@@ -815,6 +815,10 @@ img {
   color: #fff;
 }
 
+.tool-switcher {
+  margin-bottom: 14px;
+}
+
 .tool-checkboxes {
   display: flex;
   flex-direction: column;
@@ -1466,6 +1470,147 @@ img {
 }
 
 /* ---------------------------------------------------------------------------
+   性格推荐工具
+--------------------------------------------------------------------------- */
+
+.nature-tool {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 640px;
+}
+
+.nature-import-panel {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.nature-import-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nature-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.nature-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+
+.nature-stat-input {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.nature-result {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.nature-result-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary);
+}
+
+.nature-result-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.nature-result-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nature-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border: 1px solid currentColor;
+}
+
+.nature-badge-raise {
+  color: var(--success);
+}
+
+.nature-badge-lower {
+  color: var(--danger);
+}
+
+.nature-result-reason {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.nature-stats-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.nature-stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.nature-stats-table th,
+.nature-stats-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.nature-stats-table thead th {
+  background: #f8fafc;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.nature-stats-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.nature-cell-raised {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.nature-cell-lowered {
+  color: var(--danger);
+}
+
+.nature-mark-badge {
+  margin-left: 4px;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+/* ---------------------------------------------------------------------------
    响应式：窄屏下工具栏换行、详情标签改为纵向
 --------------------------------------------------------------------------- */
 
@@ -1485,5 +1630,9 @@ img {
 
   .scene-row-type {
     display: none;
+  }
+
+  .nature-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }

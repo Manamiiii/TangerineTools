@@ -141,6 +141,15 @@ export function naturalCompare(a, b) {
   return 0
 }
 
+// 按 key 优先、name 兜底的方式在字段列表中查找目标字段。
+// 用于跨预置/自定义资料表通用地定位「特性标签」「名称」「形态」等字段，
+// 不依赖某一套具体的资料表结构。
+export function findFieldByKeyOrName(fields, keys = [], names = []) {
+  const byKey = fields.find((f) => keys.includes(f.key))
+  if (byKey) return byKey
+  return fields.find((f) => names.includes(f.name)) || null
+}
+
 export function findDefaultSortField(fields) {
   return fields.find(
     (f) => NUMBER_FIELD_NAMES.includes(f.name) || NUMBER_FIELD_KEYS.includes(f.key),

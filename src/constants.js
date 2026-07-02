@@ -16,7 +16,7 @@ export function sceneTypeLabel(value) {
 export const SCENE_TOOLS = [
   { value: 'catalog', label: '资料库', ready: true },
   { value: 'stock', label: '属性库存', ready: false },
-  { value: 'nature', label: '性格推荐', ready: false },
+  { value: 'nature', label: '性格推荐', ready: true },
 ]
 
 // 字段类型：资料表列的数据类型。

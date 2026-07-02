@@ -36,7 +36,7 @@ const FORM_OPTIONS = [
 // 其中 attack/control/support/defense/special 是第一轮就存在的旧值，
 // 这里只更新了展示名称与配色（新语义更细），value 保持不变，
 // 已保存的旧标签数据可以继续正常展示、不会变成空白或 undefined。
-const TRAIT_TAG_OPTIONS = [
+export const TRAIT_TAG_OPTIONS = [
   { value: 'attack', label: '输出倾向', color: '#dc2626', image: '' },
   { value: 'patkLean', label: '物攻倾向', color: '#ea580c', image: '' },
   { value: 'matkLean', label: '魔攻倾向', color: '#c026d3', image: '' },
