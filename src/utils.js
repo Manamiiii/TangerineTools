@@ -47,6 +47,34 @@ export function normalizeOption(opt) {
   }
 }
 
+// 合并字段的选项列表：预置里新增的选项会被补齐（本地没有才追加）；
+// 本地已有的选项里，如果其 label/color 仍完全等于 legacyDefaults 记录的
+// 旧默认值（即用户没有手动改过），会被更新为预置的最新展示名/颜色；
+// 已被用户修改过的选项、以及预置里没有的本地自定义选项都保持原样不变。
+export function mergeFieldOptions(existingOptions, presetOptions, legacyDefaults = {}) {
+  const existing = Array.isArray(existingOptions) ? existingOptions : []
+  const preset = Array.isArray(presetOptions) ? presetOptions : []
+  const presetByValue = new Map(preset.map((opt) => [opt.value, opt]))
+
+  const merged = existing.map((opt) => {
+    const presetOpt = presetByValue.get(opt.value)
+    const legacy = legacyDefaults[opt.value]
+    if (presetOpt && legacy && opt.label === legacy.label && opt.color === legacy.color) {
+      return { ...opt, label: presetOpt.label, color: presetOpt.color }
+    }
+    return opt
+  })
+
+  const existingValues = new Set(existing.map((opt) => opt.value))
+  for (const presetOpt of preset) {
+    if (!existingValues.has(presetOpt.value)) {
+      merged.push({ ...presetOpt })
+    }
+  }
+
+  return merged
+}
+
 export function normalizeField(field) {
   return {
     id: field.id,

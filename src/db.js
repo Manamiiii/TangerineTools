@@ -2,8 +2,8 @@
 // 场景 / 资料表 / 字段 / 行的基础 CRUD，以及全量导出/导入。
 
 import Dexie from 'dexie'
-import { ROCK_KINGDOM_PRESET } from './presets/rockKingdom.js'
-import { deriveFieldKey, generateId, normalizeField, nowIso } from './utils.js'
+import { ROCK_KINGDOM_PRESET, TRAIT_TAG_LEGACY_DEFAULTS } from './presets/rockKingdom.js'
+import { deriveFieldKey, generateId, mergeFieldOptions, normalizeField, nowIso } from './utils.js'
 
 export const db = new Dexie('tangerine-tools')
 
@@ -21,32 +21,66 @@ db.version(1).stores({
 
 export async function ensureSeeded() {
   const seeded = await db.meta.get('seededRockKingdom')
-  if (seeded?.value) return
-  await seedRockKingdom()
-  await db.meta.put({ key: 'seededRockKingdom', value: true })
+  if (!seeded?.value) {
+    await seedRockKingdomStructure()
+    await db.meta.put({ key: 'seededRockKingdom', value: true })
+  }
+  // 以下两步在每次启动时都会执行（不受 seededRockKingdom 一次性标记限制），
+  // 目的是让"已经播种过"的老用户也能安全地补齐后续新增的字段选项/预置行，
+  // 同时尊重用户已删除的场景/资料表、已有的自定义编辑，不做覆盖式重置。
+  await migrateRockKingdomFieldOptions()
+  await migrateRockKingdomRows()
 }
 
-async function seedRockKingdom() {
+async function seedRockKingdomStructure() {
   const { scene, tables, fields } = ROCK_KINGDOM_PRESET
   await db.transaction('rw', db.scenes, db.catalogTables, db.catalogFields, async () => {
     await db.scenes.put(scene)
     for (const table of tables) await db.catalogTables.put(table)
     for (const field of fields) await db.catalogFields.put(field)
   })
+}
+
+// 为已存在的洛克王国字段（如特性标签）补齐预置里新增的选项，并且只在用户
+// 尚未自定义过旧选项时才更新其展示名/颜色。字段本身已被用户删除时跳过，
+// 不做任何恢复。
+async function migrateRockKingdomFieldOptions() {
+  for (const presetField of ROCK_KINGDOM_PRESET.fields) {
+    if (!Array.isArray(presetField.options) || presetField.options.length === 0) continue
+    const existingField = await db.catalogFields.get(presetField.id)
+    if (!existingField) continue
+    const legacyDefaults = presetField.key === 'traitTags' ? TRAIT_TAG_LEGACY_DEFAULTS : {}
+    const mergedOptions = mergeFieldOptions(existingField.options, presetField.options, legacyDefaults)
+    if (JSON.stringify(mergedOptions) !== JSON.stringify(existingField.options)) {
+      await db.catalogFields.update(presetField.id, { options: mergedOptions, updatedAt: nowIso() })
+    }
+  }
+}
+
+// 补齐预置行数据：只插入本地还不存在（按 id 判断）的行，已存在的行（含用户
+// 编辑过的）一律不动。资料表已被用户删除时跳过，不做任何恢复。
+async function migrateRockKingdomRows() {
+  const tableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const table = await db.catalogTables.get(tableId)
+  if (!table) return
   try {
     const res = await fetch(`${import.meta.env.BASE_URL}presets/rockKingdomRows.json`)
     if (!res.ok) return
-    const rows = await res.json()
-    const tableId = tables[0].id
+    const presetRows = await res.json()
+    const existingIds = new Set(await db.catalogRows.where('tableId').equals(tableId).primaryKeys())
     const now = nowIso()
-    const rowsToInsert = rows.map((row) => ({
-      id: row.id || generateId('row'),
-      tableId,
-      values: row.values || {},
-      createdAt: row.createdAt || now,
-      updatedAt: row.updatedAt || now,
-    }))
-    await db.catalogRows.bulkPut(rowsToInsert)
+    const rowsToInsert = presetRows
+      .filter((row) => row.id && !existingIds.has(row.id))
+      .map((row) => ({
+        id: row.id,
+        tableId,
+        values: row.values || {},
+        createdAt: row.createdAt || now,
+        updatedAt: row.updatedAt || now,
+      }))
+    if (rowsToInsert.length > 0) {
+      await db.catalogRows.bulkPut(rowsToInsert)
+    }
   } catch (err) {
     // 预置资料只是锦上添花的 mock 数据；离线或抓取失败时，骨架仍应可用。
     console.warn('加载洛克王国预置资料行失败：', err)
