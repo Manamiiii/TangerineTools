@@ -5,9 +5,20 @@ import { useEffect, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { ArrowLeft, Download, Upload } from 'lucide-react'
 import { db, ensureSeeded, exportAllData, importAllData } from './db.js'
+import { SCENE_TOOLS } from './constants.js'
 import { SceneList } from './components/scenes.jsx'
 import { CatalogTool } from './components/dataTables.jsx'
+import { NatureTool } from './components/nature.jsx'
+import { StockTool } from './components/stock.jsx'
 import { ConfirmDialog, IconButton } from './components/common.jsx'
+
+// 工具 value -> 对应的工具组件。只有 constants.js 中标记 ready:true 的工具
+// 才会被场景工作台实际渲染、并出现在多工具切换器中。
+const TOOL_COMPONENTS = {
+  catalog: CatalogTool,
+  nature: NatureTool,
+  stock: StockTool,
+}
 
 function useHashRoute() {
   const [hash, setHash] = useState(() => window.location.hash.slice(1))
@@ -72,12 +83,39 @@ export default function App() {
 }
 
 function SceneWorkbench({ scene }) {
-  if (scene.tools?.includes('catalog')) {
-    return <CatalogTool scene={scene} />
+  const readyTools = SCENE_TOOLS.filter(
+    (tool) => tool.ready && scene.tools?.includes(tool.value),
+  )
+  const [activeTool, setActiveTool] = useState(null)
+  const current = readyTools.find((t) => t.value === activeTool) || readyTools[0] || null
+
+  if (!current) {
+    return (
+      <div className="scene-workbench-empty">
+        <p>该场景尚未启用任何已实现的工具，请先在场景编辑中开启已实现的工具。</p>
+      </div>
+    )
   }
+
+  const ToolComponent = TOOL_COMPONENTS[current.value]
+
   return (
-    <div className="scene-workbench-empty">
-      <p>该场景尚未启用任何已实现的工具，请先在场景编辑中开启「资料库」。</p>
+    <div className="scene-workbench">
+      {readyTools.length > 1 && (
+        <div className="segmented tool-switcher">
+          {readyTools.map((tool) => (
+            <button
+              key={tool.value}
+              type="button"
+              className={`segmented-item ${current.value === tool.value ? 'active' : ''}`}
+              onClick={() => setActiveTool(tool.value)}
+            >
+              {tool.label}
+            </button>
+          ))}
+        </div>
+      )}
+      <ToolComponent scene={scene} />
     </div>
   )
 }

@@ -2,8 +2,9 @@
 // 场景 / 资料表 / 字段 / 行的基础 CRUD，以及全量导出/导入。
 
 import Dexie from 'dexie'
-import { ROCK_KINGDOM_PRESET } from './presets/rockKingdom.js'
-import { deriveFieldKey, generateId, normalizeField, nowIso } from './utils.js'
+import { ROCK_KINGDOM_PRESET, TRAIT_TAG_LEGACY_DEFAULTS } from './presets/rockKingdom.js'
+import { STOCK_FIXED_FIELDS, STOCK_TABLE_NAME } from './domain/stock.js'
+import { deriveFieldKey, generateId, mergeFieldOptions, normalizeField, nowIso } from './utils.js'
 
 export const db = new Dexie('tangerine-tools')
 
@@ -21,32 +22,87 @@ db.version(1).stores({
 
 export async function ensureSeeded() {
   const seeded = await db.meta.get('seededRockKingdom')
-  if (seeded?.value) return
-  await seedRockKingdom()
-  await db.meta.put({ key: 'seededRockKingdom', value: true })
+  if (!seeded?.value) {
+    await seedRockKingdomStructure()
+    await db.meta.put({ key: 'seededRockKingdom', value: true })
+  }
+  // 以下几步在每次启动时都会执行（不受 seededRockKingdom 一次性标记限制），
+  // 目的是让"已经播种过"的老用户也能安全地补齐后续新增的字段选项/预置行/默认工具，
+  // 同时尊重用户已删除的场景/资料表、已有的自定义编辑，不做覆盖式重置。
+  await migrateRockKingdomFieldOptions()
+  await migrateRockKingdomRows()
+  await migrateRockKingdomSceneTools()
 }
 
-async function seedRockKingdom() {
+// 洛克王国场景第一轮的旧默认值只启用了资料库工具；这一轮把新默认值改为三个工具
+// 都启用。这里只处理老用户"场景 tools 仍然恰好等于旧默认值"的情况，自动补齐为
+// 新默认值；只要用户自定义过 tools（无论是关掉了资料库、只手动开了库存，还是
+// 任何不同于旧默认值的组合），一律不覆盖，尊重用户的选择。场景已被用户删除时跳过。
+const LEGACY_DEFAULT_SCENE_TOOLS = ['catalog']
+
+async function migrateRockKingdomSceneTools() {
+  const scene = await db.scenes.get(ROCK_KINGDOM_PRESET.scene.id)
+  if (!scene) return
+  const isLegacyDefault =
+    Array.isArray(scene.tools) &&
+    scene.tools.length === LEGACY_DEFAULT_SCENE_TOOLS.length &&
+    scene.tools.every((tool, index) => tool === LEGACY_DEFAULT_SCENE_TOOLS[index])
+  if (!isLegacyDefault) return
+  await db.scenes.update(scene.id, {
+    tools: [...ROCK_KINGDOM_PRESET.scene.tools],
+    updatedAt: nowIso(),
+  })
+}
+
+async function seedRockKingdomStructure() {
   const { scene, tables, fields } = ROCK_KINGDOM_PRESET
   await db.transaction('rw', db.scenes, db.catalogTables, db.catalogFields, async () => {
     await db.scenes.put(scene)
     for (const table of tables) await db.catalogTables.put(table)
     for (const field of fields) await db.catalogFields.put(field)
   })
+}
+
+// 为已存在的洛克王国字段（如特性标签）补齐预置里新增的选项，并且只在用户
+// 尚未自定义过旧选项时才更新其展示名/颜色。字段本身已被用户删除时跳过，
+// 不做任何恢复。
+async function migrateRockKingdomFieldOptions() {
+  for (const presetField of ROCK_KINGDOM_PRESET.fields) {
+    if (!Array.isArray(presetField.options) || presetField.options.length === 0) continue
+    const existingField = await db.catalogFields.get(presetField.id)
+    if (!existingField) continue
+    const legacyDefaults = presetField.key === 'traitTags' ? TRAIT_TAG_LEGACY_DEFAULTS : {}
+    const mergedOptions = mergeFieldOptions(existingField.options, presetField.options, legacyDefaults)
+    if (JSON.stringify(mergedOptions) !== JSON.stringify(existingField.options)) {
+      await db.catalogFields.update(presetField.id, { options: mergedOptions, updatedAt: nowIso() })
+    }
+  }
+}
+
+// 补齐预置行数据：只插入本地还不存在（按 id 判断）的行，已存在的行（含用户
+// 编辑过的）一律不动。资料表已被用户删除时跳过，不做任何恢复。
+async function migrateRockKingdomRows() {
+  const tableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const table = await db.catalogTables.get(tableId)
+  if (!table) return
   try {
     const res = await fetch(`${import.meta.env.BASE_URL}presets/rockKingdomRows.json`)
     if (!res.ok) return
-    const rows = await res.json()
-    const tableId = tables[0].id
+    const presetRows = await res.json()
+    const existingIds = new Set(await db.catalogRows.where('tableId').equals(tableId).primaryKeys())
     const now = nowIso()
-    const rowsToInsert = rows.map((row) => ({
-      id: row.id || generateId('row'),
-      tableId,
-      values: row.values || {},
-      createdAt: row.createdAt || now,
-      updatedAt: row.updatedAt || now,
-    }))
-    await db.catalogRows.bulkPut(rowsToInsert)
+    const rowsToInsert = presetRows
+      .filter((row) => row.id && !existingIds.has(row.id))
+      .map((row) => ({
+        id: row.id,
+        tableId,
+        values: row.values || {},
+        createdAt: row.createdAt || now,
+        updatedAt: row.updatedAt || now,
+      }))
+    if (rowsToInsert.length > 0) {
+      await db.catalogRows.bulkPut(rowsToInsert)
+    }
   } catch (err) {
     // 预置资料只是锦上添花的 mock 数据；离线或抓取失败时，骨架仍应可用。
     console.warn('加载洛克王国预置资料行失败：', err)
@@ -137,6 +193,48 @@ async function deleteCatalogTableInternal(id) {
   await db.catalogFields.where('tableId').equals(id).delete()
   await db.catalogRows.where('tableId').equals(id).delete()
   await db.catalogTables.delete(id)
+}
+
+// 属性库存：复用 catalogTables/catalogFields 存储，通过 kind: 'stock' 标记
+// 与资料库的普通资料表区分开，避免混入资料库工具的资料表选择器。
+// 幂等：同一场景只会创建一次，已存在时直接返回，不会覆盖用户数据。
+export async function ensureStockTable(sceneId) {
+  const existing = await db.catalogTables
+    .where('sceneId')
+    .equals(sceneId)
+    .filter((t) => t.kind === 'stock')
+    .first()
+  if (existing) return existing
+
+  const now = nowIso()
+  const order = await db.catalogTables.where('sceneId').equals(sceneId).count()
+  const table = {
+    id: generateId('table'),
+    sceneId,
+    name: STOCK_TABLE_NAME,
+    kind: 'stock',
+    order,
+    createdAt: now,
+    updatedAt: now,
+  }
+  const fields = STOCK_FIXED_FIELDS.map((f, index) =>
+    normalizeField({
+      id: generateId('field'),
+      tableId: table.id,
+      key: f.key,
+      name: f.name,
+      type: f.type,
+      order: index,
+      options: f.options,
+      createdAt: now,
+      updatedAt: now,
+    }),
+  )
+  await db.transaction('rw', db.catalogTables, db.catalogFields, async () => {
+    await db.catalogTables.put(table)
+    for (const field of fields) await db.catalogFields.put(field)
+  })
+  return table
 }
 
 // ---------------------------------------------------------------------------

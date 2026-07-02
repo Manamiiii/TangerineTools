@@ -815,6 +815,10 @@ img {
   color: #fff;
 }
 
+.tool-switcher {
+  margin-bottom: 14px;
+}
+
 .tool-checkboxes {
   display: flex;
   flex-direction: column;
@@ -1387,6 +1391,297 @@ img {
 }
 
 /* ---------------------------------------------------------------------------
+   同编号形态对比
+--------------------------------------------------------------------------- */
+
+.form-comparison {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.form-comparison-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.form-comparison-summary {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 10px;
+}
+
+.form-comparison-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.form-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.form-comparison-table th,
+.form-comparison-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.form-comparison-table thead th {
+  background: #f8fafc;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.form-comparison-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.form-comparison-same-badge {
+  margin-left: 4px;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-faint);
+}
+
+.form-comparison-cell.mark-highest {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.form-comparison-cell.mark-lowest {
+  color: var(--danger);
+}
+
+.form-comparison-mark-badge {
+  margin-left: 4px;
+  font-size: 10px;
+  font-weight: 400;
+  border-radius: 999px;
+  padding: 0 6px;
+  border: 1px solid currentColor;
+}
+
+/* ---------------------------------------------------------------------------
+   性格推荐工具
+--------------------------------------------------------------------------- */
+
+.nature-tool {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 640px;
+}
+
+.nature-import-panel {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.nature-import-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nature-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.nature-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+
+.nature-stat-input {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.nature-result {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.nature-result-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary);
+}
+
+.nature-result-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.nature-result-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nature-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border: 1px solid currentColor;
+}
+
+.nature-badge-raise {
+  color: var(--success);
+}
+
+.nature-badge-lower {
+  color: var(--danger);
+}
+
+.nature-result-reason {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.nature-stats-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.nature-stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.nature-stats-table th,
+.nature-stats-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.nature-stats-table thead th {
+  background: #f8fafc;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.nature-stats-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.nature-cell-raised {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.nature-cell-lowered {
+  color: var(--danger);
+}
+
+.nature-mark-badge {
+  margin-left: 4px;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+/* ---------------------------------------------------------------------------
+   属性库存工具：统计面板
+--------------------------------------------------------------------------- */
+
+.stock-stats-panel {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.stock-stats-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.stock-stats-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.stock-stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stock-stats-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.stock-stats-count {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.stock-stats-count-lg {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stock-stats-threshold {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.stock-stats-threshold .input {
+  width: 64px;
+}
+
+/* ---------------------------------------------------------------------------
    响应式：窄屏下工具栏换行、详情标签改为纵向
 --------------------------------------------------------------------------- */
 
@@ -1406,5 +1701,13 @@ img {
 
   .scene-row-type {
     display: none;
+  }
+
+  .nature-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .stock-stats-panel {
+    grid-template-columns: 1fr;
   }
 }
