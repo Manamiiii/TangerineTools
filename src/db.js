@@ -3,6 +3,7 @@
 
 import Dexie from 'dexie'
 import { ROCK_KINGDOM_PRESET, TRAIT_TAG_LEGACY_DEFAULTS } from './presets/rockKingdom.js'
+import { STOCK_FIXED_FIELDS, STOCK_TABLE_NAME } from './domain/stock.js'
 import { deriveFieldKey, generateId, mergeFieldOptions, normalizeField, nowIso } from './utils.js'
 
 export const db = new Dexie('tangerine-tools')
@@ -171,6 +172,48 @@ async function deleteCatalogTableInternal(id) {
   await db.catalogFields.where('tableId').equals(id).delete()
   await db.catalogRows.where('tableId').equals(id).delete()
   await db.catalogTables.delete(id)
+}
+
+// 属性库存：复用 catalogTables/catalogFields 存储，通过 kind: 'stock' 标记
+// 与资料库的普通资料表区分开，避免混入资料库工具的资料表选择器。
+// 幂等：同一场景只会创建一次，已存在时直接返回，不会覆盖用户数据。
+export async function ensureStockTable(sceneId) {
+  const existing = await db.catalogTables
+    .where('sceneId')
+    .equals(sceneId)
+    .filter((t) => t.kind === 'stock')
+    .first()
+  if (existing) return existing
+
+  const now = nowIso()
+  const order = await db.catalogTables.where('sceneId').equals(sceneId).count()
+  const table = {
+    id: generateId('table'),
+    sceneId,
+    name: STOCK_TABLE_NAME,
+    kind: 'stock',
+    order,
+    createdAt: now,
+    updatedAt: now,
+  }
+  const fields = STOCK_FIXED_FIELDS.map((f, index) =>
+    normalizeField({
+      id: generateId('field'),
+      tableId: table.id,
+      key: f.key,
+      name: f.name,
+      type: f.type,
+      order: index,
+      options: f.options,
+      createdAt: now,
+      updatedAt: now,
+    }),
+  )
+  await db.transaction('rw', db.catalogTables, db.catalogFields, async () => {
+    await db.catalogTables.put(table)
+    for (const field of fields) await db.catalogFields.put(field)
+  })
+  return table
 }
 
 // ---------------------------------------------------------------------------

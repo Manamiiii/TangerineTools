@@ -11,11 +11,11 @@ export function sceneTypeLabel(value) {
   return SCENE_TYPES.find((t) => t.value === value)?.label || value
 }
 
-// 场景可启用的工具。第一轮只落地资料库，其余工具先占位，
-// 后续新 session 按 docs/session-start-prompt.md 继续实现。
+// 场景可启用的工具。三个工具目前均已落地，ready 字段仍然保留，
+// 便于未来新增工具时先占位、再逐步实现。
 export const SCENE_TOOLS = [
   { value: 'catalog', label: '资料库', ready: true },
-  { value: 'stock', label: '属性库存', ready: false },
+  { value: 'stock', label: '属性库存', ready: true },
   { value: 'nature', label: '性格推荐', ready: true },
 ]
 

@@ -48,7 +48,12 @@ import { CellView, DataGrid, FieldInput, FieldManagerModal, FilterPanel } from '
 
 export function CatalogTool({ scene }) {
   const tables = useLiveQuery(
-    () => db.catalogTables.where('sceneId').equals(scene.id).sortBy('order'),
+    () =>
+      db.catalogTables
+        .where('sceneId')
+        .equals(scene.id)
+        .filter((t) => t.kind !== 'stock')
+        .sortBy('order'),
     [scene.id],
   )
   const [activeTableId, setActiveTableId] = useState(null)

@@ -1611,6 +1611,77 @@ img {
 }
 
 /* ---------------------------------------------------------------------------
+   属性库存工具：统计面板
+--------------------------------------------------------------------------- */
+
+.stock-stats-panel {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.stock-stats-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.stock-stats-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.stock-stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stock-stats-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.stock-stats-count {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.stock-stats-count-lg {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stock-stats-threshold {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.stock-stats-threshold .input {
+  width: 64px;
+}
+
+/* ---------------------------------------------------------------------------
    响应式：窄屏下工具栏换行、详情标签改为纵向
 --------------------------------------------------------------------------- */
 
@@ -1634,5 +1705,9 @@ img {
 
   .nature-stats-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .stock-stats-panel {
+    grid-template-columns: 1fr;
   }
 }

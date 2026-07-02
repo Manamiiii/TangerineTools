@@ -105,7 +105,12 @@ export function NatureTool({ scene }) {
 // 场景下没有任何资料表时返回 null，保证性格工具可以完全独立使用。
 function RowImportPanel({ scene, onImport }) {
   const tables = useLiveQuery(
-    () => db.catalogTables.where('sceneId').equals(scene.id).sortBy('order'),
+    () =>
+      db.catalogTables
+        .where('sceneId')
+        .equals(scene.id)
+        .filter((t) => t.kind !== 'stock')
+        .sortBy('order'),
     [scene.id],
   )
   const [tableId, setTableId] = useState(null)

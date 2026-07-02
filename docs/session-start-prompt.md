@@ -4,7 +4,7 @@
 
 ## 项目是什么
 
-本地优先的个人资料管理 Web App（Vite + React 19 + Dexie.js），面向个人（非多用户）使用，纯静态站点，无后端。当前处于**第一轮（round 1）**之后的状态——骨架 + 核心循环（场景管理 + 资料库工具）已经实现并通过构建/lint/浏览器走查验证。详见 `docs/system-capabilities.md`（能力范围）和 `docs/data-sync.md`（数据模型与导出/导入语义）。
+本地优先的个人资料管理 Web App（Vite + React 19 + Dexie.js），面向个人（非多用户）使用，纯静态站点，无后端。当前场景工作台的三个工具（资料库 `catalog`、属性库存 `stock`、性格推荐 `nature`）均已实现并通过构建/lint/浏览器走查验证。详见 `docs/system-capabilities.md`（能力范围）和 `docs/data-sync.md`（数据模型与导出/导入语义）。
 
 ## 先读这三份文档
 
@@ -29,20 +29,24 @@ src/
   utils.js            # id 生成、字段归一化、排序/筛选/分页等通用逻辑函数
   presets/
     rockKingdom.js     # 洛克王国场景/资料表/字段定义（结构化数据，随 bundle 打包）
+  domain/
+    stock.js           # 属性库存工具的固定字段定义、状态选项、统计纯函数
+    nature.js          # 性格推荐工具的六维计算、性格评分、推荐理由纯函数
+    rockKingdom.js      # 同编号形态识别、对比表格构建纯函数（资料库详情弹窗使用）
   components/
     common.jsx         # 通用 UI：Modal / ConfirmDialog / IconButton / Popover / Pagination / DragHandle / StatsRadarChart 等
     scenes.jsx          # 首页场景列表 + 新建/编辑场景弹窗
     catalog.jsx         # 字段管理、列头菜单、数据表格（DataGrid）、筛选面板、单元格渲染/编辑（CellView/FieldInput）
-    dataTables.jsx      # 资料库工具顶层：资料表管理 + TableView（搜索/筛选/排序/分页）+ 行的新增/编辑/详情弹窗
-    stock.jsx           # 尚未实现（占位，对应 SCENE_TOOLS 里 ready:false 的 "属性库存"）
-    nature.jsx          # 尚未实现（占位，对应 SCENE_TOOLS 里 ready:false 的 "性格推荐"）
+    dataTables.jsx      # 资料库工具顶层：资料表管理 + TableView（搜索/筛选/排序/分页）+ 行的新增/编辑/详情弹窗（含同编号形态对比）
+    stock.jsx           # 属性库存工具：固定字段实例的增删改 + 分类/状态/等级阈值统计
+    nature.jsx          # 性格推荐工具：手动录入或从资料库带入六维，计算并展示推荐性格
 public/
-  presets/rockKingdomRows.json  # 洛克王国示例行数据（7 条），运行时 fetch 加载
+  presets/rockKingdomRows.json  # 洛克王国示例行数据（10 条，含 4 组同编号形态），运行时 fetch 加载
 docs/
   system-capabilities.md / data-sync.md / session-start-prompt.md
 ```
 
-> 注意：`stock.jsx` / `nature.jsx` 目前**并未**作为文件创建——第一轮的 `SCENE_TOOLS` 里这两个工具值仅用于 UI 占位（禁用勾选框 + "即将推出"徽章），`SceneWorkbench`（`App.jsx`）目前只处理 `tools.includes('catalog')` 的情况，其余场景会显示一个空态提示文案。若要实现这两个工具，需要新建对应组件文件，并在 `SceneWorkbench` 里按 `scene.tools` 分派渲染。
+> 属性库存工具的数据复用资料库的 `catalogTables`/`catalogFields`/`catalogRows` 存储，通过在 `catalogTables` 上打 `kind: 'stock'` 标记与普通资料表区分（由 `db.js` 的 `ensureStockTable` 幂等创建）。这是一个非索引属性，只在查询后用 JS `.filter()` 区分，没有引入 Dexie schema 版本变更。任何新增的"资料表选择器"（如资料库的表切换、性格推荐的带入面板）都要记得排除 `kind === 'stock'` 的表，避免库存表混入。
 
 ## 关键约定 / 容易踩的坑
 
@@ -65,12 +69,9 @@ docs/
 
 尚未做穷尽式走查的部分（非阻塞，供参考）：字段管理弹窗内的增删改查交互、筛选面板实际交互、列头排序点击、分页页大小切换、行的新增/编辑表单提交、导出文件下载触发、导入确认弹窗与实际合并结果、场景的新建/编辑/删除表单提交。这些功能均已实现并通过 `npm run build`/`lint`，但建议在做相关改动前自行走查一遍确认现状。
 
-## 明确排期在后续 session 的工作（第一轮范围外）
+## 明确排除在范围外的工作
 
-1. `stock.jsx`——属性库存矩阵统计工具。
-2. `nature.jsx`——性格推荐工具。
-3. 洛克王国全量 496 条数据同步（当前仅 7 条演示数据）。
-4. 同编号多形态对比视图。
-5. PWA 安装配置（manifest、离线缓存、安装到主屏幕）。
+1. 洛克王国全量数据同步（当前仅 10 条示例/演示数据，远少于完整图鉴规模）。
+2. PWA 安装配置（manifest、离线缓存、安装到主屏幕）——这是主动排除的范围决策，不是缺陷。
 
-开始这些工作前，建议先用 `AskUserQuestion` 或直接和用户确认这一轮要做哪几项、优先级如何，而不要一次性全部展开。
+开始这些工作前，建议先用 `AskUserQuestion` 或直接和用户确认范围与优先级，而不要一次性全部展开。
