@@ -1,0 +1,140 @@
+// 应用入口组件：基于 hash 的极简路由（首页场景列表 ↔ 场景工作台）、
+// 启动时的预置资料播种、全局 JSON 导出/导入（仅首页展示）。
+
+import { useEffect, useState } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { ArrowLeft, Download, Upload } from 'lucide-react'
+import { db, ensureSeeded, exportAllData, importAllData } from './db.js'
+import { SceneList } from './components/scenes.jsx'
+import { CatalogTool } from './components/dataTables.jsx'
+import { ConfirmDialog, IconButton } from './components/common.jsx'
+
+function useHashRoute() {
+  const [hash, setHash] = useState(() => window.location.hash.slice(1))
+  useEffect(() => {
+    function onHashChange() {
+      setHash(window.location.hash.slice(1))
+    }
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+  return hash
+}
+
+function goHome() {
+  window.location.hash = ''
+}
+
+function goToScene(id) {
+  window.location.hash = `scene/${id}`
+}
+
+export default function App() {
+  const [seeded, setSeeded] = useState(false)
+
+  useEffect(() => {
+    ensureSeeded().then(() => setSeeded(true))
+  }, [])
+
+  const hash = useHashRoute()
+  const sceneId = hash.startsWith('scene/') ? hash.slice('scene/'.length) : null
+  const scenes = useLiveQuery(() => db.scenes.orderBy('order').toArray(), [])
+  const activeScene = (sceneId && scenes?.find((s) => s.id === sceneId)) || null
+
+  if (!seeded || !scenes) {
+    return <div className="app-loading">加载中…</div>
+  }
+
+  return (
+    <div className="app-shell">
+      <header className="app-header">
+        <button type="button" className="app-brand" onClick={goHome}>
+          TangerineTools
+        </button>
+        {activeScene ? (
+          <div className="scene-context">
+            <IconButton icon={ArrowLeft} title="返回场景列表" onClick={goHome} />
+            <span className="scene-context-name">{activeScene.name}</span>
+          </div>
+        ) : (
+          <GlobalDataActions />
+        )}
+      </header>
+      <main className="app-main">
+        {activeScene ? (
+          <SceneWorkbench scene={activeScene} />
+        ) : (
+          <SceneList scenes={scenes} onOpen={goToScene} />
+        )}
+      </main>
+    </div>
+  )
+}
+
+function SceneWorkbench({ scene }) {
+  if (scene.tools?.includes('catalog')) {
+    return <CatalogTool scene={scene} />
+  }
+  return (
+    <div className="scene-workbench-empty">
+      <p>该场景尚未启用任何已实现的工具，请先在场景编辑中开启「资料库」。</p>
+    </div>
+  )
+}
+
+function GlobalDataActions() {
+  const [pendingFile, setPendingFile] = useState(null)
+  const [error, setError] = useState('')
+
+  async function handleExport() {
+    const payload = await exportAllData()
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `tangerine-tools-${payload.exportedAt.slice(0, 10)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  function handleFileChosen(e) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    setError('')
+    setPendingFile(file)
+  }
+
+  async function confirmImport() {
+    try {
+      const text = await pendingFile.text()
+      const payload = JSON.parse(text)
+      await importAllData(payload)
+      setPendingFile(null)
+    } catch (err) {
+      setPendingFile(null)
+      setError(err.message || '导入失败，请检查文件内容')
+    }
+  }
+
+  return (
+    <div className="global-data-actions">
+      {error && <span className="form-error">{error}</span>}
+      <IconButton icon={Download} label="导出数据" onClick={handleExport} />
+      <label className="btn btn-file">
+        <Upload size={14} />
+        导入数据
+        <input type="file" accept="application/json" hidden onChange={handleFileChosen} />
+      </label>
+      {pendingFile && (
+        <ConfirmDialog
+          title="导入数据"
+          message={`即将导入「${pendingFile.name}」。相同 id 的数据会被覆盖，文件中未包含的数据将保留在本地，此操作不可撤销。确定继续吗？`}
+          confirmText="导入"
+          onCancel={() => setPendingFile(null)}
+          onConfirm={confirmImport}
+        />
+      )}
+    </div>
+  )
+}
