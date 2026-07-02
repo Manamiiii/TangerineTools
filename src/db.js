@@ -26,11 +26,32 @@ export async function ensureSeeded() {
     await seedRockKingdomStructure()
     await db.meta.put({ key: 'seededRockKingdom', value: true })
   }
-  // 以下两步在每次启动时都会执行（不受 seededRockKingdom 一次性标记限制），
-  // 目的是让"已经播种过"的老用户也能安全地补齐后续新增的字段选项/预置行，
+  // 以下几步在每次启动时都会执行（不受 seededRockKingdom 一次性标记限制），
+  // 目的是让"已经播种过"的老用户也能安全地补齐后续新增的字段选项/预置行/默认工具，
   // 同时尊重用户已删除的场景/资料表、已有的自定义编辑，不做覆盖式重置。
   await migrateRockKingdomFieldOptions()
   await migrateRockKingdomRows()
+  await migrateRockKingdomSceneTools()
+}
+
+// 洛克王国场景第一轮的旧默认值只启用了资料库工具；这一轮把新默认值改为三个工具
+// 都启用。这里只处理老用户"场景 tools 仍然恰好等于旧默认值"的情况，自动补齐为
+// 新默认值；只要用户自定义过 tools（无论是关掉了资料库、只手动开了库存，还是
+// 任何不同于旧默认值的组合），一律不覆盖，尊重用户的选择。场景已被用户删除时跳过。
+const LEGACY_DEFAULT_SCENE_TOOLS = ['catalog']
+
+async function migrateRockKingdomSceneTools() {
+  const scene = await db.scenes.get(ROCK_KINGDOM_PRESET.scene.id)
+  if (!scene) return
+  const isLegacyDefault =
+    Array.isArray(scene.tools) &&
+    scene.tools.length === LEGACY_DEFAULT_SCENE_TOOLS.length &&
+    scene.tools.every((tool, index) => tool === LEGACY_DEFAULT_SCENE_TOOLS[index])
+  if (!isLegacyDefault) return
+  await db.scenes.update(scene.id, {
+    tools: [...ROCK_KINGDOM_PRESET.scene.tools],
+    updatedAt: nowIso(),
+  })
 }
 
 async function seedRockKingdomStructure() {

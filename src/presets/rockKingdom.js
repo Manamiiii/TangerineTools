@@ -113,7 +113,7 @@ export const ROCK_KINGDOM_PRESET = {
     name: '洛克王国',
     type: 'game',
     color: '#2563eb',
-    tools: ['catalog'],
+    tools: ['catalog', 'stock', 'nature'],
     order: 0,
     createdAt: SEED_TIME,
     updatedAt: SEED_TIME,
