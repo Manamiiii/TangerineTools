@@ -1,0 +1,238 @@
+// 通用工具函数：ID/时间、字段与选项归一化、六维解析、
+// 搜索/筛选/排序、分页等。保持纯函数、不依赖 Dexie。
+
+import { NUMBER_FIELD_KEYS, NUMBER_FIELD_NAMES, STATS_DIMENSIONS } from './constants.js'
+
+export function generateId(prefix = 'id') {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `${prefix}-${crypto.randomUUID()}`
+  }
+  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+}
+
+export function nowIso() {
+  return new Date().toISOString()
+}
+
+export function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value))
+}
+
+// 根据字段展示名生成一个稳定、唯一的字段 key。
+export function deriveFieldKey(name, existingKeys = []) {
+  let base = String(name || 'field')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+  if (!base) base = 'field'
+  let key = base
+  let i = 1
+  while (existingKeys.includes(key)) {
+    key = `${base}_${i}`
+    i += 1
+  }
+  return key
+}
+
+export function normalizeOption(opt) {
+  if (typeof opt === 'string') {
+    return { value: opt, label: opt, color: '', image: '' }
+  }
+  return {
+    value: opt.value ?? opt.label ?? '',
+    label: opt.label ?? opt.value ?? '',
+    color: opt.color || '',
+    image: opt.image || '',
+  }
+}
+
+export function normalizeField(field) {
+  return {
+    id: field.id,
+    tableId: field.tableId,
+    key: field.key,
+    name: field.name || field.key,
+    type: field.type || 'text',
+    order: field.order ?? 0,
+    hidden: !!field.hidden,
+    options: Array.isArray(field.options) ? field.options.map(normalizeOption) : [],
+    statsMap: field.statsMap && typeof field.statsMap === 'object' ? field.statsMap : {},
+    referenceTableId: field.referenceTableId || null,
+    createdAt: field.createdAt || nowIso(),
+    updatedAt: field.updatedAt || nowIso(),
+  }
+}
+
+export function optionLabel(field, value) {
+  const opt = field.options?.find((o) => o.value === value)
+  return opt ? opt.label : value == null ? '' : String(value)
+}
+
+export function stringifyCellValue(raw, field) {
+  if (raw == null || raw === '') return ''
+  if (field.type === 'multiselect' && Array.isArray(raw)) {
+    return raw.map((v) => optionLabel(field, v)).join(' ')
+  }
+  if (field.type === 'select') {
+    return optionLabel(field, raw)
+  }
+  if (field.type === 'boolean') {
+    return raw ? '是' : '否'
+  }
+  return String(raw)
+}
+
+// 自然排序比较：数字段落按数值比较，其余按本地化字符串比较。
+export function naturalCompare(a, b) {
+  if (a == null && b == null) return 0
+  if (a == null) return -1
+  if (b == null) return 1
+  if (typeof a === 'number' && typeof b === 'number') return a - b
+  const as = String(a)
+  const bs = String(b)
+  const chunkRe = /(\d+|\D+)/g
+  const aParts = as.match(chunkRe) || []
+  const bParts = bs.match(chunkRe) || []
+  const len = Math.max(aParts.length, bParts.length)
+  for (let i = 0; i < len; i += 1) {
+    const ap = aParts[i]
+    const bp = bParts[i]
+    if (ap === undefined) return -1
+    if (bp === undefined) return 1
+    const aIsNum = /^\d+$/.test(ap)
+    const bIsNum = /^\d+$/.test(bp)
+    if (aIsNum && bIsNum) {
+      const diff = Number(ap) - Number(bp)
+      if (diff !== 0) return diff
+    } else {
+      const cmp = ap.localeCompare(bp, 'zh-Hans-CN')
+      if (cmp !== 0) return cmp
+    }
+  }
+  return 0
+}
+
+export function findDefaultSortField(fields) {
+  return fields.find(
+    (f) => NUMBER_FIELD_NAMES.includes(f.name) || NUMBER_FIELD_KEYS.includes(f.key),
+  )
+}
+
+export function compareRowsBySort(a, b, sort, fields) {
+  if (sort && sort.fieldKey) {
+    const dir = sort.direction === 'desc' ? -1 : 1
+    return naturalCompare(a.values?.[sort.fieldKey], b.values?.[sort.fieldKey]) * dir
+  }
+  const defaultField = findDefaultSortField(fields)
+  if (defaultField) {
+    return naturalCompare(a.values?.[defaultField.key], b.values?.[defaultField.key])
+  }
+  return naturalCompare(a.createdAt, b.createdAt)
+}
+
+// 解析六维图字段实际读取的列：优先使用手动配置的 statsMap，
+// 否则按字段 key / 名称自动识别。
+export function resolveStatsMapping(fields, statsMap = {}) {
+  const byKey = new Map(fields.map((f) => [f.key, f]))
+  const result = {}
+  for (const dim of STATS_DIMENSIONS) {
+    const mapped = statsMap?.[dim.key]
+    if (mapped && byKey.has(mapped)) {
+      result[dim.key] = mapped
+      continue
+    }
+    const match = fields.find((f) => {
+      const key = (f.key || '').toLowerCase()
+      const name = (f.name || '').toLowerCase()
+      return dim.aliases.some((alias) => key === alias.toLowerCase() || name === alias.toLowerCase())
+    })
+    result[dim.key] = match ? match.key : null
+  }
+  return result
+}
+
+export function getStatsValues(fields, statsMap, values) {
+  const mapping = resolveStatsMapping(fields, statsMap)
+  return STATS_DIMENSIONS.map((dim) => ({
+    key: dim.key,
+    label: dim.label,
+    value: Number(values?.[mapping[dim.key]]) || 0,
+  }))
+}
+
+export function rowMatchesSearch(row, fields, query) {
+  const q = (query || '').trim().toLowerCase()
+  if (!q) return true
+  return fields.some((field) => {
+    if (field.type === 'stats') return false
+    const text = stringifyCellValue(row.values?.[field.key], field)
+    return text.toLowerCase().includes(q)
+  })
+}
+
+export function rowMatchesFilters(row, fields, filters) {
+  if (!filters) return true
+  return Object.entries(filters).every(([fieldKey, cond]) => {
+    if (!cond) return true
+    const field = fields.find((f) => f.key === fieldKey)
+    if (!field) return true
+    const raw = row.values?.[fieldKey]
+    switch (field.type) {
+      case 'number': {
+        const num = Number(raw)
+        if (cond.min !== '' && cond.min != null && !(num >= Number(cond.min))) return false
+        if (cond.max !== '' && cond.max != null && !(num <= Number(cond.max))) return false
+        return true
+      }
+      case 'select': {
+        if (!cond.values || cond.values.length === 0) return true
+        return cond.values.includes(raw)
+      }
+      case 'multiselect': {
+        if (!cond.values || cond.values.length === 0) return true
+        const arr = Array.isArray(raw) ? raw : []
+        return arr.some((v) => cond.values.includes(v))
+      }
+      case 'boolean': {
+        if (cond.value == null) return true
+        return !!raw === cond.value
+      }
+      case 'date': {
+        if (!raw) return !cond.from && !cond.to
+        if (cond.from && raw < cond.from) return false
+        if (cond.to && raw > cond.to) return false
+        return true
+      }
+      default: {
+        if (!cond.contains) return true
+        return String(raw ?? '')
+          .toLowerCase()
+          .includes(String(cond.contains).toLowerCase())
+      }
+    }
+  })
+}
+
+export function hasActiveFilters(filters) {
+  if (!filters) return false
+  return Object.values(filters).some((cond) => {
+    if (!cond) return false
+    if (cond.contains) return true
+    if (cond.min !== '' && cond.min != null) return true
+    if (cond.max !== '' && cond.max != null) return true
+    if (cond.values && cond.values.length > 0) return true
+    if (cond.value != null) return true
+    if (cond.from || cond.to) return true
+    return false
+  })
+}
+
+export function paginate(list, page, pageSize) {
+  const start = (page - 1) * pageSize
+  return list.slice(start, start + pageSize)
+}
+
+export function totalPages(count, pageSize) {
+  return Math.max(1, Math.ceil(count / pageSize))
+}

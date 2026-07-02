@@ -1,0 +1,187 @@
+[
+  {
+    "id": "row-rock-001",
+    "values": {
+      "image": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2218%22%20fill%3D%22%2394a3b8%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2262%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ffffff%22%20font-family%3D%22sans-serif%22%3E%E8%BF%AA%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "name": "迪莫",
+      "no": "001",
+      "element": "normal",
+      "form": "base",
+      "bst": 300,
+      "shiny": false,
+      "traitName": "皮糙肉厚",
+      "traitTags": [
+        "defense"
+      ],
+      "traitIcon": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2218%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2262%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ffffff%22%20font-family%3D%22sans-serif%22%3E%E7%9A%AE%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "traitDesc": "天生体质厚实，受到的伤害会有所降低，适合站在队伍前排消耗对手。",
+      "hp": 100,
+      "patk": 45,
+      "matk": 30,
+      "pdef": 50,
+      "mdef": 40,
+      "spd": 35
+    },
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "row-rock-002",
+    "values": {
+      "image": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2218%22%20fill%3D%22%2394a3b8%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2262%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ffffff%22%20font-family%3D%22sans-serif%22%3E%E5%96%B5%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "name": "喵喵",
+      "no": "002",
+      "element": "normal",
+      "form": "base",
+      "bst": 310,
+      "shiny": false,
+      "traitName": "敏捷反应",
+      "traitTags": [
+        "attack"
+      ],
+      "traitIcon": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2218%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2262%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ffffff%22%20font-family%3D%22sans-serif%22%3E%E6%95%8F%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "traitDesc": "动作敏捷，行动顺位更容易领先，擅长率先发难。",
+      "hp": 80,
+      "patk": 55,
+      "matk": 35,
+      "pdef": 35,
+      "mdef": 35,
+      "spd": 70
+    },
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "row-rock-003",
+    "values": {
+      "image": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2218%22%20fill%3D%22%23a855f7%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2262%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ffffff%22%20font-family%3D%22sans-serif%22%3E%E9%AD%94%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "name": "魔力猫",
+      "no": "003",
+      "element": "magic",
+      "form": "evolved",
+      "bst": 475,
+      "shiny": true,
+      "traitName": "魔力涌动",
+      "traitTags": [
+        "attack",
+        "special"
+      ],
+      "traitIcon": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2218%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2262%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ffffff%22%20font-family%3D%22sans-serif%22%3E%E9%AD%94%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "traitDesc": "喵喵的进化形态，体内魔力大幅提升，魔法攻击附带额外效果。",
+      "hp": 110,
+      "patk": 60,
+      "matk": 95,
+      "pdef": 55,
+      "mdef": 70,
+      "spd": 85
+    },
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "row-rock-004",
+    "values": {
+      "image": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2218%22%20fill%3D%22%2338bdf8%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2262%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ffffff%22%20font-family%3D%22sans-serif%22%3E%E6%B0%B4%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "name": "水灵",
+      "no": "004",
+      "element": "water",
+      "form": "base",
+      "bst": 345,
+      "shiny": false,
+      "traitName": "清凉体质",
+      "traitTags": [
+        "support"
+      ],
+      "traitIcon": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2218%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2262%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ffffff%22%20font-family%3D%22sans-serif%22%3E%E6%B8%85%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "traitDesc": "体质清凉温和，能够在战斗中缓和队伍的节奏。",
+      "hp": 95,
+      "patk": 40,
+      "matk": 55,
+      "pdef": 50,
+      "mdef": 60,
+      "spd": 45
+    },
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "row-rock-005",
+    "values": {
+      "image": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2218%22%20fill%3D%22%2338bdf8%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2262%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ffffff%22%20font-family%3D%22sans-serif%22%3E%E5%9C%A3%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "name": "圣水守护",
+      "no": "005",
+      "element": "water",
+      "form": "evolved",
+      "bst": 495,
+      "shiny": false,
+      "traitName": "圣水庇护",
+      "traitTags": [
+        "defense",
+        "support"
+      ],
+      "traitIcon": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2218%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2262%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ffffff%22%20font-family%3D%22sans-serif%22%3E%E5%9C%A3%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "traitDesc": "水灵的进化形态，能够召唤圣水护盾，减少队伍受到的伤害。",
+      "hp": 130,
+      "patk": 55,
+      "matk": 75,
+      "pdef": 90,
+      "mdef": 95,
+      "spd": 50
+    },
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "row-rock-006",
+    "values": {
+      "image": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2218%22%20fill%3D%22%2360a5fa%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2262%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ffffff%22%20font-family%3D%22sans-serif%22%3E%E9%B8%AD%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "name": "鸭吉吉",
+      "no": "006",
+      "element": "flying",
+      "form": "base",
+      "bst": 330,
+      "shiny": false,
+      "traitName": "轻盈羽翼",
+      "traitTags": [
+        "attack"
+      ],
+      "traitIcon": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2218%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2262%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ffffff%22%20font-family%3D%22sans-serif%22%3E%E8%BD%BB%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "traitDesc": "身形轻盈，能够灵活地躲避对手的攻击。",
+      "hp": 85,
+      "patk": 50,
+      "matk": 40,
+      "pdef": 40,
+      "mdef": 40,
+      "spd": 75
+    },
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "row-rock-007",
+    "values": {
+      "image": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2218%22%20fill%3D%22%2360a5fa%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2262%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ffffff%22%20font-family%3D%22sans-serif%22%3E%E9%B8%AD%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "name": "鸭吉吉国王",
+      "no": "007",
+      "element": "flying",
+      "form": "evolved",
+      "bst": 475,
+      "shiny": false,
+      "traitName": "王者威严",
+      "traitTags": [
+        "attack",
+        "control"
+      ],
+      "traitIcon": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2218%22%20fill%3D%22%23334155%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2262%22%20font-size%3D%2240%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ffffff%22%20font-family%3D%22sans-serif%22%3E%E7%8E%8B%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "traitDesc": "鸭吉吉的进化形态，王者气场能震慑对手，使其攻击力有所下降。",
+      "hp": 115,
+      "patk": 80,
+      "matk": 60,
+      "pdef": 65,
+      "mdef": 65,
+      "spd": 90
+    },
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  }
+]
