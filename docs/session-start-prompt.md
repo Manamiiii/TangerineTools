@@ -12,6 +12,12 @@
 2. `docs/data-sync.md` —— Dexie schema、导出 JSON 结构、导入合并策略（同 id 覆盖、缺失保留）。
 3. 本文件。
 
+## 环境要求
+
+- Node 版本必须满足 `>=20.19.0`（见 `package.json` 的 `engines.node`，仓库根目录也提供了 `.nvmrc`）。开始开发前先执行 `node -v` 确认当前版本，如果安装了 nvm，建议直接 `nvm use` 让它读取 `.nvmrc`。
+- 确认 Node 版本符合要求后，再执行 `npm ci`、`npm run build`、`npm run lint`。
+- 如果在低于要求的版本（例如 Node 16）下执行 `npm run build` 遇到 Vite 报错或语法不兼容问题，这是环境版本问题，不代表代码本身有 bug——请先切换到符合要求的 Node 版本重试，而不是去改代码兼容旧版本。
+
 ## 代码地图
 
 ```

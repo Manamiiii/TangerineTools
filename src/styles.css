@@ -1387,6 +1387,85 @@ img {
 }
 
 /* ---------------------------------------------------------------------------
+   同编号形态对比
+--------------------------------------------------------------------------- */
+
+.form-comparison {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.form-comparison-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.form-comparison-summary {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 10px;
+}
+
+.form-comparison-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.form-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.form-comparison-table th,
+.form-comparison-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.form-comparison-table thead th {
+  background: #f8fafc;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.form-comparison-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.form-comparison-same-badge {
+  margin-left: 4px;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-faint);
+}
+
+.form-comparison-cell.mark-highest {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.form-comparison-cell.mark-lowest {
+  color: var(--danger);
+}
+
+.form-comparison-mark-badge {
+  margin-left: 4px;
+  font-size: 10px;
+  font-weight: 400;
+  border-radius: 999px;
+  padding: 0 6px;
+  border: 1px solid currentColor;
+}
+
+/* ---------------------------------------------------------------------------
    响应式：窄屏下工具栏换行、详情标签改为纵向
 --------------------------------------------------------------------------- */
 
