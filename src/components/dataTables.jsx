@@ -52,7 +52,7 @@ export function CatalogTool({ scene }) {
       db.catalogTables
         .where('sceneId')
         .equals(scene.id)
-        .filter((t) => t.kind !== 'stock')
+        .filter((t) => !t.kind)
         .sortBy('order'),
     [scene.id],
   )

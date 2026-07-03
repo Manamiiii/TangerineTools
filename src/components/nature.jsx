@@ -1,7 +1,9 @@
 // 性格推荐工具：手动录入或从场景资料库带入六维 + 特性标签，
 // 推荐一组强化/弱化搭配，并展示可解释的推荐理由。
+// 除首选之外，工具还会同时暴露若干候选方案（推荐/可选清单），
+// 用户可以直接点击某个候选，替换主结果卡片的展示内容。
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { ArrowDownCircle, ArrowUpCircle, Sparkles } from 'lucide-react'
 import { db } from '../db.js'
@@ -24,8 +26,14 @@ const EMPTY_STATS = Object.fromEntries(STATS_DIMENSIONS.map((d) => [d.key, '']))
 const TRAIT_TAG_FIELD = { type: 'multiselect', options: TRAIT_TAG_OPTIONS }
 const TRAIT_TAG_LABELS = Object.fromEntries(TRAIT_TAG_OPTIONS.map((o) => [o.value, o.label]))
 
+// 候选清单的展示条数：首个作为「推荐」呈现，之后 N-1 个作为「可选」。
+// 组合总数 = 1（均衡） + 5×4（强化+弱化）= 21，取前 6 条覆盖典型搭配，
+// 又不至于让页面过长。
+const CANDIDATE_LIMIT = 6
+
 export function NatureTool({ scene }) {
   const [input, setInput] = useState({ name: '', stats: { ...EMPTY_STATS }, traitTags: [] })
+  const [selectedIndex, setSelectedIndex] = useState(0)
 
   function updateStat(key, value) {
     setInput((prev) => ({ ...prev, stats: { ...prev.stats, [key]: value } }))
@@ -37,13 +45,25 @@ export function NatureTool({ scene }) {
       stats: { ...EMPTY_STATS, ...stats },
       traitTags: traitTags || [],
     })
+    setSelectedIndex(0)
   }
 
-  const numericStats = Object.fromEntries(
-    STATS_DIMENSIONS.map((d) => [d.key, Number(input.stats[d.key]) || 0]),
+  const numericStats = useMemo(
+    () => Object.fromEntries(STATS_DIMENSIONS.map((d) => [d.key, Number(input.stats[d.key]) || 0])),
+    [input.stats],
   )
   const hasAnyStat = STATS_DIMENSIONS.some((d) => numericStats[d.key] > 0)
-  const nature = calculateNatureScores(numericStats, input.traitTags)[0]
+  const candidates = useMemo(
+    () => calculateNatureScores(numericStats, input.traitTags).slice(0, CANDIDATE_LIMIT),
+    [numericStats, input.traitTags],
+  )
+  // 输入变化后如果原选中下标越界（例如输入被清空、候选变少），回退到首选。
+  useEffect(() => {
+    if (selectedIndex >= candidates.length) setSelectedIndex(0)
+  }, [candidates.length, selectedIndex])
+
+  const activeIndex = Math.min(selectedIndex, Math.max(candidates.length - 1, 0))
+  const nature = candidates[activeIndex] || { raise: null, lower: null, score: 0 }
   const adjustedStats = applyNatureModifier(numericStats, nature)
   const reasoning = explainNatureRecommendation(nature, numericStats, input.traitTags, TRAIT_TAG_LABELS)
 
@@ -85,12 +105,19 @@ export function NatureTool({ scene }) {
       </div>
 
       {hasAnyStat ? (
-        <NatureResult
-          nature={nature}
-          baseStats={numericStats}
-          adjustedStats={adjustedStats}
-          reasoning={reasoning}
-        />
+        <>
+          <NatureCandidateList
+            candidates={candidates}
+            activeIndex={activeIndex}
+            onSelect={setSelectedIndex}
+          />
+          <NatureResult
+            nature={nature}
+            baseStats={numericStats}
+            adjustedStats={adjustedStats}
+            reasoning={reasoning}
+          />
+        </>
       ) : (
         <EmptyState
           title="填写六维后查看推荐"
@@ -109,7 +136,7 @@ function RowImportPanel({ scene, onImport }) {
       db.catalogTables
         .where('sceneId')
         .equals(scene.id)
-        .filter((t) => t.kind !== 'stock')
+        .filter((t) => !t.kind)
         .sortBy('order'),
     [scene.id],
   )
@@ -178,6 +205,42 @@ function RowImportPanel({ scene, onImport }) {
           带入
         </button>
       </div>
+    </div>
+  )
+}
+
+// 候选清单：首行标记「推荐」，之后是「可选」。点击某项即把它作为主结果。
+// 分数保留一位小数，便于对比但不显得数据太满；均衡候选（raise=null）显示为 0.0。
+function NatureCandidateList({ candidates, activeIndex, onSelect }) {
+  if (!candidates || candidates.length === 0) return null
+  return (
+    <div className="nature-candidates">
+      <div className="nature-candidates-title">候选方案</div>
+      <ul className="nature-candidates-list">
+        {candidates.map((c, index) => {
+          const label = index === 0 ? '推荐' : '可选'
+          const isActive = index === activeIndex
+          return (
+            <li key={`${c.raise ?? 'none'}-${c.lower ?? 'none'}`}>
+              <button
+                type="button"
+                className={`nature-candidate ${isActive ? 'active' : ''}`}
+                onClick={() => onSelect(index)}
+              >
+                <span
+                  className={`nature-candidate-tag ${
+                    index === 0 ? 'nature-candidate-tag-primary' : ''
+                  }`}
+                >
+                  {label}
+                </span>
+                <span className="nature-candidate-name">{natureName(c)}</span>
+                <span className="nature-candidate-score">{c.score.toFixed(1)}</span>
+              </button>
+            </li>
+          )
+        })}
+      </ul>
     </div>
   )
 }
