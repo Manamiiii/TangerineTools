@@ -11,10 +11,14 @@ export function sceneTypeLabel(value) {
   return SCENE_TYPES.find((t) => t.value === value)?.label || value
 }
 
-// 场景可启用的工具。三个工具目前均已落地，ready 字段仍然保留，
+// 场景可启用的工具。四个工具目前均已落地，ready 字段仍然保留，
 // 便于未来新增工具时先占位、再逐步实现。
+// 「单项清单」用于记录某个具体拥有的实例（例如一只已捕获、正在培养的精灵），
+// 与「属性库存」按"属性汇总"的思路互补：库存回答"我有多少能达到条件的"，
+// 单项清单回答"我具体拥有哪一只、状态如何"。
 export const SCENE_TOOLS = [
   { value: 'catalog', label: '资料库', ready: true },
+  { value: 'owned', label: '单项清单', ready: true },
   { value: 'stock', label: '属性库存', ready: true },
   { value: 'nature', label: '性格推荐', ready: true },
 ]

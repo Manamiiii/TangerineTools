@@ -4,6 +4,7 @@
 import Dexie from 'dexie'
 import { ROCK_KINGDOM_PRESET, TRAIT_TAG_LEGACY_DEFAULTS } from './presets/rockKingdom.js'
 import { STOCK_FIXED_FIELDS, STOCK_TABLE_NAME } from './domain/stock.js'
+import { OWNED_FIXED_FIELDS, OWNED_TABLE_NAME } from './domain/owned.js'
 import { deriveFieldKey, generateId, mergeFieldOptions, normalizeField, nowIso } from './utils.js'
 
 export const db = new Dexie('tangerine-tools')
@@ -34,19 +35,30 @@ export async function ensureSeeded() {
   await migrateRockKingdomSceneTools()
 }
 
-// 洛克王国场景第一轮的旧默认值只启用了资料库工具；这一轮把新默认值改为三个工具
-// 都启用。这里只处理老用户"场景 tools 仍然恰好等于旧默认值"的情况，自动补齐为
-// 新默认值；只要用户自定义过 tools（无论是关掉了资料库、只手动开了库存，还是
-// 任何不同于旧默认值的组合），一律不覆盖，尊重用户的选择。场景已被用户删除时跳过。
-const LEGACY_DEFAULT_SCENE_TOOLS = ['catalog']
+// 洛克王国场景经历了几轮默认工具变更：
+// - 第一轮：只启用资料库 -> ['catalog']
+// - 第二轮：加入库存与性格推荐 -> ['catalog', 'stock', 'nature']
+// - 当前：再加入单项清单 -> ['catalog', 'owned', 'stock', 'nature']
+// 迁移策略：只在场景 tools 恰好等于某一版旧默认值时，自动补齐到当前默认值。
+// 只要用户手动改过 tools（哪怕只是关掉了资料库或加入了不同工具的组合），
+// 一律不覆盖，尊重用户的选择。场景已被用户删除时跳过。
+const LEGACY_DEFAULT_SCENE_TOOLS_LIST = [
+  ['catalog'],
+  ['catalog', 'stock', 'nature'],
+]
+
+function arraysEqual(a, b) {
+  if (!Array.isArray(a) || !Array.isArray(b)) return false
+  if (a.length !== b.length) return false
+  return a.every((item, index) => item === b[index])
+}
 
 async function migrateRockKingdomSceneTools() {
   const scene = await db.scenes.get(ROCK_KINGDOM_PRESET.scene.id)
   if (!scene) return
-  const isLegacyDefault =
-    Array.isArray(scene.tools) &&
-    scene.tools.length === LEGACY_DEFAULT_SCENE_TOOLS.length &&
-    scene.tools.every((tool, index) => tool === LEGACY_DEFAULT_SCENE_TOOLS[index])
+  const isLegacyDefault = LEGACY_DEFAULT_SCENE_TOOLS_LIST.some((legacy) =>
+    arraysEqual(scene.tools, legacy),
+  )
   if (!isLegacyDefault) return
   await db.scenes.update(scene.id, {
     tools: [...ROCK_KINGDOM_PRESET.scene.tools],
@@ -226,6 +238,58 @@ export async function ensureStockTable(sceneId) {
       type: f.type,
       order: index,
       options: f.options,
+      createdAt: now,
+      updatedAt: now,
+    }),
+  )
+  await db.transaction('rw', db.catalogTables, db.catalogFields, async () => {
+    await db.catalogTables.put(table)
+    for (const field of fields) await db.catalogFields.put(field)
+  })
+  return table
+}
+
+// 单项清单：与资料库共享 catalogTables 存储，用 kind: 'owned' 标记；
+// 与资料库、库存都相互隔离（不会出现在资料库工具的资料表选择器里）。
+// 幂等：同一场景只会创建一次，已存在时直接返回，不覆盖用户数据。
+// ref 字段的 referenceTableId 会自动绑定到当前场景第一个"普通"资料表
+// （即 !table.kind），例如洛克王国场景的"精灵图鉴"。用户新建的场景若
+// 还没有普通资料表，则先创建单项清单表并留空引用，等资料表创建后再手动指定。
+export async function ensureOwnedTable(sceneId) {
+  const existing = await db.catalogTables
+    .where('sceneId')
+    .equals(sceneId)
+    .filter((t) => t.kind === 'owned')
+    .first()
+  if (existing) return existing
+
+  const catalogTable = await db.catalogTables
+    .where('sceneId')
+    .equals(sceneId)
+    .filter((t) => !t.kind)
+    .first()
+
+  const now = nowIso()
+  const order = await db.catalogTables.where('sceneId').equals(sceneId).count()
+  const table = {
+    id: generateId('table'),
+    sceneId,
+    name: OWNED_TABLE_NAME,
+    kind: 'owned',
+    order,
+    createdAt: now,
+    updatedAt: now,
+  }
+  const fields = OWNED_FIXED_FIELDS.map((f, index) =>
+    normalizeField({
+      id: generateId('field'),
+      tableId: table.id,
+      key: f.key,
+      name: f.name,
+      type: f.type,
+      order: index,
+      options: f.options,
+      referenceTableId: f.type === 'reference' ? catalogTable?.id || null : undefined,
       createdAt: now,
       updatedAt: now,
     }),

@@ -10,12 +10,14 @@ import { SceneList } from './components/scenes.jsx'
 import { CatalogTool } from './components/dataTables.jsx'
 import { NatureTool } from './components/nature.jsx'
 import { StockTool } from './components/stock.jsx'
+import { OwnedTool } from './components/owned.jsx'
 import { ConfirmDialog, IconButton } from './components/common.jsx'
 
 // 工具 value -> 对应的工具组件。只有 constants.js 中标记 ready:true 的工具
 // 才会被场景工作台实际渲染、并出现在多工具切换器中。
 const TOOL_COMPONENTS = {
   catalog: CatalogTool,
+  owned: OwnedTool,
   nature: NatureTool,
   stock: StockTool,
 }

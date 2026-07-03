@@ -36,8 +36,125 @@ export function getSameNumberRows(currentRow, rows, fields) {
     .sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''))
 }
 
-// 基于同编号的行集合，构建对比表格数据：名称/形态 + 各数值维度（含最高/最低/相同标注）。
-// 只有 2 行及以上才具备对比意义，否则返回空数组，调用方应据此隐藏对比区块。
+// 适合方向的推荐候选：按优先级从上往下匹配，命中第一个即返回。
+// 每条规则的 test 收到该行的六维、种族值、特性标签、以及同组内的最大值信息，
+// 用尽量少的判断给出"这个形态最擅长做什么"的一句话结论。
+// 顺序设计：先看输出/速度/耐久之类的结构性定位，再看能量/续航/控制之类的功能性倾向。
+const FORM_DIRECTION_RULES = [
+  {
+    // 物攻显著高于魔攻且是组内最高的物攻。
+    label: '物攻输出',
+    test: ({ stats, groupMax }) =>
+      stats.patk >= 90 && stats.patk >= stats.matk + 20 && stats.patk === groupMax.patk,
+  },
+  {
+    // 魔攻显著高于物攻且是组内最高的魔攻。
+    label: '魔攻输出',
+    test: ({ stats, groupMax }) =>
+      stats.matk >= 90 && stats.matk >= stats.patk + 20 && stats.matk === groupMax.matk,
+  },
+  {
+    // 双攻均高、差距不大：双攻输出。
+    label: '双攻输出',
+    test: ({ stats }) => stats.patk >= 85 && stats.matk >= 85 && Math.abs(stats.patk - stats.matk) <= 20,
+  },
+  {
+    // 速度在组内最高且明显偏高：主打速攻/先手。
+    label: '高速先手',
+    test: ({ stats, groupMax }) => stats.spd >= 95 && stats.spd === groupMax.spd,
+  },
+  {
+    // 生命+双防合计明显偏高：耐久坦克。
+    label: '耐久坦克',
+    test: ({ stats }) => stats.hp + stats.pdef + stats.mdef >= 320,
+  },
+  {
+    // 携带 energyCycle 标签：能量循环。
+    label: '能量循环',
+    test: ({ traitTags }) => traitTags.includes('energyCycle'),
+  },
+  {
+    // 携带 support 标签：辅助续航。
+    label: '辅助续航',
+    test: ({ traitTags }) => traitTags.includes('support'),
+  },
+  {
+    // 携带 control 标签：异常控制。
+    label: '异常控制',
+    test: ({ traitTags }) => traitTags.includes('control'),
+  },
+]
+
+// 兜底方向：所有规则都没命中时，根据组内最高的单项六维给一个粗略定位。
+function fallbackDirection(stats, groupMax) {
+  const candidates = [
+    { key: 'patk', label: '物攻侧重' },
+    { key: 'matk', label: '魔攻侧重' },
+    { key: 'spd', label: '速度侧重' },
+    { key: 'hp', label: '生存侧重' },
+    { key: 'pdef', label: '物防侧重' },
+    { key: 'mdef', label: '魔防侧重' },
+  ]
+  const hit = candidates.find((c) => stats[c.key] === groupMax[c.key])
+  return hit?.label || '均衡定位'
+}
+
+// 计算适合方向 + 主要差异（相对同组均值的最大正/负偏差维度）。
+// 均值维度包括六维；正偏差用于"擅长"，负偏差用于"薄弱"；
+// 完全均衡（各维度都在均值 ±5% 内）时不列薄弱维度，避免噪音结论。
+function computeFormExtras(row, allRows, groupMax) {
+  const values = row.values || {}
+  const stats = {
+    hp: Number(values.hp) || 0,
+    patk: Number(values.patk) || 0,
+    matk: Number(values.matk) || 0,
+    pdef: Number(values.pdef) || 0,
+    mdef: Number(values.mdef) || 0,
+    spd: Number(values.spd) || 0,
+  }
+  const traitTags = Array.isArray(values.traitTags) ? values.traitTags : []
+
+  const rule = FORM_DIRECTION_RULES.find((r) => r.test({ stats, traitTags, groupMax }))
+  const direction = rule ? rule.label : fallbackDirection(stats, groupMax)
+
+  // 主要差异：找出这一行相对同组均值偏差最大的正向 + 负向维度。
+  const dimKeys = ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
+  const dimLabels = {
+    hp: '生命',
+    patk: '物攻',
+    matk: '魔攻',
+    pdef: '物防',
+    mdef: '魔防',
+    spd: '速度',
+  }
+  const means = {}
+  for (const key of dimKeys) {
+    const sum = allRows.reduce((acc, r) => acc + (Number(r.values?.[key]) || 0), 0)
+    means[key] = allRows.length ? sum / allRows.length : 0
+  }
+  const diffs = dimKeys.map((key) => ({
+    key,
+    label: dimLabels[key],
+    diff: stats[key] - means[key],
+    mean: means[key],
+  }))
+  const positive = diffs.filter((d) => d.diff > 5).sort((a, b) => b.diff - a.diff)
+  const negative = diffs.filter((d) => d.diff < -5).sort((a, b) => a.diff - b.diff)
+  const parts = []
+  if (positive.length > 0) {
+    parts.push(`强于同组：${positive.slice(0, 2).map((d) => d.label).join('/')}`)
+  }
+  if (negative.length > 0) {
+    parts.push(`弱于同组：${negative.slice(0, 2).map((d) => d.label).join('/')}`)
+  }
+  const difference = parts.length ? parts.join('；') : '与同组基本持平'
+
+  return { direction, difference }
+}
+
+// 基于同编号的行集合，构建对比表格数据：名称/形态 + 各数值维度（含最高/最低/相同标注）
+// + 适合方向 + 主要差异。只有 2 行及以上才具备对比意义，否则返回空数组，
+// 调用方应据此隐藏对比区块。
 export function buildFormComparisonRows(rows, fields) {
   if (!Array.isArray(rows) || rows.length < 2 || !Array.isArray(fields)) return []
   const fieldByKey = new Map(fields.map((f) => [f.key, f]))
@@ -52,9 +169,26 @@ export function buildFormComparisonRows(rows, fields) {
     extremes.set(dim.key, { max, min, allEqual: max === min })
   }
 
+  // 组内六维最大值：适合方向规则里判断"是否为组内最强"要用到，
+  // 在这里统一算好，避免每行重算。
+  const groupMax = {
+    hp: Math.max(...rows.map((r) => Number(r.values?.hp) || 0)),
+    patk: Math.max(...rows.map((r) => Number(r.values?.patk) || 0)),
+    matk: Math.max(...rows.map((r) => Number(r.values?.matk) || 0)),
+    pdef: Math.max(...rows.map((r) => Number(r.values?.pdef) || 0)),
+    mdef: Math.max(...rows.map((r) => Number(r.values?.mdef) || 0)),
+    spd: Math.max(...rows.map((r) => Number(r.values?.spd) || 0)),
+  }
+
   return rows.map((row) => {
     const formValue = row.values?.form
-    const formLabel = formField && formValue != null ? optionLabel(formField, formValue) : ''
+    // form 字段迁移到 text 类型之后，直接使用文本值；旧的 select 数据仍用 optionLabel 兜底。
+    const formLabel =
+      formField && formValue != null
+        ? formField.type === 'select'
+          ? optionLabel(formField, formValue)
+          : String(formValue)
+        : ''
     const stats = dims.map((dim) => {
       const value = Number(row.values?.[dim.key]) || 0
       const { max, min, allEqual } = extremes.get(dim.key)
@@ -64,11 +198,14 @@ export function buildFormComparisonRows(rows, fields) {
       else if (value === min) mark = 'lowest'
       return { key: dim.key, label: dim.label, value, mark }
     })
+    const extras = computeFormExtras(row, rows, groupMax)
     return {
       rowId: row.id,
       name: row.values?.name || '未命名',
       form: formLabel,
       stats,
+      direction: extras.direction,
+      difference: extras.difference,
     }
   })
 }

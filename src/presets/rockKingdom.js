@@ -9,27 +9,102 @@ const SEED_TIME = '2026-01-01T00:00:00.000Z'
 const SCENE_ID = 'scene-rock-kingdom'
 const TABLE_ID = 'table-rock-kingdom-elf-basic'
 
-// 生成一个纯本地、无外部依赖的占位图标（内联 SVG data URI）。
-// 第一轮不接入真实素材，避免引用未授权的美术资源或不稳定的外链。
-function placeholderIcon(text, bg, fg = '#ffffff') {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><rect width="48" height="48" rx="10" fill="${bg}"/><text x="24" y="32" font-size="20" text-anchor="middle" fill="${fg}" font-family="sans-serif">${text}</text></svg>`
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
-}
-
+// 系别图标：使用洛克王国官方图鉴的公开静态资源地址。
+// key 与洛克王国官方图鉴 URL 中的目录名一致；覆盖洛克王国官方公开的全部 14 系，
+// 与 496 条预置行数据保持一致，用户仍可在字段编辑中按需增删。
 const ELEMENT_OPTIONS = [
-  { value: 'normal', label: '普通系', color: '#94a3b8' },
-  { value: 'magic', label: '魔法系', color: '#a855f7' },
-  { value: 'water', label: '水系', color: '#38bdf8' },
-  { value: 'flying', label: '飞行系', color: '#60a5fa' },
-  { value: 'fire', label: '火系', color: '#f97316' },
-  { value: 'mech', label: '机械系', color: '#64748b' },
-  { value: 'dark', label: '黑暗系', color: '#6b21a8' },
-  { value: 'holy', label: '圣灵系', color: '#facc15' },
-].map((opt) => ({ ...opt, image: placeholderIcon(opt.label.slice(0, 1), opt.color) }))
+  {
+    value: 'normal',
+    label: '普通系',
+    color: '#94a3b8',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/pt.png',
+  },
+  {
+    value: 'magic',
+    label: '魔法系',
+    color: '#a855f7',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/mf.png',
+  },
+  {
+    value: 'water',
+    label: '水系',
+    color: '#38bdf8',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/ss.png',
+  },
+  {
+    value: 'flying',
+    label: '飞行系',
+    color: '#60a5fa',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/fx.png',
+  },
+  {
+    value: 'fire',
+    label: '火系',
+    color: '#f97316',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/hs.png',
+  },
+  {
+    value: 'mech',
+    label: '机械系',
+    color: '#64748b',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/jx.png',
+  },
+  {
+    value: 'dark',
+    label: '黑暗系',
+    color: '#6b21a8',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/ha.png',
+  },
+  {
+    value: 'holy',
+    label: '圣灵系',
+    color: '#facc15',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/sl.png',
+  },
+  {
+    value: 'grass',
+    label: '草系',
+    color: '#22c55e',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/cs.png',
+  },
+  {
+    value: 'ground',
+    label: '土系',
+    color: '#a16207',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/ts.png',
+  },
+  {
+    value: 'ice',
+    label: '冰系',
+    color: '#67e8f9',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/bx.png',
+  },
+  {
+    value: 'electric',
+    label: '电系',
+    color: '#eab308',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/dx.png',
+  },
+  {
+    value: 'dragon',
+    label: '龙系',
+    color: '#d946ef',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/lx.png',
+  },
+  {
+    value: 'ghost',
+    label: '幽灵系',
+    color: '#334155',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/yl.png',
+  },
+]
 
-const FORM_OPTIONS = [
-  { value: 'base', label: '基础形态', color: '#94a3b8', image: '' },
-  { value: 'evolved', label: '进化形态', color: '#2563eb', image: '' },
+// 异色的选项化表达：以 select 而非 boolean 存储，可以在表格里直接以彩色标签
+// 展示；yes/no 的字面值也能兼容 boolean 的历史数据（true 会被渲染为空单元格，
+// 迁移函数会在必要时补齐——见 db.js/rockKingdom 迁移路径）。
+const SHINY_OPTIONS = [
+  { value: 'no', label: '非异色', color: '#94a3b8', image: '' },
+  { value: 'yes', label: '异色', color: '#db2777', image: '' },
 ]
 
 // 特性标签：13 类倾向标签，用于多选描述精灵在队伍里的定位/资源循环特点。
@@ -79,8 +154,8 @@ const fields = [
   makeField({ key: 'image', name: '精灵图', type: 'image' }, 0),
   makeField({ key: 'name', name: '名称', type: 'text' }, 1),
   makeField({ key: 'no', name: '编号', type: 'text' }, 2),
-  makeField({ key: 'element', name: '系别', type: 'select', options: ELEMENT_OPTIONS }, 3),
-  makeField({ key: 'form', name: '形态', type: 'select', options: FORM_OPTIONS }, 4),
+  makeField({ key: 'element', name: '系别', type: 'multiselect', options: ELEMENT_OPTIONS }, 3),
+  makeField({ key: 'form', name: '形态', type: 'text' }, 4),
   makeField({ key: 'bst', name: '种族值', type: 'number' }, 5),
   makeField(
     {
@@ -91,7 +166,7 @@ const fields = [
     },
     6,
   ),
-  makeField({ key: 'shiny', name: '是否异色', type: 'boolean' }, 7),
+  makeField({ key: 'shiny', name: '是否异色', type: 'select', options: SHINY_OPTIONS }, 7),
   makeField({ key: 'traitName', name: '特性名称', type: 'text' }, 8),
   makeField(
     { key: 'traitTags', name: '特性标签', type: 'multiselect', options: TRAIT_TAG_OPTIONS },
@@ -113,7 +188,7 @@ export const ROCK_KINGDOM_PRESET = {
     name: '洛克王国',
     type: 'game',
     color: '#2563eb',
-    tools: ['catalog', 'stock', 'nature'],
+    tools: ['catalog', 'owned', 'stock', 'nature'],
     order: 0,
     createdAt: SEED_TIME,
     updatedAt: SEED_TIME,

@@ -1682,6 +1682,138 @@ img {
 }
 
 /* ---------------------------------------------------------------------------
+   单项清单工具：搜索栏 + 异色统计
+--------------------------------------------------------------------------- */
+
+.owned-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 240px;
+}
+
+.owned-search-input {
+  flex: 1;
+  min-width: 160px;
+}
+
+.owned-shiny-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.owned-shiny-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------------------
+   性格推荐：候选方案列表
+--------------------------------------------------------------------------- */
+
+.nature-candidates {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.nature-candidates-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.nature-candidates-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nature-candidate {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.nature-candidate:hover {
+  border-color: var(--primary);
+}
+
+.nature-candidate.active {
+  border-color: var(--primary);
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.nature-candidate-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--text-muted);
+}
+
+.nature-candidate-tag.recommended {
+  background: var(--success);
+}
+
+.nature-candidate-tag.alternative {
+  background: var(--primary);
+}
+
+.nature-candidate-name {
+  font-weight: 600;
+}
+
+.nature-candidate-score {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------------------
+   形态对比：适合方向 + 主要差异
+--------------------------------------------------------------------------- */
+
+.form-comparison-direction {
+  white-space: nowrap;
+}
+
+.form-comparison-direction-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+  background: rgba(37, 99, 235, 0.1);
+  border-radius: 999px;
+}
+
+.form-comparison-difference {
+  font-size: 12px;
+  color: var(--text-muted);
+  max-width: 220px;
+  white-space: normal;
+}
+
+/* ---------------------------------------------------------------------------
    响应式：窄屏下工具栏换行、详情标签改为纵向
 --------------------------------------------------------------------------- */
 
