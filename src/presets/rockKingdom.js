@@ -10,8 +10,8 @@ const SCENE_ID = 'scene-rock-kingdom'
 const TABLE_ID = 'table-rock-kingdom-elf-basic'
 
 // 系别图标：使用洛克王国官方图鉴的公开静态资源地址。
-// key 与洛克王国官方图鉴 URL 中的目录名一致；洛克王国目前公开的属性略多于
-// 8 种，此处只保留常见的 8 系，其余属性可在字段编辑中手动追加。
+// key 与洛克王国官方图鉴 URL 中的目录名一致；覆盖洛克王国官方公开的全部 14 系，
+// 与 496 条预置行数据保持一致，用户仍可在字段编辑中按需增删。
 const ELEMENT_OPTIONS = [
   {
     value: 'normal',

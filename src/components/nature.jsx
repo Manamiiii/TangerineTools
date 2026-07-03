@@ -229,7 +229,7 @@ function NatureCandidateList({ candidates, activeIndex, onSelect }) {
               >
                 <span
                   className={`nature-candidate-tag ${
-                    index === 0 ? 'nature-candidate-tag-primary' : ''
+                    index === 0 ? 'recommended' : 'alternative'
                   }`}
                 >
                   {label}

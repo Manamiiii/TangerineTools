@@ -26,7 +26,7 @@ db.version(1).stores({
 | `catalogRows` | `id` | `tableId` | 行：`tableId` / `values`（以字段 `key` 为键的对象） / 时间戳 |
 | `meta` | `key` | — | 内部标记，如播种标记 `seededRockKingdom` |
 
-字段的 `key` 由 `deriveFieldKey`（`src/utils.js`）从字段名派生，并保证在同一资料表内唯一；行数据 `values` 用字段 `key`（而非字段 `id`）作为属性名存取。属性库存工具（`stock.jsx`）与单项清单工具（`owned.jsx`）的固定字段是例外——它们的 `key` 是手动指定的英文字面量（库存：`name`/`level`/`category`/`status`/`note`，定义在 `src/domain/stock.js` 的 `STOCK_FIXED_FIELDS`；单项清单：`spirit`/`nickname`/`level`/`natureBias`/`bloodline`/`status`/`shiny`/`acquiredAt`/`note`，定义在 `src/domain/owned.js` 的 `OWNED_FIXED_FIELDS`），不经过 `deriveFieldKey` 生成。
+字段的 `key` 由 `deriveFieldKey`（`src/utils.js`）从字段名派生，并保证在同一资料表内唯一；行数据 `values` 用字段 `key`（而非字段 `id`）作为属性名存取。属性库存工具（`stock.jsx`）与单项清单工具（`owned.jsx`）的固定字段是例外——它们的 `key` 是手动指定的英文字面量（库存：`name`/`level`/`category`/`status`/`note`，定义在 `src/domain/stock.js` 的 `STOCK_FIXED_FIELDS`；单项清单：`ref`/`nickname`/`level`/`natureDirection`/`bloodline`/`status`/`shiny`/`acquiredAt`/`note`，定义在 `src/domain/owned.js` 的 `OWNED_FIXED_FIELDS`），不经过 `deriveFieldKey` 生成。
 
 ### `catalogTables.kind` 与 stock / owned 两类衍生工具
 
