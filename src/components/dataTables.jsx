@@ -552,6 +552,8 @@ function FormComparisonSection({ rows, summary }) {
                   {dim.mark === 'same' && <span className="form-comparison-same-badge">相同</span>}
                 </th>
               ))}
+              <th>适合方向</th>
+              <th>主要差异</th>
             </tr>
           </thead>
           <tbody>
@@ -567,6 +569,10 @@ function FormComparisonSection({ rows, summary }) {
                     )}
                   </td>
                 ))}
+                <td className="form-comparison-direction">
+                  <span className="form-comparison-direction-tag">{row.direction}</span>
+                </td>
+                <td className="form-comparison-difference">{row.difference}</td>
               </tr>
             ))}
           </tbody>
