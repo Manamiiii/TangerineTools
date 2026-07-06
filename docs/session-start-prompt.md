@@ -48,7 +48,7 @@ docs/
   system-capabilities.md / data-sync.md / session-start-prompt.md
 ```
 
-> 属性库存工具与单项清单工具均复用资料库的 `catalogTables`/`catalogFields`/`catalogRows` 存储，通过在 `catalogTables` 上打 `kind: 'stock'` 或 `kind: 'owned'` 标记与普通资料表区分。`db.js` 的 `ensureStockTable` / `ensureOwnedTable` 使用按场景 id 派生的**稳定 id**（`table-stock-${sceneId}` / `table-owned-${sceneId}`，字段 id 形如 `field-stock-${sceneId}-${key}` / `field-owned-${sceneId}-${key}`）而非随机 id 创建表和字段：表已存在时直接 `get` 返回并按需补齐缺失字段（不覆盖已有字段），不存在时才用固定 id 新建，因此 React StrictMode 下 effect 被执行两次也不会创建出重复的表。`kind` 是一个非索引属性，只在查询后用 JS `.filter()` 区分，没有引入 Dexie schema 版本变更。任何新增的"资料表选择器"（如资料库的表切换、性格推荐的带入面板）都要记得只保留 `!table.kind` 的普通资料表，避免库存表/单项清单表混入。
+> 属性库存工具与单项清单工具均复用资料库的 `catalogTables`/`catalogFields`/`catalogRows` 存储，通过在 `catalogTables` 上打 `kind: 'stock'` 或 `kind: 'owned'` 标记与普通资料表区分。`db.js` 的 `ensureStockTable` / `ensureOwnedTable` 使用按场景 id 派生的**稳定 id**（`table-stock-${sceneId}` / `table-owned-${sceneId}`，字段 id 形如 `field-stock-${sceneId}-${key}` / `field-owned-${sceneId}-${key}`）而非随机 id 创建表和字段：表已存在时直接 `get` 返回并按需补齐缺失字段（不覆盖已有字段）；按稳定 id 找不到时会回退按 `sceneId`+`kind` 查找旧版本（随机 id）建的表并直接复用（不改其 id），都找不到才用固定 id 新建。因此 React StrictMode 下 effect 被执行两次、或从旧版本升级，都不会创建出重复的表。`kind` 是一个非索引属性，只在查询后用 JS `.filter()` 区分，没有引入 Dexie schema 版本变更。任何新增的"资料表选择器"（如资料库的表切换、性格推荐的带入面板）都要记得只保留 `!table.kind` 的普通资料表，避免库存表/单项清单表混入。
 
 ## 关键约定 / 容易踩的坑
 

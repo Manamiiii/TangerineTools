@@ -216,7 +216,12 @@ async function ensureFixedFields(tableId, sceneId, idPrefix, fixedFields, now, e
   const existingKeys = new Set(existingFields.map((f) => f.key))
   const missing = fixedFields.filter((f) => !existingKeys.has(f.key))
   if (missing.length === 0) return
+  // 用现有字段里最大的 order + 1 作为起点，而不是 existingFields.length：
+  // deleteField 不会重排剩余字段的 order，删除中间字段后会留下空洞，
+  // 此时 length 可能小于等于某个仍存在的 order，直接用 length 会产生重复 order。
   const startOrder = existingFields.length
+    ? Math.max(...existingFields.map((f) => f.order ?? 0)) + 1
+    : 0
   const newFields = missing.map((f, index) =>
     normalizeField({
       id: `field-${idPrefix}-${sceneId}-${f.key}`,
@@ -241,12 +246,21 @@ async function ensureFixedFields(tableId, sceneId, idPrefix, fixedFields, now, e
 // 幂等：table/field 均使用按 sceneId 派生的稳定 id（而非随机 id），
 // 因此重复调用（例如 React StrictMode 下 effect 被执行两次）不会创建
 // 出重复的资料表——后一次调用会 put 到同一个 id 上，不会新增记录。
+// 兼容旧数据：早期版本用随机 id 创建过库存表，若按稳定 id 找不到，
+// 再按 sceneId + kind 找一遍，命中则直接复用那张旧表（不改 id，
+// 避免级联改写 catalogFields/catalogRows 的 tableId），否则才新建。
 export async function ensureStockTable(sceneId) {
   const tableId = `table-stock-${sceneId}`
   const now = nowIso()
-  const existing = await db.catalogTables.get(tableId)
+  const existing =
+    (await db.catalogTables.get(tableId)) ||
+    (await db.catalogTables
+      .where('sceneId')
+      .equals(sceneId)
+      .filter((t) => t.kind === 'stock')
+      .first())
   if (existing) {
-    await ensureFixedFields(tableId, sceneId, 'stock', STOCK_FIXED_FIELDS, now)
+    await ensureFixedFields(existing.id, sceneId, 'stock', STOCK_FIXED_FIELDS, now)
     return existing
   }
 
@@ -283,7 +297,7 @@ export async function ensureStockTable(sceneId) {
 // 单项清单：与资料库共享 catalogTables 存储，用 kind: 'owned' 标记；
 // 与资料库、库存都相互隔离（不会出现在资料库工具的资料表选择器里）。
 // 幂等：table/field 均使用按 sceneId 派生的稳定 id，重复调用不会创建
-// 出重复的资料表（原理同 ensureStockTable，见上方注释）。
+// 出重复的资料表（原理同 ensureStockTable，见上方注释，含旧随机 id 兼容）。
 // ref 字段的 referenceTableId 会自动绑定到当前场景第一个"普通"资料表
 // （即 !table.kind），例如洛克王国场景的"精灵图鉴"。用户新建的场景若
 // 还没有普通资料表，则先创建单项清单表并留空引用，等资料表创建后再手动指定。
@@ -296,9 +310,15 @@ export async function ensureOwnedTable(sceneId) {
     .filter((t) => !t.kind)
     .first()
 
-  const existing = await db.catalogTables.get(tableId)
+  const existing =
+    (await db.catalogTables.get(tableId)) ||
+    (await db.catalogTables
+      .where('sceneId')
+      .equals(sceneId)
+      .filter((t) => t.kind === 'owned')
+      .first())
   if (existing) {
-    await ensureFixedFields(tableId, sceneId, 'owned', OWNED_FIXED_FIELDS, now, (f) =>
+    await ensureFixedFields(existing.id, sceneId, 'owned', OWNED_FIXED_FIELDS, now, (f) =>
       f.type === 'reference' ? { referenceTableId: catalogTable?.id || null } : null,
     )
     return existing

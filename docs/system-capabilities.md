@@ -52,7 +52,7 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 
 场景启用「单项清单」工具后会渲染 `OwnedTool`，用来记录“我具体拥有哪一只、状态如何”，与「属性库存」的“我拥有多少能达到条件的”互补：
 
-- 数据同样复用 `catalogTables` / `catalogFields` / `catalogRows` 存储，通过 `catalogTables.kind === 'owned'` 与资料库、库存区分（首次进入该工具时由 `ensureOwnedTable` 创建；table/field 均使用按场景 id 派生的稳定 id，即使 React StrictMode 下 effect 被执行两次也不会创建出重复的资料表，表已存在但缺字段时只补齐缺失字段、不覆盖已有字段），资料库工具与性格推荐工具的选择器都会自动过滤掉这张表（`!table.kind`），互不干扰；全量导出/导入沿用现有逻辑。
+- 数据同样复用 `catalogTables` / `catalogFields` / `catalogRows` 存储，通过 `catalogTables.kind === 'owned'` 与资料库、库存区分（首次进入该工具时由 `ensureOwnedTable` 创建；table/field 均使用按场景 id 派生的稳定 id，即使 React StrictMode 下 effect 被执行两次也不会创建出重复的资料表，表已存在但缺字段时只补齐缺失字段、不覆盖已有字段；若按稳定 id 找不到表，会回退按 `sceneId`+`kind` 查找旧版本随机 id 建的表并直接复用，避免升级后产生重复表），资料库工具与性格推荐工具的选择器都会自动过滤掉这张表（`!table.kind`），互不干扰；全量导出/导入沿用现有逻辑。
 - 字段是**固定**的 9 个：精灵（引用，自动绑定当前场景第一张“普通资料表”，即 `!kind` 的表——例如洛克王国场景的“精灵基础资料”）、昵称/标记（文本）、等级（数字）、性格方向（单选：物攻/魔攻/物防/魔防/速度/均衡强化）、血脉（单选：首领/污染/奇异/普通）、状态（单选：已拥有/培养中/备用/目标）、异色（单选：是/否）、获取日期（日期）、备注（长文本）。
 - 单元格渲染、表单输入复用资料库的 `CellView` / `FieldInput`，视觉风格与资料库一致。
 - **搜索**：昵称/备注/等级三个字段字面量匹配；引用字段（精灵）联动到被引用表的行 `name` 一起匹配。
@@ -66,7 +66,7 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 
 场景启用「属性库存」工具后会渲染 `StockTool`，用于登记一批"实例"（例如正在培养的精灵）并做简单统计：
 
-- 数据复用资料库的 `catalogTables` / `catalogFields` / `catalogRows` 存储，通过 `catalogTables.kind === 'stock'` 标记与普通资料表区分（首次进入该工具时由 `ensureStockTable` 创建；table/field 均使用按场景 id 派生的稳定 id，重复调用不会创建出重复的资料表，原理同单项清单的 `ensureOwnedTable`），因此资料库工具的表选择器、性格推荐工具的"从资料库带入"选择器都会自动过滤掉这张库存表，互不干扰；沿用现有的全量导出/导入逻辑，无需额外处理。
+- 数据复用资料库的 `catalogTables` / `catalogFields` / `catalogRows` 存储，通过 `catalogTables.kind === 'stock'` 标记与普通资料表区分（首次进入该工具时由 `ensureStockTable` 创建；table/field 均使用按场景 id 派生的稳定 id，重复调用不会创建出重复的资料表，找不到稳定 id 表时会回退到旧版本随机 id 表的兼容查找，原理同单项清单的 `ensureOwnedTable`），因此资料库工具的表选择器、性格推荐工具的"从资料库带入"选择器都会自动过滤掉这张库存表，互不干扰；沿用现有的全量导出/导入逻辑，无需额外处理。
 - 字段是**固定**的 5 个（非用户可配置）：名称（文本）、等级（数字）、分类（文本）、状态（单选：未开始/培养中/已完成）、备注（长文本）。
 - 支持新增 / 编辑 / 删除实例；单元格渲染、表单输入复用资料库的 `CellView` / `FieldInput`，视觉风格与资料库一致。
 - **统计视图**（工具栏「统计」按钮切换显示/隐藏）：
