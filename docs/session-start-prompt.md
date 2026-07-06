@@ -48,7 +48,7 @@ docs/
   system-capabilities.md / data-sync.md / session-start-prompt.md
 ```
 
-> 属性库存工具与单项清单工具均复用资料库的 `catalogTables`/`catalogFields`/`catalogRows` 存储，通过在 `catalogTables` 上打 `kind: 'stock'` 或 `kind: 'owned'` 标记与普通资料表区分（由 `db.js` 的 `ensureStockTable` / `ensureOwnedTable` 幂等创建）。`kind` 是一个非索引属性，只在查询后用 JS `.filter()` 区分，没有引入 Dexie schema 版本变更。任何新增的"资料表选择器"（如资料库的表切换、性格推荐的带入面板）都要记得只保留 `!table.kind` 的普通资料表，避免库存表/单项清单表混入。
+> 属性库存工具与单项清单工具均复用资料库的 `catalogTables`/`catalogFields`/`catalogRows` 存储，通过在 `catalogTables` 上打 `kind: 'stock'` 或 `kind: 'owned'` 标记与普通资料表区分。`db.js` 的 `ensureStockTable` / `ensureOwnedTable` 使用按场景 id 派生的**稳定 id**（`table-stock-${sceneId}` / `table-owned-${sceneId}`，字段 id 形如 `field-stock-${sceneId}-${key}` / `field-owned-${sceneId}-${key}`）而非随机 id 创建表和字段：表已存在时直接 `get` 返回并按需补齐缺失字段（不覆盖已有字段）；按稳定 id 找不到时会回退按 `sceneId`+`kind` 查找旧版本（随机 id）建的表并直接复用（不改其 id），都找不到才用固定 id 新建。因此 React StrictMode 下 effect 被执行两次、或从旧版本升级，都不会创建出重复的表。`kind` 是一个非索引属性，只在查询后用 JS `.filter()` 区分，没有引入 Dexie schema 版本变更。任何新增的"资料表选择器"（如资料库的表切换、性格推荐的带入面板）都要记得只保留 `!table.kind` 的普通资料表，避免库存表/单项清单表混入。
 
 ## 关键约定 / 容易踩的坑
 
@@ -60,7 +60,7 @@ docs/
 - **导入是合并不是替换**：见 `docs/data-sync.md`，同 id 覆盖、文件中缺失的本地数据会保留，不会被删除。不要在没有明确需求的情况下改成"清空后导入"的语义。
 - **预置资料播种只跑一次**：通过 `meta` 表的 `seededRockKingdom` 标记防止重复播种；不要假设每次启动都会重新填充洛克王国数据（用户删除后不会自动恢复）。
 - **洛克王国场景默认启用四个工具**：`ROCK_KINGDOM_PRESET.scene.tools` 现在是 `['catalog', 'owned', 'stock', 'nature']`，新安装首次打开即可看到四工具切换器。老用户（场景 `tools` 仍恰好等于任一旧默认值 `['catalog']` 或 `['catalog', 'stock', 'nature']`）会被 `db.js` 的 `migrateRockKingdomSceneTools()`（每次启动都执行，不受 `seededRockKingdom` 一次性标记限制）自动补齐为四项；只要用户自定义过 `tools`（关闭过资料库、只手动开过库存等任何不同于两个已知旧默认值的组合），迁移会跳过、不覆盖。
-- **图标/图片素材**：预置的洛克王国精灵图/特性图仍使用本地内联 SVG data URI 占位（`placeholderIcon`），没有引用任何外部精灵/特性图片。**唯一例外**：`element` 字段的选项图标使用了官方图鉴静态资源 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/*.png`——这是公开可访问的图鉴 icon，不含精灵美术资源。若后续要补齐精灵/特性图，需要用户自行提供合法来源的图片，不要臆造或抓取未经授权的外部图片链接。
+- **图标/图片素材**：预置的洛克王国精灵图/特性图仍使用本地内联 SVG data URI 占位（`placeholderIcon`），没有引用任何外部精灵/特性图片。**唯一例外**：`element` 字段的 18 个选项图标使用了官方图鉴静态资源，URL 形如 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/${encodeURIComponent(系别中文名)}.png`（如 普通.png、草.png）——这是公开可访问的图鉴 icon，不含精灵美术资源。若后续要补齐精灵/特性图，需要用户自行提供合法来源的图片，不要臆造或抓取未经授权的外部图片链接。
 - **CSS**：`src/styles.css` 是唯一样式来源，无 CSS 模块/框架。新增组件前建议先搜索该文件确认是否已有可复用的类（按钮、表单、Modal、Popover、表格等都已有一套通用类名）。
 
 ## 已验证的质量基线
@@ -88,7 +88,7 @@ docs/
 
 ## 明确排除在范围外的工作
 
-1. 洛克王国全量真实数值同步（当前 496 条预置行的六维数值/特性标签/形态命名等均为占位/演示值，与官方真实数据无关；接入真实官方数据依赖外部资料，超出当前范围）。
+1. 洛克王国全量真实数值同步（当前 496 条预置行的六维数值/特性标签/形态命名/精灵图与特性图等仍为占位/演示值，与官方真实数据无关；`element` 系别字段的取值/标签/图标已对齐官方 18 个系别，但这只是分类对齐，不等于接入了逐条真实数值——接入真实官方数据依赖外部资料，超出当前范围）。
 2. PWA 安装配置（manifest、离线缓存、安装到主屏幕）——这是主动排除的范围决策，不是缺陷。
 
 开始这些工作前，建议先用 `AskUserQuestion` 或直接和用户确认范围与优先级，而不要一次性全部展开。

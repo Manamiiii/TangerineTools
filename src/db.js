@@ -207,21 +207,66 @@ async function deleteCatalogTableInternal(id) {
   await db.catalogTables.delete(id)
 }
 
+// 为固定工具资料表（库存/单项清单）补齐缺失的固定字段：只新增本地还没有
+// （按 key 判断）的字段，已存在的字段（含用户编辑过的选项/名称）一律不动。
+// 用于 ensureStockTable/ensureOwnedTable 在表已存在但字段不全时的补齐场景，
+// 例如从旧版本升级、或字段定义在新版本中有增补。
+async function ensureFixedFields(tableId, sceneId, idPrefix, fixedFields, now, extraProps) {
+  const existingFields = await db.catalogFields.where('tableId').equals(tableId).toArray()
+  const existingKeys = new Set(existingFields.map((f) => f.key))
+  const missing = fixedFields.filter((f) => !existingKeys.has(f.key))
+  if (missing.length === 0) return
+  // 用现有字段里最大的 order + 1 作为起点，而不是 existingFields.length：
+  // deleteField 不会重排剩余字段的 order，删除中间字段后会留下空洞，
+  // 此时 length 可能小于等于某个仍存在的 order，直接用 length 会产生重复 order。
+  const startOrder = existingFields.length
+    ? Math.max(...existingFields.map((f) => f.order ?? 0)) + 1
+    : 0
+  const newFields = missing.map((f, index) =>
+    normalizeField({
+      id: `field-${idPrefix}-${sceneId}-${f.key}`,
+      tableId,
+      key: f.key,
+      name: f.name,
+      type: f.type,
+      order: startOrder + index,
+      options: f.options,
+      createdAt: now,
+      updatedAt: now,
+      ...(extraProps ? extraProps(f) : null),
+    }),
+  )
+  await db.transaction('rw', db.catalogFields, async () => {
+    for (const field of newFields) await db.catalogFields.put(field)
+  })
+}
+
 // 属性库存：复用 catalogTables/catalogFields 存储，通过 kind: 'stock' 标记
 // 与资料库的普通资料表区分开，避免混入资料库工具的资料表选择器。
-// 幂等：同一场景只会创建一次，已存在时直接返回，不会覆盖用户数据。
+// 幂等：table/field 均使用按 sceneId 派生的稳定 id（而非随机 id），
+// 因此重复调用（例如 React StrictMode 下 effect 被执行两次）不会创建
+// 出重复的资料表——后一次调用会 put 到同一个 id 上，不会新增记录。
+// 兼容旧数据：早期版本用随机 id 创建过库存表，若按稳定 id 找不到，
+// 再按 sceneId + kind 找一遍，命中则直接复用那张旧表（不改 id，
+// 避免级联改写 catalogFields/catalogRows 的 tableId），否则才新建。
 export async function ensureStockTable(sceneId) {
-  const existing = await db.catalogTables
-    .where('sceneId')
-    .equals(sceneId)
-    .filter((t) => t.kind === 'stock')
-    .first()
-  if (existing) return existing
-
+  const tableId = `table-stock-${sceneId}`
   const now = nowIso()
+  const existing =
+    (await db.catalogTables.get(tableId)) ||
+    (await db.catalogTables
+      .where('sceneId')
+      .equals(sceneId)
+      .filter((t) => t.kind === 'stock')
+      .first())
+  if (existing) {
+    await ensureFixedFields(existing.id, sceneId, 'stock', STOCK_FIXED_FIELDS, now)
+    return existing
+  }
+
   const order = await db.catalogTables.where('sceneId').equals(sceneId).count()
   const table = {
-    id: generateId('table'),
+    id: tableId,
     sceneId,
     name: STOCK_TABLE_NAME,
     kind: 'stock',
@@ -231,7 +276,7 @@ export async function ensureStockTable(sceneId) {
   }
   const fields = STOCK_FIXED_FIELDS.map((f, index) =>
     normalizeField({
-      id: generateId('field'),
+      id: `field-stock-${sceneId}-${f.key}`,
       tableId: table.id,
       key: f.key,
       name: f.name,
@@ -251,28 +296,37 @@ export async function ensureStockTable(sceneId) {
 
 // 单项清单：与资料库共享 catalogTables 存储，用 kind: 'owned' 标记；
 // 与资料库、库存都相互隔离（不会出现在资料库工具的资料表选择器里）。
-// 幂等：同一场景只会创建一次，已存在时直接返回，不覆盖用户数据。
+// 幂等：table/field 均使用按 sceneId 派生的稳定 id，重复调用不会创建
+// 出重复的资料表（原理同 ensureStockTable，见上方注释，含旧随机 id 兼容）。
 // ref 字段的 referenceTableId 会自动绑定到当前场景第一个"普通"资料表
 // （即 !table.kind），例如洛克王国场景的"精灵图鉴"。用户新建的场景若
 // 还没有普通资料表，则先创建单项清单表并留空引用，等资料表创建后再手动指定。
 export async function ensureOwnedTable(sceneId) {
-  const existing = await db.catalogTables
-    .where('sceneId')
-    .equals(sceneId)
-    .filter((t) => t.kind === 'owned')
-    .first()
-  if (existing) return existing
-
+  const tableId = `table-owned-${sceneId}`
+  const now = nowIso()
   const catalogTable = await db.catalogTables
     .where('sceneId')
     .equals(sceneId)
     .filter((t) => !t.kind)
     .first()
 
-  const now = nowIso()
+  const existing =
+    (await db.catalogTables.get(tableId)) ||
+    (await db.catalogTables
+      .where('sceneId')
+      .equals(sceneId)
+      .filter((t) => t.kind === 'owned')
+      .first())
+  if (existing) {
+    await ensureFixedFields(existing.id, sceneId, 'owned', OWNED_FIXED_FIELDS, now, (f) =>
+      f.type === 'reference' ? { referenceTableId: catalogTable?.id || null } : null,
+    )
+    return existing
+  }
+
   const order = await db.catalogTables.where('sceneId').equals(sceneId).count()
   const table = {
-    id: generateId('table'),
+    id: tableId,
     sceneId,
     name: OWNED_TABLE_NAME,
     kind: 'owned',
@@ -282,7 +336,7 @@ export async function ensureOwnedTable(sceneId) {
   }
   const fields = OWNED_FIXED_FIELDS.map((f, index) =>
     normalizeField({
-      id: generateId('field'),
+      id: `field-owned-${sceneId}-${f.key}`,
       tableId: table.id,
       key: f.key,
       name: f.name,

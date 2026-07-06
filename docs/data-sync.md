@@ -32,7 +32,7 @@ db.version(1).stores({
 
 属性库存工具（`stock`）和单项清单工具（`owned`）都不使用独立的 Dexie 表，而是复用 `catalogTables` / `catalogFields` / `catalogRows` 三张表存储数据，通过在对应 `catalogTables` 记录上打 `kind: 'stock'` 或 `kind: 'owned'` 标记来与普通资料库表区分：
 
-- 每个场景首次打开对应工具时，`db.js` 的 `ensureStockTable(sceneId)` / `ensureOwnedTable(sceneId)` 会幂等地创建一张带对应 `kind` 的表及其固定字段（库存 5 个字段、单项清单 9 个字段；若已存在则直接返回，不会重复创建或覆盖数据）。
+- 每个场景首次打开对应工具时，`db.js` 的 `ensureStockTable(sceneId)` / `ensureOwnedTable(sceneId)` 会创建一张带对应 `kind` 的表及其固定字段（库存 5 个字段、单项清单 9 个字段）。table 与 field 均使用按场景 id 派生的**稳定 id**（如 `table-stock-${sceneId}` / `field-owned-${sceneId}-${field.key}`），而不是随机 id：若按稳定 id 能 `get` 到表则直接返回（缺字段时只补齐缺失字段，不覆盖已有字段/选项）；若按稳定 id 找不到，再按 `sceneId` + `kind` 查一遍——命中说明是旧版本（随机 id）建的表，直接复用（不改其 id，避免级联改写 `catalogFields`/`catalogRows` 的 `tableId`）；两者都找不到才用固定 id `put` 一张新表。这样即使 React StrictMode 下 effect 被并发执行两次，两次调用也会作用在同一条记录上，不会产生重复的资料表；从旧版本升级、已有随机 id 表的场景同样不会被重复创建。
 - `kind` 是非索引属性（不在 `.stores()` 的索引串里），只在用 `.where('sceneId').equals(...)` 查出结果后，再用 JS 的 `.filter((t) => t.kind === 'stock')`、`.filter((t) => t.kind === 'owned')` 或 `.filter((t) => !t.kind)` 做区分，因此**没有引入 Dexie schema 版本变更**。
 - 资料库工具（`CatalogTool`）与性格推荐工具的资料带入面板（`RowImportPanel`）都会用 `.filter((t) => !t.kind)` 只保留普通资料表，避免 stock / owned 表出现在这两处的选择器里。
 - 单项清单工具的"精灵"引用字段（`reference` 类型）在初始化/新增行时会自动挑选**当前场景内第一张 `!kind` 的普通资料表**作为引用目标（例如洛克王国场景的"精灵基础资料"）。
@@ -46,7 +46,7 @@ db.version(1).stores({
   1. 写入 `src/presets/rockKingdom.js` 中定义的场景 / 资料表 / 字段（结构化数据，随 JS bundle 一起打包）。
   2. 通过 `fetch(`${BASE_URL}presets/rockKingdomRows.json`)` 拉取行数据（放在 `public/` 下，不参与 JS 打包，避免图片占位数据体积膨胀主 bundle）。
   3. 拉取失败（如离线）时仅打印警告，不阻塞——场景/表/字段骨架依然可用，用户可以自行录入数据。
-- 当前 `rockKingdomRows.json` 包含 **496 条**示例精灵行：前 10 条为手工挑选的经典精灵（迪莫/喵喵/魔力猫/水灵/圣水守护/鸭吉吉/鸭吉吉国王/烈焰虎/烈焰霸王/磐石龟），其余按编号 + 元素组合程序化生成，覆盖全部 14 个官方系别（多系精灵通过 `element` 的 `multiselect` 类型体现）；含多组同编号不同形态的行，用于演示资料库详情弹窗的"同编号形态对比 / 适合方向 / 主要差异"功能。系别字段使用官方图鉴静态资源图标（`https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/*.png`），其余精灵图/特性图仍是本地内联 SVG data URI 占位。
+- 当前 `rockKingdomRows.json` 包含 **496 条**示例精灵行：前 10 条为手工挑选的经典精灵（迪莫/喵喵/魔力猫/水灵/圣水守护/鸭吉吉/鸭吉吉国王/烈焰虎/烈焰霸王/磐石龟），其余按编号 + 元素组合程序化生成；`element` 取值已对齐官方全部 18 个系别（多系精灵通过 `element` 的 `multiselect` 类型体现）；含多组同编号不同形态的行，用于演示资料库详情弹窗的"同编号形态对比 / 适合方向 / 主要差异"功能。系别字段使用官方图鉴静态资源图标（`https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/<系别中文名>.png`），其余精灵图/特性图仍是本地内联 SVG data URI 占位。
 - **六维数值、特性标签、形态命名等均为占位/演示值**，不是官方真实图鉴数据；接入真实数据的技术路径见下方"全量真实数值：当前决策与未来接入方式"。
 - 迁移策略：老用户升级到新版本时，`ensureSeeded` 只补齐**本地不存在的**预置行（按 id 判断），已存在的行（包含用户编辑过的）一律不覆盖；`shiny` 字段的 `yes`/`no` 值直接由数据行本身携带的新值决定，不做旧 `boolean` 到新 `select` 的自动改写。
 

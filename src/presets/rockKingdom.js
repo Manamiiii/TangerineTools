@@ -9,95 +9,37 @@ const SEED_TIME = '2026-01-01T00:00:00.000Z'
 const SCENE_ID = 'scene-rock-kingdom'
 const TABLE_ID = 'table-rock-kingdom-elf-basic'
 
-// 系别图标：使用洛克王国官方图鉴的公开静态资源地址。
-// key 与洛克王国官方图鉴 URL 中的目录名一致；覆盖洛克王国官方公开的全部 14 系，
-// 与 496 条预置行数据保持一致，用户仍可在字段编辑中按需增删。
-const ELEMENT_OPTIONS = [
-  {
-    value: 'normal',
-    label: '普通系',
-    color: '#94a3b8',
-    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/pt.png',
-  },
-  {
-    value: 'magic',
-    label: '魔法系',
-    color: '#a855f7',
-    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/mf.png',
-  },
-  {
-    value: 'water',
-    label: '水系',
-    color: '#38bdf8',
-    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/ss.png',
-  },
-  {
-    value: 'flying',
-    label: '飞行系',
-    color: '#60a5fa',
-    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/fx.png',
-  },
-  {
-    value: 'fire',
-    label: '火系',
-    color: '#f97316',
-    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/hs.png',
-  },
-  {
-    value: 'mech',
-    label: '机械系',
-    color: '#64748b',
-    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/jx.png',
-  },
-  {
-    value: 'dark',
-    label: '黑暗系',
-    color: '#6b21a8',
-    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/ha.png',
-  },
-  {
-    value: 'holy',
-    label: '圣灵系',
-    color: '#facc15',
-    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/sl.png',
-  },
-  {
-    value: 'grass',
-    label: '草系',
-    color: '#22c55e',
-    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/cs.png',
-  },
-  {
-    value: 'ground',
-    label: '土系',
-    color: '#a16207',
-    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/ts.png',
-  },
-  {
-    value: 'ice',
-    label: '冰系',
-    color: '#67e8f9',
-    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/bx.png',
-  },
-  {
-    value: 'electric',
-    label: '电系',
-    color: '#eab308',
-    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/dx.png',
-  },
-  {
-    value: 'dragon',
-    label: '龙系',
-    color: '#d946ef',
-    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/lx.png',
-  },
-  {
-    value: 'ghost',
-    label: '幽灵系',
-    color: '#334155',
-    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/yl.png',
-  },
+// 系别图标：使用洛克王国官方图鉴的公开静态资源地址，URL 中的文件名直接是
+// 系别的中文名（经 encodeURIComponent 编码），例如 普通系 -> 普通.png。
+// 覆盖洛克王国官方公开的全部 18 系，与 496 条预置行数据保持一致，
+// 用户仍可在字段编辑中按需增删。
+const ELEMENT_SYSTEM_LIST = [
+  { value: 'normal', cn: '普通', color: '#94a3b8' },
+  { value: 'grass', cn: '草', color: '#22c55e' },
+  { value: 'fire', cn: '火', color: '#f97316' },
+  { value: 'water', cn: '水', color: '#38bdf8' },
+  { value: 'light', cn: '光', color: '#facc15' },
+  { value: 'earth', cn: '地', color: '#a16207' },
+  { value: 'ice', cn: '冰', color: '#67e8f9' },
+  { value: 'dragon', cn: '龙', color: '#d946ef' },
+  { value: 'electric', cn: '电', color: '#eab308' },
+  { value: 'poison', cn: '毒', color: '#a855f7' },
+  { value: 'bug', cn: '虫', color: '#84cc16' },
+  { value: 'fighting', cn: '武', color: '#b91c1c' },
+  { value: 'flying', cn: '翼', color: '#60a5fa' },
+  { value: 'cute', cn: '萌', color: '#f472b6' },
+  { value: 'ghost', cn: '幽', color: '#334155' },
+  { value: 'dark', cn: '恶', color: '#6b21a8' },
+  { value: 'mech', cn: '机械', color: '#64748b' },
+  { value: 'illusion', cn: '幻', color: '#7c3aed' },
 ]
+
+const ELEMENT_OPTIONS = ELEMENT_SYSTEM_LIST.map(({ value, cn, color }) => ({
+  value,
+  label: `${cn}系`,
+  color,
+  image: `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/${encodeURIComponent(cn)}.png`,
+}))
 
 // 异色的选项化表达：以 select 而非 boolean 存储，可以在表格里直接以彩色标签
 // 展示；yes/no 的字面值也能兼容 boolean 的历史数据（true 会被渲染为空单元格，
