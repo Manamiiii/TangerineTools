@@ -18,6 +18,45 @@
 - 确认 Node 版本符合要求后，再执行 `npm ci`、`npm run build`、`npm run lint`。
 - 如果在低于要求的版本（例如 Node 16）下执行 `npm run build` 遇到 Vite 报错或语法不兼容问题，这是环境版本问题，不代表代码本身有 bug——请先切换到符合要求的 Node 版本重试，而不是去改代码兼容旧版本。
 
+
+## 新 session 标准工作流
+
+每次新开 session，建议按下面流程启动，避免遗漏项目约束或重复踩坑：
+
+1. 先读 `docs/session-start-prompt.md`、`docs/system-capabilities.md`、`docs/data-sync.md`。
+2. 查看 `git status --short`、最近 commit、当前 PR 描述和 review comments。
+3. 如果任务涉及上一轮未完成的洛克王国官方资料生成，请额外读取 `docs/pending-rock-kingdom-official-data-prompt.md`。
+4. 先复述本轮目标、已知风险和不应触碰的边界，再开始改代码。
+5. 改动前确认是否会影响 Dexie schema、owned / stock 稳定 id、导入/导出合并语义、预置资料迁移。
+6. 改完至少运行 `npm run build` 和 `npm run lint`；涉及数据同步时运行 `npm run sync:rock`；涉及页面体验时用 dev server 或 GitHub Pages 验证。
+7. 提交前检查 `git diff` 和 `git status --short`，确认没有临时文件、下载源文件或调试输出误入提交。
+8. 完成后提交 commit，并在 PR / 最终回复里写清楚变更、验证命令、未完成事项和下一步建议。
+
+### 可复制的新 session 开场 Prompt
+
+```text
+请继续开发 GitHub 仓库 Manamiiii/TangerineTools 当前 PR / 功能分支。
+
+开始前请先阅读并遵守：
+
+1. docs/session-start-prompt.md
+2. docs/system-capabilities.md
+3. docs/data-sync.md
+4. 当前 PR 描述、最近 commit、review comments
+
+通用约束：
+
+- 不要直接改 main，请基于当前功能分支继续。
+- 不要引入 Dexie schema 版本变更，除非我明确要求。
+- 不要删除用户 owned / stock 数据。
+- owned / stock 的稳定 id 幂等与旧随机 id 兼容逻辑不能破坏。
+- 导入仍是“同 id 覆盖，文件中缺失的本地数据保留”，不要擅自改成清空替换。
+- 洛克王国预置资料必须来自官方公开 d.json；如果当前环境无法访问原始数据源且没有用户提供的真实 d.json 文件，不要生成 mock / 占位 / 程序化假数据。
+- 修改后请运行 npm run build 和 npm run lint。
+- 如果涉及可运行页面变化，优先通过 dev server 或 GitHub Pages 验证。
+- 完成后提交 commit，并创建 PR / 更新 PR 说明。
+```
+
 ## 代码地图
 
 ```
