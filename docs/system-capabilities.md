@@ -85,14 +85,14 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 - 展示可解释的推荐理由文案（`explainNatureRecommendation`），而非仅给出结论。
 - 六维全部为空（或都为 0）时展示空态提示，不强行计算。
 
-### 6. 洛克王国预置资料（演示数据）
+### 6. 洛克王国预置资料
 
 - 首次启动自动播种（`ensureSeeded`，通过 `meta` 表的 `seededRockKingdom` 标记防止重复播种）：
   - 场景「洛克王国」（游戏类型，新安装默认启用「资料库」「单项清单」「属性库存」「性格推荐」四个工具，进入后直接显示四工具切换器，默认停留在资料库；旧版本曾经启用不同组合，`ensureSeeded` 里的 `migrateRockKingdomSceneTools` 会在场景 `tools` 仍恰好等于任一旧默认组合（`['catalog']` 或 `['catalog', 'stock', 'nature']`）时自动补齐为四项，一旦用户自定义过 `tools` 则不覆盖），资料表「精灵基础资料」，18 个字段（含 6 个隐藏的六维底层字段）。
-  - 496 条示例精灵行（前 10 条为手工挑选的迪莫/喵喵/魔力猫/水灵/圣水守护/鸭吉吉/鸭吉吉国王/烈焰虎/烈焰霸王/磐石龟，其余按编号 + 元素组合程序化生成；`element` 取值已对齐官方 18 个系别），数据来自 `public/presets/rockKingdomRows.json`，运行时 `fetch` 加载（避免把图片占位数据打进主 bundle）；若离线加载失败，场景/表/字段骨架依然可用，只是没有行数据。
+  - 496 条官方图鉴精灵行，数据由 `scripts/sync-rock-kingdom-preset.mjs` 从 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/d.json` 采集：遍历 `l` 基础条目并展开详情里的 `forms` 独立形态，生成 `public/presets/rockKingdomRows.json` 后运行时 `fetch` 加载；若离线加载失败，场景/表/字段骨架依然可用，只是没有行数据。
   - 系别字段使用 `multiselect` 类型，覆盖官方全部 18 个系别（普通/草/火/水/光/地/冰/龙/电/毒/虫/武/翼/萌/幽/恶/机械/幻），图标使用洛克王国官方图鉴静态资源（`https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/<系别中文名>.png`），支持多系精灵；`form` 字段是自由文本（例如「基础形态」「进化形态」「究极形态」），`shiny` 是 `yes/no` 单选。
-  - 精灵图/特性图仍使用纯本地内联 SVG data URI 占位，不引用任何外部美术资源。
-  - 迁移策略：老用户升级到新版本时，`ensureSeeded` 只补齐**本地不存在的**预置行（按 id 判断），已存在的行（包含用户编辑过的）一律不覆盖；`shiny` 字段从旧的 `boolean` 迁移到 `yes/no` 由数据行本身携带的新值决定，不做自动改写。
+  - 精灵图、系别图标、特性图标均使用同源公开静态资源前缀 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/`，中文路径按段编码；不使用本地 SVG 占位精灵图。
+  - 迁移策略：老用户升级到新版本时，`migrateRockKingdomRows()` 会删除默认资料表中明确可识别的旧 `row-rock-*` / `data:image/svg+xml` 占位行，再插入官方稳定 id 行；用户新增的非占位资料行、owned 单项清单、stock 属性库存不会被删除；`meta.rockKingdomRowsVersion` 记录资料版本，不引入 Dexie schema 版本变更。
 
 ### 7. 全量数据导出 / 导入（仅首页）
 
@@ -103,7 +103,7 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 
 以下能力经过评估后**明确不在当前范围内**，不是遗漏或缺陷：
 
-- **洛克王国全量真实数值**：当前预置数据是 496 条示例行（前 10 条为手工挑选并按新格式迁移的经典精灵，其余按编号 + 元素组合程序化生成）；`element` 字段的 18 个系别取值、标签与图标已对齐官方图鉴，但**六维数值、特性标签、形态命名、精灵图/特性图等仍为占位/演示值**，与官方真实数值无关；接入真实官方数值依赖于外部资料，作为独立任务另行规划（数据结构与未来接入方式见 `docs/data-sync.md`）。
+- **洛克王国对局向深度资料**：当前预置资料只覆盖公开图鉴 `d.json` 可映射的基础资料、六维、特性、图片、系别、形态；技能、进化链、属性克制、PVP 规则等仍不在范围内。
 - **PWA 安装配置**（离线缓存、manifest、可安装到主屏幕等）：这是一个**主动排除**的范围决策，而非未完成的缺陷——当前定位是"可直接用浏览器打开的本地优先工具"，是否需要可安装体验留待后续按需评估。
 - 技能/进化链/属性克制等游戏对局向功能、PVP 相关工具、AI 自动打标签、云同步/多用户协作、后端服务：均超出"个人本地资料管理工具"的定位，未纳入规划。
 

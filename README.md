@@ -11,9 +11,7 @@ TangerineTools 是一个本地优先（local-first）的个人资料管理 Web A
 - **属性库存**：登记一批实例并按分类、状态、等级阈值做快速统计。
 - **性格推荐**：手动录入或从资料库带入六维数据，根据数值与特性标签生成可解释的性格推荐候选。
 - **全量导入/导出**：在首页通过 JSON 文件手动备份或迁移全部本地数据。
-- **洛克王国演示资料**：首次启动会自动创建“洛克王国”场景，包含精灵基础资料表和 496 条演示精灵行。
-
-> 注意：洛克王国预置资料中的六维数值、特性标签、形态命名等是用于演示 UI 与数据结构的占位数据，不代表官方真实图鉴数值。
+- **洛克王国预置资料**：首次启动会自动创建“洛克王国”场景，包含精灵基础资料表；预置行数据目标来源为洛克王国公开图鉴静态 JSON，并由同步脚本生成。
 
 ## 技术栈
 
@@ -73,6 +71,7 @@ npm run lint
 | `npm run build` | 生成生产构建 |
 | `npm run preview` | 本地预览生产构建产物 |
 | `npm run lint` | 使用 oxlint 做静态检查 |
+| `npm run sync:rock` | 从洛克王国公开图鉴 `d.json` 生成预置资料行（当前执行环境需能访问源站） |
 
 ## 功能模块
 
@@ -141,15 +140,14 @@ npm run lint
 
 ## 洛克王国预置资料
 
-首次启动时会自动创建洛克王国演示场景：
+首次启动时会自动创建洛克王国场景：
 
 - 默认启用资料库、单项清单、属性库存、性格推荐四个工具。
 - 包含“精灵基础资料”资料表。
-- 包含 496 条演示精灵行，行数据位于 `public/presets/rockKingdomRows.json`。
-- 系别选项使用洛克王国官方图鉴公开静态资源图标。
-- 精灵图/特性图仍使用本地内联 SVG 占位。
+- 行数据位于 `public/presets/rockKingdomRows.json`。目标生成方式是运行 `npm run sync:rock`，从 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/d.json` 读取 `l` 基础条目并展开详情里的 `forms`，生成 496 条预置资料。
+- 精灵图、系别图标、特性图标使用同源公开静态资源前缀 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/`。
 
-预置资料只会安全补齐，不会覆盖用户已经编辑过的同 id 行。用户删除场景或资料表后，应用不会强行恢复。
+预置资料只会安全补齐；迁移官方行时只删除明确可识别的旧 `row-rock-*` / `data:image/svg+xml` 占位行，不会删除用户新增的非占位行、单项清单或属性库存记录。
 
 ## 项目结构
 
@@ -173,9 +171,16 @@ npm run lint
 └── vite.config.js
 ```
 
-## 部署
+## 部署 / 远程测试
 
 本项目不依赖后端服务，执行 `npm run build` 后可将 `dist/` 部署到任意静态托管平台，例如 GitHub Pages、Cloudflare Pages、Netlify 或静态文件服务器。
+
+仓库已提供 `.github/workflows/pages.yml`：
+
+1. 在 GitHub 仓库设置中进入 **Settings → Pages**。
+2. 将 **Build and deployment / Source** 设置为 **GitHub Actions**。
+3. 合并到 `main` 后会自动构建并部署。
+4. 如果想在当前功能分支远程测试，不需要把代码拉到本地：进入 **Actions → Deploy GitHub Pages → Run workflow**，选择要测试的分支手动运行；部署完成后，workflow 的 `github-pages` 环境会显示 Pages URL。
 
 请注意：应用数据保存在用户浏览器本地 IndexedDB 中；更换浏览器、设备或域名时，需要通过首页的导出/导入功能手动迁移数据。
 

@@ -18,6 +18,45 @@
 - 确认 Node 版本符合要求后，再执行 `npm ci`、`npm run build`、`npm run lint`。
 - 如果在低于要求的版本（例如 Node 16）下执行 `npm run build` 遇到 Vite 报错或语法不兼容问题，这是环境版本问题，不代表代码本身有 bug——请先切换到符合要求的 Node 版本重试，而不是去改代码兼容旧版本。
 
+
+## 新 session 标准工作流
+
+每次新开 session，建议按下面流程启动，避免遗漏项目约束或重复踩坑：
+
+1. 先读 `docs/session-start-prompt.md`、`docs/system-capabilities.md`、`docs/data-sync.md`。
+2. 查看 `git status --short`、最近 commit、当前 PR 描述和 review comments。
+3. 如果任务涉及上一轮未完成的洛克王国官方资料生成，请额外读取 `docs/pending-rock-kingdom-official-data-prompt.md`。
+4. 先复述本轮目标、已知风险和不应触碰的边界，再开始改代码。
+5. 改动前确认是否会影响 Dexie schema、owned / stock 稳定 id、导入/导出合并语义、预置资料迁移。
+6. 改完至少运行 `npm run build` 和 `npm run lint`；涉及数据同步时运行 `npm run sync:rock`；涉及页面体验时用 dev server 或 GitHub Pages 验证。
+7. 提交前检查 `git diff` 和 `git status --short`，确认没有临时文件、下载源文件或调试输出误入提交。
+8. 完成后提交 commit，并在 PR / 最终回复里写清楚变更、验证命令、未完成事项和下一步建议。
+
+### 可复制的新 session 开场 Prompt
+
+```text
+请继续开发 GitHub 仓库 Manamiiii/TangerineTools 当前 PR / 功能分支。
+
+开始前请先阅读并遵守：
+
+1. docs/session-start-prompt.md
+2. docs/system-capabilities.md
+3. docs/data-sync.md
+4. 当前 PR 描述、最近 commit、review comments
+
+通用约束：
+
+- 不要直接改 main，请基于当前功能分支继续。
+- 不要引入 Dexie schema 版本变更，除非我明确要求。
+- 不要删除用户 owned / stock 数据。
+- owned / stock 的稳定 id 幂等与旧随机 id 兼容逻辑不能破坏。
+- 导入仍是“同 id 覆盖，文件中缺失的本地数据保留”，不要擅自改成清空替换。
+- 洛克王国预置资料必须来自官方公开 d.json；如果当前环境无法访问原始数据源且没有用户提供的真实 d.json 文件，不要生成 mock / 占位 / 程序化假数据。
+- 修改后请运行 npm run build 和 npm run lint。
+- 如果涉及可运行页面变化，优先通过 dev server 或 GitHub Pages 验证。
+- 完成后提交 commit，并创建 PR / 更新 PR 说明。
+```
+
 ## 代码地图
 
 ```
@@ -43,7 +82,9 @@ src/
     stock.jsx           # 属性库存工具：固定字段实例的增删改 + 分类/状态/等级阈值统计
     nature.jsx          # 性格推荐工具：手动录入或从资料库带入六维，展示推荐性格 + 候选清单（top-N 可选切换）
 public/
-  presets/rockKingdomRows.json  # 洛克王国示例行数据（496 条，前 10 条手工挑选、其余程序化生成），运行时 fetch 加载
+  presets/rockKingdomRows.json  # 洛克王国官方图鉴行数据（d.json 的 l + forms 展开为 496 条），运行时 fetch 加载
+scripts/
+  sync-rock-kingdom-preset.mjs  # 从公开 d.json 采集并生成 rockKingdomRows.json
 docs/
   system-capabilities.md / data-sync.md / session-start-prompt.md
 ```
@@ -58,9 +99,9 @@ docs/
 - **隐藏字段仍需在详情页展示**：字段的 `hidden` 只影响是否出现在表格列里，`RowDetailModal` 会展示**全部**字段（含隐藏的），并加"隐藏列"徽章标注，不能因为字段隐藏就在详情页也过滤掉。
 - **默认排序**：`NUMBER_FIELD_NAMES = ['编号']` / `NUMBER_FIELD_KEYS = ['no', 'number']` 用于自动识别"编号"字段并套用默认自然升序；没有编号字段的资料表不做特殊排序。用户可以通过点击列头手动切换排序。
 - **导入是合并不是替换**：见 `docs/data-sync.md`，同 id 覆盖、文件中缺失的本地数据会保留，不会被删除。不要在没有明确需求的情况下改成"清空后导入"的语义。
-- **预置资料播种只跑一次**：通过 `meta` 表的 `seededRockKingdom` 标记防止重复播种；不要假设每次启动都会重新填充洛克王国数据（用户删除后不会自动恢复）。
+- **预置结构播种只跑一次，资料行迁移每次启动安全补齐**：通过 `meta.seededRockKingdom` 防止重复写入场景/表/字段骨架；`migrateRockKingdomRows()` 会在默认资料表存在时补齐官方预置行，并删除明确可识别的旧 `row-rock-*` / `data:image/svg+xml` 占位行，但不会删除用户新增的非占位行、owned 个体清单或 stock 库存记录。
 - **洛克王国场景默认启用四个工具**：`ROCK_KINGDOM_PRESET.scene.tools` 现在是 `['catalog', 'owned', 'stock', 'nature']`，新安装首次打开即可看到四工具切换器。老用户（场景 `tools` 仍恰好等于任一旧默认值 `['catalog']` 或 `['catalog', 'stock', 'nature']`）会被 `db.js` 的 `migrateRockKingdomSceneTools()`（每次启动都执行，不受 `seededRockKingdom` 一次性标记限制）自动补齐为四项；只要用户自定义过 `tools`（关闭过资料库、只手动开过库存等任何不同于两个已知旧默认值的组合），迁移会跳过、不覆盖。
-- **图标/图片素材**：预置的洛克王国精灵图/特性图仍使用本地内联 SVG data URI 占位（`placeholderIcon`），没有引用任何外部精灵/特性图片。**唯一例外**：`element` 字段的 18 个选项图标使用了官方图鉴静态资源，URL 形如 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/${encodeURIComponent(系别中文名)}.png`（如 普通.png、草.png）——这是公开可访问的图鉴 icon，不含精灵美术资源。若后续要补齐精灵/特性图，需要用户自行提供合法来源的图片，不要臆造或抓取未经授权的外部图片链接。
+- **图标/图片素材**：洛克王国预置资料来源为公开静态图鉴 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/d.json`；精灵图、18 系图标、特性图标均使用同源公开静态资源前缀 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/`，同步脚本逐段编码中文路径。不要再引入本地 SVG 或 `data:image/svg+xml` 作为精灵图。
 - **CSS**：`src/styles.css` 是唯一样式来源，无 CSS 模块/框架。新增组件前建议先搜索该文件确认是否已有可复用的类（按钮、表单、Modal、Popover、表格等都已有一套通用类名）。
 
 ## 已验证的质量基线
@@ -88,7 +129,7 @@ docs/
 
 ## 明确排除在范围外的工作
 
-1. 洛克王国全量真实数值同步（当前 496 条预置行的六维数值/特性标签/形态命名/精灵图与特性图等仍为占位/演示值，与官方真实数据无关；`element` 系别字段的取值/标签/图标已对齐官方 18 个系别，但这只是分类对齐，不等于接入了逐条真实数值——接入真实官方数据依赖外部资料，超出当前范围）。
+1. 技能、进化链、属性克制等对局向资料同步（当前预置资料只接入公开图鉴 `d.json` 中的基础资料、六维、特性、图片、系别、形态；不要把技能、进化链、克制关系塞进当前资料库字段）。
 2. PWA 安装配置（manifest、离线缓存、安装到主屏幕）——这是主动排除的范围决策，不是缺陷。
 
 开始这些工作前，建议先用 `AskUserQuestion` 或直接和用户确认范围与优先级，而不要一次性全部展开。

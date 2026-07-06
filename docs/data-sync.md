@@ -41,28 +41,18 @@ db.version(1).stores({
 ## 预置资料加载（播种）
 
 - 应用启动时 `App.jsx` 调用 `ensureSeeded()`。
-- 该函数检查 `meta` 表中 `seededRockKingdom` 是否已为 `true`；若是则跳过，保证只播种一次，不会覆盖用户后续的修改或删除。
-- 首次播种时：
-  1. 写入 `src/presets/rockKingdom.js` 中定义的场景 / 资料表 / 字段（结构化数据，随 JS bundle 一起打包）。
-  2. 通过 `fetch(`${BASE_URL}presets/rockKingdomRows.json`)` 拉取行数据（放在 `public/` 下，不参与 JS 打包，避免图片占位数据体积膨胀主 bundle）。
-  3. 拉取失败（如离线）时仅打印警告，不阻塞——场景/表/字段骨架依然可用，用户可以自行录入数据。
-- 当前 `rockKingdomRows.json` 包含 **496 条**示例精灵行：前 10 条为手工挑选的经典精灵（迪莫/喵喵/魔力猫/水灵/圣水守护/鸭吉吉/鸭吉吉国王/烈焰虎/烈焰霸王/磐石龟），其余按编号 + 元素组合程序化生成；`element` 取值已对齐官方全部 18 个系别（多系精灵通过 `element` 的 `multiselect` 类型体现）；含多组同编号不同形态的行，用于演示资料库详情弹窗的"同编号形态对比 / 适合方向 / 主要差异"功能。系别字段使用官方图鉴静态资源图标（`https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/<系别中文名>.png`），其余精灵图/特性图仍是本地内联 SVG data URI 占位。
-- **六维数值、特性标签、形态命名等均为占位/演示值**，不是官方真实图鉴数据；接入真实数据的技术路径见下方"全量真实数值：当前决策与未来接入方式"。
-- 迁移策略：老用户升级到新版本时，`ensureSeeded` 只补齐**本地不存在的**预置行（按 id 判断），已存在的行（包含用户编辑过的）一律不覆盖；`shiny` 字段的 `yes`/`no` 值直接由数据行本身携带的新值决定，不做旧 `boolean` 到新 `select` 的自动改写。
-
-### 全量真实数值：当前决策与未来接入方式
-
-补齐**真实图鉴数值**（每条精灵的官方六维、技能、系别、进化关系等准确数值）明确**不在当前范围内**，原因：
-
-- 需要真实、准确的官方数值资料作为数据源，而不是靠猜测或臆造凑数——当前 496 条演示行的数值/特性均是程序化生成的占位数据，仅用于验证 UI/交互/统计逻辑，不代表官方真实数据。
-- 数据体量大，属于独立的数据整理工作，不适合与功能开发耦合在同一轮改动里。
-
-若后续要接入真实数据，建议的技术路径（无需改动播种逻辑本身）：
-
-1. 保持现有的行数据结构（`id` / `tableId` / `values` / `createdAt` / `updatedAt`），把真实数据整理成同样格式。
-2. 数据量较大时，可以把单一的 `rockKingdomRows.json` 拆分为多个分片文件（例如按系别或编号区间分片），播种时依次 `fetch` 并合并，避免单个 JSON 文件过大。
-3. 复用现有的「同 id 覆盖、缺失保留」合并语义（见下方导入与合并策略）：后续更新数据时，可以让用户通过导出/导入功能自行合并新数据，而不必重新设计一套同步机制。
-4. 用户手动编辑过的行（包括通过导入带入的自定义数据）应始终优先于预置数据——不要设计成"重新播种会覆盖用户修改"的逻辑。
+- 该函数检查 `meta` 表中 `seededRockKingdom` 是否已为 `true`；若不是，则先写入 `src/presets/rockKingdom.js` 中定义的洛克王国场景 / 默认资料表 / 字段结构。场景骨架只播种一次，不会覆盖用户后续的修改或删除。
+- 行数据通过 `fetch(`${BASE_URL}presets/rockKingdomRows.json`)` 拉取，文件放在 `public/` 下，不参与 JS 打包。拉取失败（如离线）时仅打印警告，不阻塞场景/表/字段骨架。
+- 目标行数据来源是洛克王国公开图鉴静态 JSON：`https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/d.json`。同步脚本 `npm run sync:rock` 会读取 `l` 基础条目，并展开每个条目详情里的 `forms` 独立形态，预期为 `375 + 121 = 496` 条预置资料。若官方源数量变化，脚本会输出实际统计并失败，避免硬塞成 496。
+- 精灵图、系别图标、特性图标均使用同源公开静态资源前缀 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/`，路径逐段 `encodeURIComponent` 编码；不使用本地 SVG 或 `data:image/svg+xml` 作为精灵图。
+- 系别字段使用 `multiselect` 类型，覆盖官方 18 个系别：普通/草/火/水/光/地/冰/龙/电/毒/虫/武/翼/萌/幽/恶/机械/幻，对应内部值为 `normal`/`grass`/`fire`/`water`/`light`/`earth`/`ice`/`dragon`/`electric`/`poison`/`bug`/`fighting`/`flying`/`cute`/`ghost`/`dark`/`mech`/`illusion`。
+- 资料库、单项清单、属性库存三者关系：资料库是精灵种类 / 图鉴 / 静态资料；单项清单是用户实际抓到或培养的每一只个体；属性库存是资源、素材、库存类记录。单项清单和属性库存仍复用 `catalogTables`/`catalogFields`/`catalogRows`，通过 `kind: 'owned'` / `kind: 'stock'` 与资料库表区分。
+- 预置资料迁移策略：
+  1. 新安装 / 干净 IndexedDB 只会插入官方图鉴行，不应出现旧 `row-rock-*` 占位行。
+  2. 老用户若已播种旧占位资料，`migrateRockKingdomRows()` 会在默认洛克王国资料表中删除可明确识别的旧占位行（`id` 以 `row-rock-` 开头，或 `values.image` 以 `data:image/svg+xml` 开头），再按新稳定 id 插入官方行，避免重复。
+  3. 用户自己新增的非占位资料行不会被删除；无法安全判断为占位的数据不会被覆盖。
+  4. owned / stock 表及其用户记录不属于默认资料表 `tableId`，迁移不会触碰。
+  5. 迁移通过 `meta.rockKingdomRowsVersion = "official-d-json-2026-06-08"` 标记资料版本，不引入 Dexie schema 版本变更。
 
 ## 导出格式
 
@@ -117,4 +107,4 @@ UI 层（`App.jsx` 的 `GlobalDataActions`）在实际执行导入前会用 `Con
 - 增量导出（只导出变更部分）
 - 导入时的字段级合并或冲突提示（当前是整条记录覆盖，无冲突检测）
 - 基于 `schemaVersion` 的自动迁移
-- 洛克王国全量**真实数值**（当前 496 条演示行的数值/特性/形态命名均为程序化占位数据，接入真实官方数值见上方"全量真实数值：当前决策与未来接入方式"）
+- 洛克王国技能、进化链、属性克制、PVP 规则等对局向深度资料（当前预置资料只覆盖公开图鉴 d.json 可映射的基础资料、六维、特性、图片、系别、形态）
