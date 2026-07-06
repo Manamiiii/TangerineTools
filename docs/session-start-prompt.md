@@ -43,7 +43,9 @@ src/
     stock.jsx           # 属性库存工具：固定字段实例的增删改 + 分类/状态/等级阈值统计
     nature.jsx          # 性格推荐工具：手动录入或从资料库带入六维，展示推荐性格 + 候选清单（top-N 可选切换）
 public/
-  presets/rockKingdomRows.json  # 洛克王国示例行数据（496 条，前 10 条手工挑选、其余程序化生成），运行时 fetch 加载
+  presets/rockKingdomRows.json  # 洛克王国官方图鉴行数据（d.json 的 l + forms 展开为 496 条），运行时 fetch 加载
+scripts/
+  sync-rock-kingdom-preset.mjs  # 从公开 d.json 采集并生成 rockKingdomRows.json
 docs/
   system-capabilities.md / data-sync.md / session-start-prompt.md
 ```
@@ -58,9 +60,9 @@ docs/
 - **隐藏字段仍需在详情页展示**：字段的 `hidden` 只影响是否出现在表格列里，`RowDetailModal` 会展示**全部**字段（含隐藏的），并加"隐藏列"徽章标注，不能因为字段隐藏就在详情页也过滤掉。
 - **默认排序**：`NUMBER_FIELD_NAMES = ['编号']` / `NUMBER_FIELD_KEYS = ['no', 'number']` 用于自动识别"编号"字段并套用默认自然升序；没有编号字段的资料表不做特殊排序。用户可以通过点击列头手动切换排序。
 - **导入是合并不是替换**：见 `docs/data-sync.md`，同 id 覆盖、文件中缺失的本地数据会保留，不会被删除。不要在没有明确需求的情况下改成"清空后导入"的语义。
-- **预置资料播种只跑一次**：通过 `meta` 表的 `seededRockKingdom` 标记防止重复播种；不要假设每次启动都会重新填充洛克王国数据（用户删除后不会自动恢复）。
+- **预置结构播种只跑一次，资料行迁移每次启动安全补齐**：通过 `meta.seededRockKingdom` 防止重复写入场景/表/字段骨架；`migrateRockKingdomRows()` 会在默认资料表存在时补齐官方预置行，并删除明确可识别的旧 `row-rock-*` / `data:image/svg+xml` 占位行，但不会删除用户新增的非占位行、owned 个体清单或 stock 库存记录。
 - **洛克王国场景默认启用四个工具**：`ROCK_KINGDOM_PRESET.scene.tools` 现在是 `['catalog', 'owned', 'stock', 'nature']`，新安装首次打开即可看到四工具切换器。老用户（场景 `tools` 仍恰好等于任一旧默认值 `['catalog']` 或 `['catalog', 'stock', 'nature']`）会被 `db.js` 的 `migrateRockKingdomSceneTools()`（每次启动都执行，不受 `seededRockKingdom` 一次性标记限制）自动补齐为四项；只要用户自定义过 `tools`（关闭过资料库、只手动开过库存等任何不同于两个已知旧默认值的组合），迁移会跳过、不覆盖。
-- **图标/图片素材**：预置的洛克王国精灵图/特性图仍使用本地内联 SVG data URI 占位（`placeholderIcon`），没有引用任何外部精灵/特性图片。**唯一例外**：`element` 字段的 18 个选项图标使用了官方图鉴静态资源，URL 形如 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/${encodeURIComponent(系别中文名)}.png`（如 普通.png、草.png）——这是公开可访问的图鉴 icon，不含精灵美术资源。若后续要补齐精灵/特性图，需要用户自行提供合法来源的图片，不要臆造或抓取未经授权的外部图片链接。
+- **图标/图片素材**：洛克王国预置资料来源为公开静态图鉴 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/d.json`；精灵图、18 系图标、特性图标均使用同源公开静态资源前缀 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/`，同步脚本逐段编码中文路径。不要再引入本地 SVG 或 `data:image/svg+xml` 作为精灵图。
 - **CSS**：`src/styles.css` 是唯一样式来源，无 CSS 模块/框架。新增组件前建议先搜索该文件确认是否已有可复用的类（按钮、表单、Modal、Popover、表格等都已有一套通用类名）。
 
 ## 已验证的质量基线
@@ -88,7 +90,7 @@ docs/
 
 ## 明确排除在范围外的工作
 
-1. 洛克王国全量真实数值同步（当前 496 条预置行的六维数值/特性标签/形态命名/精灵图与特性图等仍为占位/演示值，与官方真实数据无关；`element` 系别字段的取值/标签/图标已对齐官方 18 个系别，但这只是分类对齐，不等于接入了逐条真实数值——接入真实官方数据依赖外部资料，超出当前范围）。
+1. 技能、进化链、属性克制等对局向资料同步（当前预置资料只接入公开图鉴 `d.json` 中的基础资料、六维、特性、图片、系别、形态；不要把技能、进化链、克制关系塞进当前资料库字段）。
 2. PWA 安装配置（manifest、离线缓存、安装到主屏幕）——这是主动排除的范围决策，不是缺陷。
 
 开始这些工作前，建议先用 `AskUserQuestion` 或直接和用户确认范围与优先级，而不要一次性全部展开。

@@ -1,6 +1,6 @@
 // 洛克王国预置场景：场景 + 资料表 + 字段定义。
-// 行数据（少量 mock）单独放在 public/presets/rockKingdomRows.json，
-// 通过 fetch 加载，避免图片占位数据进入主 bundle。
+// 行数据单独放在 public/presets/rockKingdomRows.json，运行时通过 fetch 加载，
+// 避免把官方图鉴静态资源 URL 清单打进主 bundle。
 
 import { normalizeField } from '../utils.js'
 
@@ -8,10 +8,11 @@ const SEED_TIME = '2026-01-01T00:00:00.000Z'
 
 const SCENE_ID = 'scene-rock-kingdom'
 const TABLE_ID = 'table-rock-kingdom-elf-basic'
+export const ROCK_KINGDOM_ROWS_VERSION = 'official-d-json-2026-06-08'
 
 // 系别图标：使用洛克王国官方图鉴的公开静态资源地址，URL 中的文件名直接是
 // 系别的中文名（经 encodeURIComponent 编码），例如 普通系 -> 普通.png。
-// 覆盖洛克王国官方公开的全部 18 系，与 496 条预置行数据保持一致，
+// 覆盖洛克王国官方公开的全部 18 系，与官方 d.json 展开的预置行数据保持一致，
 // 用户仍可在字段编辑中按需增删。
 const ELEMENT_SYSTEM_LIST = [
   { value: 'normal', cn: '普通', color: '#94a3b8' },
