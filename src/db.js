@@ -2,7 +2,11 @@
 // 场景 / 资料表 / 字段 / 行的基础 CRUD，以及全量导出/导入。
 
 import Dexie from 'dexie'
-import { ROCK_KINGDOM_PRESET, TRAIT_TAG_LEGACY_DEFAULTS } from './presets/rockKingdom.js'
+import {
+  ROCK_KINGDOM_PRESET,
+  ROCK_KINGDOM_ROWS_VERSION,
+  TRAIT_TAG_LEGACY_DEFAULTS,
+} from './presets/rockKingdom.js'
 import { STOCK_FIXED_FIELDS, STOCK_TABLE_NAME } from './domain/stock.js'
 import { OWNED_FIXED_FIELDS, OWNED_TABLE_NAME } from './domain/owned.js'
 import { deriveFieldKey, generateId, mergeFieldOptions, normalizeField, nowIso } from './utils.js'
@@ -91,8 +95,18 @@ async function migrateRockKingdomFieldOptions() {
   }
 }
 
-// 补齐预置行数据：只插入本地还不存在（按 id 判断）的行，已存在的行（含用户
-// 编辑过的）一律不动。资料表已被用户删除时跳过，不做任何恢复。
+function isLegacyRockKingdomPlaceholderRow(row) {
+  return (
+    row.tableId === ROCK_KINGDOM_PRESET.tables[0].id &&
+    (row.id?.startsWith('row-rock-') || row.values?.image?.startsWith('data:image/svg+xml'))
+  )
+}
+
+// 补齐预置行数据：新安装会插入 public/presets/rockKingdomRows.json 中的官方
+// 图鉴行；升级用户如果本地仍有旧版 row-rock-* / SVG 占位行，会在插入官方
+// 行前删除这些明确可识别的占位行，避免出现“496 占位 + 496 官方”的重复。
+// 用户自行新增或无法安全判断为占位的普通资料行不会被删除；owned / stock
+// 工具表不在默认资料表 tableId 下，也不会被触碰。资料表已被用户删除时跳过。
 async function migrateRockKingdomRows() {
   const tableId = ROCK_KINGDOM_PRESET.tables[0].id
   const table = await db.catalogTables.get(tableId)
@@ -101,22 +115,37 @@ async function migrateRockKingdomRows() {
     const res = await fetch(`${import.meta.env.BASE_URL}presets/rockKingdomRows.json`)
     if (!res.ok) return
     const presetRows = await res.json()
-    const existingIds = new Set(await db.catalogRows.where('tableId').equals(tableId).primaryKeys())
+    const isOfficialDJsonPreset = presetRows.some((row) =>
+      row.id?.startsWith('rock-creature-src-'),
+    )
     const now = nowIso()
-    const rowsToInsert = presetRows
-      .filter((row) => row.id && !existingIds.has(row.id))
-      .map((row) => ({
-        id: row.id,
-        tableId,
-        values: row.values || {},
-        createdAt: row.createdAt || now,
-        updatedAt: row.updatedAt || now,
-      }))
-    if (rowsToInsert.length > 0) {
-      await db.catalogRows.bulkPut(rowsToInsert)
-    }
+
+    await db.transaction('rw', db.catalogRows, db.meta, async () => {
+      if (isOfficialDJsonPreset) {
+        const existingRows = await db.catalogRows.where('tableId').equals(tableId).toArray()
+        const legacyPlaceholderIds = existingRows
+          .filter(isLegacyRockKingdomPlaceholderRow)
+          .map((row) => row.id)
+        if (legacyPlaceholderIds.length > 0) await db.catalogRows.bulkDelete(legacyPlaceholderIds)
+      }
+
+      const existingIds = new Set(await db.catalogRows.where('tableId').equals(tableId).primaryKeys())
+      const rowsToInsert = presetRows
+        .filter((row) => row.id && !existingIds.has(row.id))
+        .map((row) => ({
+          id: row.id,
+          tableId,
+          values: row.values || {},
+          createdAt: row.createdAt || now,
+          updatedAt: row.updatedAt || now,
+        }))
+      if (rowsToInsert.length > 0) await db.catalogRows.bulkPut(rowsToInsert)
+      if (isOfficialDJsonPreset) {
+        await db.meta.put({ key: 'rockKingdomRowsVersion', value: ROCK_KINGDOM_ROWS_VERSION })
+      }
+    })
   } catch (err) {
-    // 预置资料只是锦上添花的 mock 数据；离线或抓取失败时，骨架仍应可用。
+    // 预置资料离线或抓取失败时，骨架仍应可用。不能用 mock 数据兜底。
     console.warn('加载洛克王国预置资料行失败：', err)
   }
 }
