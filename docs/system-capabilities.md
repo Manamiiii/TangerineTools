@@ -99,12 +99,18 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 - **导出**：一键导出全部 Dexie 数据（`scenes` / `catalogTables` / `catalogFields` / `catalogRows` / `meta`）为带时间戳的 JSON 文件下载。
 - **导入**：选择 JSON 文件后二次确认，采用「同 id 覆盖、文件中不存在的本地数据保留」的合并策略（非整表替换）；导入前做基础结构校验（`validateImportPayload`）。
 
+
+### 8. Android Chrome PWA 安装基础能力
+
+- 站点提供 Web App Manifest、`theme-color`、192/512 SVG 图标和 `display: standalone` 配置。
+- Manifest 的 `start_url`、`scope` 和图标路径使用相对路径，配合 Vite `base: './'` 兼容 GitHub Pages 仓库子路径部署。
+- 提供一个极简 service worker 用于满足 Android Chrome 安装条件；它会在安装/激活后尽快接管页面，但不预缓存资源、不返回自定义缓存响应、不读写 IndexedDB，避免影响用户本地数据或让旧版本因运行时缓存长期滞留。
+
 ## 明确排除在范围外的能力
 
 以下能力经过评估后**明确不在当前范围内**，不是遗漏或缺陷：
 
 - **洛克王国对局向深度资料**：当前预置资料只覆盖公开图鉴 `d.json` 可映射的基础资料、六维、特性、图片、系别、形态；技能、进化链、属性克制、PVP 规则等仍不在范围内。
-- **PWA 安装配置**（离线缓存、manifest、可安装到主屏幕等）：这是一个**主动排除**的范围决策，而非未完成的缺陷——当前定位是"可直接用浏览器打开的本地优先工具"，是否需要可安装体验留待后续按需评估。
 - 技能/进化链/属性克制等游戏对局向功能、PVP 相关工具、AI 自动打标签、云同步/多用户协作、后端服务：均超出"个人本地资料管理工具"的定位，未纳入规划。
 
 新 session 若要继续扩展上述范围外的能力，请先阅读 `docs/session-start-prompt.md`。

@@ -182,6 +182,10 @@ npm run lint
 3. 合并到 `main` 后会自动构建并部署。
 4. 如果想在当前功能分支远程测试，不需要把代码拉到本地：进入 **Actions → Deploy GitHub Pages → Run workflow**，选择要测试的分支手动运行；部署完成后，workflow 的 `github-pages` 环境会显示 Pages URL。
 
+GitHub Pages 部署后的站点包含 Web App Manifest、主题色、192/512 SVG 图标和一个极简 service worker；在 Android Chrome 中可通过浏览器菜单添加到主屏幕，并以 `standalone` 显示模式打开。PWA 配置中的 `start_url`、`scope`、图标和 service worker 注册路径均使用相对路径，以兼容 GitHub Pages 的仓库子路径部署。
+
+当前 service worker 仅用于满足安装能力：安装后立即接管页面，但不预缓存、不拦截返回自定义缓存响应，也不写入或迁移 IndexedDB。这样可以避免用户数据被触碰，并尽量避免旧静态资源因运行时缓存而长期不更新。
+
 请注意：应用数据保存在用户浏览器本地 IndexedDB 中；更换浏览器、设备或域名时，需要通过首页的导出/导入功能手动迁移数据。
 
 ## 维护文档
