@@ -293,7 +293,11 @@ export function Popover({ open, onClose, children, align = 'left', className = '
   useEffect(() => {
     if (!open) return undefined
     function handleClick(e) {
-      if (ref.current && !ref.current.contains(e.target)) onClose?.()
+      const popover = ref.current
+      const anchor = popover?.parentElement
+      if (!popover) return
+      if (popover.contains(e.target) || anchor?.contains(e.target)) return
+      onClose?.()
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
