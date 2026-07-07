@@ -14,12 +14,12 @@ export function sceneTypeLabel(value) {
 
 // 场景可启用的工具。四个工具目前均已落地，ready 字段仍然保留，
 // 便于未来新增工具时先占位、再逐步实现。
-// 「资料库」记录某一类对象的静态资料；「个体清单」记录每一个具体实例；
-// 「条件统计」用于按分类/状态/数值条件做汇总；「性格推荐」是洛克王国定制工具。
+// 「资料库」记录某一类对象的静态资料；「收集记录」记录我与这些对象的收集关系；
+// 「统计视图」用于从资料库/收集记录按条件汇总；「性格推荐」是洛克王国定制工具。
 export const SCENE_TOOLS = [
   { value: 'catalog', label: '资料库', ready: true },
-  { value: 'owned', label: '个体清单', ready: true },
-  { value: 'stock', label: '条件统计', ready: true },
+  { value: 'owned', label: '收集记录', ready: true },
+  { value: 'stock', label: '统计视图', ready: true },
   { value: 'nature', label: '性格推荐', ready: true },
 ]
 

@@ -1,12 +1,12 @@
-// 个体清单工具的领域逻辑：固定字段定义、选项常量、统计纯函数。
-// 与「条件统计」的思路互补：条件统计回答"我拥有多少能达到条件的个体"，
-// 个体清单回答"我具体拥有哪一只、它现在是什么状态"。
+// 收集记录工具的领域逻辑：固定字段定义、选项常量、统计纯函数。
+// 与「统计视图」的思路互补：统计视图回答"我拥有多少能达到条件的个体"，
+// 收集记录回答"我具体拥有哪一只、它现在是什么状态"。
 //
-// 存储上和资料库、条件统计共用 catalogTables/catalogFields/catalogRows，
+// 存储上和资料库、统计视图共用 catalogTables/catalogFields/catalogRows，
 // 通过 kind: 'owned' 区分，字段类型仍是标准的 reference/text/number/select/date/longtext，
 // 因此可以直接复用 catalog 里的 FieldInput/CellView 渲染。
 
-export const OWNED_TABLE_NAME = '个体清单'
+export const OWNED_TABLE_NAME = '收集记录'
 
 // 血脉：洛克王国里常见的四种血脉分类。颜色与选项配色板保持一致，
 // 避免和状态/异色的配色冲突。
@@ -48,11 +48,11 @@ export const OWNED_NATURE_DIRECTION_OPTIONS = [
   { value: 'balanced', label: '均衡', color: '#64748b' },
 ]
 
-// 个体清单资料表的固定字段，顺序即表格列顺序。
+// 洛克王国收集记录的预置字段，顺序即表格列顺序。
 // key 手工指定稳定标识符（不经过 deriveFieldKey），便于统计函数直接取值。
 // ref 字段的 refTableKind/refTableName 由 ensureOwnedTable 在运行时补齐，
 // 因为它需要绑定到当前场景里的普通资料表（例如洛克王国的"精灵图鉴"）。
-export const OWNED_FIXED_FIELDS = [
+export const ROCK_KINGDOM_COLLECTION_FIELDS = [
   { key: 'ref', name: '精灵', type: 'reference' },
   { key: 'nickname', name: '昵称/标记', type: 'text' },
   { key: 'level', name: '等级', type: 'number' },

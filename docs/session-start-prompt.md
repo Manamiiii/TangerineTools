@@ -4,7 +4,7 @@
 
 ## 项目是什么
 
-本地优先的个人资料管理 Web App（Vite + React 19 + Dexie.js），面向个人（非多用户）使用，纯静态站点，无后端。当前场景工作台的四个工具（资料库 `catalog`、个体清单 `owned`、条件统计 `stock`、性格推荐 `nature`）均已实现并通过构建/lint/浏览器走查验证。详见 `docs/system-capabilities.md`（能力范围）和 `docs/data-sync.md`（数据模型与导出/导入语义）。
+本地优先的个人资料管理 Web App（Vite + React 19 + Dexie.js），面向个人（非多用户）使用，纯静态站点，无后端。当前场景工作台的四个工具（资料库 `catalog`、收集记录 `owned`、统计视图 `stock`、性格推荐 `nature`）均已实现并通过构建/lint/浏览器走查验证。详见 `docs/system-capabilities.md`（能力范围）和 `docs/data-sync.md`（数据模型与导出/导入语义）。
 
 ## 先读这三份文档
 
@@ -69,8 +69,8 @@ src/
   presets/
     rockKingdom.js     # 洛克王国场景/资料表/字段定义（结构化数据，随 bundle 打包）
   domain/
-    stock.js           # 条件统计工具的固定字段定义、状态选项、统计纯函数
-    owned.js           # 个体清单工具的固定字段定义、选项、搜索/统计纯函数
+    stock.js           # 统计视图工具的旧版固定字段定义、状态选项、统计纯函数
+    owned.js           # 收集记录工具的洛克王国预置字段、选项、搜索/统计纯函数
     nature.js          # 性格推荐工具的六维计算、性格评分、推荐理由纯函数
     rockKingdom.js      # 同编号形态识别、对比表格构建（含适合方向/主要差异）纯函数（资料库详情弹窗使用）
   components/
@@ -78,8 +78,8 @@ src/
     scenes.jsx          # 首页场景列表 + 新建/编辑场景弹窗
     catalog.jsx         # 字段管理、列头菜单、数据表格（DataGrid）、筛选面板、单元格渲染/编辑（CellView/FieldInput）
     dataTables.jsx      # 资料库工具顶层：资料表管理 + TableView（搜索/筛选/排序/分页）+ 行的新增/编辑/详情弹窗（含同编号形态对比 + 适合方向 + 主要差异）
-    owned.jsx           # 个体清单工具：固定 9 字段个体的增删改 + 搜索 + 状态/血脉/异色统计
-    stock.jsx           # 条件统计工具：固定字段记录的增删改 + 分类/状态/等级阈值统计
+    owned.jsx           # 收集记录工具：普通场景空字段、洛克王国补齐收集字段；支持一对一/一对多模式
+    stock.jsx           # 统计视图工具：从资料库/收集记录选择数据源并按字段分组统计
     nature.jsx          # 性格推荐工具：手动录入或从资料库带入六维，展示推荐性格 + 候选清单（top-N 可选切换）
 public/
   presets/rockKingdomRows.json  # 洛克王国官方图鉴行数据（d.json 的 l + forms 展开为 496 条），运行时 fetch 加载
@@ -89,7 +89,7 @@ docs/
   system-capabilities.md / data-sync.md / session-start-prompt.md
 ```
 
-> 条件统计工具与个体清单工具均复用资料库的 `catalogTables`/`catalogFields`/`catalogRows` 存储，通过在 `catalogTables` 上打 `kind: 'stock'` 或 `kind: 'owned'` 标记与普通资料表区分。`db.js` 的 `ensureStockTable` / `ensureOwnedTable` 使用按场景 id 派生的**稳定 id**（`table-stock-${sceneId}` / `table-owned-${sceneId}`，字段 id 形如 `field-stock-${sceneId}-${key}` / `field-owned-${sceneId}-${key}`）而非随机 id 创建表和字段：表已存在时直接 `get` 返回并按需补齐缺失字段（不覆盖已有字段）；按稳定 id 找不到时会回退按 `sceneId`+`kind` 查找旧版本（随机 id）建的表并直接复用（不改其 id），都找不到才用固定 id 新建。因此 React StrictMode 下 effect 被执行两次、或从旧版本升级，都不会创建出重复的表。`kind` 是一个非索引属性，只在查询后用 JS `.filter()` 区分，没有引入 Dexie schema 版本变更。任何新增的"资料表选择器"（如资料库的表切换、性格推荐的带入面板）都要记得只保留 `!table.kind` 的普通资料表，避免条件统计表/个体清单表混入。
+> 收集记录工具复用资料库的 `catalogTables`/`catalogFields`/`catalogRows` 存储，通过在 `catalogTables` 上打 `kind: 'owned'` 与普通资料表区分。`db.js` 的 `ensureOwnedTable` 使用按场景 id 派生的稳定 id（`table-owned-${sceneId}`）创建/复用表；普通新建场景只创建空表，不预置业务字段，用户通过「字段」自行配置；洛克王国预置场景会补齐精灵收集字段，并默认使用一对多模式。统计视图工具仍沿用内部工具值 `stock`，但新 UI 不再创建固定字段统计表，而是从普通资料表和收集记录表中选择数据源做即时统计。`kind` / `collectionMode` 均为非索引属性，没有引入 Dexie schema 版本变更。任何新增的“资料表选择器”（如资料库表切换、性格推荐带入面板）都要只保留 `!table.kind` 的普通资料表，避免收集记录表混入。
 
 ## 关键约定 / 容易踩的坑
 
@@ -99,8 +99,8 @@ docs/
 - **隐藏字段仍需在详情页展示**：字段的 `hidden` 只影响是否出现在表格列里，`RowDetailModal` 会展示**全部**字段（含隐藏的），并加"隐藏列"徽章标注，不能因为字段隐藏就在详情页也过滤掉。
 - **默认排序**：`NUMBER_FIELD_NAMES = ['编号']` / `NUMBER_FIELD_KEYS = ['no', 'number']` 用于自动识别"编号"字段并套用默认自然升序；没有编号字段的资料表不做特殊排序。用户可以通过点击列头手动切换排序。
 - **导入是合并不是替换**：见 `docs/data-sync.md`，同 id 覆盖、文件中缺失的本地数据会保留，不会被删除。不要在没有明确需求的情况下改成"清空后导入"的语义。
-- **预置结构播种只跑一次，资料行迁移每次启动安全补齐**：通过 `meta.seededRockKingdom` 防止重复写入场景/表/字段骨架；`migrateRockKingdomRows()` 会在默认资料表存在时补齐官方预置行，并删除明确可识别的旧 `row-rock-*` / `data:image/svg+xml` 占位行，但不会删除用户新增的非占位行、owned 个体清单或 stock 条件统计记录。
-- **洛克王国场景默认启用四个工具**：`ROCK_KINGDOM_PRESET.scene.tools` 现在是 `['catalog', 'owned', 'stock', 'nature']`，新安装首次打开即可看到四工具切换器。老用户（场景 `tools` 仍恰好等于任一旧默认值 `['catalog']` 或 `['catalog', 'stock', 'nature']`）会被 `db.js` 的 `migrateRockKingdomSceneTools()`（每次启动都执行，不受 `seededRockKingdom` 一次性标记限制）自动补齐为四项；只要用户自定义过 `tools`（关闭过资料库、只手动开过条件统计等任何不同于两个已知旧默认值的组合），迁移会跳过、不覆盖。
+- **预置结构播种只跑一次，资料行迁移每次启动安全补齐**：通过 `meta.seededRockKingdom` 防止重复写入场景/表/字段骨架；`migrateRockKingdomRows()` 会在默认资料表存在时补齐官方预置行，并删除明确可识别的旧 `row-rock-*` / `data:image/svg+xml` 占位行，但不会删除用户新增的非占位行、owned 收集记录或 stock 统计视图记录。
+- **洛克王国场景默认启用四个工具**：`ROCK_KINGDOM_PRESET.scene.tools` 现在是 `['catalog', 'owned', 'stock', 'nature']`，新安装首次打开即可看到四工具切换器。老用户（场景 `tools` 仍恰好等于任一旧默认值 `['catalog']` 或 `['catalog', 'stock', 'nature']`）会被 `db.js` 的 `migrateRockKingdomSceneTools()`（每次启动都执行，不受 `seededRockKingdom` 一次性标记限制）自动补齐为四项；只要用户自定义过 `tools`（关闭过资料库、只手动开过统计视图等任何不同于两个已知旧默认值的组合），迁移会跳过、不覆盖。
 - **图标/图片素材**：洛克王国预置资料来源为公开静态图鉴 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/d.json`；精灵图、18 系图标、特性图标均使用同源公开静态资源前缀 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/`，同步脚本逐段编码中文路径。不要再引入本地 SVG 或 `data:image/svg+xml` 作为精灵图。
 - **CSS**：`src/styles.css` 是唯一样式来源，无 CSS 模块/框架。新增组件前建议先搜索该文件确认是否已有可复用的类（按钮、表单、Modal、Popover、表格等都已有一套通用类名）。
 
@@ -111,15 +111,15 @@ docs/
 - `npm run lint`（oxlint）通过，无警告。
 - 通过 Playwright 手动走查确认以下链路在真实浏览器中可用且控制台无报错：
   - 首页场景列表渲染、洛克王国预置数据播种（496 条）、hash 路由跳转进入场景工作台。
-  - 场景工作台多工具切换器（资料库 / 个体清单 / 条件统计 / 性格推荐 四个分段按钮）新安装默认即可见（无需手动编辑场景勾选启用），可自由切换且互不影响数据。
-  - 洛克王国默认工具与迁移路径：清空 IndexedDB 模拟全新安装并刷新，首页工具列显示"资料库 · 个体清单 · 条件统计 · 性格推荐"，进入场景后默认停留在资料库、四工具切换器可见；手动把 `scene-rock-kingdom.tools` 写回旧默认值 `['catalog']` 或 `['catalog', 'stock', 'nature']` 后刷新，`migrateRockKingdomSceneTools()` 自动补齐为四项且 `updatedAt` 被刷新为当前时间；手动写入自定义组合（如仅 `['stock']`）后刷新，`tools` 与 `updatedAt` 均保持不变，未被覆盖。
-  - 资料库工具栏（搜索→表选择器→筛选→字段管理→新增行）渲染顺序正确；数据表格渲染全部 **496** 条预置行且按编号升序排列；六维迷你统计渲染正确。表选择器只列出普通资料表（`!table.kind`），不含个体清单表 / 条件统计表。
+  - 场景工作台多工具切换器（资料库 / 收集记录 / 统计视图 / 性格推荐 四个分段按钮）新安装默认即可见（无需手动编辑场景勾选启用），可自由切换且互不影响数据。
+  - 洛克王国默认工具与迁移路径：清空 IndexedDB 模拟全新安装并刷新，首页工具列显示"资料库 · 收集记录 · 统计视图 · 性格推荐"，进入场景后默认停留在资料库、四工具切换器可见；手动把 `scene-rock-kingdom.tools` 写回旧默认值 `['catalog']` 或 `['catalog', 'stock', 'nature']` 后刷新，`migrateRockKingdomSceneTools()` 自动补齐为四项且 `updatedAt` 被刷新为当前时间；手动写入自定义组合（如仅 `['stock']`）后刷新，`tools` 与 `updatedAt` 均保持不变，未被覆盖。
+  - 资料库工具栏（搜索→表选择器→筛选→字段管理→新增行）渲染顺序正确；数据表格渲染全部 **496** 条预置行且按编号升序排列；六维迷你统计渲染正确。表选择器只列出普通资料表（`!table.kind`），不含收集记录表。
   - 搜索框文本匹配过滤正确（如输入"烈焰"可正确缩小到烈焰虎/烈焰霸王等匹配行）。
   - 列头点击排序：升序/降序两个方向均验证结果顺序正确。
   - 筛选面板：按字段类型渲染对应控件（单选/多选勾选列表、数字范围、布尔二态、六维图不可筛选等）；`element` 作为 `multiselect` 字段渲染带图标的选项，勾选后可正确将结果缩小；"清空"按钮可正确恢复全部预置行并重置控件状态。
   - 分页页大小切换控件（10/20/50/100）在 496 条数据下正常翻页；页码导航正确。
-  - 个体清单工具：新增个体（引用精灵、填昵称/等级/性格方向/血脉/状态/异色/日期/备注）→ 编辑 → 删除；搜索框对昵称/备注/等级/被引用精灵名字面量过滤；「统计」按钮切换后显示状态/血脉分组计数与异色累计。
-  - 条件统计工具：记录增删改、统计视图（分类分组计数、状态计数、等级阈值计数）渲染正确。
+  - 收集记录工具：新增收集记录（引用精灵、填昵称/等级/性格方向/血脉/状态/异色/日期/备注）→ 编辑 → 删除；搜索框对昵称/备注/等级/被引用精灵名字面量过滤；「统计」按钮切换后显示状态/血脉分组计数与异色累计。
+  - 统计视图工具：从资料库/收集记录选择数据源，按字段分组并叠加数值阈值条件统计。
   - 性格推荐工具：手动录入六维、从资料库"带入"一行（`!table.kind` 表 + 行选择器）自动填充六维与特性标签、推荐结果与理由文案渲染正确；候选清单默认展示 top-6，点击可切换查看每个候选的加成对比。
   - 行详情弹窗展示全部字段（含隐藏字段徽章）及关闭/编辑/删除操作；同编号形态对比区块正确列出同编号、不同形态的行并标注各维度最高/最低/相同值，并展示每一行的**适合方向**（如「物攻输出/魔攻输出/双攻输出/高速先手/耐久坦克/能量循环/辅助续航/异常控制」）与**主要差异**（相对同组均值的强/弱维度概括）。
 

@@ -1,9 +1,9 @@
-// 条件统计工具的领域逻辑：固定字段定义、状态选项、统计纯函数。
-// 条件统计复用资料库的 catalogFields/catalogRows 存储，字段类型仍是标准的
+// 统计视图工具的领域逻辑：旧版固定字段定义、状态选项、统计纯函数。
+// 统计视图复用资料库的 catalogFields/catalogRows 存储，字段类型仍是标准的
 // text/number/select/longtext，因此可以直接复用 FieldInput/CellView 渲染，
-// 不需要为条件统计单独实现一套字段/单元格组件。
+// 不需要为统计视图单独实现一套字段/单元格组件。
 
-export const STOCK_TABLE_NAME = '条件统计'
+export const STOCK_TABLE_NAME = '统计视图'
 
 export const STOCK_STATUS_OPTIONS = [
   { value: 'todo', label: '未开始', color: '#64748b' },
@@ -11,7 +11,7 @@ export const STOCK_STATUS_OPTIONS = [
   { value: 'done', label: '已完成', color: '#059669' },
 ]
 
-// 条件统计资料表的固定字段，顺序即表格列顺序。key 为手动指定的稳定标识符
+// 统计视图资料表的固定字段，顺序即表格列顺序。key 为手动指定的稳定标识符
 // （与预置资料的做法一致），不经过 deriveFieldKey 生成。
 export const STOCK_FIXED_FIELDS = [
   { key: 'name', name: '名称', type: 'text' },
@@ -34,7 +34,7 @@ export function groupByCategory(rows) {
     .sort((a, b) => b.count - a.count)
 }
 
-// 数值型条件统计：等级达到（大于等于）threshold 的记录数量。
+// 数值型统计视图：等级达到（大于等于）threshold 的记录数量。
 export function countByLevelAtLeast(rows, threshold) {
   const min = Number(threshold) || 0
   return rows.filter((row) => Number(row.values?.level) >= min).length
