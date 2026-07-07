@@ -25,7 +25,7 @@ export const SCENE_TOOLS = [
 
 // 字段类型：资料表列的数据类型。
 export const FIELD_TYPES = [
-  { value: 'text', label: '文本' },
+  { value: 'text', label: '短文本' },
   { value: 'longtext', label: '长文本' },
   { value: 'number', label: '数字' },
   { value: 'image', label: '图片' },
@@ -34,7 +34,7 @@ export const FIELD_TYPES = [
   { value: 'boolean', label: '布尔' },
   { value: 'url', label: 'URL' },
   { value: 'date', label: '日期' },
-  { value: 'reference', label: '引用' },
+  { value: 'reference', label: '引用资料' },
   { value: 'stats', label: '指标视图' },
 ]
 

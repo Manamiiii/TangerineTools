@@ -1,7 +1,7 @@
 // 通用控件：弹窗、确认框、按钮、颜色选择器、标签、
 // 指标视图、分页、弹出菜单、拖拽排序等。所有工具型页面共用。
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, GripVertical, X } from 'lucide-react'
 import { COLOR_PALETTE, PAGE_SIZE_OPTIONS, STATS_SCALE_MAX } from '../constants.js'
 import { clamp } from '../utils.js'
@@ -114,18 +114,47 @@ export function FormRow({ label, children, hint }) {
 }
 
 export function ColorSwatchPicker({ value, onChange, colors = COLOR_PALETTE }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (!open) return undefined
+    function handleClick(e) {
+      if (!ref.current?.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [open])
+
+  const activeColor = value || colors[0]
   return (
-    <div className="color-swatches">
-      {colors.map((c) => (
-        <button
-          key={c}
-          type="button"
-          className={`color-swatch ${value === c ? 'selected' : ''}`}
-          style={{ background: c }}
-          onClick={() => onChange(c)}
-          aria-label={c}
-        />
-      ))}
+    <div className="color-picker" ref={ref}>
+      <button
+        type="button"
+        className="color-picker-trigger"
+        onClick={() => setOpen((v) => !v)}
+        aria-label="选择颜色"
+        title={activeColor}
+      >
+        <span style={{ background: activeColor }} />
+      </button>
+      {open ? (
+        <div className="color-picker-popover">
+          {colors.map((c) => (
+            <button
+              key={c}
+              type="button"
+              className={`color-swatch ${value === c ? 'selected' : ''}`}
+              style={{ background: c }}
+              onClick={() => {
+                onChange(c)
+                setOpen(false)
+              }}
+              aria-label={c}
+            />
+          ))}
+        </div>
+      ) : null}
     </div>
   )
 }
