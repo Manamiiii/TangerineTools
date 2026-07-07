@@ -108,9 +108,37 @@ function isLegacyRockKingdomPlaceholderRow(row) {
   )
 }
 
+function isEmptyPresetValue(value) {
+  return value == null || value === '' || (Array.isArray(value) && value.length === 0)
+}
+
+function isInvalidElementValue(value) {
+  const elementField = ROCK_KINGDOM_PRESET.fields.find((field) => field.key === 'element')
+  const validValues = new Set((elementField?.options || []).map((option) => option.value))
+  const values = Array.isArray(value) ? value : value ? [value] : []
+  return values.some((item) => !validValues.has(item))
+}
+
+function mergeMissingOfficialRockKingdomValues(existingValues = {}, presetValues = {}) {
+  const nextValues = { ...existingValues }
+  let changed = false
+  for (const [key, presetValue] of Object.entries(presetValues)) {
+    const currentValue = nextValues[key]
+    const shouldRepair =
+      isEmptyPresetValue(currentValue) || (key === 'element' && isInvalidElementValue(currentValue))
+    if (shouldRepair && !isEmptyPresetValue(presetValue)) {
+      nextValues[key] = presetValue
+      changed = true
+    }
+  }
+  return changed ? nextValues : existingValues
+}
+
 // 补齐预置行数据：新安装会插入 public/presets/rockKingdomRows.json 中的官方
 // 图鉴行；升级用户如果本地仍有旧版 row-rock-* / SVG 占位行，会在插入官方
 // 行前删除这些明确可识别的占位行，避免出现“496 占位 + 496 官方”的重复。
+// 对已经写入但缺少官方字段值的 rock-creature-src-* 行，会只补齐空值字段
+// （或修正无法匹配选项的旧系别值），不覆盖已有非空值。
 // 用户自行新增或无法安全判断为占位的普通资料行不会被删除；owned / stock
 // 工具表不在默认资料表 tableId 下，也不会被触碰。资料表已被用户删除时跳过。
 async function migrateRockKingdomRows() {
@@ -135,17 +163,29 @@ async function migrateRockKingdomRows() {
         if (legacyPlaceholderIds.length > 0) await db.catalogRows.bulkDelete(legacyPlaceholderIds)
       }
 
-      const existingIds = new Set(await db.catalogRows.where('tableId').equals(tableId).primaryKeys())
-      const rowsToInsert = presetRows
-        .filter((row) => row.id && !existingIds.has(row.id))
-        .map((row) => ({
-          id: row.id,
-          tableId,
-          values: row.values || {},
-          createdAt: row.createdAt || now,
-          updatedAt: row.updatedAt || now,
-        }))
-      if (rowsToInsert.length > 0) await db.catalogRows.bulkPut(rowsToInsert)
+      const existingRows = await db.catalogRows.where('tableId').equals(tableId).toArray()
+      const existingById = new Map(existingRows.map((row) => [row.id, row]))
+      const rowsToPut = presetRows
+        .filter((row) => row.id)
+        .flatMap((row) => {
+          const existing = existingById.get(row.id)
+          if (!existing) {
+            return [
+              {
+                id: row.id,
+                tableId,
+                values: row.values || {},
+                createdAt: row.createdAt || now,
+                updatedAt: row.updatedAt || now,
+              },
+            ]
+          }
+          if (!isOfficialDJsonPreset || !row.id.startsWith('rock-creature-src-')) return []
+          const nextValues = mergeMissingOfficialRockKingdomValues(existing.values, row.values || {})
+          if (nextValues === existing.values) return []
+          return [{ ...existing, values: nextValues, updatedAt: now }]
+        })
+      if (rowsToPut.length > 0) await db.catalogRows.bulkPut(rowsToPut)
       if (isOfficialDJsonPreset) {
         await db.meta.put({ key: 'rockKingdomRowsVersion', value: ROCK_KINGDOM_ROWS_VERSION })
       }

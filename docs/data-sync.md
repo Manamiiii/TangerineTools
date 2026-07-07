@@ -50,9 +50,10 @@ db.version(1).stores({
 - 预置资料迁移策略：
   1. 新安装 / 干净 IndexedDB 只会插入官方图鉴行，不应出现旧 `row-rock-*` 占位行。
   2. 老用户若已播种旧占位资料，`migrateRockKingdomRows()` 会在默认洛克王国资料表中删除可明确识别的旧占位行（`id` 以 `row-rock-` 开头，或 `values.image` 以 `data:image/svg+xml` 开头），再按新稳定 id 插入官方行，避免重复。
-  3. 用户自己新增的非占位资料行不会被删除；无法安全判断为占位的数据不会被覆盖。
-  4. owned / stock 表及其用户记录不属于默认资料表 `tableId`，迁移不会触碰。
-  5. 迁移通过 `meta.rockKingdomRowsVersion = "official-d-json-2026-06-08"` 标记资料版本，不引入 Dexie schema 版本变更。
+  3. 若浏览器里已存在 `rock-creature-src-*` 官方稳定 id 行，但某些官方字段仍为空（如旧缓存缺少 `element` / `form`），启动迁移会只补齐这些空值字段；若旧 `element` 值无法匹配当前系别选项，也会用官方值修正。已有非空字段不会被整体覆盖。
+  4. 用户自己新增的非占位资料行不会被删除；无法安全判断为占位的数据不会被覆盖。
+  5. owned / stock 表及其用户记录不属于默认资料表 `tableId`，迁移不会触碰。
+  6. 迁移通过 `meta.rockKingdomRowsVersion = "official-d-json-2026-06-08"` 标记资料版本，不引入 Dexie schema 版本变更。
 
 ## 导出格式
 

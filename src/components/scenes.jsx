@@ -141,12 +141,12 @@ function SceneFormModal({ scene, onClose }) {
           />
         </FormRow>
         <FormRow label="类型" hint={SCENE_TYPES.find((t) => t.value === type)?.description}>
-          <div className="segmented segmented-wrap">
+          <div className="scene-type-options">
             {SCENE_TYPES.map((t) => (
               <button
                 key={t.value}
                 type="button"
-                className={`segmented-item ${type === t.value ? 'active' : ''}`}
+                className={`scene-type-button ${type === t.value ? 'active' : ''}`}
                 title={t.description}
                 onClick={() => setType(t.value)}
               >
