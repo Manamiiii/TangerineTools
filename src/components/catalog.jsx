@@ -181,6 +181,9 @@ function FieldRow({ field, allFields, sceneTables }) {
 
 function OptionsEditor({ field }) {
   const options = field.options || []
+  const { onDragStart, onDragOver, onDrop } = useDragReorder(options, (next) => {
+    updateField(field.id, { options: next })
+  })
 
   function updateOption(value, patch) {
     const next = options.map((o) => (o.value === value ? { ...o, ...patch } : o))
@@ -199,34 +202,19 @@ function OptionsEditor({ field }) {
     updateField(field.id, { options: options.filter((o) => o.value !== value) })
   }
 
-  function moveOption(index, direction) {
-    const nextIndex = index + direction
-    if (nextIndex < 0 || nextIndex >= options.length) return
-    const next = options.slice()
-    const [moved] = next.splice(index, 1)
-    next.splice(nextIndex, 0, moved)
-    updateField(field.id, { options: next })
-  }
-
   return (
     <div className="options-editor">
-      <div className="options-editor-header">选项（点击色块选择颜色，图片可留空；顺序会影响展示和筛选顺序）</div>
+      <div className="options-editor-header">选项（拖拽调整顺序，点击色块选择颜色，图片可留空）</div>
       {options.map((opt, index) => (
-        <div key={opt.value} className="option-row">
-          <span className="option-reorder">
-            <IconButton
-              icon={ArrowUp}
-              title="上移选项"
-              disabled={index === 0}
-              onClick={() => moveOption(index, -1)}
-            />
-            <IconButton
-              icon={ArrowDown}
-              title="下移选项"
-              disabled={index === options.length - 1}
-              onClick={() => moveOption(index, 1)}
-            />
-          </span>
+        <div
+          key={opt.value}
+          className="option-row"
+          draggable
+          onDragStart={() => onDragStart(index)}
+          onDragOver={onDragOver}
+          onDrop={() => onDrop(index)}
+        >
+          <DragHandle />
           <input
             className="input option-label-input"
             value={opt.label}

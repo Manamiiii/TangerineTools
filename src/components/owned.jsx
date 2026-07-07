@@ -10,9 +10,8 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { BarChart3, Pencil, Plus, Search, Settings2, Trash2 } from 'lucide-react'
 import { createRow, db, deleteRow, ensureOwnedTable, updateRow } from '../db.js'
 import {
-  OWNED_SHINY_OPTIONS,
+  OWNED_COLORFUL_OPTIONS,
   countByBloodline,
-  countByStatus,
   countShiny,
   matchesOwnedSearch,
 } from '../domain/owned.js'
@@ -108,6 +107,7 @@ function OwnedTableView({ table, sceneId }) {
   if (!fields || !rows) return null
 
   const sortedFields = [...fields].sort((a, b) => a.order - b.order)
+  const visibleFields = sortedFields.filter((field) => !field.hidden)
 
   return (
     <div className="table-view">
@@ -149,7 +149,7 @@ function OwnedTableView({ table, sceneId }) {
           icon={Plus}
           label="新增记录"
           variant="primary"
-          disabled={sortedFields.length === 0}
+          disabled={visibleFields.length === 0}
           onClick={() => setRowForm('new')}
         />
       </div>
@@ -159,12 +159,12 @@ function OwnedTableView({ table, sceneId }) {
       {rows.length === 0 ? (
         <EmptyState
           title="还没有收集记录"
-          description={sortedFields.length === 0 ? '先添加字段，再记录你的收集进度。' : '点击“新增记录”记录第一条收集进度。'}
+          description={visibleFields.length === 0 ? '先添加字段，再记录你的收集进度。' : '点击“新增记录”记录第一条收集进度。'}
           action={
             <button
               type="button"
               className="btn btn-primary"
-              disabled={sortedFields.length === 0}
+              disabled={visibleFields.length === 0}
               onClick={() => setRowForm('new')}
             >
               新增记录
@@ -175,7 +175,7 @@ function OwnedTableView({ table, sceneId }) {
         <EmptyState title="没有匹配的记录" description="试试更换关键字或清空搜索框。" />
       ) : (
         <OwnedGrid
-          fields={sortedFields}
+          fields={visibleFields}
           rows={filteredRows}
           onEditRow={setRowForm}
           onDeleteRow={setDeletingRow}
@@ -194,7 +194,7 @@ function OwnedTableView({ table, sceneId }) {
       {rowForm && (
         <OwnedFormModal
           table={table}
-          fields={sortedFields}
+          fields={visibleFields}
           row={rowForm === 'new' ? null : rowForm}
           rows={rows}
           collectionMode={table.collectionMode || 'single'}
@@ -329,11 +329,11 @@ function OwnedFormModal({ table, fields, row, rows, collectionMode, onClose }) {
 }
 
 // ---------------------------------------------------------------------------
-// 统计视图：按状态 / 血脉 / 异色分别汇总
+// 统计视图：按血脉 / 炫彩分别汇总
 // ---------------------------------------------------------------------------
 
 function OwnedStatsPanel({ rows, fields }) {
-  const hasRockKingdomFields = ['status', 'bloodline', 'shiny'].some((key) =>
+  const hasRockKingdomFields = ['bloodline', 'colorful'].some((key) =>
     fields.some((field) => field.key === key),
   )
   if (!hasRockKingdomFields) {
@@ -348,25 +348,12 @@ function OwnedStatsPanel({ rows, fields }) {
     )
   }
 
-  const statusStats = countByStatus(rows)
   const bloodlineStats = countByBloodline(rows)
-  const shinyCount = countShiny(rows)
-  const shinyOption = OWNED_SHINY_OPTIONS.find((o) => o.value === 'yes')
+  const colorfulCount = countShiny(rows)
+  const colorfulOption = OWNED_COLORFUL_OPTIONS.find((o) => o.value === 'yes')
 
   return (
     <div className="stock-stats-panel">
-      <div className="stock-stats-card">
-        <div className="stock-stats-card-title">按状态统计</div>
-        <ul className="stock-stats-list">
-          {statusStats.map((s) => (
-            <li key={s.value}>
-              <OptionTag option={s} size="sm" />
-              <span className="stock-stats-count">{s.count}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
       <div className="stock-stats-card">
         <div className="stock-stats-card-title">按血脉统计</div>
         <ul className="stock-stats-list">
@@ -380,13 +367,13 @@ function OwnedStatsPanel({ rows, fields }) {
       </div>
 
       <div className="stock-stats-card">
-        <div className="stock-stats-card-title">异色统计</div>
+        <div className="stock-stats-card-title">炫彩统计</div>
         <div className="owned-shiny-row">
-          {shinyOption ? <OptionTag option={shinyOption} size="sm" /> : null}
-          <span className="stock-stats-count stock-stats-count-lg">{shinyCount}</span>
+          {colorfulOption ? <OptionTag option={colorfulOption} size="sm" /> : null}
+          <span className="stock-stats-count stock-stats-count-lg">{colorfulCount}</span>
         </div>
         <p className="owned-shiny-hint">
-          共 {rows.length} 条记录，异色占比 {rows.length ? Math.round((shinyCount / rows.length) * 100) : 0}%
+          共 {rows.length} 条记录，炫彩占比 {rows.length ? Math.round((colorfulCount / rows.length) * 100) : 0}%
         </p>
       </div>
     </div>
