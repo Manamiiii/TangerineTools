@@ -59,19 +59,19 @@ const SHINY_OPTIONS = [
 // 这里只更新了展示名称与配色（新语义更细），value 保持不变，
 // 已保存的旧标签数据可以继续正常展示、不会变成空白或 undefined。
 export const TRAIT_TAG_OPTIONS = [
-  { value: 'attack', label: '输出倾向', color: '#dc2626', image: '' },
-  { value: 'patkLean', label: '物攻倾向', color: '#ea580c', image: '' },
-  { value: 'matkLean', label: '魔攻倾向', color: '#c026d3', image: '' },
-  { value: 'spdLean', label: '速度倾向', color: '#eab308', image: '' },
-  { value: 'defense', label: '耐久倾向', color: '#2563eb', image: '' },
-  { value: 'support', label: '回复续航', color: '#059669', image: '' },
+  { value: 'attack', label: '双攻输出', color: '#dc2626', image: '' },
+  { value: 'patkLean', label: '物攻输出', color: '#ea580c', image: '' },
+  { value: 'matkLean', label: '魔攻输出', color: '#c026d3', image: '' },
+  { value: 'spdLean', label: '高速先手', color: '#eab308', image: '' },
+  { value: 'defense', label: '耐久坦克', color: '#2563eb', image: '' },
+  { value: 'support', label: '回复辅助', color: '#059669', image: '' },
   { value: 'energyCycle', label: '能量循环', color: '#0d9488', image: '' },
   { value: 'counterGain', label: '克制收益', color: '#4f46e5', image: '' },
   { value: 'growth', label: '强化成长', color: '#65a30d', image: '' },
   { value: 'shieldReduce', label: '护盾减伤', color: '#0891b2', image: '' },
   { value: 'control', label: '异常控制', color: '#7c3aed', image: '' },
   { value: 'pivot', label: '换入返场', color: '#475569', image: '' },
-  { value: 'special', label: '待判断', color: '#94a3b8', image: '' },
+  { value: 'special', label: '特殊机制', color: '#94a3b8', image: '' },
 ]
 
 // 第一轮（round 1）里 5 个旧标签值的默认展示名/配色，仅供迁移逻辑判断

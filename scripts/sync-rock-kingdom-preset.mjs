@@ -22,24 +22,38 @@ function fullUrl(assetPath) {
   return new URL(assetPath.split('/').map(encodeURIComponent).join('/'), ASSET_BASE).href
 }
 
-function deriveTags(desc) {
+function deriveTags(desc, stats = {}) {
   const tags = []
   const add = (tag) => {
-    if (!tags.includes(tag) && tags.length < 3) tags.push(tag)
+    if (!tags.includes(tag) && tags.length < 4) tags.push(tag)
   }
-  if (!desc) return ['special']
-  if (/物攻|物理|物伤/.test(desc)) add('patkLean')
-  if (/魔攻|魔法|魔伤/.test(desc)) add('matkLean')
-  if (/速度|先手|行动/.test(desc)) add('spdLean')
-  if (/回复|生命|治疗/.test(desc)) add('support')
-  if (/能量|能耗/.test(desc)) add('energyCycle')
-  if (/克制/.test(desc)) add('counterGain')
-  if (/强化|永久\+|\+20%|\+70%/.test(desc)) add('growth')
-  if (/护盾|减伤/.test(desc)) add('shieldReduce')
-  if (/防御/.test(desc)) add('defense')
-  if (/冻结|中毒|灼烧|异常|恐惧|控制/.test(desc)) add('control')
-  if (/返场|换入|换下/.test(desc)) add('pivot')
-  if (tags.length === 0 && /攻击|伤害|暴击|威力/.test(desc)) add('attack')
+  const hp = Number(stats.hp) || 0
+  const patk = Number(stats.patk) || 0
+  const matk = Number(stats.matk) || 0
+  const pdef = Number(stats.pdef) || 0
+  const mdef = Number(stats.mdef) || 0
+  const spd = Number(stats.spd) || 0
+  const bulk = hp + pdef + mdef
+  const topAttack = Math.max(patk, matk)
+
+  if (patk >= matk + 15 && patk >= 85) add('patkLean')
+  if (matk >= patk + 15 && matk >= 85) add('matkLean')
+  if (Math.abs(patk - matk) <= 15 && patk >= 85 && matk >= 85) add('attack')
+  if (spd >= 95 || (spd >= 85 && spd >= topAttack - 5)) add('spdLean')
+  if (bulk >= 300 || pdef >= 105 || mdef >= 105 || hp >= 120) add('defense')
+
+  if (desc) {
+    if (/回复|恢复|生命|治疗|回血|保留1点生命/.test(desc)) add('support')
+    if (/能量|能耗|回复\d*能量|获得\d*能量/.test(desc)) add('energyCycle')
+    if (/克制|抵触/.test(desc)) add('counterGain')
+    if (/强化|永久\+|\+20%|\+70%|提升|增加/.test(desc)) add('growth')
+    if (/护盾|减伤|防御|免疫|抵免/.test(desc)) add('shieldReduce')
+    if (/冻结|中毒|灼烧|异常|恐惧|控制|污染|睡眠|麻醉/.test(desc)) add('control')
+    if (/返场|换入|换下|替换|出战编队/.test(desc)) add('pivot')
+    if (/亲密|同乘|采集|挖矿|捕捉|经验|家园|灵感|范围/.test(desc)) add('support')
+    if (tags.length === 0 && /攻击|伤害|暴击|威力|致命/.test(desc)) add('attack')
+  }
+
   return tags.length > 0 ? tags : ['special']
 }
 
@@ -104,7 +118,14 @@ function makeRow(data, source, base) {
       bst: detail.rt ?? source.rt ?? 0,
       shiny: source.sh === 1 ? 'yes' : 'no',
       traitName,
-      traitTags: deriveTags(detail.te || ''),
+      traitTags: deriveTags(detail.te || '', {
+        hp: detail.hp,
+        patk: detail.atk,
+        matk: detail.matk,
+        pdef: detail.df,
+        mdef: detail.mdf,
+        spd: detail.spd,
+      }),
       traitIcon: traitName && data._tm[traitName] ? fullUrl(data._tm[traitName]) : '',
       traitDesc: detail.te || '',
       hp: detail.hp ?? 0,

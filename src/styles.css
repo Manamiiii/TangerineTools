@@ -1349,11 +1349,6 @@ img {
   font-weight: 600;
   font-size: 12px;
   color: var(--text-muted);
-  cursor: pointer;
-}
-
-.th-label:hover {
-  color: var(--text);
 }
 
 .th-actions {

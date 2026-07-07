@@ -7,15 +7,10 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { BarChart3, Pencil, Plus, Search, Settings2, Trash2 } from 'lucide-react'
+import { Pencil, Plus, Search, Settings2, Trash2 } from 'lucide-react'
 import { createRow, db, deleteRow, ensureOwnedTable, updateRow } from '../db.js'
-import {
-  OWNED_COLORFUL_OPTIONS,
-  countByBloodline,
-  countShiny,
-  matchesOwnedSearch,
-} from '../domain/owned.js'
-import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal, OptionTag } from './common.jsx'
+import { matchesOwnedSearch } from '../domain/owned.js'
+import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal } from './common.jsx'
 import { CellView, FieldInput, FieldManagerModal } from './catalog.jsx'
 
 export function OwnedTool({ scene }) {
@@ -84,7 +79,6 @@ function OwnedTableView({ table, sceneId }) {
     return map
   }, [refFieldTables?.map((t) => t.id).join('|') || ''])
 
-  const [statsOpen, setStatsOpen] = useState(false)
   const [fieldManagerOpen, setFieldManagerOpen] = useState(false)
   const [keyword, setKeyword] = useState('')
   const [rowForm, setRowForm] = useState(null) // null | 'new' | row
@@ -140,12 +134,6 @@ function OwnedTableView({ table, sceneId }) {
           onClick={() => setFieldManagerOpen(true)}
         />
         <IconButton
-          icon={BarChart3}
-          label="统计"
-          active={statsOpen}
-          onClick={() => setStatsOpen((v) => !v)}
-        />
-        <IconButton
           icon={Plus}
           label="新增记录"
           variant="primary"
@@ -154,7 +142,6 @@ function OwnedTableView({ table, sceneId }) {
         />
       </div>
 
-      {statsOpen && <OwnedStatsPanel rows={rows} fields={sortedFields} />}
 
       {rows.length === 0 ? (
         <EmptyState
@@ -325,57 +312,5 @@ function OwnedFormModal({ table, fields, row, rows, collectionMode, onClose }) {
         ))}
       </form>
     </Modal>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// 统计视图：按血脉 / 炫彩分别汇总
-// ---------------------------------------------------------------------------
-
-function OwnedStatsPanel({ rows, fields }) {
-  const hasRockKingdomFields = ['bloodline', 'colorful'].some((key) =>
-    fields.some((field) => field.key === key),
-  )
-  if (!hasRockKingdomFields) {
-    return (
-      <div className="stock-stats-panel">
-        <div className="stock-stats-card">
-          <div className="stock-stats-card-title">记录总数</div>
-          <div className="stock-stats-count stock-stats-count-lg">{rows.length}</div>
-          <p className="owned-shiny-hint">更复杂的分组统计可在「统计视图」工具中配置。</p>
-        </div>
-      </div>
-    )
-  }
-
-  const bloodlineStats = countByBloodline(rows)
-  const colorfulCount = countShiny(rows)
-  const colorfulOption = OWNED_COLORFUL_OPTIONS.find((o) => o.value === 'yes')
-
-  return (
-    <div className="stock-stats-panel">
-      <div className="stock-stats-card">
-        <div className="stock-stats-card-title">按血脉统计</div>
-        <ul className="stock-stats-list">
-          {bloodlineStats.map((s) => (
-            <li key={s.value}>
-              <OptionTag option={s} size="sm" />
-              <span className="stock-stats-count">{s.count}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="stock-stats-card">
-        <div className="stock-stats-card-title">炫彩统计</div>
-        <div className="owned-shiny-row">
-          {colorfulOption ? <OptionTag option={colorfulOption} size="sm" /> : null}
-          <span className="stock-stats-count stock-stats-count-lg">{colorfulCount}</span>
-        </div>
-        <p className="owned-shiny-hint">
-          共 {rows.length} 条记录，炫彩占比 {rows.length ? Math.round((colorfulCount / rows.length) * 100) : 0}%
-        </p>
-      </div>
-    </div>
   )
 }

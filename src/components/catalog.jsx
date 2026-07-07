@@ -751,15 +751,11 @@ export function DataGrid({
               return (
                 <th key={field.id}>
                   <div className="th-content">
-                    <button
-                      type="button"
-                      className="th-label"
-                      onClick={() => onSortChange(field.key, 'toggle')}
-                    >
+                    <span className="th-label">
                       {field.name}
                       {sort?.fieldKey === field.key &&
                         (sort.direction === 'desc' ? <ArrowDown size={12} /> : <ArrowUp size={12} />)}
-                    </button>
+                    </span>
                     <ColumnMenu
                       onSort={(direction) => onSortChange(field.key, direction)}
                       onInsertLeft={() => onInsertField(fullIndex)}
