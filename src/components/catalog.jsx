@@ -31,7 +31,7 @@ import {
   Modal,
   OptionTag,
   Popover,
-  StatsRadarChart,
+  StatsChart,
   useDragReorder,
 } from './common.jsx'
 
@@ -94,7 +94,12 @@ async function handleTypeChange(field, nextType) {
   } else if (!field.options || field.options.length === 0) {
     patch.options = [{ value: generateId('opt'), label: '选项 1', color: '#64748b', image: '' }]
   }
-  if (nextType !== 'stats') patch.statsMap = {}
+  if (nextType !== 'stats') {
+    patch.statsMap = {}
+    patch.statsDimensions = []
+  } else {
+    patch.statsStyle = field.statsStyle || 'bars'
+  }
   if (nextType !== 'reference') patch.referenceTableId = null
   await updateField(field.id, patch)
 }
@@ -223,24 +228,70 @@ function OptionsEditor({ field }) {
 }
 
 function StatsMappingEditor({ field, allFields }) {
-  const mapping = resolveStatsMapping(allFields, field.statsMap)
   const candidateFields = allFields.filter((f) => f.id !== field.id && f.type === 'number')
+  const mapping = resolveStatsMapping(allFields, field.statsMap, field.statsDimensions)
+  const dimensions =
+    field.statsDimensions?.length > 0
+      ? field.statsDimensions
+      : STATS_DIMENSIONS.map((dim) => ({
+          key: dim.key,
+          label: dim.label,
+          fieldKey: mapping[dim.key] || '',
+        }))
 
-  function updateMap(dimKey, fieldKey) {
-    updateField(field.id, { statsMap: { ...field.statsMap, [dimKey]: fieldKey || null } })
+  function commitDimensions(nextDimensions) {
+    const nextMap = Object.fromEntries(nextDimensions.map((dim) => [dim.key, dim.fieldKey || null]))
+    updateField(field.id, { statsDimensions: nextDimensions, statsMap: nextMap })
+  }
+
+  function updateDimension(index, patch) {
+    const next = dimensions.map((dim, i) => (i === index ? { ...dim, ...patch } : dim))
+    commitDimensions(next)
+  }
+
+  function addDimension() {
+    const nextKey = generateId('stat')
+    commitDimensions([
+      ...dimensions,
+      {
+        key: nextKey,
+        label: `指标 ${dimensions.length + 1}`,
+        fieldKey: candidateFields[0]?.key || '',
+      },
+    ])
+  }
+
+  function removeDimension(index) {
+    commitDimensions(dimensions.filter((_, i) => i !== index))
   }
 
   return (
     <div className="stats-mapping-editor">
-      <div className="options-editor-header">六维映射（未设置时按字段名 / 键自动识别）</div>
-      <div className="stats-mapping-grid">
-        {STATS_DIMENSIONS.map((dim) => (
-          <label key={dim.key} className="stats-mapping-row">
-            <span>{dim.label}</span>
+      <div className="options-editor-header">指标视图（可映射任意数量值字段）</div>
+      <label className="stats-style-row">
+        <span>展示形式</span>
+        <select
+          className="select"
+          value={field.statsStyle || 'bars'}
+          onChange={(e) => updateField(field.id, { statsStyle: e.target.value })}
+        >
+          <option value="bars">条形列表（默认）</option>
+          <option value="radar">雷达图</option>
+        </select>
+      </label>
+      <div className="stats-mapping-grid stats-mapping-grid-wide">
+        {dimensions.map((dim, index) => (
+          <div key={dim.key} className="stats-mapping-row stats-mapping-row-editable">
+            <input
+              className="input"
+              value={dim.label || ''}
+              onChange={(e) => updateDimension(index, { label: e.target.value })}
+              placeholder="指标名称"
+            />
             <select
               className="select"
-              value={mapping[dim.key] || ''}
-              onChange={(e) => updateMap(dim.key, e.target.value)}
+              value={dim.fieldKey || mapping[dim.key] || ''}
+              onChange={(e) => updateDimension(index, { fieldKey: e.target.value })}
             >
               <option value="">自动识别</option>
               {candidateFields.map((f) => (
@@ -249,9 +300,13 @@ function StatsMappingEditor({ field, allFields }) {
                 </option>
               ))}
             </select>
-          </label>
+            <IconButton icon={X} title="删除指标" onClick={() => removeDimension(index)} />
+          </div>
         ))}
       </div>
+      <button type="button" className="btn btn-dashed btn-xs" onClick={addDimension}>
+        <Plus size={12} /> 添加指标
+      </button>
     </div>
   )
 }
@@ -336,8 +391,8 @@ function ReferenceFieldInput({ field, value, onChange }) {
 
 export function CellView({ field, row, allFields, mode = 'table' }) {
   if (field.type === 'stats') {
-    const stats = getStatsValues(allFields, field.statsMap, row.values)
-    return <StatsRadarChart stats={stats} size={mode === 'detail' ? 'lg' : 'sm'} />
+    const stats = getStatsValues(allFields, field.statsMap, row.values, field.statsDimensions)
+    return <StatsChart stats={stats} variant={field.statsStyle || 'bars'} size={mode === 'detail' ? 'lg' : 'sm'} />
   }
 
   const value = row.values?.[field.key]
@@ -853,7 +908,7 @@ function FilterControl({ field, value, onChange }) {
         </div>
       )
     case 'stats':
-      return <span className="filter-unsupported">六维图不支持筛选</span>
+      return <span className="filter-unsupported">指标视图不支持筛选</span>
     default:
       return (
         <input

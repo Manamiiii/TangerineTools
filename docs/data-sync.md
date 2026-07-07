@@ -20,9 +20,9 @@ db.version(1).stores({
 
 | 表 | 主键 | 索引 | 说明 |
 |---|---|---|---|
-| `scenes` | `id` | `order` | 场景：`name` / `type` / `color` / `tools[]` / `order` / `createdAt` / `updatedAt` |
+| `scenes` | `id` | `order` | 场景：`name` / `type` / `tools[]` / `order` / `createdAt` / `updatedAt` |
 | `catalogTables` | `id` | `sceneId`, `order` | 资料表：`sceneId` / `name` / `order` / 时间戳 / 可选的 `kind`（非索引属性；值为 `'owned'` 时表示收集记录表，`undefined`/缺省表示普通资料库表；历史版本可能存在 `kind: 'stock'` 的旧统计表，导入导出会保留但新统计视图不再依赖它） |
-| `catalogFields` | `id` | `tableId`, `order` | 字段：`tableId` / `key` / `name` / `type` / `order` / `hidden` / 类型相关配置（`options` / `statsMap` / `referenceTableId` 等） |
+| `catalogFields` | `id` | `tableId`, `order` | 字段：`tableId` / `key` / `name` / `type` / `order` / `hidden` / 类型相关配置（`options` / `statsMap` / `statsDimensions` / `statsStyle` / `referenceTableId` 等） |
 | `catalogRows` | `id` | `tableId` | 行：`tableId` / `values`（以字段 `key` 为键的对象） / 时间戳 |
 | `meta` | `key` | — | 内部标记，如播种标记 `seededRockKingdom` |
 

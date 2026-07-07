@@ -439,12 +439,6 @@ img {
   box-shadow: 0 0 0 2px var(--surface) inset;
 }
 
-.scene-color-field {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
 
 /* ---------------------------------------------------------------------------
    文本截断
@@ -550,6 +544,73 @@ img {
 .stats-legend-value {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+}
+
+.stats-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 170px;
+}
+
+.stats-bars-sm {
+  gap: 4px;
+  min-width: 150px;
+}
+
+.stats-bars-lg {
+  gap: 8px;
+  min-width: 260px;
+}
+
+.stats-bar-row {
+  display: grid;
+  grid-template-columns: 40px minmax(72px, 1fr) 34px;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.stats-bars-sm .stats-bar-row {
+  grid-template-columns: 30px minmax(64px, 1fr) 28px;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.stats-bars-lg .stats-bar-row {
+  grid-template-columns: 52px minmax(160px, 1fr) 42px;
+  font-size: 14px;
+}
+
+.stats-bar-label {
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.stats-bar-track {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.stats-bars-sm .stats-bar-track {
+  height: 8px;
+}
+
+.stats-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #38bdf8, #2563eb);
+}
+
+.stats-bar-value {
+  color: var(--text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 
 /* ---------------------------------------------------------------------------
@@ -756,12 +817,6 @@ img {
   background: #f8fafc;
 }
 
-.scene-color-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex: 0 0 auto;
-}
 
 .scene-row-name {
   font-weight: 600;
@@ -977,6 +1032,22 @@ img {
   gap: 8px;
 }
 
+.stats-mapping-grid-wide {
+  grid-template-columns: 1fr;
+}
+
+.stats-style-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.stats-style-row .select {
+  width: 180px;
+}
+
 .stats-mapping-row {
   display: flex;
   align-items: center;
@@ -987,6 +1058,15 @@ img {
 
 .stats-mapping-row .select {
   width: 140px;
+}
+
+.stats-mapping-row-editable {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(160px, 1fr) auto;
+}
+
+.stats-mapping-row-editable .select {
+  width: 100%;
 }
 
 /* ---------------------------------------------------------------------------

@@ -3,6 +3,7 @@
 
 import Dexie from 'dexie'
 import {
+  ELEMENT_LEGACY_DEFAULTS,
   ROCK_KINGDOM_PRESET,
   ROCK_KINGDOM_ROWS_VERSION,
   TRAIT_TAG_LEGACY_DEFAULTS,
@@ -87,7 +88,12 @@ async function migrateRockKingdomFieldOptions() {
     if (!Array.isArray(presetField.options) || presetField.options.length === 0) continue
     const existingField = await db.catalogFields.get(presetField.id)
     if (!existingField) continue
-    const legacyDefaults = presetField.key === 'traitTags' ? TRAIT_TAG_LEGACY_DEFAULTS : {}
+    const legacyDefaults =
+      presetField.key === 'traitTags'
+        ? TRAIT_TAG_LEGACY_DEFAULTS
+        : presetField.key === 'element'
+          ? ELEMENT_LEGACY_DEFAULTS
+          : {}
     const mergedOptions = mergeFieldOptions(existingField.options, presetField.options, legacyDefaults)
     if (JSON.stringify(mergedOptions) !== JSON.stringify(existingField.options)) {
       await db.catalogFields.update(presetField.id, { options: mergedOptions, updatedAt: nowIso() })
@@ -154,14 +160,13 @@ async function migrateRockKingdomRows() {
 // 场景
 // ---------------------------------------------------------------------------
 
-export async function createScene({ name, type, color, tools }) {
+export async function createScene({ name, type, tools }) {
   const count = await db.scenes.count()
   const now = nowIso()
   const scene = {
     id: generateId('scene'),
     name,
     type,
-    color,
     tools: tools || [],
     order: count,
     createdAt: now,

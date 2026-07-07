@@ -1,24 +1,13 @@
 // 首页场景工作台：场景列表（逐行展示）+ 新建/编辑场景弹窗。
 
 import { useState } from 'react'
-import { Pencil, Plus, Shuffle, Trash2 } from 'lucide-react'
-import { COLOR_PALETTE, SCENE_TOOLS, SCENE_TYPES } from '../constants.js'
+import { Pencil, Plus, Trash2 } from 'lucide-react'
+import { SCENE_TOOLS, SCENE_TYPES } from '../constants.js'
 import { createScene, deleteScene, updateScene } from '../db.js'
-import { ColorSwatchPicker, ConfirmDialog, EmptyState, FormRow, IconButton, Modal } from './common.jsx'
+import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal } from './common.jsx'
 
 function sceneTypeLabel(value) {
   return SCENE_TYPES.find((t) => t.value === value)?.label || value
-}
-
-function pickRandomSceneColor(scenes = [], currentColor = '') {
-  const usedColors = new Set(
-    scenes
-      .map((scene) => scene.color)
-      .filter((color) => color && color !== currentColor),
-  )
-  const unusedColors = COLOR_PALETTE.filter((color) => !usedColors.has(color))
-  const pool = unusedColors.length > 0 ? unusedColors : COLOR_PALETTE
-  return pool[Math.floor(Math.random() * pool.length)] || COLOR_PALETTE[0]
 }
 
 function sceneToolLabels(tools) {
@@ -58,7 +47,6 @@ export function SceneList({ scenes, onOpen }) {
         <ul className="scene-rows">
           {scenes.map((scene) => (
             <li key={scene.id} className="scene-row" onClick={() => onOpen(scene.id)}>
-              <span className="scene-color-dot" style={{ background: scene.color }} />
               <span className="scene-row-name">{scene.name}</span>
               <span className="scene-row-type">{sceneTypeLabel(scene.type)}</span>
               <span className="scene-row-tools">{sceneToolLabels(scene.tools)}</span>
@@ -79,7 +67,6 @@ export function SceneList({ scenes, onOpen }) {
       {editing ? (
         <SceneFormModal
           scene={editing === 'new' ? null : editing}
-          scenes={scenes}
           onClose={() => setEditing(null)}
         />
       ) : null}
@@ -101,10 +88,9 @@ export function SceneList({ scenes, onOpen }) {
   )
 }
 
-function SceneFormModal({ scene, scenes, onClose }) {
+function SceneFormModal({ scene, onClose }) {
   const [name, setName] = useState(scene?.name || '')
   const [type, setType] = useState(scene?.type || SCENE_TYPES[0].value)
-  const [color, setColor] = useState(() => scene?.color || pickRandomSceneColor(scenes))
   const [tools, setTools] = useState(scene?.tools || ['catalog'])
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -121,9 +107,9 @@ function SceneFormModal({ scene, scenes, onClose }) {
     }
     setSaving(true)
     if (scene) {
-      await updateScene(scene.id, { name: name.trim(), type, color, tools })
+      await updateScene(scene.id, { name: name.trim(), type, tools })
     } else {
-      await createScene({ name: name.trim(), type, color, tools })
+      await createScene({ name: name.trim(), type, tools })
     }
     setSaving(false)
     onClose()
@@ -167,19 +153,6 @@ function SceneFormModal({ scene, scenes, onClose }) {
                 {t.label}
               </button>
             ))}
-          </div>
-        </FormRow>
-        <FormRow label="色调" hint="新建场景会优先随机使用其它场景还没使用过的颜色。">
-          <div className="scene-color-field">
-            <ColorSwatchPicker value={color} onChange={setColor} />
-            <button
-              type="button"
-              className="btn btn-xs"
-              onClick={() => setColor(pickRandomSceneColor(scenes, color))}
-            >
-              <Shuffle size={12} />
-              随机
-            </button>
           </div>
         </FormRow>
         <FormRow label="启用工具">

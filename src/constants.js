@@ -2,10 +2,10 @@
 // 保持数据结构简单、可扩展，避免过早引入复杂配置。
 
 export const SCENE_TYPES = [
-  { value: 'general', label: '通用整理', color: '#64748b', description: '默认类型，适合还没有明确领域的资料整理。' },
-  { value: 'game', label: '游戏资料', color: '#2563eb', description: '适合角色、装备、宠物、养成进度等游戏内容。' },
-  { value: 'media', label: '镜头素材', color: '#7c3aed', description: '适合镜头、分镜、素材、拍摄计划等影像内容。' },
-  { value: 'data', label: '资料档案', color: '#059669', description: '适合长期沉淀的资料、清单、索引和参考库。' },
+  { value: 'general', label: '通用整理', description: '默认类型，适合还没有明确领域的资料整理。' },
+  { value: 'game', label: '游戏资料', description: '适合角色、装备、宠物、养成进度等游戏内容。' },
+  { value: 'media', label: '镜头素材', description: '适合镜头、分镜、素材、拍摄计划等影像内容。' },
+  { value: 'data', label: '资料档案', description: '适合长期沉淀的资料、清单、索引和参考库。' },
 ]
 
 export function sceneTypeLabel(value) {
@@ -35,7 +35,7 @@ export const FIELD_TYPES = [
   { value: 'url', label: 'URL' },
   { value: 'date', label: '日期' },
   { value: 'reference', label: '引用' },
-  { value: 'stats', label: '六维图' },
+  { value: 'stats', label: '指标视图' },
 ]
 
 export function fieldTypeLabel(value) {
@@ -53,7 +53,7 @@ export function isOptionFieldType(type) {
   return type === 'select' || type === 'multiselect'
 }
 
-// 六维图使用的六个维度。key 用于自动识别资料表中对应的原始数值字段。
+// 指标视图使用的默认指标。key 用于自动识别资料表中对应的原始数值字段。
 export const STATS_DIMENSIONS = [
   { key: 'hp', label: '生命', aliases: ['hp', '生命', '体力'] },
   { key: 'patk', label: '物攻', aliases: ['patk', 'atk', '物攻', '物理攻击'] },
@@ -63,10 +63,10 @@ export const STATS_DIMENSIONS = [
   { key: 'spd', label: '速度', aliases: ['spd', 'speed', '速度'] },
 ]
 
-// 六维图缩放使用的固定满值刻度，保证不同精灵之间的图形可比较。
+// 指标视图缩放使用的固定满值刻度，保证不同精灵之间的图形可比较。
 export const STATS_SCALE_MAX = 150
 
-// 场景 / 选项配色板。场景新建时会优先随机未被其它场景使用的颜色。
+// 选项配色板。
 export const COLOR_PALETTE = [
   '#64748b', // slate
   '#2563eb', // blue

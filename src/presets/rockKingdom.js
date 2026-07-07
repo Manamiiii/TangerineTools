@@ -37,10 +37,14 @@ const ELEMENT_SYSTEM_LIST = [
 
 const ELEMENT_OPTIONS = ELEMENT_SYSTEM_LIST.map(({ value, cn, color }) => ({
   value,
-  label: `${cn}系`,
+  label: cn,
   color,
   image: `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/${encodeURIComponent(cn)}.png`,
 }))
+
+export const ELEMENT_LEGACY_DEFAULTS = Object.fromEntries(
+  ELEMENT_SYSTEM_LIST.map(({ value, cn, color }) => [value, { label: `${cn}系`, color }]),
+)
 
 // 异色的选项化表达：以 select 而非 boolean 存储，可以在表格里直接以彩色标签
 // 展示；yes/no 的字面值也能兼容 boolean 的历史数据（true 会被渲染为空单元格，
@@ -105,7 +109,16 @@ const fields = [
       key: 'stats',
       name: '六维',
       type: 'stats',
+      statsStyle: 'bars',
       statsMap: { hp: 'hp', patk: 'patk', matk: 'matk', pdef: 'pdef', mdef: 'mdef', spd: 'spd' },
+      statsDimensions: [
+        { key: 'hp', label: '生命', fieldKey: 'hp' },
+        { key: 'patk', label: '物攻', fieldKey: 'patk' },
+        { key: 'matk', label: '魔攻', fieldKey: 'matk' },
+        { key: 'pdef', label: '物防', fieldKey: 'pdef' },
+        { key: 'mdef', label: '魔防', fieldKey: 'mdef' },
+        { key: 'spd', label: '速度', fieldKey: 'spd' },
+      ],
     },
     6,
   ),
@@ -130,7 +143,6 @@ export const ROCK_KINGDOM_PRESET = {
     id: SCENE_ID,
     name: '洛克王国',
     type: 'game',
-    color: '#2563eb',
     tools: ['catalog', 'owned', 'stock', 'nature'],
     order: 0,
     createdAt: SEED_TIME,
