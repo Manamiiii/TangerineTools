@@ -1,4 +1,4 @@
-// 属性库存工具：固定字段（名称/等级/分类/状态/备注）的实例列表，
+// 条件统计工具：固定字段（名称/等级/分类/状态/备注）的记录列表，
 // 支持新增/编辑/删除，以及按分类、按等级阈值、按状态的统计视图。
 // 数据复用资料库的 catalogTables/catalogFields/catalogRows（kind: 'stock'），
 // 与资料库工具的普通资料表相互隔离。
@@ -59,18 +59,18 @@ function StockTableView({ table }) {
           active={statsOpen}
           onClick={() => setStatsOpen((v) => !v)}
         />
-        <IconButton icon={Plus} label="新增实例" variant="primary" onClick={() => setRowForm('new')} />
+        <IconButton icon={Plus} label="新增记录" variant="primary" onClick={() => setRowForm('new')} />
       </div>
 
       {statsOpen && <StockStatsPanel rows={rows} />}
 
       {rows.length === 0 ? (
         <EmptyState
-          title="还没有库存实例"
-          description="点击“新增实例”添加第一条库存记录。"
+          title="还没有统计记录"
+          description="点击“新增记录”添加第一条可统计记录。"
           action={
             <button type="button" className="btn btn-primary" onClick={() => setRowForm('new')}>
-              新增实例
+              新增记录
             </button>
           }
         />
@@ -94,8 +94,8 @@ function StockTableView({ table }) {
 
       {deletingRow && (
         <ConfirmDialog
-          title="删除实例"
-          message="确定删除这条库存记录吗？此操作不可撤销。"
+          title="删除记录"
+          message="确定删除这条统计记录吗？此操作不可撤销。"
           confirmText="删除"
           danger
           onCancel={() => setDeletingRow(null)}
@@ -151,7 +151,7 @@ function StockGrid({ fields, rows, onEditRow, onDeleteRow }) {
 }
 
 // ---------------------------------------------------------------------------
-// 新增 / 编辑实例弹窗
+// 新增 / 编辑记录弹窗
 // ---------------------------------------------------------------------------
 
 function StockFormModal({ table, fields, row, onClose }) {
@@ -182,7 +182,7 @@ function StockFormModal({ table, fields, row, onClose }) {
 
   return (
     <Modal
-      title={row ? '编辑实例' : '新增实例'}
+      title={row ? '编辑记录' : '新增记录'}
       onClose={onClose}
       width={480}
       footer={
@@ -257,7 +257,7 @@ function StockStatsPanel({ rows }) {
             value={threshold}
             onChange={(e) => setThreshold(Number(e.target.value) || 0)}
           />
-          的实例数
+          的记录数
         </label>
         <div className="stock-stats-count stock-stats-count-lg">{levelCount}</div>
       </div>

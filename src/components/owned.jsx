@@ -1,9 +1,9 @@
-// 单项清单工具：记录场景下用户具体拥有的实例（例如洛克王国里的每一只
+// 个体清单工具：记录场景下用户具体拥有的个体（例如洛克王国里的每一只
 // 已捕获、正在培养的精灵）。字段是固定的（精灵/昵称/等级/性格方向/血脉/
 // 状态/异色/获取日期/备注），支持增删改查、搜索、统计视图。
 //
 // 数据复用资料库的 catalogTables/catalogFields/catalogRows（kind: 'owned'），
-// 与资料库、库存均相互隔离。ref 字段绑定到当前场景的普通资料表
+// 与资料库、条件统计均相互隔离。ref 字段绑定到当前场景的普通资料表
 // （例如"精灵图鉴"），因此可以复用 catalog 的 ReferenceCellView/Input。
 
 import { useEffect, useMemo, useState } from 'react'
@@ -49,7 +49,7 @@ function OwnedTableView({ table, sceneId }) {
     () => db.catalogRows.where('tableId').equals(table.id).toArray(),
     [table.id],
   )
-  // 单项清单的 ref 字段引用的资料表内容用于把关键字扩展到"被引用行的名称"，
+  // 个体清单的 ref 字段引用的资料表内容用于把关键字扩展到"被引用行的名称"，
   // 这样搜索"卡卡露"也能命中昵称留空的行。
   const refFieldTables = useLiveQuery(
     () =>
@@ -120,7 +120,7 @@ function OwnedTableView({ table, sceneId }) {
         />
         <IconButton
           icon={Plus}
-          label="新增实例"
+          label="新增个体"
           variant="primary"
           onClick={() => setRowForm('new')}
         />
@@ -130,16 +130,16 @@ function OwnedTableView({ table, sceneId }) {
 
       {rows.length === 0 ? (
         <EmptyState
-          title="还没有单项记录"
-          description={'点击"新增实例"记录第一只已拥有 / 培养中的精灵。'}
+          title="还没有个体记录"
+          description={'点击"新增个体"记录第一只已拥有 / 培养中的精灵。'}
           action={
             <button type="button" className="btn btn-primary" onClick={() => setRowForm('new')}>
-              新增实例
+              新增个体
             </button>
           }
         />
       ) : filteredRows.length === 0 ? (
-        <EmptyState title="没有匹配的实例" description="试试更换关键字或清空搜索框。" />
+        <EmptyState title="没有匹配的个体" description="试试更换关键字或清空搜索框。" />
       ) : (
         <OwnedGrid
           fields={sortedFields}
@@ -160,8 +160,8 @@ function OwnedTableView({ table, sceneId }) {
 
       {deletingRow && (
         <ConfirmDialog
-          title="删除实例"
-          message="确定删除这条单项清单记录吗？此操作不可撤销。"
+          title="删除个体"
+          message="确定删除这条个体清单记录吗？此操作不可撤销。"
           confirmText="删除"
           danger
           onCancel={() => setDeletingRow(null)}
@@ -176,7 +176,7 @@ function OwnedTableView({ table, sceneId }) {
 }
 
 // ---------------------------------------------------------------------------
-// 表格：与库存一致的精简表格，无字段管理/排序控件
+// 表格：与条件统计一致的精简表格，无字段管理/排序控件
 // ---------------------------------------------------------------------------
 
 function OwnedGrid({ fields, rows, onEditRow, onDeleteRow }) {
@@ -217,7 +217,7 @@ function OwnedGrid({ fields, rows, onEditRow, onDeleteRow }) {
 }
 
 // ---------------------------------------------------------------------------
-// 新增 / 编辑实例弹窗
+// 新增 / 编辑个体弹窗
 // ---------------------------------------------------------------------------
 
 function OwnedFormModal({ table, fields, row, onClose }) {
@@ -248,7 +248,7 @@ function OwnedFormModal({ table, fields, row, onClose }) {
 
   return (
     <Modal
-      title={row ? '编辑实例' : '新增实例'}
+      title={row ? '编辑个体' : '新增个体'}
       onClose={onClose}
       width={480}
       footer={

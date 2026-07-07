@@ -1,13 +1,24 @@
 // 首页场景工作台：场景列表（逐行展示）+ 新建/编辑场景弹窗。
 
 import { useState } from 'react'
-import { Pencil, Plus, Trash2 } from 'lucide-react'
-import { SCENE_TOOLS, SCENE_TYPES } from '../constants.js'
+import { Pencil, Plus, Shuffle, Trash2 } from 'lucide-react'
+import { COLOR_PALETTE, SCENE_TOOLS, SCENE_TYPES } from '../constants.js'
 import { createScene, deleteScene, updateScene } from '../db.js'
 import { ColorSwatchPicker, ConfirmDialog, EmptyState, FormRow, IconButton, Modal } from './common.jsx'
 
 function sceneTypeLabel(value) {
   return SCENE_TYPES.find((t) => t.value === value)?.label || value
+}
+
+function pickRandomSceneColor(scenes = [], currentColor = '') {
+  const usedColors = new Set(
+    scenes
+      .map((scene) => scene.color)
+      .filter((color) => color && color !== currentColor),
+  )
+  const unusedColors = COLOR_PALETTE.filter((color) => !usedColors.has(color))
+  const pool = unusedColors.length > 0 ? unusedColors : COLOR_PALETTE
+  return pool[Math.floor(Math.random() * pool.length)] || COLOR_PALETTE[0]
 }
 
 function sceneToolLabels(tools) {
@@ -66,7 +77,11 @@ export function SceneList({ scenes, onOpen }) {
       )}
 
       {editing ? (
-        <SceneFormModal scene={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />
+        <SceneFormModal
+          scene={editing === 'new' ? null : editing}
+          scenes={scenes}
+          onClose={() => setEditing(null)}
+        />
       ) : null}
 
       {deleting ? (
@@ -86,10 +101,10 @@ export function SceneList({ scenes, onOpen }) {
   )
 }
 
-function SceneFormModal({ scene, onClose }) {
+function SceneFormModal({ scene, scenes, onClose }) {
   const [name, setName] = useState(scene?.name || '')
   const [type, setType] = useState(scene?.type || SCENE_TYPES[0].value)
-  const [color, setColor] = useState(scene?.color || SCENE_TYPES[0].color)
+  const [color, setColor] = useState(() => scene?.color || pickRandomSceneColor(scenes))
   const [tools, setTools] = useState(scene?.tools || ['catalog'])
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -139,13 +154,14 @@ function SceneFormModal({ scene, onClose }) {
             autoFocus
           />
         </FormRow>
-        <FormRow label="类型">
-          <div className="segmented">
+        <FormRow label="类型" hint={SCENE_TYPES.find((t) => t.value === type)?.description}>
+          <div className="segmented segmented-wrap">
             {SCENE_TYPES.map((t) => (
               <button
                 key={t.value}
                 type="button"
                 className={`segmented-item ${type === t.value ? 'active' : ''}`}
+                title={t.description}
                 onClick={() => setType(t.value)}
               >
                 {t.label}
@@ -153,8 +169,18 @@ function SceneFormModal({ scene, onClose }) {
             ))}
           </div>
         </FormRow>
-        <FormRow label="色调">
-          <ColorSwatchPicker value={color} onChange={setColor} />
+        <FormRow label="色调" hint="新建场景会优先随机使用其它场景还没使用过的颜色。">
+          <div className="scene-color-field">
+            <ColorSwatchPicker value={color} onChange={setColor} />
+            <button
+              type="button"
+              className="btn btn-xs"
+              onClick={() => setColor(pickRandomSceneColor(scenes, color))}
+            >
+              <Shuffle size={12} />
+              随机
+            </button>
+          </div>
         </FormRow>
         <FormRow label="启用工具">
           <div className="tool-checkboxes">
