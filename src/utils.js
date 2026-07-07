@@ -86,6 +86,8 @@ export function normalizeField(field) {
     hidden: !!field.hidden,
     options: Array.isArray(field.options) ? field.options.map(normalizeOption) : [],
     statsMap: field.statsMap && typeof field.statsMap === 'object' ? field.statsMap : {},
+    statsDimensions: Array.isArray(field.statsDimensions) ? field.statsDimensions : [],
+    statsStyle: field.statsStyle === 'radar' ? 'radar' : 'bars',
     referenceTableId: field.referenceTableId || null,
     createdAt: field.createdAt || nowIso(),
     updatedAt: field.updatedAt || nowIso(),
@@ -168,13 +170,14 @@ export function compareRowsBySort(a, b, sort, fields) {
   return naturalCompare(a.createdAt, b.createdAt)
 }
 
-// 解析六维图字段实际读取的列：优先使用手动配置的 statsMap，
+// 解析指标视图字段实际读取的列：优先使用手动配置的 statsMap，
 // 否则按字段 key / 名称自动识别。
-export function resolveStatsMapping(fields, statsMap = {}) {
+export function resolveStatsMapping(fields, statsMap = {}, statsDimensions = []) {
   const byKey = new Map(fields.map((f) => [f.key, f]))
   const result = {}
-  for (const dim of STATS_DIMENSIONS) {
-    const mapped = statsMap?.[dim.key]
+  const dimensions = Array.isArray(statsDimensions) && statsDimensions.length > 0 ? statsDimensions : STATS_DIMENSIONS
+  for (const dim of dimensions) {
+    const mapped = dim.fieldKey || statsMap?.[dim.key]
     if (mapped && byKey.has(mapped)) {
       result[dim.key] = mapped
       continue
@@ -182,16 +185,18 @@ export function resolveStatsMapping(fields, statsMap = {}) {
     const match = fields.find((f) => {
       const key = (f.key || '').toLowerCase()
       const name = (f.name || '').toLowerCase()
-      return dim.aliases.some((alias) => key === alias.toLowerCase() || name === alias.toLowerCase())
+      const aliases = dim.aliases || [dim.key, dim.label]
+      return aliases.some((alias) => key === String(alias).toLowerCase() || name === String(alias).toLowerCase())
     })
     result[dim.key] = match ? match.key : null
   }
   return result
 }
 
-export function getStatsValues(fields, statsMap, values) {
-  const mapping = resolveStatsMapping(fields, statsMap)
-  return STATS_DIMENSIONS.map((dim) => ({
+export function getStatsValues(fields, statsMap, values, statsDimensions = []) {
+  const dimensions = Array.isArray(statsDimensions) && statsDimensions.length > 0 ? statsDimensions : STATS_DIMENSIONS
+  const mapping = resolveStatsMapping(fields, statsMap, dimensions)
+  return dimensions.map((dim) => ({
     key: dim.key,
     label: dim.label,
     value: Number(values?.[mapping[dim.key]]) || 0,

@@ -138,16 +138,12 @@ function computeFormExtras(row, allRows, groupMax) {
     diff: stats[key] - means[key],
     mean: means[key],
   }))
-  const positive = diffs.filter((d) => d.diff > 5).sort((a, b) => b.diff - a.diff)
-  const negative = diffs.filter((d) => d.diff < -5).sort((a, b) => a.diff - b.diff)
+  const strongest = diffs.filter((d) => d.diff > 5).sort((a, b) => b.diff - a.diff)[0]
+  const weakest = diffs.filter((d) => d.diff < -5).sort((a, b) => a.diff - b.diff)[0]
   const parts = []
-  if (positive.length > 0) {
-    parts.push(`强于同组：${positive.slice(0, 2).map((d) => d.label).join('/')}`)
-  }
-  if (negative.length > 0) {
-    parts.push(`弱于同组：${negative.slice(0, 2).map((d) => d.label).join('/')}`)
-  }
-  const difference = parts.length ? parts.join('；') : '与同组基本持平'
+  if (strongest) parts.push(`强项：${strongest.label}`)
+  if (weakest) parts.push(`短板：${weakest.label}`)
+  const difference = parts.length ? parts.join(' / ') : '均衡'
 
   return { direction, difference }
 }

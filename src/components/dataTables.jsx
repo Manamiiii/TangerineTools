@@ -170,6 +170,7 @@ function TableView({ table, tables, sceneId, onSwitchTable }) {
   const [focusFieldId, setFocusFieldId] = useState(null)
   const [rowForm, setRowForm] = useState(null) // null | 'new' | row
   const [rowDetail, setRowDetail] = useState(null)
+  const [referenceDetail, setReferenceDetail] = useState(null)
   const [deletingRow, setDeletingRow] = useState(null)
   const [tableModal, setTableModal] = useState(null) // null | 'new' | 'rename'
   const [deletingTable, setDeletingTable] = useState(false)
@@ -307,6 +308,7 @@ function TableView({ table, tables, sceneId, onSwitchTable }) {
             onRowClick={(row) => setRowDetail(row)}
             onEditRow={(row) => setRowForm(row)}
             onDeleteRow={(row) => setDeletingRow(row)}
+            onOpenReference={setReferenceDetail}
           />
           <Pagination
             page={page}
@@ -350,6 +352,7 @@ function TableView({ table, tables, sceneId, onSwitchTable }) {
           fields={sortedFields}
           rows={rows}
           onClose={() => setRowDetail(null)}
+          onOpenReference={setReferenceDetail}
           onEdit={() => {
             setRowForm(rowDetail)
             setRowDetail(null)
@@ -358,6 +361,17 @@ function TableView({ table, tables, sceneId, onSwitchTable }) {
             setDeletingRow(rowDetail)
             setRowDetail(null)
           }}
+        />
+      )}
+
+      {referenceDetail && (
+        <RowDetailModal
+          title="引用资料详情"
+          row={referenceDetail.row}
+          fields={referenceDetail.fields}
+          rows={referenceDetail.rows}
+          onClose={() => setReferenceDetail(null)}
+          onOpenReference={setReferenceDetail}
         />
       )}
 
@@ -485,7 +499,7 @@ function RowFormModal({ table, fields, row, onClose }) {
 // 行详情页（弹窗形式，展示包括隐藏字段在内的全部字段）
 // ---------------------------------------------------------------------------
 
-function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete }) {
+function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete, onOpenReference, title = '详情' }) {
   const sorted = [...fields].sort((a, b) => a.order - b.order)
   const numberField = findNumberField(fields)
   const sameNumberRows = numberField ? getSameNumberRows(row, rows, fields) : []
@@ -494,7 +508,7 @@ function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete }) {
 
   return (
     <Modal
-      title="详情"
+      title={title}
       onClose={onClose}
       width={680}
       footer={
@@ -502,12 +516,16 @@ function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete }) {
           <button type="button" className="btn" onClick={onClose}>
             关闭
           </button>
-          <button type="button" className="btn btn-danger" onClick={onDelete}>
-            删除
-          </button>
-          <button type="button" className="btn btn-primary" onClick={onEdit}>
-            编辑
-          </button>
+          {onDelete && (
+            <button type="button" className="btn btn-danger" onClick={onDelete}>
+              删除
+            </button>
+          )}
+          {onEdit && (
+            <button type="button" className="btn btn-primary" onClick={onEdit}>
+              编辑
+            </button>
+          )}
         </>
       }
     >
@@ -519,7 +537,13 @@ function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete }) {
               {field.hidden && <span className="filter-hidden-badge">隐藏列</span>}
             </div>
             <div className="row-detail-value">
-              <CellView field={field} row={row} allFields={sorted} mode="detail" />
+              <CellView
+                field={field}
+                row={row}
+                allFields={sorted}
+                mode="detail"
+                onOpenReference={onOpenReference}
+              />
             </div>
           </div>
         ))}
@@ -533,6 +557,7 @@ function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete }) {
 }
 
 const MARK_LABELS = { highest: '最高', lowest: '最低' }
+const FORM_COMPARISON_MAX = 150
 
 function FormComparisonSection({ rows, summary }) {
   const dims = rows[0]?.stats || []
@@ -563,10 +588,18 @@ function FormComparisonSection({ rows, summary }) {
                 <td>{row.form}</td>
                 {row.stats.map((stat) => (
                   <td key={stat.key} className={`form-comparison-cell mark-${stat.mark}`}>
-                    {stat.value}
-                    {MARK_LABELS[stat.mark] && (
-                      <span className="form-comparison-mark-badge">{MARK_LABELS[stat.mark]}</span>
-                    )}
+                    <span className="form-comparison-stat">
+                      <span className="form-comparison-stat-track" aria-hidden="true">
+                        <span
+                          className="form-comparison-stat-fill"
+                          style={{ width: `${Math.min((stat.value / FORM_COMPARISON_MAX) * 100, 100)}%` }}
+                        />
+                      </span>
+                      <span className="form-comparison-stat-value">{stat.value}</span>
+                      {MARK_LABELS[stat.mark] && (
+                        <span className="form-comparison-mark-badge">{MARK_LABELS[stat.mark]}</span>
+                      )}
+                    </span>
                   </td>
                 ))}
                 <td className="form-comparison-direction">

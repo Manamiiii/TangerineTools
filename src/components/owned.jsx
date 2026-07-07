@@ -1,24 +1,17 @@
-// 单项清单工具：记录场景下用户具体拥有的实例（例如洛克王国里的每一只
-// 已捕获、正在培养的精灵）。字段是固定的（精灵/昵称/等级/性格方向/血脉/
-// 状态/异色/获取日期/备注），支持增删改查、搜索、统计视图。
+// 收集记录工具：记录“我与资料项的关系”。普通新建场景默认不预置字段，
+// 可在字段管理里按场景自行配置；洛克王国预置场景会补齐精灵收集字段。
 //
 // 数据复用资料库的 catalogTables/catalogFields/catalogRows（kind: 'owned'），
-// 与资料库、库存均相互隔离。ref 字段绑定到当前场景的普通资料表
+// 与资料库、统计视图均相互隔离。reference 字段可绑定到当前场景的普通资料表
 // （例如"精灵图鉴"），因此可以复用 catalog 的 ReferenceCellView/Input。
 
 import { useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { BarChart3, Pencil, Plus, Search, Trash2 } from 'lucide-react'
+import { Pencil, Plus, Search, Settings2, Trash2 } from 'lucide-react'
 import { createRow, db, deleteRow, ensureOwnedTable, updateRow } from '../db.js'
-import {
-  OWNED_SHINY_OPTIONS,
-  countByBloodline,
-  countByStatus,
-  countShiny,
-  matchesOwnedSearch,
-} from '../domain/owned.js'
-import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal, OptionTag } from './common.jsx'
-import { CellView, FieldInput } from './catalog.jsx'
+import { matchesOwnedSearch } from '../domain/owned.js'
+import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal } from './common.jsx'
+import { CellView, FieldInput, FieldManagerModal } from './catalog.jsx'
 
 export function OwnedTool({ scene }) {
   useEffect(() => {
@@ -40,6 +33,16 @@ export function OwnedTool({ scene }) {
   return <OwnedTableView table={table} sceneId={scene.id} />
 }
 
+function defaultValueForType(type) {
+  if (type === 'multiselect') return []
+  if (type === 'boolean') return false
+  return ''
+}
+
+function collectionModeLabel(mode) {
+  return mode === 'multiple' ? '一对多' : '一对一'
+}
+
 function OwnedTableView({ table, sceneId }) {
   const fields = useLiveQuery(
     () => db.catalogFields.where('tableId').equals(table.id).sortBy('order'),
@@ -49,7 +52,7 @@ function OwnedTableView({ table, sceneId }) {
     () => db.catalogRows.where('tableId').equals(table.id).toArray(),
     [table.id],
   )
-  // 单项清单的 ref 字段引用的资料表内容用于把关键字扩展到"被引用行的名称"，
+  // 收集记录的 reference 字段引用的资料表内容用于把关键字扩展到"被引用行的名称"，
   // 这样搜索"卡卡露"也能命中昵称留空的行。
   const refFieldTables = useLiveQuery(
     () =>
@@ -76,7 +79,7 @@ function OwnedTableView({ table, sceneId }) {
     return map
   }, [refFieldTables?.map((t) => t.id).join('|') || ''])
 
-  const [statsOpen, setStatsOpen] = useState(false)
+  const [fieldManagerOpen, setFieldManagerOpen] = useState(false)
   const [keyword, setKeyword] = useState('')
   const [rowForm, setRowForm] = useState(null) // null | 'new' | row
   const [deletingRow, setDeletingRow] = useState(null)
@@ -98,6 +101,7 @@ function OwnedTableView({ table, sceneId }) {
   if (!fields || !rows) return null
 
   const sortedFields = [...fields].sort((a, b) => a.order - b.order)
+  const visibleFields = sortedFields.filter((field) => !field.hidden)
 
   return (
     <div className="table-view">
@@ -108,60 +112,87 @@ function OwnedTableView({ table, sceneId }) {
             className="input owned-search-input"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="搜索昵称 / 精灵名 / 备注"
+            placeholder="搜索收集记录…"
           />
+        </div>
+        <div className="segmented collection-mode-switcher" title="一对一：同一资料项只保留一条收集记录；一对多：同一资料项可以记录多条。">
+          {['single', 'multiple'].map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              className={`segmented-item ${(table.collectionMode || 'single') === mode ? 'active' : ''}`}
+              onClick={() => db.catalogTables.update(table.id, { collectionMode: mode })}
+            >
+              {collectionModeLabel(mode)}
+            </button>
+          ))}
         </div>
         <span className="toolbar-spacer" />
         <IconButton
-          icon={BarChart3}
-          label="统计"
-          active={statsOpen}
-          onClick={() => setStatsOpen((v) => !v)}
+          icon={Settings2}
+          label="字段"
+          onClick={() => setFieldManagerOpen(true)}
         />
         <IconButton
           icon={Plus}
-          label="新增实例"
+          label="新增记录"
           variant="primary"
+          disabled={visibleFields.length === 0}
           onClick={() => setRowForm('new')}
         />
       </div>
 
-      {statsOpen && <OwnedStatsPanel rows={rows} />}
 
       {rows.length === 0 ? (
         <EmptyState
-          title="还没有单项记录"
-          description={'点击"新增实例"记录第一只已拥有 / 培养中的精灵。'}
+          title="还没有收集记录"
+          description={visibleFields.length === 0 ? '先添加字段，再记录你的收集进度。' : '点击“新增记录”记录第一条收集进度。'}
           action={
-            <button type="button" className="btn btn-primary" onClick={() => setRowForm('new')}>
-              新增实例
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={visibleFields.length === 0}
+              onClick={() => setRowForm('new')}
+            >
+              新增记录
             </button>
           }
         />
       ) : filteredRows.length === 0 ? (
-        <EmptyState title="没有匹配的实例" description="试试更换关键字或清空搜索框。" />
+        <EmptyState title="没有匹配的记录" description="试试更换关键字或清空搜索框。" />
       ) : (
         <OwnedGrid
-          fields={sortedFields}
+          fields={visibleFields}
           rows={filteredRows}
           onEditRow={setRowForm}
           onDeleteRow={setDeletingRow}
         />
       )}
 
+      {fieldManagerOpen && (
+        <FieldManagerModal
+          tableId={table.id}
+          fields={sortedFields}
+          sceneTables={refFieldTables || []}
+          onClose={() => setFieldManagerOpen(false)}
+        />
+      )}
+
       {rowForm && (
         <OwnedFormModal
           table={table}
-          fields={sortedFields}
+          fields={visibleFields}
           row={rowForm === 'new' ? null : rowForm}
+          rows={rows}
+          collectionMode={table.collectionMode || 'single'}
           onClose={() => setRowForm(null)}
         />
       )}
 
       {deletingRow && (
         <ConfirmDialog
-          title="删除实例"
-          message="确定删除这条单项清单记录吗？此操作不可撤销。"
+          title="删除记录"
+          message="确定删除这条收集记录吗？此操作不可撤销。"
           confirmText="删除"
           danger
           onCancel={() => setDeletingRow(null)}
@@ -176,7 +207,7 @@ function OwnedTableView({ table, sceneId }) {
 }
 
 // ---------------------------------------------------------------------------
-// 表格：与库存一致的精简表格，无字段管理/排序控件
+// 表格：与统计视图一致的精简表格，无字段管理/排序控件
 // ---------------------------------------------------------------------------
 
 function OwnedGrid({ fields, rows, onEditRow, onDeleteRow }) {
@@ -217,14 +248,14 @@ function OwnedGrid({ fields, rows, onEditRow, onDeleteRow }) {
 }
 
 // ---------------------------------------------------------------------------
-// 新增 / 编辑实例弹窗
+// 新增 / 编辑记录弹窗
 // ---------------------------------------------------------------------------
 
-function OwnedFormModal({ table, fields, row, onClose }) {
+function OwnedFormModal({ table, fields, row, rows, collectionMode, onClose }) {
   const [values, setValues] = useState(() => {
     const init = {}
     fields.forEach((f) => {
-      init[f.key] = row?.values?.[f.key] ?? ''
+      init[f.key] = row?.values?.[f.key] ?? defaultValueForType(f.type)
     })
     return init
   })
@@ -240,7 +271,14 @@ function OwnedFormModal({ table, fields, row, onClose }) {
     if (row) {
       await updateRow(row.id, { ...row.values, ...values })
     } else {
-      await createRow(table.id, values)
+      const refField = fields.find((field) => field.type === 'reference')
+      const duplicate = collectionMode === 'single' && refField
+        ? rows.find((item) =>
+            item.values?.[refField.key] && item.values?.[refField.key] === values[refField.key],
+          )
+        : null
+      if (duplicate) await updateRow(duplicate.id, { ...duplicate.values, ...values })
+      else await createRow(table.id, values)
     }
     setSaving(false)
     onClose()
@@ -248,7 +286,7 @@ function OwnedFormModal({ table, fields, row, onClose }) {
 
   return (
     <Modal
-      title={row ? '编辑实例' : '新增实例'}
+      title={row ? '编辑记录' : '新增记录'}
       onClose={onClose}
       width={480}
       footer={
@@ -274,55 +312,5 @@ function OwnedFormModal({ table, fields, row, onClose }) {
         ))}
       </form>
     </Modal>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// 统计视图：按状态 / 血脉 / 异色分别汇总
-// ---------------------------------------------------------------------------
-
-function OwnedStatsPanel({ rows }) {
-  const statusStats = countByStatus(rows)
-  const bloodlineStats = countByBloodline(rows)
-  const shinyCount = countShiny(rows)
-  const shinyOption = OWNED_SHINY_OPTIONS.find((o) => o.value === 'yes')
-
-  return (
-    <div className="stock-stats-panel">
-      <div className="stock-stats-card">
-        <div className="stock-stats-card-title">按状态统计</div>
-        <ul className="stock-stats-list">
-          {statusStats.map((s) => (
-            <li key={s.value}>
-              <OptionTag option={s} size="sm" />
-              <span className="stock-stats-count">{s.count}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="stock-stats-card">
-        <div className="stock-stats-card-title">按血脉统计</div>
-        <ul className="stock-stats-list">
-          {bloodlineStats.map((s) => (
-            <li key={s.value}>
-              <OptionTag option={s} size="sm" />
-              <span className="stock-stats-count">{s.count}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="stock-stats-card">
-        <div className="stock-stats-card-title">异色统计</div>
-        <div className="owned-shiny-row">
-          {shinyOption ? <OptionTag option={shinyOption} size="sm" /> : null}
-          <span className="stock-stats-count stock-stats-count-lg">{shinyCount}</span>
-        </div>
-        <p className="owned-shiny-hint">
-          共 {rows.length} 条记录，异色占比 {rows.length ? Math.round((shinyCount / rows.length) * 100) : 0}%
-        </p>
-      </div>
-    </div>
   )
 }

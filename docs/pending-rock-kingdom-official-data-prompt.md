@@ -18,7 +18,7 @@
 
 - 已新增 scripts/sync-rock-kingdom-preset.mjs。
 - 已新增 package.json 脚本：npm run sync:rock。
-- 已补 migration：官方 rock-creature-src-* 行应用时，会删除默认资料表里明确可识别的旧 row-rock-* / data:image/svg+xml 占位行，但不会删除用户新增非占位行、owned 单项清单或 stock 属性库存。
+- 已补 migration：官方 rock-creature-src-* 行应用时，会删除默认资料表里明确可识别的旧 row-rock-* / data:image/svg+xml 占位行，但不会删除用户新增非占位行、owned 收集记录或 stock 统计视图。
 - 已新增 GitHub Pages workflow：.github/workflows/pages.yml。
 - 但是上一执行环境无法访问：
   https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/d.json

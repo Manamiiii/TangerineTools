@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { SCENE_TOOLS, SCENE_TYPES } from '../constants.js'
 import { createScene, deleteScene, updateScene } from '../db.js'
-import { ColorSwatchPicker, ConfirmDialog, EmptyState, FormRow, IconButton, Modal } from './common.jsx'
+import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal } from './common.jsx'
 
 function sceneTypeLabel(value) {
   return SCENE_TYPES.find((t) => t.value === value)?.label || value
@@ -47,7 +47,6 @@ export function SceneList({ scenes, onOpen }) {
         <ul className="scene-rows">
           {scenes.map((scene) => (
             <li key={scene.id} className="scene-row" onClick={() => onOpen(scene.id)}>
-              <span className="scene-color-dot" style={{ background: scene.color }} />
               <span className="scene-row-name">{scene.name}</span>
               <span className="scene-row-type">{sceneTypeLabel(scene.type)}</span>
               <span className="scene-row-tools">{sceneToolLabels(scene.tools)}</span>
@@ -66,7 +65,10 @@ export function SceneList({ scenes, onOpen }) {
       )}
 
       {editing ? (
-        <SceneFormModal scene={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />
+        <SceneFormModal
+          scene={editing === 'new' ? null : editing}
+          onClose={() => setEditing(null)}
+        />
       ) : null}
 
       {deleting ? (
@@ -89,7 +91,6 @@ export function SceneList({ scenes, onOpen }) {
 function SceneFormModal({ scene, onClose }) {
   const [name, setName] = useState(scene?.name || '')
   const [type, setType] = useState(scene?.type || SCENE_TYPES[0].value)
-  const [color, setColor] = useState(scene?.color || SCENE_TYPES[0].color)
   const [tools, setTools] = useState(scene?.tools || ['catalog'])
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -106,9 +107,9 @@ function SceneFormModal({ scene, onClose }) {
     }
     setSaving(true)
     if (scene) {
-      await updateScene(scene.id, { name: name.trim(), type, color, tools })
+      await updateScene(scene.id, { name: name.trim(), type, tools })
     } else {
-      await createScene({ name: name.trim(), type, color, tools })
+      await createScene({ name: name.trim(), type, tools })
     }
     setSaving(false)
     onClose()
@@ -139,22 +140,20 @@ function SceneFormModal({ scene, onClose }) {
             autoFocus
           />
         </FormRow>
-        <FormRow label="类型">
-          <div className="segmented">
+        <FormRow label="类型" hint={SCENE_TYPES.find((t) => t.value === type)?.description}>
+          <div className="scene-type-options">
             {SCENE_TYPES.map((t) => (
               <button
                 key={t.value}
                 type="button"
-                className={`segmented-item ${type === t.value ? 'active' : ''}`}
+                className={`scene-type-button ${type === t.value ? 'active' : ''}`}
+                title={t.description}
                 onClick={() => setType(t.value)}
               >
                 {t.label}
               </button>
             ))}
           </div>
-        </FormRow>
-        <FormRow label="色调">
-          <ColorSwatchPicker value={color} onChange={setColor} />
         </FormRow>
         <FormRow label="启用工具">
           <div className="tool-checkboxes">

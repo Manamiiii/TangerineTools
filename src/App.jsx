@@ -160,8 +160,11 @@ function GlobalDataActions() {
   return (
     <div className="global-data-actions">
       {error && <span className="form-error">{error}</span>}
-      <IconButton icon={Download} label="导出数据" onClick={handleExport} />
-      <label className="btn btn-file">
+      <button type="button" className="btn global-data-btn" onClick={handleExport}>
+        <Download size={14} />
+        导出数据
+      </button>
+      <label className="btn btn-file global-data-btn">
         <Upload size={14} />
         导入数据
         <input type="file" accept="application/json" hidden onChange={handleFileChosen} />

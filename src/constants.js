@@ -2,9 +2,10 @@
 // 保持数据结构简单、可扩展，避免过早引入复杂配置。
 
 export const SCENE_TYPES = [
-  { value: 'general', label: '通用', color: '#64748b' },
-  { value: 'game', label: '游戏', color: '#2563eb' },
-  { value: 'data', label: '资料', color: '#059669' },
+  { value: 'general', label: '通用整理', description: '默认类型，适合还没有明确领域的资料整理。' },
+  { value: 'game', label: '游戏资料', description: '适合角色、装备、宠物、养成进度等游戏内容。' },
+  { value: 'media', label: '镜头素材', description: '适合镜头、分镜、素材、拍摄计划等影像内容。' },
+  { value: 'data', label: '资料档案', description: '适合长期沉淀的资料、清单、索引和参考库。' },
 ]
 
 export function sceneTypeLabel(value) {
@@ -13,19 +14,18 @@ export function sceneTypeLabel(value) {
 
 // 场景可启用的工具。四个工具目前均已落地，ready 字段仍然保留，
 // 便于未来新增工具时先占位、再逐步实现。
-// 「单项清单」用于记录某个具体拥有的实例（例如一只已捕获、正在培养的精灵），
-// 与「属性库存」按"属性汇总"的思路互补：库存回答"我有多少能达到条件的"，
-// 单项清单回答"我具体拥有哪一只、状态如何"。
+// 「资料库」记录某一类对象的静态资料；「收集记录」记录我与这些对象的收集关系；
+// 「统计视图」用于从资料库/收集记录按条件汇总；「性格推荐」是洛克王国定制工具。
 export const SCENE_TOOLS = [
   { value: 'catalog', label: '资料库', ready: true },
-  { value: 'owned', label: '单项清单', ready: true },
-  { value: 'stock', label: '属性库存', ready: true },
+  { value: 'owned', label: '收集记录', ready: true },
+  { value: 'stock', label: '统计视图', ready: true },
   { value: 'nature', label: '性格推荐', ready: true },
 ]
 
 // 字段类型：资料表列的数据类型。
 export const FIELD_TYPES = [
-  { value: 'text', label: '文本' },
+  { value: 'text', label: '短文本' },
   { value: 'longtext', label: '长文本' },
   { value: 'number', label: '数字' },
   { value: 'image', label: '图片' },
@@ -34,8 +34,8 @@ export const FIELD_TYPES = [
   { value: 'boolean', label: '布尔' },
   { value: 'url', label: 'URL' },
   { value: 'date', label: '日期' },
-  { value: 'reference', label: '引用' },
-  { value: 'stats', label: '六维图' },
+  { value: 'reference', label: '引用资料' },
+  { value: 'stats', label: '指标视图' },
 ]
 
 export function fieldTypeLabel(value) {
@@ -53,7 +53,7 @@ export function isOptionFieldType(type) {
   return type === 'select' || type === 'multiselect'
 }
 
-// 六维图使用的六个维度。key 用于自动识别资料表中对应的原始数值字段。
+// 指标视图使用的默认指标。key 用于自动识别资料表中对应的原始数值字段。
 export const STATS_DIMENSIONS = [
   { key: 'hp', label: '生命', aliases: ['hp', '生命', '体力'] },
   { key: 'patk', label: '物攻', aliases: ['patk', 'atk', '物攻', '物理攻击'] },
@@ -63,10 +63,10 @@ export const STATS_DIMENSIONS = [
   { key: 'spd', label: '速度', aliases: ['spd', 'speed', '速度'] },
 ]
 
-// 六维图缩放使用的固定满值刻度，保证不同精灵之间的图形可比较。
+// 指标视图缩放使用的固定满值刻度，保证不同精灵之间的图形可比较。
 export const STATS_SCALE_MAX = 150
 
-// 场景 / 选项配色板，颜色数量克制，保证 UI 统一、不花哨。
+// 选项配色板。
 export const COLOR_PALETTE = [
   '#64748b', // slate
   '#2563eb', // blue
@@ -76,6 +76,14 @@ export const COLOR_PALETTE = [
   '#7c3aed', // violet
   '#0891b2', // cyan
   '#db2777', // pink
+  '#16a34a', // green
+  '#ea580c', // orange
+  '#4f46e5', // indigo
+  '#9333ea', // purple
+  '#0d9488', // teal
+  '#be123c', // rose
+  '#52525b', // zinc
+  '#ca8a04', // yellow
 ]
 
 export const PAGE_SIZE_OPTIONS = [10, 20, 50, 100]

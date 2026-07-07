@@ -1,7 +1,7 @@
 // 通用控件：弹窗、确认框、按钮、颜色选择器、标签、
-// 六维图、分页、弹出菜单、拖拽排序等。所有工具型页面共用。
+// 指标视图、分页、弹出菜单、拖拽排序等。所有工具型页面共用。
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, GripVertical, X } from 'lucide-react'
 import { COLOR_PALETTE, PAGE_SIZE_OPTIONS, STATS_SCALE_MAX } from '../constants.js'
 import { clamp } from '../utils.js'
@@ -114,18 +114,47 @@ export function FormRow({ label, children, hint }) {
 }
 
 export function ColorSwatchPicker({ value, onChange, colors = COLOR_PALETTE }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (!open) return undefined
+    function handleClick(e) {
+      if (!ref.current?.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [open])
+
+  const activeColor = value || colors[0]
   return (
-    <div className="color-swatches">
-      {colors.map((c) => (
-        <button
-          key={c}
-          type="button"
-          className={`color-swatch ${value === c ? 'selected' : ''}`}
-          style={{ background: c }}
-          onClick={() => onChange(c)}
-          aria-label={c}
-        />
-      ))}
+    <div className="color-picker" ref={ref}>
+      <button
+        type="button"
+        className="color-picker-trigger"
+        onClick={() => setOpen((v) => !v)}
+        aria-label="选择颜色"
+        title={activeColor}
+      >
+        <span style={{ background: activeColor }} />
+      </button>
+      {open ? (
+        <div className="color-picker-popover">
+          {colors.map((c) => (
+            <button
+              key={c}
+              type="button"
+              className={`color-swatch ${value === c ? 'selected' : ''}`}
+              style={{ background: c }}
+              onClick={() => {
+                onChange(c)
+                setOpen(false)
+              }}
+              aria-label={c}
+            />
+          ))}
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -172,24 +201,28 @@ export function OptionTag({ option, size = 'sm' }) {
 }
 
 // ---------------------------------------------------------------------------
-// 六维图
+// 指标视图
 // ---------------------------------------------------------------------------
 
-const ANGLES = [-90, -30, 30, 90, 150, 210].map((d) => (d * Math.PI) / 180)
+function statAngle(index, total) {
+  return (-90 + (360 / Math.max(total, 1)) * index) * (Math.PI / 180)
+}
 
-function statPoint(cx, cy, radius, value, max, index) {
+function statPoint(cx, cy, radius, value, max, index, total) {
   const r = radius * clamp(value / max, 0, 1)
-  const angle = ANGLES[index]
+  const angle = statAngle(index, total)
   return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)]
 }
 
 export function StatsRadarChart({ stats, size = 'sm' }) {
+  const safeStats = stats.length > 0 ? stats : [{ key: 'empty', label: '无', value: 0 }]
   const dim = size === 'lg' ? 200 : 52
   const cx = dim / 2
   const cy = dim / 2
   const radius = dim / 2 - (size === 'lg' ? 28 : 8)
   const max = STATS_SCALE_MAX
-  const dataPoints = stats.map((s, i) => statPoint(cx, cy, radius, s.value, max, i))
+  const total = safeStats.length
+  const dataPoints = safeStats.map((s, i) => statPoint(cx, cy, radius, s.value, max, i, total))
   const dataPath = dataPoints.map((p) => p.join(',')).join(' ')
 
   return (
@@ -198,7 +231,8 @@ export function StatsRadarChart({ stats, size = 'sm' }) {
         {[0.25, 0.5, 0.75, 1].map((lvl) => (
           <polygon
             key={lvl}
-            points={ANGLES.map((_, i) => statPoint(cx, cy, radius, lvl * max, max, i).join(','))
+            points={safeStats
+              .map((_, i) => statPoint(cx, cy, radius, lvl * max, max, i, total).join(','))
               .join(' ')}
             fill="none"
             stroke="#e2e8f0"
@@ -228,6 +262,32 @@ export function StatsRadarChart({ stats, size = 'sm' }) {
       )}
     </div>
   )
+}
+
+export function StatsBarsChart({ stats, size = 'sm' }) {
+  const maxValue = Math.max(STATS_SCALE_MAX, ...stats.map((s) => Number(s.value) || 0))
+  return (
+    <div className={`stats-bars stats-bars-${size}`}>
+      {stats.map((s) => {
+        const value = Number(s.value) || 0
+        const width = `${clamp((value / maxValue) * 100, 0, 100)}%`
+        return (
+          <div key={s.key} className="stats-bar-row" title={`${s.label}：${value}`}>
+            <span className="stats-bar-label">{s.label}</span>
+            <span className="stats-bar-track" aria-hidden="true">
+              <span className="stats-bar-fill" style={{ width }} />
+            </span>
+            <span className="stats-bar-value">{value}</span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+export function StatsChart({ stats, variant = 'bars', size = 'sm' }) {
+  if (variant === 'radar') return <StatsRadarChart stats={stats} size={size} />
+  return <StatsBarsChart stats={stats} size={size} />
 }
 
 // ---------------------------------------------------------------------------
