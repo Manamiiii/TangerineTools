@@ -1150,7 +1150,19 @@ img {
   border-radius: 999px;
   background: #f1f5f9;
   border: 1px solid var(--border);
+  color: var(--text);
   font-size: 12px;
+}
+
+.reference-tag-button {
+  cursor: pointer;
+  font: inherit;
+}
+
+.reference-tag-button:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: #eff6ff;
 }
 
 .detail-longtext {

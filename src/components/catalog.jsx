@@ -379,11 +379,25 @@ function referenceRowLabel(fields, row) {
   return stringifyCellValue(row.values?.[labelField.key], labelField) || row.id
 }
 
-function ReferenceCellView({ field, value }) {
+function ReferenceCellView({ field, value, onOpenReference }) {
   const { fields, rows } = useReferenceContext(field.referenceTableId)
   if (!value) return <span className="cell-empty">—</span>
   const row = rows.find((r) => r.id === value)
-  return <span className="reference-tag">{row ? referenceRowLabel(fields, row) : value}</span>
+  const label = row ? referenceRowLabel(fields, row) : value
+  if (!row || !onOpenReference) return <span className="reference-tag">{label}</span>
+  return (
+    <button
+      type="button"
+      className="reference-tag reference-tag-button"
+      onClick={(e) => {
+        e.stopPropagation()
+        onOpenReference({ field, row, fields, rows })
+      }}
+      title="查看引用资料"
+    >
+      {label}
+    </button>
+  )
 }
 
 function ReferenceFieldInput({ field, value, onChange }) {
@@ -414,7 +428,7 @@ function ReferenceFieldInput({ field, value, onChange }) {
 // 单元格展示
 // ---------------------------------------------------------------------------
 
-export function CellView({ field, row, allFields, mode = 'table' }) {
+export function CellView({ field, row, allFields, mode = 'table', onOpenReference }) {
   if (field.type === 'stats') {
     const stats = getStatsValues(allFields, field.statsMap, row.values, field.statsDimensions)
     return <StatsChart stats={stats} variant={field.statsStyle || 'bars'} size={mode === 'detail' ? 'lg' : 'sm'} />
@@ -485,7 +499,7 @@ export function CellView({ field, row, allFields, mode = 'table' }) {
     case 'date':
       return <span>{value || '—'}</span>
     case 'reference':
-      return <ReferenceCellView field={field} value={value} />
+      return <ReferenceCellView field={field} value={value} onOpenReference={onOpenReference} />
     default:
       return <span>{value == null ? '' : String(value)}</span>
   }
@@ -735,6 +749,7 @@ export function DataGrid({
   onRowClick,
   onEditRow,
   onDeleteRow,
+  onOpenReference,
 }) {
   const visibleFields = fields.filter((f) => !f.hidden)
 
@@ -778,7 +793,13 @@ export function DataGrid({
             <tr key={row.id} className="data-grid-row" onClick={() => onRowClick(row)}>
               {visibleFields.map((field) => (
                 <td key={field.id}>
-                  <CellView field={field} row={row} allFields={allFields} mode="table" />
+                  <CellView
+                    field={field}
+                    row={row}
+                    allFields={allFields}
+                    mode="table"
+                    onOpenReference={onOpenReference}
+                  />
                 </td>
               ))}
               <td className="td-actions" onClick={(e) => e.stopPropagation()}>
