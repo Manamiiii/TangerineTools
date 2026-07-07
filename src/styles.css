@@ -1642,6 +1642,42 @@ img {
   border: 1px solid currentColor;
 }
 
+.form-comparison-stat {
+  display: grid;
+  grid-template-columns: 72px 28px auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-comparison-stat-track {
+  display: block;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.form-comparison-stat-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #38bdf8, #2563eb);
+}
+
+.form-comparison-cell.mark-highest .form-comparison-stat-fill {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.form-comparison-cell.mark-lowest .form-comparison-stat-fill {
+  background: linear-gradient(90deg, #fb7185, #ef4444);
+}
+
+.form-comparison-stat-value {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
 /* ---------------------------------------------------------------------------
    性格推荐工具
 --------------------------------------------------------------------------- */

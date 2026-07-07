@@ -557,6 +557,7 @@ function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete, onOpenRe
 }
 
 const MARK_LABELS = { highest: '最高', lowest: '最低' }
+const FORM_COMPARISON_MAX = 150
 
 function FormComparisonSection({ rows, summary }) {
   const dims = rows[0]?.stats || []
@@ -587,10 +588,18 @@ function FormComparisonSection({ rows, summary }) {
                 <td>{row.form}</td>
                 {row.stats.map((stat) => (
                   <td key={stat.key} className={`form-comparison-cell mark-${stat.mark}`}>
-                    {stat.value}
-                    {MARK_LABELS[stat.mark] && (
-                      <span className="form-comparison-mark-badge">{MARK_LABELS[stat.mark]}</span>
-                    )}
+                    <span className="form-comparison-stat">
+                      <span className="form-comparison-stat-track" aria-hidden="true">
+                        <span
+                          className="form-comparison-stat-fill"
+                          style={{ width: `${Math.min((stat.value / FORM_COMPARISON_MAX) * 100, 100)}%` }}
+                        />
+                      </span>
+                      <span className="form-comparison-stat-value">{stat.value}</span>
+                      {MARK_LABELS[stat.mark] && (
+                        <span className="form-comparison-mark-badge">{MARK_LABELS[stat.mark]}</span>
+                      )}
+                    </span>
                   </td>
                 ))}
                 <td className="form-comparison-direction">
