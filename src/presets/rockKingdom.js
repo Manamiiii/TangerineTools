@@ -128,6 +128,26 @@ export const SKILL_CATEGORY_LEGACY_DEFAULTS = {
   status: { label: '状态', color: '#64748b' },
 }
 
+const SKILL_EFFECT_TAG_OPTIONS = [
+  { value: 'priority', label: '先手优先', color: '#eab308', image: '' },
+  { value: 'speed', label: '速度节奏', color: '#facc15', image: '' },
+  { value: 'healing', label: '回复吸血', color: '#16a34a', image: '' },
+  { value: 'damageReduction', label: '护盾减伤', color: '#2563eb', image: '' },
+  { value: 'energyGain', label: '回能迸发', color: '#0d9488', image: '' },
+  { value: 'energyDrain', label: '能量干扰', color: '#0891b2', image: '' },
+  { value: 'costChange', label: '能耗变化', color: '#14b8a6', image: '' },
+  { value: 'statBoost', label: '自身强化', color: '#65a30d', image: '' },
+  { value: 'statDebuff', label: '削弱对手', color: '#9333ea', image: '' },
+  { value: 'control', label: '异常控制', color: '#7c3aed', image: '' },
+  { value: 'counterAttack', label: '应对攻击', color: '#dc2626', image: '' },
+  { value: 'counterDefense', label: '应对防御', color: '#475569', image: '' },
+  { value: 'counterStatus', label: '应对状态', color: '#db2777', image: '' },
+  { value: 'pivot', label: '脱离轮转', color: '#64748b', image: '' },
+  { value: 'multiHit', label: '连击', color: '#f97316', image: '' },
+  { value: 'charge', label: '蓄力', color: '#a16207', image: '' },
+  { value: 'fieldEffect', label: '天气场地', color: '#0ea5e9', image: '' },
+]
+
 function makeField(partial, order, tableId = TABLE_ID, idPrefix = 'field-rock') {
   return normalizeField({
     id: `${idPrefix}-${partial.key}`,
@@ -190,8 +210,14 @@ const skillFields = [
   makeField({ key: 'power', name: '威力', type: 'number' }, 4, SKILL_TABLE_ID, 'field-rock-skill'),
   makeField({ key: 'cost', name: '能耗', type: 'number' }, 5, SKILL_TABLE_ID, 'field-rock-skill'),
   makeField({ key: 'priority', name: '先制/速度', type: 'text' }, 6, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'effect', name: '效果', type: 'longtext' }, 7, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'learnerRefs', name: '可学精灵', type: 'references', referenceTableId: TABLE_ID }, 8, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField(
+    { key: 'effectTags', name: '效果标签', type: 'multiselect', options: SKILL_EFFECT_TAG_OPTIONS },
+    7,
+    SKILL_TABLE_ID,
+    'field-rock-skill',
+  ),
+  makeField({ key: 'effect', name: '效果', type: 'longtext' }, 8, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'learnerRefs', name: '可学精灵', type: 'references', referenceTableId: TABLE_ID }, 9, SKILL_TABLE_ID, 'field-rock-skill'),
 ]
 
 export const ROCK_KINGDOM_PRESET = {

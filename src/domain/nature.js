@@ -267,8 +267,39 @@ function skillItemText(item) {
   ].filter(Boolean).join(' ')
 }
 
+function deriveSkillEffectTags(item) {
+  const explicit = Array.isArray(item.effectTags) ? item.effectTags : []
+  const tags = new Set(explicit)
+  const text = skillItemText(item)
+  if (/先手|优先|抢先/.test(text)) tags.add('priority')
+  if (/迅捷|速度[+-]|速度提升|速度降低|先手|高速/.test(text)) tags.add('speed')
+  if (/回复|恢复|治疗|吸血|生命/.test(text)) tags.add('healing')
+  if (/防御|护盾|减伤|承伤|抵抗|免疫/.test(text)) tags.add('damageReduction')
+  if (/回复\d*能量|获得\d*能量|能量回复|迸发/.test(text)) tags.add('energyGain')
+  if (/偷取.*能量|失去\d*能量|扣.*能量|能量减少/.test(text)) tags.add('energyDrain')
+  if (/能耗[+-]|费用[+-]|消耗[+-]|全技能能耗/.test(text)) tags.add('costChange')
+  if (/物攻\+|魔攻\+|双攻\+|物防\+|魔防\+|双防\+|威力\+|强化|提升|增加/.test(text)) tags.add('statBoost')
+  if (/物攻-|魔攻-|双攻-|物防-|魔防-|双防-|速度-|削弱|降低|减少/.test(text)) tags.add('statDebuff')
+  if (/中毒|剧毒|灼烧|烧伤|冻结|冰冻|睡眠|恐惧|麻痹|混乱|沉默|束缚|异常|控制/.test(text)) tags.add('control')
+  if (/应对攻击|反击|受到攻击后|承受.*后/.test(text)) tags.add('counterAttack')
+  if (/应对防御/.test(text)) tags.add('counterDefense')
+  if (/应对状态/.test(text)) tags.add('counterStatus')
+  if (/脱离|换入|换场|换下|返场|替换/.test(text)) tags.add('pivot')
+  if (/\d+\s*连击|连击/.test(text)) tags.add('multiHit')
+  if (/蓄力/.test(text)) tags.add('charge')
+  if (/天气|场地|雨|雪|沙暴|放晴/.test(text)) tags.add('fieldEffect')
+  return [...tags]
+}
+
+function countTagged(items, tag) {
+  return items.filter((item) => item.effectTags.includes(tag)).length
+}
+
 export function analyzeSkillInfo(skillInfo = {}) {
-  const items = normalizeSkillItems(skillInfo)
+  const items = normalizeSkillItems(skillInfo).map((item) => ({
+    ...item,
+    effectTags: deriveSkillEffectTags(item),
+  }))
   const texts = items.map(skillItemText).map((text) => text.trim()).filter(Boolean)
   const joined = texts.join('；')
   const isPhysicalItem = (item) => item.category === 'physical' || /物理|物攻|物伤|physical/.test(skillItemText(item))
@@ -278,49 +309,70 @@ export function analyzeSkillInfo(skillInfo = {}) {
   const magicalItems = items.filter(isMagicalItem)
   const statusItems = items.filter((item) => isStatusItem(item) && !isPhysicalItem(item) && !isMagicalItem(item))
   const attackItems = [...physicalItems, ...magicalItems]
+  const powersOf = (list) =>
+    list.map((item) => Number(item.power)).filter((value) => Number.isFinite(value) && value > 0)
   const averagePower = (list) => {
-    const powers = list.map((item) => Number(item.power)).filter((value) => Number.isFinite(value) && value > 0)
+    const powers = powersOf(list)
     return powers.length ? powers.reduce((sum, value) => sum + value, 0) / powers.length : 0
   }
   const hasPhysical = physicalItems.length > 0 || /物理|物攻|近战|攻击技能/.test(joined)
   const hasMagical = magicalItems.length > 0 || /魔法|魔攻|法术|特殊/.test(joined)
-  const speedRequired = /先手|先于|优先|抢先|高速|先制/.test(joined)
-  const backLoaded = /后手|后攻|受到攻击后|承受.*后|反击/.test(joined)
-  const control = /控制|异常|中毒|麻痹|冰冻|睡眠|恐惧|混乱|沉默|束缚/.test(joined)
-  const support = /回复|治疗|护盾|减伤|增益|强化|换入|换场|传递|能量/.test(joined)
-  const defense = /防御|护盾|减伤|抵抗|承伤/.test(joined)
-  const energy = /能量|能耗|费用|消耗/.test(joined)
+  const physicalAveragePower = averagePower(physicalItems)
+  const magicalAveragePower = averagePower(magicalItems)
+  const physicalRouteScore =
+    physicalItems.length + countTagged(physicalItems, 'statBoost') * 1.2 + countTagged(physicalItems, 'multiHit') * 0.8
+  const magicalRouteScore =
+    magicalItems.length + countTagged(magicalItems, 'statBoost') * 1.2 + countTagged(magicalItems, 'multiHit') * 0.8
+  const routeGap = physicalRouteScore - magicalRouteScore
+  const attackMode = Math.abs(routeGap) >= 2
+    ? routeGap > 0 ? 'physical' : 'magical'
+    : hasPhysical && hasMagical ? 'mixed' : hasPhysical ? 'physical' : hasMagical ? 'magical' : 'unknown'
+  const effectTagCounts = Object.fromEntries(
+    [...new Set(items.flatMap((item) => item.effectTags))].map((tag) => [tag, countTagged(items, tag)]),
+  )
+  const speedRequired = Boolean(effectTagCounts.priority || effectTagCounts.speed)
+  const backLoaded = Boolean(effectTagCounts.counterAttack)
+  const control = Boolean(effectTagCounts.control)
+  const sustain = Boolean(effectTagCounts.healing || effectTagCounts.damageReduction)
+  const support = Boolean(sustain || effectTagCounts.statBoost || effectTagCounts.pivot)
+  const defense = Boolean(effectTagCounts.damageReduction || effectTagCounts.counterDefense)
+  const energy = Boolean(effectTagCounts.energyGain || effectTagCounts.energyDrain || effectTagCounts.costChange)
 
   return {
     count: texts.length,
     texts,
     hasPhysical,
     hasMagical,
-    attackMode: hasPhysical && hasMagical ? 'mixed' : hasPhysical ? 'physical' : hasMagical ? 'magical' : 'unknown',
+    attackMode,
+    routeGap: Math.round(routeGap * 10) / 10,
     speedRequired,
     backLoaded,
     control,
     support,
+    sustain,
     defense,
     energy,
+    effectTagCounts,
     breakdown: {
       physicalCount: physicalItems.length,
       magicalCount: magicalItems.length,
       statusCount: statusItems.length,
       attackCount: attackItems.length,
-      physicalAveragePower: averagePower(physicalItems),
-      magicalAveragePower: averagePower(magicalItems),
+      physicalAveragePower,
+      magicalAveragePower,
       attackAveragePower: averagePower(attackItems),
       physicalShare: attackItems.length ? physicalItems.length / attackItems.length : 0,
       magicalShare: attackItems.length ? magicalItems.length / attackItems.length : 0,
     },
     summary: texts.length > 0
       ? `已读取 ${texts.length} 条技能线索：${[
-        hasPhysical && '物理',
-        hasMagical && '魔法',
+        attackMode === 'physical' && '物理路线',
+        attackMode === 'magical' && '魔法路线',
+        attackMode === 'mixed' && '双攻',
         speedRequired && '先手',
         backLoaded && '后手',
         control && '控制',
+        sustain && '续航/减伤',
         support && '辅助',
         energy && '能量',
       ].filter(Boolean).join(' / ') || '暂无明确标签'}`
@@ -466,12 +518,13 @@ export function inferRoles(baseStats = {}, traitTags = [], skillInfo = {}) {
     addRole('support', 1.2, '特性标签支持辅助/返场')
   }
   if (traitTags.includes('energyCycle')) addRole('energyCycle', 1.3, '特性标签支持能量循环')
-  if (skillProfile.attackMode === 'physical') addRole('physicalAttacker', 1.4, '技能线索偏物理输出')
-  if (skillProfile.attackMode === 'magical') addRole('magicalAttacker', 1.4, '技能线索偏魔法输出')
-  if (skillProfile.attackMode === 'mixed') addRole('mixedAttacker', 1.1, '技能线索同时覆盖物理与魔法')
+  if (skillProfile.attackMode === 'physical') addRole('physicalAttacker', 1.4, '技能效果标签偏物理输出')
+  if (skillProfile.attackMode === 'magical') addRole('magicalAttacker', 1.4, '技能效果标签偏魔法输出')
+  if (skillProfile.attackMode === 'mixed') addRole('mixedAttacker', 1.1, '技能效果同时覆盖物理与魔法')
   if (skillProfile.speedRequired || skillProfile.control) {
     addRole('fastAttacker', 1.1, '技能线索强调先手/控制节奏')
   }
+  if (skillProfile.sustain) addRole('bulky', 0.8, '技能效果包含回复/减伤，耐久性格可保留')
   if (skillProfile.support || skillProfile.defense) addRole('support', 0.9, '技能线索包含辅助/防御效果')
   if (skillProfile.energy) addRole('energyCycle', 0.8, '技能线索涉及能量/能耗')
 
@@ -514,7 +567,37 @@ function decisionFromScore(score, hardRisk) {
   return 'keepable'
 }
 
-export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [], providedContext = null, skillInfo = {}) {
+function normalizeNaturePreference(preference = {}) {
+  return {
+    keepNatureIds: new Set(preference.keepNatureIds || []),
+    keepNatureNames: new Set(preference.keepNatureNames || []),
+    reason: preference.reason || '阵容上下文需要保留该性格',
+  }
+}
+
+function applyNaturePreference(evaluation, preference = {}) {
+  const normalized = normalizeNaturePreference(preference)
+  const shouldKeep =
+    normalized.keepNatureIds.has(evaluation.id) || normalized.keepNatureNames.has(evaluation.name)
+  if (!shouldKeep) return evaluation
+  return {
+    ...evaluation,
+    decision: evaluation.decision === 'notRecommended' && !evaluation.hardRisk
+      ? 'keepable'
+      : evaluation.decision,
+    lineupKeep: true,
+    reasons: [...evaluation.reasons, normalized.reason],
+  }
+}
+
+export function evaluateNatureCandidate(
+  candidate,
+  baseStats = {},
+  traitTags = [],
+  providedContext = null,
+  skillInfo = {},
+  preference = {},
+) {
   const stats = numericStats(baseStats)
   const context = providedContext || buildContext(stats, traitTags, skillInfo)
   const { analysis, roles, speedProfile, skillProfile, traitWeights, coreWeights, expendableWeights } = context
@@ -579,19 +662,31 @@ export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [
   }
   if (skillProfile.attackMode === 'physical' && candidate.raise === 'patk') {
     score += 10
-    reasons.push('技能线索偏物理输出，强化物攻更贴合技能组')
+    reasons.push('技能效果标签偏物理输出，强化物攻更贴合技能组')
   }
   if (skillProfile.attackMode === 'magical' && candidate.raise === 'matk') {
     score += 10
-    reasons.push('技能线索偏魔法输出，强化魔攻更贴合技能组')
+    reasons.push('技能效果标签偏魔法输出，强化魔攻更贴合技能组')
   }
   if (skillProfile.attackMode === 'physical' && candidate.lower === 'patk') {
     score -= 18
-    warnings.push('技能线索偏物理输出，弱化物攻存在冲突')
+    warnings.push('技能效果标签偏物理输出，弱化物攻存在冲突')
   }
   if (skillProfile.attackMode === 'magical' && candidate.lower === 'matk') {
     score -= 18
-    warnings.push('技能线索偏魔法输出，弱化魔攻存在冲突')
+    warnings.push('技能效果标签偏魔法输出，弱化魔攻存在冲突')
+  }
+  if (skillProfile.sustain && DEFENSE_STAT_KEYS.includes(candidate.raise)) {
+    score += 6
+    reasons.push('技能效果包含回复/减伤，强化耐久项更容易放大站场收益')
+  }
+  if (skillProfile.energy && (candidate.raise === 'spd' || candidate.raise === 'hp')) {
+    score += 4
+    reasons.push('技能效果涉及能量循环，速度或生命强化有助于维持节奏')
+  }
+  if (skillProfile.control && candidate.raise === 'spd') {
+    score += 5
+    reasons.push('技能效果包含异常/控制，强化速度有助于先手施压')
   }
   if (skillProfile.backLoaded && candidate.lower === 'spd') {
     score += 10
@@ -622,7 +717,7 @@ export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [
 
   if (hardRisk) score -= 8
 
-  return {
+  return applyNaturePreference({
     ...candidate,
     score: Math.round(score * 10) / 10,
     decision: decisionFromScore(score, hardRisk),
@@ -635,7 +730,7 @@ export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [
     reasons: reasons.length ? reasons : [`强化${raiseLabel}、弱化${lowerLabel}整体收益一般`],
     warnings,
     hardRisk,
-  }
+  }, preference)
 }
 
 function dominanceKey(item) {
@@ -659,6 +754,7 @@ function applyDominance(evaluations) {
     if (!best) continue
     for (const item of group) {
       if (item === best) continue
+      if (item.lineupKeep) continue
       if (item.score > best.score - 20) continue
       if (item.reasons.some((reason) => /专项|速度 .*提升到|生命强化/.test(reason))) continue
       const target = byKey.get(dominanceKey(item))
@@ -675,11 +771,11 @@ function applyDominance(evaluations) {
   return result
 }
 
-export function evaluateAllNatures(baseStats = {}, traitTags = [], skillInfo = {}) {
+export function evaluateAllNatures(baseStats = {}, traitTags = [], skillInfo = {}, preference = {}) {
   const stats = numericStats(baseStats)
   const context = buildContext(stats, traitTags, skillInfo)
   const evaluated = NATURE_CANDIDATES.map((candidate) =>
-    evaluateNatureCandidate(candidate, stats, traitTags, context, skillInfo),
+    evaluateNatureCandidate(candidate, stats, traitTags, context, skillInfo, preference),
   )
   return [...applyDominance(evaluated)].sort((a, b) => {
     const decisionOrder = { recommended: 0, keepable: 1, notRecommended: 2 }
@@ -783,6 +879,7 @@ export function extractSkillInfoFromReferenceRows(skillRows = []) {
       power: values.power,
       cost: values.cost,
       priority: values.priority,
+      effectTags: Array.isArray(values.effectTags) ? values.effectTags : [],
       effect: values.effect,
       description: values.effect,
     }))
