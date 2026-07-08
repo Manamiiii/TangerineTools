@@ -38,6 +38,7 @@ export async function ensureSeeded() {
   await migrateRockKingdomStructure()
   await migrateRockKingdomFieldOptions()
   await migrateRockKingdomRows()
+  await migrateRockKingdomSkillRows()
   await migrateRockKingdomSceneTools()
 }
 
@@ -241,6 +242,35 @@ async function migrateRockKingdomRows() {
   } catch (err) {
     // 预置资料离线或抓取失败时，骨架仍应可用。不能用 mock 数据兜底。
     console.warn('加载洛克王国预置资料行失败：', err)
+  }
+}
+
+async function migrateRockKingdomSkillRows() {
+  const table = ROCK_KINGDOM_PRESET.tables.find((item) => item.id === 'table-rock-kingdom-skills')
+  if (!table) return
+  const existingTable = await db.catalogTables.get(table.id)
+  if (!existingTable) return
+  try {
+    const res = await fetch(`${import.meta.env.BASE_URL}presets/rockKingdomSkillRows.json`)
+    if (!res.ok) return
+    const presetRows = await res.json()
+    const now = nowIso()
+    const rowsToPut = (Array.isArray(presetRows) ? presetRows : [])
+      .filter((row) => row.id)
+      .map((row) => ({
+        id: row.id,
+        tableId: table.id,
+        values: row.values || {},
+        createdAt: row.createdAt || now,
+        updatedAt: row.updatedAt || now,
+      }))
+    if (rowsToPut.length === 0) return
+    await db.transaction('rw', db.catalogRows, db.meta, async () => {
+      await db.catalogRows.bulkPut(rowsToPut)
+      await db.meta.put({ key: 'rockKingdomSkillRowsVersion', value: ROCK_KINGDOM_ROWS_VERSION })
+    })
+  } catch (err) {
+    console.warn('加载洛克王国技能预置资料行失败：', err)
   }
 }
 

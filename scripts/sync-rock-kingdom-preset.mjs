@@ -2,6 +2,7 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import { createHash } from 'node:crypto'
 
 const SOURCE_URL = 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/d.json'
 const ASSET_BASE = 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/'
@@ -16,6 +17,7 @@ const ELEMENT_VALUES = [...ELEMENT_MAP.values()]
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '..')
 const outputPath = path.join(repoRoot, 'public/presets/rockKingdomRows.json')
+const skillOutputPath = path.join(repoRoot, 'public/presets/rockKingdomSkillRows.json')
 
 function fullUrl(assetPath) {
   if (!assetPath) return ''
@@ -68,6 +70,55 @@ function parseNoFromImage(img) {
   return matched ? `NO.${matched[1]}` : ''
 }
 
+function skillId(name) {
+  return `rock-skill-${createHash('sha1').update(String(name)).digest('hex').slice(0, 12)}`
+}
+
+function skillLearnTypeLabel(kind) {
+  return { s: '自带', b: '血脉', t: '技能石' }[kind] || kind
+}
+
+function skillLearnTypeValue(kind) {
+  return { s: 'innate', b: 'bloodline', t: 'stone' }[kind] || 'other'
+}
+
+function skillCategoryValue(tp) {
+  if (/物理|物攻/.test(tp || '')) return 'physical'
+  if (/魔法|魔攻|特殊/.test(tp || '')) return 'magical'
+  if (/变化|状态|辅助|防御/.test(tp || '')) return 'status'
+  return ''
+}
+
+function skillElementValue(el) {
+  if (!el) return ''
+  return ELEMENT_MAP.get(el) || ''
+}
+
+function normalizeSkillList(detail) {
+  const result = []
+  for (const kind of ['s', 'b', 't']) {
+    const list = Array.isArray(detail?.sk?.[kind]) ? detail.sk[kind] : []
+    for (const skill of list) {
+      if (!skill?.nm) continue
+      result.push({ ...skill, learnKind: kind })
+    }
+  }
+  return result
+}
+
+function skillText(skill) {
+  const pieces = [
+    `${skillLearnTypeLabel(skill.learnKind)}${skill.lv != null ? `Lv.${skill.lv}` : ''}`,
+    skill.nm,
+    skill.tp,
+    skill.el,
+    skill.ec != null ? `能耗${skill.ec}` : '',
+    skill.pw != null ? `威力${skill.pw}` : '',
+    skill.ef,
+  ].filter(Boolean)
+  return pieces.join('｜')
+}
+
 async function loadSource() {
   const localInput = process.argv[2]
   if (localInput) {
@@ -99,7 +150,7 @@ function assertSourceShape(data) {
 
 function makeRow(data, source, base) {
   const sourceId = source.i
-  const detail = data.d[String(sourceId)] || {}
+  const detail = data.d[String(sourceId)] || source || {}
   const no = source.n || base.n || parseNoFromImage(source.img) || parseNoFromImage(base.img)
   const element = [source.e || base.e, source.e2 || base.e2].filter(Boolean).map((cn) => {
     const value = ELEMENT_MAP.get(cn)
@@ -107,6 +158,7 @@ function makeRow(data, source, base) {
     return value
   })
   const traitName = detail.tn || ''
+  const skills = normalizeSkillList(detail)
   return {
     id: `rock-creature-src-${String(sourceId).padStart(3, '0')}`,
     values: {
@@ -128,6 +180,8 @@ function makeRow(data, source, base) {
       }),
       traitIcon: traitName && data._tm[traitName] ? fullUrl(data._tm[traitName]) : '',
       traitDesc: detail.te || '',
+      skills: skills.map(skillText).join('\n'),
+      coreSkill: skills[0]?.nm ? skillId(skills[0].nm) : '',
       hp: detail.hp ?? 0,
       patk: detail.atk ?? 0,
       matk: detail.matk ?? 0,
@@ -136,6 +190,44 @@ function makeRow(data, source, base) {
       spd: detail.spd ?? 0,
     },
   }
+}
+
+function buildSkillRows(data) {
+  const byId = new Map()
+  for (const base of data.l) {
+    const detail = data.d[String(base.i)] || {}
+    const sources = [detail, ...(detail.forms || []).map((form) => data.d[String(form.i)] || form)]
+    for (const sourceDetail of sources) {
+      for (const skill of normalizeSkillList(sourceDetail)) {
+        const id = skillId(skill.nm)
+        const existing = byId.get(id)
+        const learnMethod = skillLearnTypeValue(skill.learnKind)
+        const learnLevel = skill.lv != null ? String(skill.lv) : ''
+        if (existing) {
+          if (learnMethod && !existing.values.learnMethod.includes(learnMethod)) existing.values.learnMethod.push(learnMethod)
+          if (learnLevel && !existing.values.learnLevel.split(' / ').includes(learnLevel)) {
+            existing.values.learnLevel = [existing.values.learnLevel, learnLevel].filter(Boolean).join(' / ')
+          }
+          continue
+        }
+        byId.set(id, {
+          id,
+          values: {
+            name: skill.nm,
+            element: skillElementValue(skill.el),
+            category: skillCategoryValue(skill.tp),
+            learnMethod: learnMethod ? [learnMethod] : [],
+            learnLevel,
+            power: skill.pw ?? '',
+            cost: skill.ec ?? '',
+            priority: '',
+            effect: skill.ef || '',
+          },
+        })
+      }
+    }
+  }
+  return [...byId.values()].sort((a, b) => String(a.values.name).localeCompare(String(b.values.name), 'zh-Hans-CN'))
 }
 
 function buildRows(data) {
@@ -173,6 +265,9 @@ function printStats(rows, baseCount, formCount) {
 const data = await loadSource()
 assertSourceShape(data)
 const { rows, baseCount, formCount } = buildRows(data)
+const skillRows = buildSkillRows(data)
 printStats(rows, baseCount, formCount)
 await writeFile(outputPath, `${JSON.stringify(rows, null, 2)}\n`, 'utf8')
+await writeFile(skillOutputPath, `${JSON.stringify(skillRows, null, 2)}\n`, 'utf8')
 console.log(`wrote ${path.relative(repoRoot, outputPath)}`)
+console.log(`wrote ${path.relative(repoRoot, skillOutputPath)} (${skillRows.length} skills)`)

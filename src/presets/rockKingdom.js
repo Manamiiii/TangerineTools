@@ -55,6 +55,13 @@ const SHINY_OPTIONS = [
   { value: 'yes', label: '异色', color: '#db2777', image: '' },
 ]
 
+const SKILL_LEARN_METHOD_OPTIONS = [
+  { value: 'innate', label: '自带', color: '#2563eb', image: '' },
+  { value: 'bloodline', label: '血脉', color: '#dc2626', image: '' },
+  { value: 'stone', label: '技能石', color: '#7c3aed', image: '' },
+  { value: 'other', label: '其他', color: '#64748b', image: '' },
+]
+
 // 特性标签：13 类倾向标签，用于多选描述精灵在队伍里的定位/资源循环特点。
 // 其中 attack/control/support/defense/special 是第一轮就存在的旧值，
 // 这里只更新了展示名称与配色（新语义更细），value 保持不变，
@@ -149,10 +156,12 @@ const skillFields = [
     { value: 'magical', label: '魔法', color: '#c026d3', image: '' },
     { value: 'status', label: '状态', color: '#64748b', image: '' },
   ] }, 2, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'power', name: '威力', type: 'number' }, 3, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'cost', name: '能耗', type: 'number' }, 4, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'priority', name: '先制/速度', type: 'text' }, 5, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'effect', name: '效果', type: 'longtext' }, 6, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'learnMethod', name: '学习方式', type: 'multiselect', options: SKILL_LEARN_METHOD_OPTIONS }, 3, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'learnLevel', name: '学习等级', type: 'text' }, 4, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'power', name: '威力', type: 'number' }, 5, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'cost', name: '能耗', type: 'number' }, 6, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'priority', name: '先制/速度', type: 'text' }, 7, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'effect', name: '效果', type: 'longtext' }, 8, SKILL_TABLE_ID, 'field-rock-skill'),
 ]
 
 export const ROCK_KINGDOM_PRESET = {
