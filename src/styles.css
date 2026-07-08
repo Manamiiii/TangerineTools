@@ -2607,6 +2607,14 @@ img {
   background: transparent;
 }
 
+.nature-tool .multiselect-chip:not(.selected) .option-tag {
+  border-color: #cbd5e1 !important;
+  background: #f1f5f9 !important;
+  color: #94a3b8 !important;
+  opacity: 0.68;
+  filter: grayscale(0.8);
+}
+
 .nature-tool .multiselect-chip.selected .option-tag {
   border-width: 2px;
   border-color: var(--primary);
@@ -2621,6 +2629,15 @@ img {
   font-size: 13px;
   background: var(--surface);
   box-shadow: none;
+}
+
+.nature-import-empty {
+  padding: 10px 12px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  color: var(--text-muted);
+  font-size: 12px;
+  background: #f8fafc;
 }
 
 .nature-candidate {

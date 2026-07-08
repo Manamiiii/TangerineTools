@@ -729,8 +729,9 @@ export function extractSkillInfoFromRow(row, fields) {
     ['skills', 'moves', 'skillList', 'moveList'],
     ['技能', '招式', '技能列表', '招式列表'],
   )
-  if (!skillField) return { skills: [] }
-  return { skills: normalizeSkillCellValue(row.values?.[skillField.key]) }
+  if (skillField) return { skills: normalizeSkillCellValue(row.values?.[skillField.key]) }
+  const traitDescField = findFieldByKeyOrName(fields || [], ['traitDesc'], ['特性说明', '特性描述'])
+  return { skills: traitDescField ? normalizeSkillCellValue(row.values?.[traitDescField.key]) : [] }
 }
 
 // 提取行的名称/编号/形态摘要，用于行选择器里的展示文案。

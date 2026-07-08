@@ -191,7 +191,14 @@ function RowImportPanel({ scene, onImport }) {
     [activeTableId],
   )
 
-  if (!tables || tables.length === 0) return null
+  if (!tables) return null
+  if (tables.length === 0) {
+    return (
+      <div className="nature-import-panel nature-import-empty">
+        未找到可带入的普通资料表，可先等待洛克王国预置资料初始化完成，或直接手动输入六维/技能线索后计算。
+      </div>
+    )
+  }
   if (!fields || !rows) return null
 
   const summaries = rows.map((row) => ({ row, summary: extractRowSummary(row, fields) }))
