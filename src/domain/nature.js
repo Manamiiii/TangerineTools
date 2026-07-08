@@ -726,7 +726,7 @@ function normalizeSkillCellValue(value) {
 export function extractSkillInfoFromRow(row, fields) {
   const skillField = findFieldByKeyOrName(
     fields || [],
-    ['skills', 'moves', 'skillList', 'moveList'],
+    ['skillRefs', 'skills', 'moves', 'skillList', 'moveList'],
     ['技能', '招式', '技能列表', '招式列表'],
   )
   if (skillField) {
@@ -735,6 +735,34 @@ export function extractSkillInfoFromRow(row, fields) {
   }
   const traitDescField = findFieldByKeyOrName(fields || [], ['traitDesc'], ['特性说明', '特性描述'])
   return { skills: traitDescField ? normalizeSkillCellValue(row.values?.[traitDescField.key]) : [] }
+}
+
+export function extractSkillRefsFromRow(row, fields) {
+  const skillField = findFieldByKeyOrName(
+    fields || [],
+    ['skillRefs'],
+    ['可用技能', '技能引用', '技能列表'],
+  )
+  if (!skillField) return []
+  const raw = row.values?.[skillField.key]
+  return Array.isArray(raw) ? raw : raw ? [raw] : []
+}
+
+export function extractSkillInfoFromReferenceRows(skillRows = []) {
+  const skills = skillRows
+    .map((row) => row?.values || row)
+    .filter(Boolean)
+    .map((values) => ({
+      name: values.name,
+      category: values.category,
+      type: values.category,
+      power: values.power,
+      cost: values.cost,
+      priority: values.priority,
+      effect: values.effect,
+      description: values.effect,
+    }))
+  return { skills }
 }
 
 // 提取行的名称/编号/形态摘要，用于行选择器里的展示文案。

@@ -11,6 +11,8 @@ import { STATS_DIMENSIONS } from '../constants.js'
 import {
   evaluateAllNatures,
   explainNatureRecommendation,
+  extractSkillInfoFromReferenceRows,
+  extractSkillRefsFromRow,
   extractSkillInfoFromRow,
   extractRowSummary,
   extractStatsFromRow,
@@ -20,6 +22,7 @@ import {
   STAT_LABELS,
 } from '../domain/nature.js'
 import { TRAIT_TAG_OPTIONS } from '../presets/rockKingdom.js'
+import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
 import { EmptyState, FormRow } from './common.jsx'
 import { FieldInput } from './catalog.jsx'
 
@@ -108,21 +111,10 @@ export function NatureTool({ scene }) {
           />
         </FormRow>
 
-        <FormRow label="技能线索（可选）" hint="每行一个技能或描述；未来资料库同步技能字段后会自动带入">
-          <textarea
-            className="input"
-            rows={3}
-            value={(draftInput.skillInfo?.skills || []).join('\n')}
-            onChange={(e) =>
-              setDraftInput((prev) => ({
-                ...prev,
-                skillInfo: {
-                  skills: e.target.value.split('\n').map((line) => line.trim()).filter(Boolean),
-                },
-              }))
-            }
-            placeholder="例如：先手物理攻击；后手反击；回复护盾；能耗降低"
-          />
+        <FormRow label="技能关联" hint="从精灵基础资料选择后，会通过「可用技能」引用读取技能资料参与分析">
+          <div className="nature-linked-skills">
+            已关联 {draftInput.skillInfo?.skills?.length || 0} 个技能
+          </div>
         </FormRow>
 
         <div className="nature-manual-actions">
@@ -167,39 +159,35 @@ export function NatureTool({ scene }) {
 // 从场景已有资料表中选择一行，带入名称/六维/特性标签。
 // 场景下没有任何资料表时返回 null，保证性格工具可以完全独立使用。
 function RowImportPanel({ scene, onImport }) {
-  const tables = useLiveQuery(
-    () =>
-      db.catalogTables
-        .where('sceneId')
-        .equals(scene.id)
-        .filter((t) => !t.kind)
-        .sortBy('order'),
+  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const skillTableId = ROCK_KINGDOM_PRESET.tables[1].id
+  const creatureTable = useLiveQuery(
+    () => db.catalogTables.get(creatureTableId),
     [scene.id],
   )
-  const [tableId, setTableId] = useState(null)
   const [rowId, setRowId] = useState(null)
 
-  const activeTableId = tableId || tables?.[0]?.id || null
-
   const fields = useLiveQuery(
-    () =>
-      activeTableId ? db.catalogFields.where('tableId').equals(activeTableId).sortBy('order') : [],
-    [activeTableId],
+    () => db.catalogFields.where('tableId').equals(creatureTableId).sortBy('order'),
+    [creatureTableId],
   )
   const rows = useLiveQuery(
-    () => (activeTableId ? db.catalogRows.where('tableId').equals(activeTableId).toArray() : []),
-    [activeTableId],
+    () => db.catalogRows.where('tableId').equals(creatureTableId).toArray(),
+    [creatureTableId],
+  )
+  const skillRows = useLiveQuery(
+    () => db.catalogRows.where('tableId').equals(skillTableId).toArray(),
+    [skillTableId],
   )
 
-  if (!tables) return null
-  if (tables.length === 0) {
+  if (creatureTable === undefined || !fields || !rows || !skillRows) return null
+  if (!creatureTable) {
     return (
       <div className="nature-import-panel nature-import-empty">
-        未找到可带入的普通资料表，可先等待洛克王国预置资料初始化完成，或直接手动输入六维/技能线索后计算。
+        未找到洛克王国「精灵基础资料」表，可先等待预置资料初始化完成，或直接手动输入六维后计算。
       </div>
     )
   }
-  if (!fields || !rows) return null
 
   const summaries = rows.map((row) => ({ row, summary: extractRowSummary(row, fields) }))
 
@@ -208,29 +196,17 @@ function RowImportPanel({ scene, onImport }) {
     const summary = extractRowSummary(target, fields)
     const stats = extractStatsFromRow(target, fields)
     const traitTags = extractTraitTagsFromRow(target, fields)
-    const skillInfo = extractSkillInfoFromRow(target, fields)
+    const skillRefs = extractSkillRefsFromRow(target, fields)
+    const referencedSkillRows = skillRows.filter((row) => skillRefs.includes(row.id))
+    const skillInfo = referencedSkillRows.length > 0
+      ? extractSkillInfoFromReferenceRows(referencedSkillRows)
+      : extractSkillInfoFromRow(target, fields)
     onImport({ name: summary.name, stats, traitTags, skillInfo })
   }
 
   return (
     <div className="nature-import-panel">
       <div className="nature-import-row">
-        {tables.length > 1 && (
-          <select
-            className="select"
-            value={activeTableId || ''}
-            onChange={(e) => {
-              setTableId(e.target.value)
-              setRowId(null)
-            }}
-          >
-            {tables.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
-            ))}
-          </select>
-        )}
         <select
           className="select"
           value={rowId || ''}

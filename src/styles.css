@@ -1165,6 +1165,43 @@ img {
   background: #eff6ff;
 }
 
+.reference-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 360px;
+  vertical-align: middle;
+}
+
+.reference-list-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 220px;
+  overflow: auto;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.reference-list-option {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: #f8fafc;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.reference-list-option.selected {
+  border-color: var(--primary);
+  background: #eff6ff;
+  color: var(--primary);
+  font-weight: 700;
+}
+
 .detail-longtext {
   white-space: pre-wrap;
   line-height: 1.7;
@@ -1704,6 +1741,17 @@ img {
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.nature-linked-skills {
+  display: inline-flex;
+  width: fit-content;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: #f8fafc;
+  color: var(--text-muted);
+  font-size: 12px;
 }
 
 .nature-stats-grid {

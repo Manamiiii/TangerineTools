@@ -36,6 +36,7 @@ export async function ensureSeeded() {
   // 目的是让"已经播种过"的老用户也能安全地补齐后续新增的字段选项/预置行/默认工具，
   // 同时尊重用户已删除的场景/资料表、已有的自定义编辑，不做覆盖式重置。
   await migrateRockKingdomStructure()
+  await migrateRockKingdomSkillReferenceFields()
   await migrateRockKingdomFieldOptions()
   await migrateRockKingdomRows()
   await migrateRockKingdomSkillRows()
@@ -126,6 +127,21 @@ async function migrateRockKingdomStructure() {
         nextFieldOrder += 1
       }
     }
+  })
+}
+
+async function migrateRockKingdomSkillReferenceFields() {
+  const tableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const table = await db.catalogTables.get(tableId)
+  if (!table) return
+  const deprecatedKeys = new Set(['skills', 'coreSkill'])
+  const fields = await db.catalogFields.where('tableId').equals(tableId).toArray()
+  const deprecatedFieldIds = fields
+    .filter((field) => deprecatedKeys.has(field.key))
+    .map((field) => field.id)
+  if (deprecatedFieldIds.length === 0) return
+  await db.transaction('rw', db.catalogFields, async () => {
+    await db.catalogFields.bulkDelete(deprecatedFieldIds)
   })
 }
 

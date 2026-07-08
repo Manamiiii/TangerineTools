@@ -138,14 +138,13 @@ const fields = [
   ),
   makeField({ key: 'traitIcon', name: '特性图标', type: 'image' }, 10),
   makeField({ key: 'traitDesc', name: '特性描述', type: 'longtext' }, 11),
-  makeField({ key: 'skills', name: '技能线索', type: 'longtext' }, 12),
-  makeField({ key: 'coreSkill', name: '核心技能', type: 'reference', referenceTableId: SKILL_TABLE_ID }, 13),
-  makeField({ key: 'hp', name: '生命', type: 'number', hidden: true }, 14),
-  makeField({ key: 'patk', name: '物攻', type: 'number', hidden: true }, 15),
-  makeField({ key: 'matk', name: '魔攻', type: 'number', hidden: true }, 16),
-  makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 17),
-  makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 18),
-  makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 19),
+  makeField({ key: 'skillRefs', name: '可用技能', type: 'references', referenceTableId: SKILL_TABLE_ID }, 12),
+  makeField({ key: 'hp', name: '生命', type: 'number', hidden: true }, 13),
+  makeField({ key: 'patk', name: '物攻', type: 'number', hidden: true }, 14),
+  makeField({ key: 'matk', name: '魔攻', type: 'number', hidden: true }, 15),
+  makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 16),
+  makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 17),
+  makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 18),
 ]
 
 const skillFields = [

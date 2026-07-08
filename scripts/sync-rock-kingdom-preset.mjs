@@ -24,10 +24,10 @@ function fullUrl(assetPath) {
   return new URL(assetPath.split('/').map(encodeURIComponent).join('/'), ASSET_BASE).href
 }
 
-function deriveTags(desc, stats = {}) {
+function deriveTags(desc, stats = {}, skillTexts = []) {
   const tags = []
   const add = (tag) => {
-    if (!tags.includes(tag) && tags.length < 4) tags.push(tag)
+    if (!tags.includes(tag) && tags.length < 6) tags.push(tag)
   }
   const hp = Number(stats.hp) || 0
   const patk = Number(stats.patk) || 0
@@ -43,6 +43,18 @@ function deriveTags(desc, stats = {}) {
   if (Math.abs(patk - matk) <= 15 && patk >= 85 && matk >= 85) add('attack')
   if (spd >= 95 || (spd >= 85 && spd >= topAttack - 5)) add('spdLean')
   if (bulk >= 300 || pdef >= 105 || mdef >= 105 || hp >= 120) add('defense')
+
+  const skillJoined = skillTexts.join('\n')
+  const physicalSkillCount = skillTexts.filter((text) => /物攻|物理|物伤/.test(text)).length
+  const magicalSkillCount = skillTexts.filter((text) => /魔攻|魔法|魔伤/.test(text)).length
+  if (physicalSkillCount >= magicalSkillCount + 3) add('patkLean')
+  if (magicalSkillCount >= physicalSkillCount + 3) add('matkLean')
+  if (physicalSkillCount >= 4 && magicalSkillCount >= 4) add('attack')
+  if (/先手|迅捷|速度\+|速度-/.test(skillJoined)) add('spdLean')
+  if (/中毒|冻结|麻痹|眩晕|恐惧|睡眠|控制|驱散|打断/.test(skillJoined)) add('control')
+  if (/回复|生命|治疗|吸血/.test(skillJoined)) add('support')
+  if (/能量|能耗|迸发|传动/.test(skillJoined)) add('energyCycle')
+  if (/防御|护盾|减伤|承伤/.test(skillJoined)) add('shieldReduce')
 
   if (desc) {
     if (/回复|恢复|生命|治疗|回血|保留1点生命/.test(desc)) add('support')
@@ -172,6 +184,7 @@ function makeRow(data, source, base) {
   })
   const traitName = detail.tn || ''
   const skills = normalizeSkillList(detail)
+  const skillTexts = skills.map(skillText)
   return {
     id: `rock-creature-src-${String(sourceId).padStart(3, '0')}`,
     values: {
@@ -190,11 +203,10 @@ function makeRow(data, source, base) {
         pdef: detail.df,
         mdef: detail.mdf,
         spd: detail.spd,
-      }),
+      }, skillTexts),
       traitIcon: traitName && data._tm[traitName] ? fullUrl(data._tm[traitName]) : '',
       traitDesc: detail.te || '',
-      skills: skills.map(skillText).join('\n'),
-      coreSkill: skills[0]?.nm ? skillId(skills[0].nm) : '',
+      skillRefs: [...new Set(skills.map((skill) => skillId(skill.nm)))],
       hp: detail.hp ?? 0,
       patk: detail.atk ?? 0,
       matk: detail.matk ?? 0,
