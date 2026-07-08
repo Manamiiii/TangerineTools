@@ -87,6 +87,28 @@ function renderDecisionList(items, limit = 5) {
   )).join('\n')
 }
 
+function renderEvaluationLine(item) {
+  const decision = NATURE_DECISION_LABELS[item.decision] || item.decision
+  return `- ${natureShort(item)}｜${decision}｜${topReason(item)}${item.warnings?.length ? `；风险：${topWarning(item)}` : ''}`
+}
+
+function renderRaiseGroups(evaluations) {
+  const statOrder = ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
+  const byRaise = evaluations.reduce((groups, item) => {
+    groups[item.raise] ||= []
+    groups[item.raise].push(item)
+    return groups
+  }, {})
+  return statOrder
+    .map((raise) => {
+      const items = [...(byRaise[raise] || [])].sort((a, b) => b.score - a.score)
+      if (items.length === 0) return ''
+      return `#### 强化${STAT_LABELS[raise] || raise}\n\n${items.map(renderEvaluationLine).join('\n')}`
+    })
+    .filter(Boolean)
+    .join('\n\n')
+}
+
 function renderSample({ sample, row, skillInfo, evaluations }) {
   const groups = groupByDecision(evaluations)
   const skillProfile = analyzeSkillInfo(skillInfo)
@@ -97,6 +119,7 @@ function renderSample({ sample, row, skillInfo, evaluations }) {
   const recommended = groups.recommended || []
   const keepable = groups.keepable || []
   const notRecommended = groups.notRecommended || []
+  const topRecommended = recommended.slice(0, 5).map(natureShort).join(' / ') || '无'
 
   return `## ${sample.name}${row.values?.form ? `（${row.values.form}）` : ''}\n\n` +
     `- 校准关注：${sample.focus || '未填写'}\n` +
@@ -107,9 +130,12 @@ function renderSample({ sample, row, skillInfo, evaluations }) {
     `- 技能摘要：${skillProfile.summary}\n` +
     `- 效果标签计数：${counts}\n` +
     `- 分布：${NATURE_DECISION_LABELS.recommended} ${recommended.length} / ${NATURE_DECISION_LABELS.keepable} ${keepable.length} / ${NATURE_DECISION_LABELS.notRecommended} ${notRecommended.length}\n\n` +
-    `### 推荐\n\n${renderDecisionList(recommended, 5)}\n\n` +
-    `### 可保留（前 6）\n\n${renderDecisionList(keepable, 6)}\n\n` +
-    `### 不推荐（前 5）\n\n${renderDecisionList(notRecommended, 5)}\n`
+    `- 推荐摘要：${topRecommended}\n\n` +
+    `### 按增益维度对比（全部 30 个性格）\n\n${renderRaiseGroups(evaluations)}\n\n` +
+    `### 最终分档摘要\n\n` +
+    `#### 推荐（前 5）\n\n${renderDecisionList(recommended, 5)}\n\n` +
+    `#### 可保留（前 6）\n\n${renderDecisionList(keepable, 6)}\n\n` +
+    `#### 不推荐（前 5）\n\n${renderDecisionList(notRecommended, 5)}\n`
 }
 
 async function main() {
@@ -149,9 +175,10 @@ async function main() {
     `本报告由 \`npm run check:nature\` 生成，用于人工校准性格推荐规则。它只读取官方 \`d.json\` 同步出的预置精灵与技能资料，不引入阵容、属性克制或战斗模拟。\n\n` +
     `## 使用方式\n\n` +
     `1. 先看每个样例的“技能摘要”和“效果标签计数”是否符合直觉。\n` +
-    `2. 再看“推荐 / 可保留 / 不推荐”的候选是否符合该精灵定位。\n` +
-    `3. 如果某类样例普遍偏差，再回到 \`src/domain/nature.js\` 调整对应权重。\n` +
-    `4. 调整后重新运行 \`npm run check:nature\`、\`npm run build\`、\`npm run lint\`。\n\n` +
+    `2. 再按“强化生命/物攻/魔攻/物防/魔防/速度”分组横向比较全部 30 个性格，优先找同一强化项里哪个弱化项被误判。\n` +
+    `3. 最后看“推荐 / 可保留 / 不推荐”的最终分档是否符合该精灵定位。\n` +
+    `4. 如果某类样例普遍偏差，再回到 \`src/domain/nature.js\` 调整对应权重。\n` +
+    `5. 调整后重新运行 \`npm run check:nature\`、\`npm run build\`、\`npm run lint\`。\n\n` +
     (missing.length ? `> 未找到样例：${missing.join('、')}\n\n` : '') +
     sections.join('\n\n') + '\n'
 
