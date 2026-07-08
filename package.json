@@ -11,7 +11,8 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "sync:rock": "node scripts/sync-rock-kingdom-preset.mjs"
+    "sync:rock": "node scripts/sync-rock-kingdom-preset.mjs",
+    "check:nature": "node scripts/check-nature-recommendations.mjs"
   },
   "dependencies": {
     "dexie": "^4.4.4",

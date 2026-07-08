@@ -78,6 +78,7 @@
 本轮重点：基于具体精灵样例校准规则权重。
 - 预置资料仍以官方 d.json 同步结果为准；
 - 技能效果标签 effectTags 已作为轻量输入，不做完整战斗模拟；
+- 先运行 npm run check:nature 查看 docs/nature-calibration-report.md；
 - 阵容、属性克制、战斗模拟暂不做；
 - 可讨论阵容需要导致某些性格“可保留”的规则入口；
 - 不引入 Dexie schema 版本变更；
