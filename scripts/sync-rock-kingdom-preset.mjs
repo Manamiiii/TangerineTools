@@ -89,6 +89,18 @@ function skillCategoryValue(tp) {
   return ''
 }
 
+function toNumberOrBlank(value) {
+  if (value == null || value === '') return ''
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : ''
+}
+
+function parsePriority(skill) {
+  const text = [skill.ef, skill.nm].filter(Boolean).join(' ')
+  const matched = text.match(/先手\s*([+-]?\d+)/)
+  return matched ? `先手${matched[1]}` : ''
+}
+
 function skillElementValue(el) {
   if (!el) return ''
   return ELEMENT_MAP.get(el) || ''
@@ -146,6 +158,7 @@ function assertSourceShape(data) {
   if (!Array.isArray(data?.e)) throw new Error('数据源结构异常：缺少系别数组 e')
   if (!data?._em || typeof data._em !== 'object') throw new Error('数据源结构异常：缺少系别图标映射 _em')
   if (!data?._tm || typeof data._tm !== 'object') throw new Error('数据源结构异常：缺少特性图标映射 _tm')
+  if (!data?._skm || typeof data._skm !== 'object') throw new Error('数据源结构异常：缺少技能图标映射 _skm')
 }
 
 function makeRow(data, source, base) {
@@ -196,8 +209,15 @@ function buildSkillRows(data) {
   const byId = new Map()
   for (const base of data.l) {
     const detail = data.d[String(base.i)] || {}
-    const sources = [detail, ...(detail.forms || []).map((form) => data.d[String(form.i)] || form)]
-    for (const sourceDetail of sources) {
+    const sources = [
+      { source: base, detail },
+      ...(detail.forms || []).map((form) => ({ source: form, detail: data.d[String(form.i)] || form })),
+    ]
+    for (const { source, detail: sourceDetail } of sources) {
+      const learner = [
+        source.n || base.n || parseNoFromImage(source.img) || parseNoFromImage(base.img),
+        source.fn || source.nm || pickEvoValue(sourceDetail, source.i, 'fn') || pickEvoValue(sourceDetail, source.i, 'nm') || '',
+      ].filter(Boolean).join(' ')
       for (const skill of normalizeSkillList(sourceDetail)) {
         const id = skillId(skill.nm)
         const existing = byId.get(id)
@@ -208,20 +228,26 @@ function buildSkillRows(data) {
           if (learnLevel && !existing.values.learnLevel.split(' / ').includes(learnLevel)) {
             existing.values.learnLevel = [existing.values.learnLevel, learnLevel].filter(Boolean).join(' / ')
           }
+          if (learner && !existing.values.learners.split('\n').includes(learner)) {
+            existing.values.learners = [existing.values.learners, learner].filter(Boolean).join('\n')
+          }
           continue
         }
         byId.set(id, {
           id,
           values: {
+            image: skill.nm && data._skm[skill.nm] ? fullUrl(data._skm[skill.nm]) : '',
             name: skill.nm,
             element: skillElementValue(skill.el),
             category: skillCategoryValue(skill.tp),
+            categoryIcon: skill.tp && data._stm?.[skill.tp] ? fullUrl(data._stm[skill.tp]) : '',
             learnMethod: learnMethod ? [learnMethod] : [],
             learnLevel,
-            power: skill.pw ?? '',
-            cost: skill.ec ?? '',
-            priority: '',
+            power: toNumberOrBlank(skill.pw),
+            cost: toNumberOrBlank(skill.ec),
+            priority: parsePriority(skill),
             effect: skill.ef || '',
+            learners: learner,
           },
         })
       }
