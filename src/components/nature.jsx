@@ -274,6 +274,7 @@ function NatureCandidateList({ candidates, activeIndex, onSelect }) {
 
 function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
   if (!nature) return null
+  const speedProfile = nature.speedProfile
 
   return (
     <div className="nature-result">
@@ -297,6 +298,16 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
       </div>
 
       <p className="nature-result-reason">{reasoning}</p>
+
+      {speedProfile && (
+        <div className={`nature-speed-note ${speedProfile.concern.level}`}>
+          <strong>速度线：{speedProfile.concern.label}</strong>
+          <span>
+            基础速度 {speedProfile.base}（{speedProfile.baseTier}，最近锚点 {speedProfile.nearestAnchor}）。
+            {speedProfile.concern.reason}；{speedProfile.note}
+          </span>
+        </div>
+      )}
 
       <div className="nature-explain-grid">
         <div>
@@ -331,6 +342,12 @@ function candidateBenefitSummary(candidate) {
   const lowerDelta = candidate.deltas?.[candidate.lower] || 0
   const warning = candidate.dominatedBy ? `被 ${candidate.dominatedBy} 支配` : candidate.warnings?.[0]
   if (warning && candidate.decision === 'notRecommended') return warning
+  if (candidate.raise === 'spd') {
+    return `增益速度 ${raiseDelta > 0 ? `+${raiseDelta}` : raiseDelta} / ${candidate.speedProfile?.concern.label || '速度关注'}`
+  }
+  if (candidate.lower === 'spd') {
+    return `牺牲速度 ${lowerDelta} / ${candidate.speedProfile?.concern.label || '速度关注'}`
+  }
   return `增益 ${STAT_LABELS[candidate.raise]} ${raiseDelta > 0 ? `+${raiseDelta}` : raiseDelta} / 代价 ${STAT_LABELS[candidate.lower]} ${lowerDelta}`
 }
 

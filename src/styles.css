@@ -1772,6 +1772,38 @@ img {
   color: var(--text-muted);
 }
 
+.nature-speed-note {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--radius-lg);
+  background: #f8fafc;
+  color: #475569;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.nature-speed-note strong {
+  color: #1e293b;
+  font-size: 13px;
+}
+
+.nature-speed-note.high {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.nature-speed-note.medium {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.nature-speed-note.low {
+  border-color: #d1fae5;
+  background: #f0fdf4;
+}
+
 .nature-stats-scroll {
   overflow-x: auto;
   border: 1px solid var(--border);

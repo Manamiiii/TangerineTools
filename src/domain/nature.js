@@ -41,6 +41,12 @@ export const SPEED_TIER_LABELS = {
   elite: '超高速',
 }
 
+export const SPEED_CONCERN_LABELS = {
+  low: '低关注',
+  medium: '中关注',
+  high: '高关注',
+}
+
 // 预置资料的速度并非连续分布，而是集中在一批固定/半固定速度点上。
 // 速度线展示时使用这些锚点，避免只按连续百分位误判“刚好跨线”的价值。
 export const SPEED_ANCHORS = [
@@ -167,6 +173,42 @@ export function speedTier(value) {
   ][score]
 }
 
+function analyzeSpeedConcern(stats, traitTags = [], roles = []) {
+  const speedScore = percentileScore('spd', stats.spd)
+  const speedTraitTags = ['spdLean', 'control', 'pivot', 'energyCycle']
+  const hasSpeedTrait = traitTags.some((tag) => speedTraitTags.includes(tag))
+  const hasSpeedRole = roles.some((role) =>
+    ['fastAttacker', 'support', 'energyCycle'].includes(role.key),
+  )
+
+  if (speedScore >= 4 || hasSpeedTrait || hasSpeedRole) {
+    return {
+      level: 'high',
+      label: SPEED_CONCERN_LABELS.high,
+      score: speedScore,
+      reason: speedScore >= 4
+        ? '基础速度已进入高速竞争圈，默认关键对手也可能满速/加速'
+        : '特性或定位依赖先手/控制/节奏，速度性格需要重点评估',
+    }
+  }
+
+  if (speedScore >= 3) {
+    return {
+      level: 'medium',
+      label: SPEED_CONCERN_LABELS.medium,
+      score: speedScore,
+      reason: '基础速度处于中速偏快区间，速度性格主要影响同档对位',
+    }
+  }
+
+  return {
+    level: 'low',
+    label: SPEED_CONCERN_LABELS.low,
+    score: speedScore,
+    reason: '基础速度未进入速度竞争圈，若无先手玩法则速度性格权重较低',
+  }
+}
+
 function topKeys(stats, keys, count = 2) {
   return [...keys].sort((a, b) => (stats[b] || 0) - (stats[a] || 0)).slice(0, count)
 }
@@ -242,6 +284,27 @@ export function analyzeStats(baseStats = {}) {
   }
 }
 
+export function analyzeSpeedProfile(baseStats = {}, traitTags = [], roles = null) {
+  const stats = numericStats(baseStats)
+  const roleList = roles || inferRoles(stats, traitTags)
+  const speedConcern = analyzeSpeedConcern(stats, traitTags, roleList)
+  const raised = Math.round(stats.spd * 1.1)
+  const lowered = Math.round(stats.spd * 0.9)
+  return {
+    base: stats.spd,
+    raised,
+    lowered,
+    baseTier: speedTier(stats.spd),
+    raisedTier: speedTier(raised),
+    loweredTier: speedTier(lowered),
+    nearestAnchor: nearestSpeedAnchor(stats.spd),
+    raisedCrossedAnchors: crossedSpeedAnchors(stats.spd, raised),
+    loweredCrossedAnchors: crossedSpeedAnchors(lowered, stats.spd),
+    concern: speedConcern,
+    note: '速度线基于资料库基础速度近似估算；实战先后手还受个体、等级、成长/努力、技能优先级与临场速度变化影响。',
+  }
+}
+
 export function inferRoles(baseStats = {}, traitTags = []) {
   const analysis = analyzeStats(baseStats)
   const { stats } = analysis
@@ -300,6 +363,7 @@ export function inferRoles(baseStats = {}, traitTags = []) {
 function buildContext(baseStats = {}, traitTags = []) {
   const analysis = analyzeStats(baseStats)
   const roles = inferRoles(baseStats, traitTags)
+  const speedProfile = analyzeSpeedProfile(baseStats, traitTags, roles)
   const traitWeights = sumTraitWeights(traitTags)
   const coreWeights = Object.fromEntries(MODIFIABLE_STAT_KEYS.map((key) => [key, 0]))
   const expendableWeights = Object.fromEntries(MODIFIABLE_STAT_KEYS.map((key) => [key, 0]))
@@ -316,7 +380,7 @@ function buildContext(baseStats = {}, traitTags = []) {
   if (Math.abs(analysis.attackBias) >= 18) expendableWeights[secondaryAttack] += 1.5
   if (analysis.percentiles[secondaryAttack].score <= 1) expendableWeights[secondaryAttack] += 0.9
   for (const key of analysis.bottomStats) expendableWeights[key] += key === 'hp' ? 0.1 : 0.4
-  return { analysis, roles, traitWeights, coreWeights, expendableWeights }
+  return { analysis, roles, speedProfile, traitWeights, coreWeights, expendableWeights }
 }
 
 function statDelta(baseStats, nature) {
@@ -333,7 +397,7 @@ function decisionFromScore(score, hardRisk) {
 export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [], providedContext = null) {
   const stats = numericStats(baseStats)
   const context = providedContext || buildContext(stats, traitTags)
-  const { analysis, roles, traitWeights, coreWeights, expendableWeights } = context
+  const { analysis, roles, speedProfile, traitWeights, coreWeights, expendableWeights } = context
   const reasons = []
   const warnings = []
   const roleLabels = roles.slice(0, 2).map((r) => r.label)
@@ -357,13 +421,25 @@ export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [
   score -= lowerTrait * 5
   score += Math.max(0, 2 - lowerBand) * 3
 
-  if (candidate.raise === 'spd' && analysis.speed.raisedTier !== analysis.speed.baseTier) {
-    score += 8
-    reasons.push(`速度 ${analysis.speed.base} → ${analysis.speed.raised}，跨过速度线 ${analysis.speed.raisedCrossedAnchors.join(' / ') || '无'}，从${analysis.speed.baseTier}提升到${analysis.speed.raisedTier}`)
+  if (candidate.raise === 'spd') {
+    const speedBonus = { high: 10, medium: 4, low: -28 }[speedProfile.concern.level]
+    score += speedBonus
+    if (speedProfile.raisedTier !== speedProfile.baseTier || speedProfile.raisedCrossedAnchors.length > 0) {
+      reasons.push(
+        `基础速度 ${speedProfile.base} 属于${speedProfile.baseTier}；加速近似到 ${speedProfile.raised}，可能跨过 ${speedProfile.raisedCrossedAnchors.join(' / ') || '无'} 锚点。${speedProfile.concern.reason}`,
+      )
+    } else if (speedProfile.concern.level === 'low') {
+      warnings.push('速度未进入竞争圈，加速主要改善同档对位，通常不应优先于主攻或耐久')
+    }
   }
-  if (candidate.lower === 'spd' && analysis.speed.loweredTier !== analysis.speed.baseTier) {
-    score -= 12
-    warnings.push(`速度 ${analysis.speed.base} → ${analysis.speed.lowered}，失去速度线 ${analysis.speed.loweredCrossedAnchors.join(' / ') || '无'}，从${analysis.speed.baseTier}跌到${analysis.speed.loweredTier}`)
+  if (candidate.lower === 'spd') {
+    const speedPenalty = { high: 14, medium: 7, low: 2 }[speedProfile.concern.level]
+    score -= speedPenalty
+    if (speedProfile.loweredTier !== speedProfile.baseTier || speedProfile.loweredCrossedAnchors.length > 0) {
+      const message = `基础速度 ${speedProfile.base} 属于${speedProfile.baseTier}；减速近似到 ${speedProfile.lowered}，会失去 ${speedProfile.loweredCrossedAnchors.join(' / ') || '无'} 锚点。${speedProfile.concern.reason}`
+      if (speedProfile.concern.level === 'low') reasons.push(`${message}，可作为低速路线的牺牲项`)
+      else warnings.push(message)
+    }
   }
   if (candidate.lower === 'hp' && !traitTags.includes('support') && !traitTags.includes('pivot')) {
     score -= 10
@@ -404,6 +480,7 @@ export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [
     decision: decisionFromScore(score, hardRisk),
     roleTags: roles.map((r) => r.key),
     roleLabel: roleLabels.join(' / ') || '泛用',
+    speedProfile,
     adjustedStats: applyNatureModifier(stats, candidate),
     deltas: statDelta(stats, candidate),
     reasons: reasons.length ? reasons : [`强化${raiseLabel}、弱化${lowerLabel}整体收益一般`],
