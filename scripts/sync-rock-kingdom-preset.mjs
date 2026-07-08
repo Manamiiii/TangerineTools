@@ -81,6 +81,34 @@ function deriveSkillTags(skillTexts = []) {
   return tags
 }
 
+function deriveSkillEffectTags(skill = {}) {
+  const tags = []
+  const add = (tag) => {
+    if (!tags.includes(tag)) tags.push(tag)
+  }
+  const text = [skill.nm, skill.tp, skill.ef].filter(Boolean).join(' ')
+
+  if (/先手|优先|抢先/.test(text)) add('priority')
+  if (/迅捷|速度[+-]|速度提升|速度降低|先手|高速/.test(text)) add('speed')
+  if (/回复|恢复|治疗|吸血|生命/.test(text)) add('healing')
+  if (/防御|护盾|减伤|承伤|抵抗|免疫/.test(text)) add('damageReduction')
+  if (/回复\d*能量|获得\d*能量|能量回复|迸发/.test(text)) add('energyGain')
+  if (/偷取.*能量|失去\d*能量|扣.*能量|能量减少/.test(text)) add('energyDrain')
+  if (/能耗[+-]|费用[+-]|消耗[+-]|全技能能耗/.test(text)) add('costChange')
+  if (/物攻\+|魔攻\+|双攻\+|物防\+|魔防\+|双防\+|威力\+|强化|提升|增加/.test(text)) add('statBoost')
+  if (/物攻-|魔攻-|双攻-|物防-|魔防-|双防-|速度-|削弱|降低|减少/.test(text)) add('statDebuff')
+  if (/中毒|剧毒|灼烧|烧伤|冻结|冰冻|睡眠|恐惧|麻痹|混乱|沉默|束缚|异常|控制/.test(text)) add('control')
+  if (/应对攻击|反击|受到攻击后|承受.*后/.test(text)) add('counterAttack')
+  if (/应对防御/.test(text)) add('counterDefense')
+  if (/应对状态/.test(text)) add('counterStatus')
+  if (/脱离|换入|换场|换下|返场|替换/.test(text)) add('pivot')
+  if (/\d+\s*连击|连击/.test(text)) add('multiHit')
+  if (/蓄力/.test(text)) add('charge')
+  if (/天气|场地|雨|雪|沙暴|放晴/.test(text)) add('fieldEffect')
+
+  return tags
+}
+
 function pickEvoValue(detail, sourceId, key) {
   const evo = Array.isArray(detail?.evo) ? detail.evo : []
   const matched = evo.find((item) => String(item.i) === String(sourceId))
@@ -253,6 +281,7 @@ function buildSkillRows(data) {
             power: toNumberOrBlank(skill.pw),
             cost: toNumberOrBlank(skill.ec),
             priority: parsePriority(skill),
+            effectTags: deriveSkillEffectTags(skill),
             effect: skill.ef || '',
             learnerRefs: learnerId ? [learnerId] : [],
           },
