@@ -11,6 +11,7 @@ import { STATS_DIMENSIONS } from '../constants.js'
 import {
   evaluateAllNatures,
   explainNatureRecommendation,
+  extractSkillInfoFromRow,
   extractRowSummary,
   extractStatsFromRow,
   extractTraitTagsFromRow,
@@ -27,7 +28,12 @@ const TRAIT_TAG_FIELD = { type: 'multiselect', options: TRAIT_TAG_OPTIONS }
 const TRAIT_TAG_LABELS = Object.fromEntries(TRAIT_TAG_OPTIONS.map((o) => [o.value, o.label]))
 
 export function NatureTool({ scene }) {
-  const [draftInput, setDraftInput] = useState({ name: '', stats: { ...EMPTY_STATS }, traitTags: [] })
+  const [draftInput, setDraftInput] = useState({
+    name: '',
+    stats: { ...EMPTY_STATS },
+    traitTags: [],
+    skillInfo: { skills: [] },
+  })
   const [input, setInput] = useState(draftInput)
   const [selectedIndex, setSelectedIndex] = useState(0)
 
@@ -35,11 +41,12 @@ export function NatureTool({ scene }) {
     setDraftInput((prev) => ({ ...prev, stats: { ...prev.stats, [key]: value } }))
   }
 
-  function handleImport({ name, stats, traitTags }) {
+  function handleImport({ name, stats, traitTags, skillInfo }) {
     const next = {
       name: name || '',
       stats: { ...EMPTY_STATS, ...stats },
       traitTags: traitTags || [],
+      skillInfo: skillInfo || { skills: [] },
     }
     setDraftInput(next)
     setInput(next)
@@ -52,8 +59,8 @@ export function NatureTool({ scene }) {
   )
   const hasAnyStat = STATS_DIMENSIONS.some((d) => numericStats[d.key] > 0)
   const candidates = useMemo(
-    () => evaluateAllNatures(numericStats, input.traitTags),
-    [numericStats, input.traitTags],
+    () => evaluateAllNatures(numericStats, input.traitTags, input.skillInfo),
+    [numericStats, input.traitTags, input.skillInfo],
   )
   // 输入变化后如果原选中下标越界（例如输入被清空、候选变少），回退到首选。
   useEffect(() => {
@@ -98,6 +105,23 @@ export function NatureTool({ scene }) {
             field={TRAIT_TAG_FIELD}
             value={draftInput.traitTags}
             onChange={(tags) => setDraftInput((prev) => ({ ...prev, traitTags: tags }))}
+          />
+        </FormRow>
+
+        <FormRow label="技能线索（可选）" hint="每行一个技能或描述；未来资料库同步技能字段后会自动带入">
+          <textarea
+            className="input"
+            rows={3}
+            value={(draftInput.skillInfo?.skills || []).join('\n')}
+            onChange={(e) =>
+              setDraftInput((prev) => ({
+                ...prev,
+                skillInfo: {
+                  skills: e.target.value.split('\n').map((line) => line.trim()).filter(Boolean),
+                },
+              }))
+            }
+            placeholder="例如：先手物理攻击；后手反击；回复护盾；能耗降低"
           />
         </FormRow>
 
@@ -177,7 +201,8 @@ function RowImportPanel({ scene, onImport }) {
     const summary = extractRowSummary(target, fields)
     const stats = extractStatsFromRow(target, fields)
     const traitTags = extractTraitTagsFromRow(target, fields)
-    onImport({ name: summary.name, stats, traitTags })
+    const skillInfo = extractSkillInfoFromRow(target, fields)
+    onImport({ name: summary.name, stats, traitTags, skillInfo })
   }
 
   return (
@@ -257,7 +282,7 @@ function NatureCandidateList({ candidates, activeIndex, onSelect }) {
                           {NATURE_DECISION_LABELS[c.decision]}
                         </span>
                         <span className="nature-candidate-name">{natureName(c)}</span>
-                        <span className="nature-candidate-role">{candidateBenefitSummary(c)}</span>
+                        <span className="nature-candidate-role">{natureModifierSummary(c)}</span>
                         <span className="nature-candidate-score">{c.score.toFixed(1)}</span>
                       </button>
                     </li>
@@ -279,8 +304,13 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
   return (
     <div className="nature-result">
       <div className="nature-result-header">
-        <Sparkles size={18} />
-        <span className="nature-result-title">{natureName(nature)}</span>
+        <span className="nature-result-icon"><Sparkles size={16} /></span>
+        <div className="nature-result-title-wrap">
+          <span className="nature-result-title">{natureName(nature)}</span>
+          <span className="nature-result-subtitle">
+            {natureModifierSummary(nature)} · 评分 {nature.score.toFixed(1)}
+          </span>
+        </div>
         <span className={`nature-candidate-tag ${nature.decision}`}>
           {NATURE_DECISION_LABELS[nature.decision]}
         </span>
@@ -298,6 +328,13 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
       </div>
 
       <p className="nature-result-reason">{reasoning}</p>
+
+      {nature.skillProfile && (
+        <div className="nature-skill-note">
+          <strong>技能线索</strong>
+          <span>{nature.skillProfile.summary}</span>
+        </div>
+      )}
 
       {speedProfile && (
         <div className={`nature-speed-note ${speedProfile.concern.level}`}>
@@ -337,18 +374,12 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
   )
 }
 
-function candidateBenefitSummary(candidate) {
+function natureModifierSummary(candidate) {
   const raiseDelta = candidate.deltas?.[candidate.raise] || 0
   const lowerDelta = candidate.deltas?.[candidate.lower] || 0
-  const warning = candidate.dominatedBy ? `被 ${candidate.dominatedBy} 支配` : candidate.warnings?.[0]
-  if (warning && candidate.decision === 'notRecommended') return warning
-  if (candidate.raise === 'spd') {
-    return `增益速度 ${raiseDelta > 0 ? `+${raiseDelta}` : raiseDelta} / ${candidate.speedProfile?.concern.label || '速度关注'}`
-  }
-  if (candidate.lower === 'spd') {
-    return `牺牲速度 ${lowerDelta} / ${candidate.speedProfile?.concern.label || '速度关注'}`
-  }
-  return `增益 ${STAT_LABELS[candidate.raise]} ${raiseDelta > 0 ? `+${raiseDelta}` : raiseDelta} / 代价 ${STAT_LABELS[candidate.lower]} ${lowerDelta}`
+  const raiseText = `${STAT_LABELS[candidate.raise]} ${raiseDelta > 0 ? `+${raiseDelta}` : raiseDelta}`
+  const lowerText = `${STAT_LABELS[candidate.lower]} ${lowerDelta}`
+  return `${raiseText} / ${lowerText}`
 }
 
 function NatureStatsBars({ nature, baseStats, adjustedStats }) {

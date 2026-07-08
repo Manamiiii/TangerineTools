@@ -47,6 +47,15 @@ export const SPEED_CONCERN_LABELS = {
   high: '高关注',
 }
 
+// 最终面板公式预留位：当前不写死未知的洛克王国世界公式。
+// 后续确认等级、个体、成长/努力等固定参数后，只需补齐这里并启用 calculateStandardStat。
+export const STANDARD_STAT_FORMULA_PLACEHOLDER = {
+  level: null,
+  individual: null,
+  growth: null,
+  flatBonus: 5,
+}
+
 // 预置资料的速度并非连续分布，而是集中在一批固定/半固定速度点上。
 // 速度线展示时使用这些锚点，避免只按连续百分位误判“刚好跨线”的价值。
 export const SPEED_ANCHORS = [
@@ -147,6 +156,12 @@ function percentileLabel(key, value) {
   return ['极低', '偏低', '中低', '中高', '较高', '顶级'][score]
 }
 
+export function calculateStandardStat(baseValue, natureModifier = 1, formula = STANDARD_STAT_FORMULA_PLACEHOLDER) {
+  const { level, individual, growth, flatBonus } = formula
+  if ([baseValue, level, individual, growth, flatBonus].some((value) => value == null)) return null
+  const raw = (((Number(baseValue) * 2 + Number(individual) + Number(growth)) * Number(level)) / 100) + Number(flatBonus)
+  return Math.floor(raw * natureModifier)
+}
 
 export function nearestSpeedAnchor(value) {
   const numeric = Number(value) || 0
@@ -227,6 +242,68 @@ function sumTraitWeights(traitTags = []) {
   return totals
 }
 
+function normalizeSkillTexts(skillInfo = {}) {
+  if (!skillInfo) return []
+  const source = Array.isArray(skillInfo) ? skillInfo : skillInfo.skills || skillInfo.moves || skillInfo.text || []
+  const list = Array.isArray(source) ? source : [source]
+  return list
+    .map((item) => {
+      if (item == null) return ''
+      if (typeof item === 'string') return item
+      return [
+        item.name,
+        item.type,
+        item.category,
+        item.power,
+        item.cost,
+        item.priority,
+        item.effect,
+        item.description,
+        item.desc,
+      ].filter(Boolean).join(' ')
+    })
+    .map((text) => text.trim())
+    .filter(Boolean)
+}
+
+export function analyzeSkillInfo(skillInfo = {}) {
+  const texts = normalizeSkillTexts(skillInfo)
+  const joined = texts.join('；')
+  const hasPhysical = /物理|物攻|近战|攻击技能/.test(joined)
+  const hasMagical = /魔法|魔攻|法术|特殊/.test(joined)
+  const speedRequired = /先手|先于|优先|抢先|高速|先制/.test(joined)
+  const backLoaded = /后手|后攻|受到攻击后|承受.*后|反击/.test(joined)
+  const control = /控制|异常|中毒|麻痹|冰冻|睡眠|恐惧|混乱|沉默|束缚/.test(joined)
+  const support = /回复|治疗|护盾|减伤|增益|强化|换入|换场|传递|能量/.test(joined)
+  const defense = /防御|护盾|减伤|抵抗|承伤/.test(joined)
+  const energy = /能量|能耗|费用|消耗/.test(joined)
+
+  return {
+    count: texts.length,
+    texts,
+    hasPhysical,
+    hasMagical,
+    attackMode: hasPhysical && hasMagical ? 'mixed' : hasPhysical ? 'physical' : hasMagical ? 'magical' : 'unknown',
+    speedRequired,
+    backLoaded,
+    control,
+    support,
+    defense,
+    energy,
+    summary: texts.length > 0
+      ? `已读取 ${texts.length} 条技能线索：${[
+        hasPhysical && '物理',
+        hasMagical && '魔法',
+        speedRequired && '先手',
+        backLoaded && '后手',
+        control && '控制',
+        support && '辅助',
+        energy && '能量',
+      ].filter(Boolean).join(' / ') || '暂无明确标签'}`
+      : '未读取到技能字段，暂按六维与特性标签评估',
+  }
+}
+
 export function natureName(nature) {
   if (!nature) return '未知性格'
   if (nature.name) return nature.name
@@ -284,12 +361,18 @@ export function analyzeStats(baseStats = {}) {
   }
 }
 
-export function analyzeSpeedProfile(baseStats = {}, traitTags = [], roles = null) {
+export function analyzeSpeedProfile(baseStats = {}, traitTags = [], roles = null, skillProfile = null) {
   const stats = numericStats(baseStats)
   const roleList = roles || inferRoles(stats, traitTags)
-  const speedConcern = analyzeSpeedConcern(stats, traitTags, roleList)
+  const extraTraitTags = skillProfile?.speedRequired ? [...traitTags, 'spdLean'] : traitTags
+  const speedConcern = analyzeSpeedConcern(stats, extraTraitTags, roleList)
   const raised = Math.round(stats.spd * 1.1)
   const lowered = Math.round(stats.spd * 0.9)
+  const standard = {
+    neutral: calculateStandardStat(stats.spd, 1),
+    raised: calculateStandardStat(stats.spd, 1.1),
+    lowered: calculateStandardStat(stats.spd, 0.9),
+  }
   return {
     base: stats.spd,
     raised,
@@ -300,13 +383,17 @@ export function analyzeSpeedProfile(baseStats = {}, traitTags = [], roles = null
     nearestAnchor: nearestSpeedAnchor(stats.spd),
     raisedCrossedAnchors: crossedSpeedAnchors(stats.spd, raised),
     loweredCrossedAnchors: crossedSpeedAnchors(lowered, stats.spd),
+    standard,
     concern: speedConcern,
-    note: '速度线基于资料库基础速度近似估算；实战先后手还受个体、等级、成长/努力、技能优先级与临场速度变化影响。',
+    note: standard.neutral == null
+      ? '最终速度公式已预留，当前因固定参数未确认，仍基于资料库基础速度近似估算。'
+      : '速度线已按标准固定参数计算；实战仍会受技能优先级与临场速度变化影响。',
   }
 }
 
-export function inferRoles(baseStats = {}, traitTags = []) {
+export function inferRoles(baseStats = {}, traitTags = [], skillInfo = {}) {
   const analysis = analyzeStats(baseStats)
+  const skillProfile = analyzeSkillInfo(skillInfo)
   const { stats } = analysis
   const roles = []
   const addRole = (key, weight, reason) => {
@@ -355,15 +442,24 @@ export function inferRoles(baseStats = {}, traitTags = []) {
     addRole('support', 1.2, '特性标签支持辅助/返场')
   }
   if (traitTags.includes('energyCycle')) addRole('energyCycle', 1.3, '特性标签支持能量循环')
+  if (skillProfile.attackMode === 'physical') addRole('physicalAttacker', 1.4, '技能线索偏物理输出')
+  if (skillProfile.attackMode === 'magical') addRole('magicalAttacker', 1.4, '技能线索偏魔法输出')
+  if (skillProfile.attackMode === 'mixed') addRole('mixedAttacker', 1.1, '技能线索同时覆盖物理与魔法')
+  if (skillProfile.speedRequired || skillProfile.control) {
+    addRole('fastAttacker', 1.1, '技能线索强调先手/控制节奏')
+  }
+  if (skillProfile.support || skillProfile.defense) addRole('support', 0.9, '技能线索包含辅助/防御效果')
+  if (skillProfile.energy) addRole('energyCycle', 0.8, '技能线索涉及能量/能耗')
 
   if (roles.length === 0) addRole('support', 0.5, '没有明显输出倾向，按泛用保守路线评估')
   return roles.sort((a, b) => b.weight - a.weight)
 }
 
-function buildContext(baseStats = {}, traitTags = []) {
+function buildContext(baseStats = {}, traitTags = [], skillInfo = {}) {
   const analysis = analyzeStats(baseStats)
-  const roles = inferRoles(baseStats, traitTags)
-  const speedProfile = analyzeSpeedProfile(baseStats, traitTags, roles)
+  const skillProfile = analyzeSkillInfo(skillInfo)
+  const roles = inferRoles(baseStats, traitTags, skillInfo)
+  const speedProfile = analyzeSpeedProfile(baseStats, traitTags, roles, skillProfile)
   const traitWeights = sumTraitWeights(traitTags)
   const coreWeights = Object.fromEntries(MODIFIABLE_STAT_KEYS.map((key) => [key, 0]))
   const expendableWeights = Object.fromEntries(MODIFIABLE_STAT_KEYS.map((key) => [key, 0]))
@@ -380,7 +476,7 @@ function buildContext(baseStats = {}, traitTags = []) {
   if (Math.abs(analysis.attackBias) >= 18) expendableWeights[secondaryAttack] += 1.5
   if (analysis.percentiles[secondaryAttack].score <= 1) expendableWeights[secondaryAttack] += 0.9
   for (const key of analysis.bottomStats) expendableWeights[key] += key === 'hp' ? 0.1 : 0.4
-  return { analysis, roles, speedProfile, traitWeights, coreWeights, expendableWeights }
+  return { analysis, roles, speedProfile, skillProfile, traitWeights, coreWeights, expendableWeights }
 }
 
 function statDelta(baseStats, nature) {
@@ -394,10 +490,10 @@ function decisionFromScore(score, hardRisk) {
   return 'keepable'
 }
 
-export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [], providedContext = null) {
+export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [], providedContext = null, skillInfo = {}) {
   const stats = numericStats(baseStats)
-  const context = providedContext || buildContext(stats, traitTags)
-  const { analysis, roles, speedProfile, traitWeights, coreWeights, expendableWeights } = context
+  const context = providedContext || buildContext(stats, traitTags, skillInfo)
+  const { analysis, roles, speedProfile, skillProfile, traitWeights, coreWeights, expendableWeights } = context
   const reasons = []
   const warnings = []
   const roleLabels = roles.slice(0, 2).map((r) => r.label)
@@ -457,6 +553,34 @@ export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [
     score += 8
     reasons.push('强化魔防可把已有魔法耐久优势做成专项防御手')
   }
+  if (skillProfile.attackMode === 'physical' && candidate.raise === 'patk') {
+    score += 10
+    reasons.push('技能线索偏物理输出，强化物攻更贴合技能组')
+  }
+  if (skillProfile.attackMode === 'magical' && candidate.raise === 'matk') {
+    score += 10
+    reasons.push('技能线索偏魔法输出，强化魔攻更贴合技能组')
+  }
+  if (skillProfile.attackMode === 'physical' && candidate.lower === 'patk') {
+    score -= 18
+    warnings.push('技能线索偏物理输出，弱化物攻存在冲突')
+  }
+  if (skillProfile.attackMode === 'magical' && candidate.lower === 'matk') {
+    score -= 18
+    warnings.push('技能线索偏魔法输出，弱化魔攻存在冲突')
+  }
+  if (skillProfile.backLoaded && candidate.lower === 'spd') {
+    score += 10
+    reasons.push('技能线索存在后手/反击收益，减速可作为战术牺牲项')
+  }
+  if (skillProfile.speedRequired && candidate.raise === 'spd') {
+    score += 10
+    reasons.push('技能线索依赖先手/优先节奏，强化速度更有价值')
+  }
+  if (skillProfile.speedRequired && candidate.lower === 'spd') {
+    score -= 12
+    warnings.push('技能线索依赖先手/优先节奏，弱化速度风险较高')
+  }
 
   if (raiseCore > 0.8) reasons.push(`强化${raiseLabel}符合当前综合定位需求`)
   if (raiseTrait > 0) reasons.push(`特性标签支持强化${raiseLabel}`)
@@ -481,6 +605,7 @@ export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [
     roleTags: roles.map((r) => r.key),
     roleLabel: roleLabels.join(' / ') || '泛用',
     speedProfile,
+    skillProfile,
     adjustedStats: applyNatureModifier(stats, candidate),
     deltas: statDelta(stats, candidate),
     reasons: reasons.length ? reasons : [`强化${raiseLabel}、弱化${lowerLabel}整体收益一般`],
@@ -526,11 +651,11 @@ function applyDominance(evaluations) {
   return result
 }
 
-export function evaluateAllNatures(baseStats = {}, traitTags = []) {
+export function evaluateAllNatures(baseStats = {}, traitTags = [], skillInfo = {}) {
   const stats = numericStats(baseStats)
-  const context = buildContext(stats, traitTags)
+  const context = buildContext(stats, traitTags, skillInfo)
   const evaluated = NATURE_CANDIDATES.map((candidate) =>
-    evaluateNatureCandidate(candidate, stats, traitTags, context),
+    evaluateNatureCandidate(candidate, stats, traitTags, context, skillInfo),
   )
   return [...applyDominance(evaluated)].sort((a, b) => {
     const decisionOrder = { recommended: 0, keepable: 1, notRecommended: 2 }
@@ -539,8 +664,8 @@ export function evaluateAllNatures(baseStats = {}, traitTags = []) {
 }
 
 // 兼容旧调用名：返回所有候选而非 top-N。
-export function calculateNatureScores(baseStats = {}, traitTags = []) {
-  return evaluateAllNatures(baseStats, traitTags)
+export function calculateNatureScores(baseStats = {}, traitTags = [], skillInfo = {}) {
+  return evaluateAllNatures(baseStats, traitTags, skillInfo)
 }
 
 // 对原始六维应用性格加成：强化项 ×1.1、弱化项 ×0.9，四舍五入取整；
@@ -584,6 +709,28 @@ export function extractTraitTagsFromRow(row, fields) {
   if (!field) return []
   const raw = row.values?.[field.key]
   return Array.isArray(raw) ? raw : []
+}
+
+function normalizeSkillCellValue(value) {
+  if (value == null || value === '') return []
+  if (Array.isArray(value)) return value
+  if (typeof value === 'object') return [value]
+  return String(value)
+    .split(/\n|；|;/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+// 提取技能/招式线索。当前预置资料未必包含技能字段；未来 d.json 同步出技能后，
+// 只要字段 key/name 命中 skills/moves/技能/招式，即可进入规则引擎。
+export function extractSkillInfoFromRow(row, fields) {
+  const skillField = findFieldByKeyOrName(
+    fields || [],
+    ['skills', 'moves', 'skillList', 'moveList'],
+    ['技能', '招式', '技能列表', '招式列表'],
+  )
+  if (!skillField) return { skills: [] }
+  return { skills: normalizeSkillCellValue(row.values?.[skillField.key]) }
 }
 
 // 提取行的名称/编号/形态摘要，用于行选择器里的展示文案。
