@@ -6,6 +6,7 @@ import {
   ELEMENT_LEGACY_DEFAULTS,
   ROCK_KINGDOM_PRESET,
   ROCK_KINGDOM_ROWS_VERSION,
+  SKILL_CATEGORY_LEGACY_DEFAULTS,
   TRAIT_TAG_LEGACY_DEFAULTS,
 } from './presets/rockKingdom.js'
 import { STOCK_FIXED_FIELDS, STOCK_TABLE_NAME } from './domain/stock.js'
@@ -37,6 +38,7 @@ export async function ensureSeeded() {
   // 同时尊重用户已删除的场景/资料表、已有的自定义编辑，不做覆盖式重置。
   await migrateRockKingdomStructure()
   await migrateRockKingdomSkillReferenceFields()
+  await migrateRockKingdomSkillTableFields()
   await migrateRockKingdomFieldOptions()
   await migrateRockKingdomRows()
   await migrateRockKingdomSkillRows()
@@ -145,6 +147,22 @@ async function migrateRockKingdomSkillReferenceFields() {
   })
 }
 
+async function migrateRockKingdomSkillTableFields() {
+  const table = ROCK_KINGDOM_PRESET.tables.find((item) => item.id === 'table-rock-kingdom-skills')
+  if (!table) return
+  const existingTable = await db.catalogTables.get(table.id)
+  if (!existingTable) return
+  const deprecatedKeys = new Set(['categoryIcon', 'learnMethod', 'learnLevel', 'learners'])
+  const fields = await db.catalogFields.where('tableId').equals(table.id).toArray()
+  const deprecatedFieldIds = fields
+    .filter((field) => deprecatedKeys.has(field.key))
+    .map((field) => field.id)
+  if (deprecatedFieldIds.length === 0) return
+  await db.transaction('rw', db.catalogFields, async () => {
+    await db.catalogFields.bulkDelete(deprecatedFieldIds)
+  })
+}
+
 // 为已存在的洛克王国字段（如特性标签）补齐预置里新增的选项，并且只在用户
 // 尚未自定义过旧选项时才更新其展示名/颜色。字段本身已被用户删除时跳过，
 // 不做任何恢复。
@@ -158,7 +176,9 @@ async function migrateRockKingdomFieldOptions() {
         ? TRAIT_TAG_LEGACY_DEFAULTS
         : presetField.key === 'element'
           ? ELEMENT_LEGACY_DEFAULTS
-          : {}
+          : presetField.tableId === 'table-rock-kingdom-skills' && presetField.key === 'category'
+            ? SKILL_CATEGORY_LEGACY_DEFAULTS
+            : {}
     const mergedOptions = mergeFieldOptions(existingField.options, presetField.options, legacyDefaults)
     if (JSON.stringify(mergedOptions) !== JSON.stringify(existingField.options)) {
       await db.catalogFields.update(presetField.id, { options: mergedOptions, updatedAt: nowIso() })

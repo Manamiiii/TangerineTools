@@ -242,35 +242,48 @@ function sumTraitWeights(traitTags = []) {
   return totals
 }
 
-function normalizeSkillTexts(skillInfo = {}) {
+function normalizeSkillItems(skillInfo = {}) {
   if (!skillInfo) return []
-  const source = Array.isArray(skillInfo) ? skillInfo : skillInfo.skills || skillInfo.moves || skillInfo.text || []
+  const source = Array.isArray(skillInfo) ? skillInfo : skillInfo.skills || skillInfo.moves || []
   const list = Array.isArray(source) ? source : [source]
-  return list
-    .map((item) => {
-      if (item == null) return ''
-      if (typeof item === 'string') return item
-      return [
-        item.name,
-        item.type,
-        item.category,
-        item.power,
-        item.cost,
-        item.priority,
-        item.effect,
-        item.description,
-        item.desc,
-      ].filter(Boolean).join(' ')
-    })
-    .map((text) => text.trim())
-    .filter(Boolean)
+  return list.map((item) => {
+    if (item && typeof item === 'object') return item
+    return { text: item == null ? '' : String(item) }
+  })
+}
+
+function skillItemText(item) {
+  return [
+    item.text,
+    item.name,
+    item.type,
+    item.category,
+    item.power,
+    item.cost,
+    item.priority,
+    item.effect,
+    item.description,
+    item.desc,
+  ].filter(Boolean).join(' ')
 }
 
 export function analyzeSkillInfo(skillInfo = {}) {
-  const texts = normalizeSkillTexts(skillInfo)
+  const items = normalizeSkillItems(skillInfo)
+  const texts = items.map(skillItemText).map((text) => text.trim()).filter(Boolean)
   const joined = texts.join('；')
-  const hasPhysical = /物理|物攻|近战|攻击技能/.test(joined)
-  const hasMagical = /魔法|魔攻|法术|特殊/.test(joined)
+  const isPhysicalItem = (item) => item.category === 'physical' || /物理|物攻|物伤|physical/.test(skillItemText(item))
+  const isMagicalItem = (item) => item.category === 'magical' || /魔法|魔攻|魔伤|magical/.test(skillItemText(item))
+  const isStatusItem = (item) => item.category === 'status' || /状态|防御|辅助|变化|status/.test(skillItemText(item))
+  const physicalItems = items.filter(isPhysicalItem)
+  const magicalItems = items.filter(isMagicalItem)
+  const statusItems = items.filter((item) => isStatusItem(item) && !isPhysicalItem(item) && !isMagicalItem(item))
+  const attackItems = [...physicalItems, ...magicalItems]
+  const averagePower = (list) => {
+    const powers = list.map((item) => Number(item.power)).filter((value) => Number.isFinite(value) && value > 0)
+    return powers.length ? powers.reduce((sum, value) => sum + value, 0) / powers.length : 0
+  }
+  const hasPhysical = physicalItems.length > 0 || /物理|物攻|近战|攻击技能/.test(joined)
+  const hasMagical = magicalItems.length > 0 || /魔法|魔攻|法术|特殊/.test(joined)
   const speedRequired = /先手|先于|优先|抢先|高速|先制/.test(joined)
   const backLoaded = /后手|后攻|受到攻击后|承受.*后|反击/.test(joined)
   const control = /控制|异常|中毒|麻痹|冰冻|睡眠|恐惧|混乱|沉默|束缚/.test(joined)
@@ -290,6 +303,17 @@ export function analyzeSkillInfo(skillInfo = {}) {
     support,
     defense,
     energy,
+    breakdown: {
+      physicalCount: physicalItems.length,
+      magicalCount: magicalItems.length,
+      statusCount: statusItems.length,
+      attackCount: attackItems.length,
+      physicalAveragePower: averagePower(physicalItems),
+      magicalAveragePower: averagePower(magicalItems),
+      attackAveragePower: averagePower(attackItems),
+      physicalShare: attackItems.length ? physicalItems.length / attackItems.length : 0,
+      magicalShare: attackItems.length ? magicalItems.length / attackItems.length : 0,
+    },
     summary: texts.length > 0
       ? `已读取 ${texts.length} 条技能线索：${[
         hasPhysical && '物理',

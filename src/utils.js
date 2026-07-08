@@ -60,7 +60,7 @@ export function mergeFieldOptions(existingOptions, presetOptions, legacyDefaults
     const presetOpt = presetByValue.get(opt.value)
     const legacy = legacyDefaults[opt.value]
     if (presetOpt && legacy && opt.label === legacy.label && opt.color === legacy.color) {
-      return { ...opt, label: presetOpt.label, color: presetOpt.color }
+      return { ...opt, label: presetOpt.label, color: presetOpt.color, image: presetOpt.image || '' }
     }
     return opt
   })

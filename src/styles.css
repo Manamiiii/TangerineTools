@@ -498,6 +498,9 @@ img {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  flex: 0 0 auto;
+  width: max-content;
+  max-width: none;
   padding: 2px 8px;
   border-radius: 999px;
   border: 1px solid var(--border-strong);
@@ -513,6 +516,7 @@ img {
 }
 
 .option-tag-img {
+  flex: 0 0 auto;
   width: 14px;
   height: 14px;
   border-radius: 3px;
@@ -1853,8 +1857,9 @@ img {
 }
 
 .nature-skill-note {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
   gap: 10px;
   padding: 8px 12px;
   border: 1px solid #ddd6fe;
@@ -1867,6 +1872,11 @@ img {
 .nature-skill-note strong {
   flex: 0 0 auto;
   color: #4c1d95;
+}
+
+.nature-skill-breakdown {
+  grid-column: 2;
+  color: #6d28d9;
 }
 
 .nature-stats-scroll {

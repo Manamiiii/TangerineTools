@@ -100,10 +100,6 @@ function skillLearnTypeLabel(kind) {
   return { s: '自带', b: '血脉', t: '技能石' }[kind] || kind
 }
 
-function skillLearnTypeValue(kind) {
-  return { s: 'innate', b: 'bloodline', t: 'stone' }[kind] || 'other'
-}
-
 function skillCategoryValue(tp) {
   if (/物理|物攻/.test(tp || '')) return 'physical'
   if (/魔法|魔攻|特殊/.test(tp || '')) return 'magical'
@@ -237,22 +233,13 @@ function buildSkillRows(data) {
       ...(detail.forms || []).map((form) => ({ source: form, detail: data.d[String(form.i)] || form })),
     ]
     for (const { source, detail: sourceDetail } of sources) {
-      const learner = [
-        source.n || base.n || parseNoFromImage(source.img) || parseNoFromImage(base.img),
-        source.fn || source.nm || pickEvoValue(sourceDetail, source.i, 'fn') || pickEvoValue(sourceDetail, source.i, 'nm') || '',
-      ].filter(Boolean).join(' ')
       for (const skill of normalizeSkillList(sourceDetail)) {
         const id = skillId(skill.nm)
         const existing = byId.get(id)
-        const learnMethod = skillLearnTypeValue(skill.learnKind)
-        const learnLevel = skill.lv != null ? String(skill.lv) : ''
+        const learnerId = `rock-creature-src-${String(source.i).padStart(3, '0')}`
         if (existing) {
-          if (learnMethod && !existing.values.learnMethod.includes(learnMethod)) existing.values.learnMethod.push(learnMethod)
-          if (learnLevel && !existing.values.learnLevel.split(' / ').includes(learnLevel)) {
-            existing.values.learnLevel = [existing.values.learnLevel, learnLevel].filter(Boolean).join(' / ')
-          }
-          if (learner && !existing.values.learners.split('\n').includes(learner)) {
-            existing.values.learners = [existing.values.learners, learner].filter(Boolean).join('\n')
+          if (learnerId && !existing.values.learnerRefs.includes(learnerId)) {
+            existing.values.learnerRefs.push(learnerId)
           }
           continue
         }
@@ -263,14 +250,11 @@ function buildSkillRows(data) {
             name: skill.nm,
             element: skillElementValue(skill.el),
             category: skillCategoryValue(skill.tp),
-            categoryIcon: skill.tp && data._stm?.[skill.tp] ? fullUrl(data._stm[skill.tp]) : '',
-            learnMethod: learnMethod ? [learnMethod] : [],
-            learnLevel,
             power: toNumberOrBlank(skill.pw),
             cost: toNumberOrBlank(skill.ec),
             priority: parsePriority(skill),
             effect: skill.ef || '',
-            learners: learner,
+            learnerRefs: learnerId ? [learnerId] : [],
           },
         })
       }

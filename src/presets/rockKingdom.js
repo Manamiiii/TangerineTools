@@ -55,13 +55,6 @@ const SHINY_OPTIONS = [
   { value: 'yes', label: '异色', color: '#db2777', image: '' },
 ]
 
-const SKILL_LEARN_METHOD_OPTIONS = [
-  { value: 'innate', label: '自带', color: '#2563eb', image: '' },
-  { value: 'bloodline', label: '血脉', color: '#dc2626', image: '' },
-  { value: 'stone', label: '技能石', color: '#7c3aed', image: '' },
-  { value: 'other', label: '其他', color: '#64748b', image: '' },
-]
-
 // 特性标签：13 类倾向标签，用于多选描述精灵在队伍里的定位/资源循环特点。
 // 其中 attack/control/support/defense/special 是第一轮就存在的旧值，
 // 这里只更新了展示名称与配色（新语义更细），value 保持不变，
@@ -107,6 +100,33 @@ const SKILL_TAG_OPTIONS = [
   { value: 'energyCycle', label: '能量循环', color: '#0d9488', image: '' },
   { value: 'defense', label: '防御减伤', color: '#2563eb', image: '' },
 ]
+
+const SKILL_CATEGORY_OPTIONS = [
+  {
+    value: 'physical',
+    label: '物攻',
+    color: '#ea580c',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/st/%E7%89%A9%E6%94%BB.png',
+  },
+  {
+    value: 'magical',
+    label: '魔攻',
+    color: '#c026d3',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/st/%E9%AD%94%E6%94%BB.png',
+  },
+  {
+    value: 'status',
+    label: '状态',
+    color: '#64748b',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/st/%E7%8A%B6%E6%80%81.png',
+  },
+]
+
+export const SKILL_CATEGORY_LEGACY_DEFAULTS = {
+  physical: { label: '物理', color: '#ea580c' },
+  magical: { label: '魔法', color: '#c026d3' },
+  status: { label: '状态', color: '#64748b' },
+}
 
 function makeField(partial, order, tableId = TABLE_ID, idPrefix = 'field-rock') {
   return normalizeField({
@@ -166,19 +186,12 @@ const skillFields = [
   makeField({ key: 'image', name: '技能图标', type: 'image' }, 0, SKILL_TABLE_ID, 'field-rock-skill'),
   makeField({ key: 'name', name: '技能名称', type: 'text' }, 1, SKILL_TABLE_ID, 'field-rock-skill'),
   makeField({ key: 'element', name: '系别', type: 'select', options: ELEMENT_OPTIONS }, 2, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'category', name: '类型', type: 'select', options: [
-    { value: 'physical', label: '物理', color: '#ea580c', image: '' },
-    { value: 'magical', label: '魔法', color: '#c026d3', image: '' },
-    { value: 'status', label: '状态', color: '#64748b', image: '' },
-  ] }, 3, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'categoryIcon', name: '类型图标', type: 'image' }, 4, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'learnMethod', name: '学习方式', type: 'multiselect', options: SKILL_LEARN_METHOD_OPTIONS }, 5, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'learnLevel', name: '学习等级', type: 'text' }, 6, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'power', name: '威力', type: 'number' }, 7, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'cost', name: '能耗', type: 'number' }, 8, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'priority', name: '先制/速度', type: 'text' }, 9, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'effect', name: '效果', type: 'longtext' }, 10, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'learners', name: '可学精灵', type: 'longtext' }, 11, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'category', name: '类型', type: 'select', options: SKILL_CATEGORY_OPTIONS }, 3, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'power', name: '威力', type: 'number' }, 4, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'cost', name: '能耗', type: 'number' }, 5, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'priority', name: '先制/速度', type: 'text' }, 6, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'effect', name: '效果', type: 'longtext' }, 7, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'learnerRefs', name: '可学精灵', type: 'references', referenceTableId: TABLE_ID }, 8, SKILL_TABLE_ID, 'field-rock-skill'),
 ]
 
 export const ROCK_KINGDOM_PRESET = {

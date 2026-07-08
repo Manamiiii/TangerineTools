@@ -316,6 +316,10 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
         <div className="nature-skill-note">
           <strong>技能线索</strong>
           <span>{nature.skillProfile.summary}</span>
+          <span className="nature-skill-breakdown">
+            物攻 {nature.skillProfile.breakdown.physicalCount} 个 / 魔攻 {nature.skillProfile.breakdown.magicalCount} 个 / 状态 {nature.skillProfile.breakdown.statusCount} 个；
+            攻击技能平均威力 {nature.skillProfile.breakdown.attackAveragePower.toFixed(0)}
+          </span>
         </div>
       )}
 
