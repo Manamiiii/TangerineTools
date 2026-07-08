@@ -729,7 +729,10 @@ export function extractSkillInfoFromRow(row, fields) {
     ['skills', 'moves', 'skillList', 'moveList'],
     ['技能', '招式', '技能列表', '招式列表'],
   )
-  if (skillField) return { skills: normalizeSkillCellValue(row.values?.[skillField.key]) }
+  if (skillField) {
+    const skills = normalizeSkillCellValue(row.values?.[skillField.key])
+    if (skills.length > 0) return { skills }
+  }
   const traitDescField = findFieldByKeyOrName(fields || [], ['traitDesc'], ['特性说明', '特性描述'])
   return { skills: traitDescField ? normalizeSkillCellValue(row.values?.[traitDescField.key]) : [] }
 }

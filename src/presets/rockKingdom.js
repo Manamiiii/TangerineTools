@@ -8,6 +8,7 @@ const SEED_TIME = '2026-01-01T00:00:00.000Z'
 
 const SCENE_ID = 'scene-rock-kingdom'
 const TABLE_ID = 'table-rock-kingdom-elf-basic'
+const SKILL_TABLE_ID = 'table-rock-kingdom-skills'
 export const ROCK_KINGDOM_ROWS_VERSION = 'official-d-json-2026-06-08'
 
 // 系别图标：使用洛克王国官方图鉴的公开静态资源地址，URL 中的文件名直接是
@@ -86,10 +87,10 @@ export const TRAIT_TAG_LEGACY_DEFAULTS = {
   special: { label: '特殊', color: '#d97706' },
 }
 
-function makeField(partial, order) {
+function makeField(partial, order, tableId = TABLE_ID, idPrefix = 'field-rock') {
   return normalizeField({
-    id: `field-rock-${partial.key}`,
-    tableId: TABLE_ID,
+    id: `${idPrefix}-${partial.key}`,
+    tableId,
     order,
     createdAt: SEED_TIME,
     updatedAt: SEED_TIME,
@@ -130,12 +131,28 @@ const fields = [
   ),
   makeField({ key: 'traitIcon', name: '特性图标', type: 'image' }, 10),
   makeField({ key: 'traitDesc', name: '特性描述', type: 'longtext' }, 11),
-  makeField({ key: 'hp', name: '生命', type: 'number', hidden: true }, 12),
-  makeField({ key: 'patk', name: '物攻', type: 'number', hidden: true }, 13),
-  makeField({ key: 'matk', name: '魔攻', type: 'number', hidden: true }, 14),
-  makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 15),
-  makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 16),
-  makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 17),
+  makeField({ key: 'skills', name: '技能线索', type: 'longtext' }, 12),
+  makeField({ key: 'coreSkill', name: '核心技能', type: 'reference', referenceTableId: SKILL_TABLE_ID }, 13),
+  makeField({ key: 'hp', name: '生命', type: 'number', hidden: true }, 14),
+  makeField({ key: 'patk', name: '物攻', type: 'number', hidden: true }, 15),
+  makeField({ key: 'matk', name: '魔攻', type: 'number', hidden: true }, 16),
+  makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 17),
+  makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 18),
+  makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 19),
+]
+
+const skillFields = [
+  makeField({ key: 'name', name: '技能名称', type: 'text' }, 0, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'element', name: '系别', type: 'select', options: ELEMENT_OPTIONS }, 1, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'category', name: '类型', type: 'select', options: [
+    { value: 'physical', label: '物理', color: '#ea580c', image: '' },
+    { value: 'magical', label: '魔法', color: '#c026d3', image: '' },
+    { value: 'status', label: '状态', color: '#64748b', image: '' },
+  ] }, 2, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'power', name: '威力', type: 'number' }, 3, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'cost', name: '能耗', type: 'number' }, 4, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'priority', name: '先制/速度', type: 'text' }, 5, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'effect', name: '效果', type: 'longtext' }, 6, SKILL_TABLE_ID, 'field-rock-skill'),
 ]
 
 export const ROCK_KINGDOM_PRESET = {
@@ -157,6 +174,14 @@ export const ROCK_KINGDOM_PRESET = {
       createdAt: SEED_TIME,
       updatedAt: SEED_TIME,
     },
+    {
+      id: SKILL_TABLE_ID,
+      sceneId: SCENE_ID,
+      name: '技能资料',
+      order: 1,
+      createdAt: SEED_TIME,
+      updatedAt: SEED_TIME,
+    },
   ],
-  fields,
+  fields: [...fields, ...skillFields],
 }

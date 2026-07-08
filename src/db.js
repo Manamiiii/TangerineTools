@@ -35,6 +35,7 @@ export async function ensureSeeded() {
   // 以下几步在每次启动时都会执行（不受 seededRockKingdom 一次性标记限制），
   // 目的是让"已经播种过"的老用户也能安全地补齐后续新增的字段选项/预置行/默认工具，
   // 同时尊重用户已删除的场景/资料表、已有的自定义编辑，不做覆盖式重置。
+  await migrateRockKingdomStructure()
   await migrateRockKingdomFieldOptions()
   await migrateRockKingdomRows()
   await migrateRockKingdomSceneTools()
@@ -77,6 +78,53 @@ async function seedRockKingdomStructure() {
     await db.scenes.put(scene)
     for (const table of tables) await db.catalogTables.put(table)
     for (const field of fields) await db.catalogFields.put(field)
+  })
+}
+
+async function migrateRockKingdomStructure() {
+  const scene = await db.scenes.get(ROCK_KINGDOM_PRESET.scene.id)
+  if (!scene) return
+  const now = nowIso()
+  const existingTables = await db.catalogTables
+    .where('sceneId')
+    .equals(ROCK_KINGDOM_PRESET.scene.id)
+    .toArray()
+  const existingTableIds = new Set(existingTables.map((table) => table.id))
+  let nextTableOrder = existingTables.length
+    ? Math.max(...existingTables.map((table) => table.order ?? 0)) + 1
+    : 0
+
+  await db.transaction('rw', db.catalogTables, db.catalogFields, async () => {
+    for (const presetTable of ROCK_KINGDOM_PRESET.tables) {
+      if (existingTableIds.has(presetTable.id)) continue
+      await db.catalogTables.put({
+        ...presetTable,
+        order: nextTableOrder,
+        createdAt: now,
+        updatedAt: now,
+      })
+      existingTableIds.add(presetTable.id)
+      nextTableOrder += 1
+    }
+
+    for (const tableId of existingTableIds) {
+      const existingFields = await db.catalogFields.where('tableId').equals(tableId).toArray()
+      const existingFieldIds = new Set(existingFields.map((field) => field.id))
+      const existingKeys = new Set(existingFields.map((field) => field.key))
+      let nextFieldOrder = existingFields.length
+        ? Math.max(...existingFields.map((field) => field.order ?? 0)) + 1
+        : 0
+      for (const presetField of ROCK_KINGDOM_PRESET.fields.filter((field) => field.tableId === tableId)) {
+        if (existingFieldIds.has(presetField.id) || existingKeys.has(presetField.key)) continue
+        await db.catalogFields.put({
+          ...presetField,
+          order: nextFieldOrder,
+          createdAt: now,
+          updatedAt: now,
+        })
+        nextFieldOrder += 1
+      }
+    }
   })
 }
 
