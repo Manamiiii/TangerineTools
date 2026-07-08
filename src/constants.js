@@ -35,6 +35,7 @@ export const FIELD_TYPES = [
   { value: 'url', label: 'URL' },
   { value: 'date', label: '日期' },
   { value: 'reference', label: '引用资料' },
+  { value: 'references', label: '多选引用资料' },
   { value: 'stats', label: '指标视图' },
 ]
 
@@ -51,6 +52,10 @@ export function isEditableFieldType(type) {
 // 类型是否支持“选项”（颜色 + 图片）配置。
 export function isOptionFieldType(type) {
   return type === 'select' || type === 'multiselect'
+}
+
+export function isReferenceFieldType(type) {
+  return type === 'reference' || type === 'references'
 }
 
 // 指标视图使用的默认指标。key 用于自动识别资料表中对应的原始数值字段。

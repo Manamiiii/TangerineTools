@@ -19,7 +19,7 @@ import {
   X,
   XCircle,
 } from 'lucide-react'
-import { FIELD_TYPES, isOptionFieldType, STATS_DIMENSIONS } from '../constants.js'
+import { FIELD_TYPES, isOptionFieldType, isReferenceFieldType, STATS_DIMENSIONS } from '../constants.js'
 import { createField, db, deleteField, reorderFields, updateField } from '../db.js'
 import { generateId, getStatsValues, resolveStatsMapping, stringifyCellValue } from '../utils.js'
 import {
@@ -100,7 +100,7 @@ async function handleTypeChange(field, nextType) {
   } else {
     patch.statsStyle = field.statsStyle || 'bars'
   }
-  if (nextType !== 'reference') patch.referenceTableId = null
+  if (!isReferenceFieldType(nextType)) patch.referenceTableId = null
   await updateField(field.id, patch)
 }
 
@@ -170,7 +170,7 @@ function FieldRow({ field, allFields, sceneTables }) {
         </div>
       )}
 
-      {field.type === 'reference' && (
+      {isReferenceFieldType(field.type) && (
         <div className="field-row-section">
           <ReferenceTableEditor field={field} sceneTables={sceneTables || []} />
         </div>
@@ -326,7 +326,7 @@ function ReferenceTableEditor({ field, sceneTables }) {
   return (
     <div className="stats-mapping-editor">
       <div className="options-editor-header">
-        引用资料表：行编辑时会从该表选择一条记录，表格中显示被引用行的文本字段名称。
+        引用资料表：行编辑时会从该表选择一条或多条记录，表格中显示被引用行的文本字段名称。
       </div>
       <select
         className="select"
@@ -388,6 +388,37 @@ function ReferenceCellView({ field, value, onOpenReference }) {
   )
 }
 
+function ReferenceListCellView({ field, value, onOpenReference }) {
+  const { fields, rows } = useReferenceContext(field.referenceTableId)
+  const ids = Array.isArray(value) ? value : value ? [value] : []
+  if (ids.length === 0) return <span className="cell-empty">—</span>
+  const visibleIds = ids.slice(0, 6)
+  return (
+    <span className="reference-list">
+      {visibleIds.map((id) => {
+        const row = rows.find((r) => r.id === id)
+        const label = row ? referenceRowLabel(fields, row) : id
+        if (!row || !onOpenReference) return <span key={id} className="reference-tag">{label}</span>
+        return (
+          <button
+            key={id}
+            type="button"
+            className="reference-tag reference-tag-button"
+            onClick={(e) => {
+              e.stopPropagation()
+              onOpenReference({ field, row, fields, rows })
+            }}
+            title="查看引用资料"
+          >
+            {label}
+          </button>
+        )
+      })}
+      {ids.length > visibleIds.length && <span className="reference-tag">+{ids.length - visibleIds.length}</span>}
+    </span>
+  )
+}
+
 function ReferenceFieldInput({ field, value, onChange }) {
   const { fields, rows } = useReferenceContext(field.referenceTableId)
   if (!field.referenceTableId) {
@@ -409,6 +440,41 @@ function ReferenceFieldInput({ field, value, onChange }) {
         </option>
       ))}
     </select>
+  )
+}
+
+function ReferenceListFieldInput({ field, value, onChange }) {
+  const { fields, rows } = useReferenceContext(field.referenceTableId)
+  const selected = Array.isArray(value) ? value : value ? [value] : []
+  if (!field.referenceTableId) {
+    return (
+      <input
+        className="input"
+        value=""
+        placeholder="请先在字段管理中设置引用资料表"
+        disabled
+      />
+    )
+  }
+  function toggle(id) {
+    onChange(selected.includes(id) ? selected.filter((item) => item !== id) : [...selected, id])
+  }
+  return (
+    <div className="reference-list-input">
+      {rows.map((row) => {
+        const checked = selected.includes(row.id)
+        return (
+          <button
+            key={row.id}
+            type="button"
+            className={`reference-list-option ${checked ? 'selected' : ''}`}
+            onClick={() => toggle(row.id)}
+          >
+            {referenceRowLabel(fields, row)}
+          </button>
+        )
+      })}
+    </div>
   )
 }
 
@@ -488,6 +554,8 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
       return <span>{value || '—'}</span>
     case 'reference':
       return <ReferenceCellView field={field} value={value} onOpenReference={onOpenReference} />
+    case 'references':
+      return <ReferenceListCellView field={field} value={value} onOpenReference={onOpenReference} />
     default:
       return <span>{value == null ? '' : String(value)}</span>
   }
@@ -588,6 +656,8 @@ export function FieldInput({ field, value, onChange }) {
       )
     case 'reference':
       return <ReferenceFieldInput field={field} value={value} onChange={onChange} />
+    case 'references':
+      return <ReferenceListFieldInput field={field} value={value} onChange={onChange} />
     case 'text':
     default:
       return <input className="input" value={value || ''} onChange={(e) => onChange(e.target.value)} />

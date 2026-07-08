@@ -8,6 +8,7 @@ const SEED_TIME = '2026-01-01T00:00:00.000Z'
 
 const SCENE_ID = 'scene-rock-kingdom'
 const TABLE_ID = 'table-rock-kingdom-elf-basic'
+const SKILL_TABLE_ID = 'table-rock-kingdom-skills'
 export const ROCK_KINGDOM_ROWS_VERSION = 'official-d-json-2026-06-08'
 
 // 系别图标：使用洛克王国官方图鉴的公开静态资源地址，URL 中的文件名直接是
@@ -86,10 +87,51 @@ export const TRAIT_TAG_LEGACY_DEFAULTS = {
   special: { label: '特殊', color: '#d97706' },
 }
 
-function makeField(partial, order) {
+const SKILL_TAG_OPTIONS = [
+  { value: 'physicalMoves', label: '物攻技能', color: '#ea580c', image: '' },
+  { value: 'magicalMoves', label: '魔攻技能', color: '#c026d3', image: '' },
+  { value: 'mixedMoves', label: '双攻技能池', color: '#dc2626', image: '' },
+  { value: 'physicalLean', label: '物攻技能偏多', color: '#f97316', image: '' },
+  { value: 'magicalLean', label: '魔攻技能偏多', color: '#d946ef', image: '' },
+  { value: 'speed', label: '速度/先手', color: '#eab308', image: '' },
+  { value: 'slowBenefit', label: '后手收益', color: '#64748b', image: '' },
+  { value: 'control', label: '控制/异常', color: '#7c3aed', image: '' },
+  { value: 'support', label: '回复辅助', color: '#059669', image: '' },
+  { value: 'energyCycle', label: '能量循环', color: '#0d9488', image: '' },
+  { value: 'defense', label: '防御减伤', color: '#2563eb', image: '' },
+]
+
+const SKILL_CATEGORY_OPTIONS = [
+  {
+    value: 'physical',
+    label: '物攻',
+    color: '#ea580c',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/st/%E7%89%A9%E6%94%BB.png',
+  },
+  {
+    value: 'magical',
+    label: '魔攻',
+    color: '#c026d3',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/st/%E9%AD%94%E6%94%BB.png',
+  },
+  {
+    value: 'status',
+    label: '状态',
+    color: '#64748b',
+    image: 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/st/%E7%8A%B6%E6%80%81.png',
+  },
+]
+
+export const SKILL_CATEGORY_LEGACY_DEFAULTS = {
+  physical: { label: '物理', color: '#ea580c' },
+  magical: { label: '魔法', color: '#c026d3' },
+  status: { label: '状态', color: '#64748b' },
+}
+
+function makeField(partial, order, tableId = TABLE_ID, idPrefix = 'field-rock') {
   return normalizeField({
-    id: `field-rock-${partial.key}`,
-    tableId: TABLE_ID,
+    id: `${idPrefix}-${partial.key}`,
+    tableId,
     order,
     createdAt: SEED_TIME,
     updatedAt: SEED_TIME,
@@ -130,12 +172,26 @@ const fields = [
   ),
   makeField({ key: 'traitIcon', name: '特性图标', type: 'image' }, 10),
   makeField({ key: 'traitDesc', name: '特性描述', type: 'longtext' }, 11),
-  makeField({ key: 'hp', name: '生命', type: 'number', hidden: true }, 12),
-  makeField({ key: 'patk', name: '物攻', type: 'number', hidden: true }, 13),
-  makeField({ key: 'matk', name: '魔攻', type: 'number', hidden: true }, 14),
-  makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 15),
-  makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 16),
-  makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 17),
+  makeField({ key: 'skillTags', name: '技能标签', type: 'multiselect', options: SKILL_TAG_OPTIONS }, 12),
+  makeField({ key: 'skillRefs', name: '可用技能', type: 'references', referenceTableId: SKILL_TABLE_ID }, 13),
+  makeField({ key: 'hp', name: '生命', type: 'number', hidden: true }, 14),
+  makeField({ key: 'patk', name: '物攻', type: 'number', hidden: true }, 15),
+  makeField({ key: 'matk', name: '魔攻', type: 'number', hidden: true }, 16),
+  makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 17),
+  makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 18),
+  makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 19),
+]
+
+const skillFields = [
+  makeField({ key: 'image', name: '技能图标', type: 'image' }, 0, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'name', name: '技能名称', type: 'text' }, 1, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'element', name: '系别', type: 'select', options: ELEMENT_OPTIONS }, 2, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'category', name: '类型', type: 'select', options: SKILL_CATEGORY_OPTIONS }, 3, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'power', name: '威力', type: 'number' }, 4, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'cost', name: '能耗', type: 'number' }, 5, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'priority', name: '先制/速度', type: 'text' }, 6, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'effect', name: '效果', type: 'longtext' }, 7, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'learnerRefs', name: '可学精灵', type: 'references', referenceTableId: TABLE_ID }, 8, SKILL_TABLE_ID, 'field-rock-skill'),
 ]
 
 export const ROCK_KINGDOM_PRESET = {
@@ -157,6 +213,14 @@ export const ROCK_KINGDOM_PRESET = {
       createdAt: SEED_TIME,
       updatedAt: SEED_TIME,
     },
+    {
+      id: SKILL_TABLE_ID,
+      sceneId: SCENE_ID,
+      name: '技能资料',
+      order: 1,
+      createdAt: SEED_TIME,
+      updatedAt: SEED_TIME,
+    },
   ],
-  fields,
+  fields: [...fields, ...skillFields],
 }

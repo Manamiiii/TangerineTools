@@ -16,6 +16,12 @@ db.version(1).stores({
 })
 ```
 
+
+### 字段类型补充
+
+- `reference`：单条资料引用，值为目标行 id。
+- `references`：多条资料引用，值为目标行 id 数组；当前用于精灵 `skillRefs` 与技能 `learnerRefs`。该字段类型仍存储在 `catalogRows.values` 中，不需要新增 IndexedDB 表或索引。
+
 ### 表结构
 
 | 表 | 主键 | 索引 | 说明 |
@@ -35,17 +41,17 @@ db.version(1).stores({
 - 普通新建场景首次打开收集记录工具时，只创建空的收集记录表，不写入默认字段；洛克王国场景会补齐精灵收集字段，这是该预置场景自身的数据模板，不是全局模板。
 - 统计视图工具（仍沿用内部工具值 `stock`）不再创建固定字段表；它从当前场景的普通资料表和收集记录表中选择数据源，按字段分组并叠加数值阈值条件做即时统计。
 - `kind` 和 `collectionMode` 都是非索引属性（不在 `.stores()` 的索引串里），只在按 `sceneId` 查询后用 JS 过滤/读取，因此**没有引入 Dexie schema 版本变更**。
-- 资料库工具（`CatalogTool`）与性格推荐工具的资料带入面板（`RowImportPanel`）都会用 `.filter((t) => !t.kind)` 只保留普通资料表，避免收集记录表混入普通资料表选择器。
+- 资料库工具（`CatalogTool`）的普通资料表选择器会用 `.filter((t) => !t.kind)` 只保留普通资料表，避免收集记录表混入。性格推荐工具现在固定绑定洛克王国 `精灵基础资料` 表，并通过 `skillRefs` 读取技能资料，不再提供任意资料表选择。
 - 因为导出/导入是对整张 Dexie 表做全量操作（不区分 `kind`），`kind` 与 `collectionMode` 会随 `catalogTables` 记录本身一起被导出/导入，**无需任何额外的导出/导入代码改动**。
 
 ## 预置资料加载（播种）
 
 - 应用启动时 `App.jsx` 调用 `ensureSeeded()`。
 - 该函数检查 `meta` 表中 `seededRockKingdom` 是否已为 `true`；若不是，则先写入 `src/presets/rockKingdom.js` 中定义的洛克王国场景 / 默认资料表 / 字段结构。场景骨架只播种一次，不会覆盖用户后续的修改或删除。
-- 行数据通过 `fetch(`${BASE_URL}presets/rockKingdomRows.json`)` 拉取，文件放在 `public/` 下，不参与 JS 打包。拉取失败（如离线）时仅打印警告，不阻塞场景/表/字段骨架。
-- 目标行数据来源是洛克王国公开图鉴静态 JSON：`https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/d.json`。同步脚本 `npm run sync:rock` 会读取 `l` 基础条目，并展开每个条目详情里的 `forms` 独立形态，预期为 `375 + 121 = 496` 条预置资料。若官方源数量变化，脚本会输出实际统计并失败，避免硬塞成 496。
-- 精灵图、系别图标、特性图标均使用同源公开静态资源前缀 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/`，路径逐段 `encodeURIComponent` 编码；不使用本地 SVG 或 `data:image/svg+xml` 作为精灵图。
-- 系别字段使用 `multiselect` 类型，覆盖官方 18 个系别：普通/草/火/水/光/地/冰/龙/电/毒/虫/武/翼/萌/幽/恶/机械/幻，对应内部值为 `normal`/`grass`/`fire`/`water`/`light`/`earth`/`ice`/`dragon`/`electric`/`poison`/`bug`/`fighting`/`flying`/`cute`/`ghost`/`dark`/`mech`/`illusion`。
+- 精灵行数据通过 `fetch(`${BASE_URL}presets/rockKingdomRows.json`)` 拉取，技能行数据通过 `fetch(`${BASE_URL}presets/rockKingdomSkillRows.json`)` 拉取，文件放在 `public/` 下，不参与 JS 打包。拉取失败（如离线）时仅打印警告，不阻塞场景/表/字段骨架。
+- 目标行数据来源是洛克王国公开图鉴静态 JSON：`https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/d.json`。当前仓库保留了可信本地源 `scripts/data/rockKingdom.d.json`，用于执行环境无法访问源站时复现同步。同步脚本 `npm run sync:rock` 会读取 `l` 基础条目并展开详情里的 `forms` 独立形态，预期为 `375 + 121 = 496` 条精灵 / 形态资料；同时读取 `sk.s` / `sk.b` / `sk.t` 生成技能资料。若官方源数量变化，脚本会输出实际统计并失败，避免硬塞成 496。
+- 精灵图、系别图标、特性图标、技能图标、技能类型图标均使用同源公开静态资源前缀 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/`，路径逐段 `encodeURIComponent` 编码；不使用本地 SVG 或 `data:image/svg+xml` 作为精灵图。
+- 系别字段使用 `multiselect` 类型，覆盖官方 18 个系别：普通/草/火/水/光/地/冰/龙/电/毒/虫/武/翼/萌/幽/恶/机械/幻，对应内部值为 `normal`/`grass`/`fire`/`water`/`light`/`earth`/`ice`/`dragon`/`electric`/`poison`/`bug`/`fighting`/`flying`/`cute`/`ghost`/`dark`/`mech`/`illusion`。精灵行使用 `skillRefs` 多引用指向技能行；技能行使用 `learnerRefs` 多引用反向指向可学习该技能的精灵行。
 - 资料库、收集记录、统计视图三者关系：资料库是对象种类 / 图鉴 / 静态资料；收集记录是用户与这些资料项的一对一或一对多关系；统计视图从资料库和收集记录中即时汇总，不再为新场景创建固定字段统计表。
 - 预置资料迁移策略：
   1. 新安装 / 干净 IndexedDB 只会插入官方图鉴行，不应出现旧 `row-rock-*` 占位行。
@@ -108,4 +114,4 @@ UI 层（`App.jsx` 的 `GlobalDataActions`）在实际执行导入前会用 `Con
 - 增量导出（只导出变更部分）
 - 导入时的字段级合并或冲突提示（当前是整条记录覆盖，无冲突检测）
 - 基于 `schemaVersion` 的自动迁移
-- 洛克王国技能、进化链、属性克制、PVP 规则等对局向深度资料（当前预置资料只覆盖公开图鉴 d.json 可映射的基础资料、六维、特性、图片、系别、形态）
+- 洛克王国完整对战模拟、进化链、属性克制、PVP 规则等对局向深度功能（当前技能资料仅作为可查看资料与性格推荐输入，不做技能组合求解或配队模拟）

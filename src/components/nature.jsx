@@ -11,6 +11,9 @@ import { STATS_DIMENSIONS } from '../constants.js'
 import {
   evaluateAllNatures,
   explainNatureRecommendation,
+  extractSkillInfoFromReferenceRows,
+  extractSkillRefsFromRow,
+  extractSkillInfoFromRow,
   extractRowSummary,
   extractStatsFromRow,
   extractTraitTagsFromRow,
@@ -19,6 +22,7 @@ import {
   STAT_LABELS,
 } from '../domain/nature.js'
 import { TRAIT_TAG_OPTIONS } from '../presets/rockKingdom.js'
+import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
 import { EmptyState, FormRow } from './common.jsx'
 import { FieldInput } from './catalog.jsx'
 
@@ -27,7 +31,12 @@ const TRAIT_TAG_FIELD = { type: 'multiselect', options: TRAIT_TAG_OPTIONS }
 const TRAIT_TAG_LABELS = Object.fromEntries(TRAIT_TAG_OPTIONS.map((o) => [o.value, o.label]))
 
 export function NatureTool({ scene }) {
-  const [draftInput, setDraftInput] = useState({ name: '', stats: { ...EMPTY_STATS }, traitTags: [] })
+  const [draftInput, setDraftInput] = useState({
+    name: '',
+    stats: { ...EMPTY_STATS },
+    traitTags: [],
+    skillInfo: { skills: [] },
+  })
   const [input, setInput] = useState(draftInput)
   const [selectedIndex, setSelectedIndex] = useState(0)
 
@@ -35,11 +44,12 @@ export function NatureTool({ scene }) {
     setDraftInput((prev) => ({ ...prev, stats: { ...prev.stats, [key]: value } }))
   }
 
-  function handleImport({ name, stats, traitTags }) {
+  function handleImport({ name, stats, traitTags, skillInfo }) {
     const next = {
       name: name || '',
       stats: { ...EMPTY_STATS, ...stats },
       traitTags: traitTags || [],
+      skillInfo: skillInfo || { skills: [] },
     }
     setDraftInput(next)
     setInput(next)
@@ -52,8 +62,8 @@ export function NatureTool({ scene }) {
   )
   const hasAnyStat = STATS_DIMENSIONS.some((d) => numericStats[d.key] > 0)
   const candidates = useMemo(
-    () => evaluateAllNatures(numericStats, input.traitTags),
-    [numericStats, input.traitTags],
+    () => evaluateAllNatures(numericStats, input.traitTags, input.skillInfo),
+    [numericStats, input.traitTags, input.skillInfo],
   )
   // 输入变化后如果原选中下标越界（例如输入被清空、候选变少），回退到首选。
   useEffect(() => {
@@ -101,6 +111,12 @@ export function NatureTool({ scene }) {
           />
         </FormRow>
 
+        <FormRow label="技能关联" hint="从精灵基础资料选择后，会通过「可用技能」引用读取技能资料参与分析">
+          <div className="nature-linked-skills">
+            已关联 {draftInput.skillInfo?.skills?.length || 0} 个技能
+          </div>
+        </FormRow>
+
         <div className="nature-manual-actions">
           <button
             type="button"
@@ -143,32 +159,35 @@ export function NatureTool({ scene }) {
 // 从场景已有资料表中选择一行，带入名称/六维/特性标签。
 // 场景下没有任何资料表时返回 null，保证性格工具可以完全独立使用。
 function RowImportPanel({ scene, onImport }) {
-  const tables = useLiveQuery(
-    () =>
-      db.catalogTables
-        .where('sceneId')
-        .equals(scene.id)
-        .filter((t) => !t.kind)
-        .sortBy('order'),
+  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const skillTableId = ROCK_KINGDOM_PRESET.tables[1].id
+  const creatureTable = useLiveQuery(
+    () => db.catalogTables.get(creatureTableId),
     [scene.id],
   )
-  const [tableId, setTableId] = useState(null)
   const [rowId, setRowId] = useState(null)
 
-  const activeTableId = tableId || tables?.[0]?.id || null
-
   const fields = useLiveQuery(
-    () =>
-      activeTableId ? db.catalogFields.where('tableId').equals(activeTableId).sortBy('order') : [],
-    [activeTableId],
+    () => db.catalogFields.where('tableId').equals(creatureTableId).sortBy('order'),
+    [creatureTableId],
   )
   const rows = useLiveQuery(
-    () => (activeTableId ? db.catalogRows.where('tableId').equals(activeTableId).toArray() : []),
-    [activeTableId],
+    () => db.catalogRows.where('tableId').equals(creatureTableId).toArray(),
+    [creatureTableId],
+  )
+  const skillRows = useLiveQuery(
+    () => db.catalogRows.where('tableId').equals(skillTableId).toArray(),
+    [skillTableId],
   )
 
-  if (!tables || tables.length === 0) return null
-  if (!fields || !rows) return null
+  if (creatureTable === undefined || !fields || !rows || !skillRows) return null
+  if (!creatureTable) {
+    return (
+      <div className="nature-import-panel nature-import-empty">
+        未找到洛克王国「精灵基础资料」表，可先等待预置资料初始化完成，或直接手动输入六维后计算。
+      </div>
+    )
+  }
 
   const summaries = rows.map((row) => ({ row, summary: extractRowSummary(row, fields) }))
 
@@ -177,28 +196,17 @@ function RowImportPanel({ scene, onImport }) {
     const summary = extractRowSummary(target, fields)
     const stats = extractStatsFromRow(target, fields)
     const traitTags = extractTraitTagsFromRow(target, fields)
-    onImport({ name: summary.name, stats, traitTags })
+    const skillRefs = extractSkillRefsFromRow(target, fields)
+    const referencedSkillRows = skillRows.filter((row) => skillRefs.includes(row.id))
+    const skillInfo = referencedSkillRows.length > 0
+      ? extractSkillInfoFromReferenceRows(referencedSkillRows)
+      : extractSkillInfoFromRow(target, fields)
+    onImport({ name: summary.name, stats, traitTags, skillInfo })
   }
 
   return (
     <div className="nature-import-panel">
       <div className="nature-import-row">
-        {tables.length > 1 && (
-          <select
-            className="select"
-            value={activeTableId || ''}
-            onChange={(e) => {
-              setTableId(e.target.value)
-              setRowId(null)
-            }}
-          >
-            {tables.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
-            ))}
-          </select>
-        )}
         <select
           className="select"
           value={rowId || ''}
@@ -257,7 +265,7 @@ function NatureCandidateList({ candidates, activeIndex, onSelect }) {
                           {NATURE_DECISION_LABELS[c.decision]}
                         </span>
                         <span className="nature-candidate-name">{natureName(c)}</span>
-                        <span className="nature-candidate-role">{candidateBenefitSummary(c)}</span>
+                        <span className="nature-candidate-role">{natureModifierSummary(c)}</span>
                         <span className="nature-candidate-score">{c.score.toFixed(1)}</span>
                       </button>
                     </li>
@@ -279,8 +287,13 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
   return (
     <div className="nature-result">
       <div className="nature-result-header">
-        <Sparkles size={18} />
-        <span className="nature-result-title">{natureName(nature)}</span>
+        <span className="nature-result-icon"><Sparkles size={16} /></span>
+        <div className="nature-result-title-wrap">
+          <span className="nature-result-title">{natureName(nature)}</span>
+          <span className="nature-result-subtitle">
+            {natureModifierSummary(nature)} · 评分 {nature.score.toFixed(1)}
+          </span>
+        </div>
         <span className={`nature-candidate-tag ${nature.decision}`}>
           {NATURE_DECISION_LABELS[nature.decision]}
         </span>
@@ -298,6 +311,17 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
       </div>
 
       <p className="nature-result-reason">{reasoning}</p>
+
+      {nature.skillProfile && (
+        <div className="nature-skill-note">
+          <strong>技能线索</strong>
+          <span>{nature.skillProfile.summary}</span>
+          <span className="nature-skill-breakdown">
+            物攻 {nature.skillProfile.breakdown.physicalCount} 个 / 魔攻 {nature.skillProfile.breakdown.magicalCount} 个 / 状态 {nature.skillProfile.breakdown.statusCount} 个；
+            攻击技能平均威力 {nature.skillProfile.breakdown.attackAveragePower.toFixed(0)}
+          </span>
+        </div>
+      )}
 
       {speedProfile && (
         <div className={`nature-speed-note ${speedProfile.concern.level}`}>
@@ -337,18 +361,12 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
   )
 }
 
-function candidateBenefitSummary(candidate) {
+function natureModifierSummary(candidate) {
   const raiseDelta = candidate.deltas?.[candidate.raise] || 0
   const lowerDelta = candidate.deltas?.[candidate.lower] || 0
-  const warning = candidate.dominatedBy ? `被 ${candidate.dominatedBy} 支配` : candidate.warnings?.[0]
-  if (warning && candidate.decision === 'notRecommended') return warning
-  if (candidate.raise === 'spd') {
-    return `增益速度 ${raiseDelta > 0 ? `+${raiseDelta}` : raiseDelta} / ${candidate.speedProfile?.concern.label || '速度关注'}`
-  }
-  if (candidate.lower === 'spd') {
-    return `牺牲速度 ${lowerDelta} / ${candidate.speedProfile?.concern.label || '速度关注'}`
-  }
-  return `增益 ${STAT_LABELS[candidate.raise]} ${raiseDelta > 0 ? `+${raiseDelta}` : raiseDelta} / 代价 ${STAT_LABELS[candidate.lower]} ${lowerDelta}`
+  const raiseText = `${STAT_LABELS[candidate.raise]} ${raiseDelta > 0 ? `+${raiseDelta}` : raiseDelta}`
+  const lowerText = `${STAT_LABELS[candidate.lower]} ${lowerDelta}`
+  return `${raiseText} / ${lowerText}`
 }
 
 function NatureStatsBars({ nature, baseStats, adjustedStats }) {

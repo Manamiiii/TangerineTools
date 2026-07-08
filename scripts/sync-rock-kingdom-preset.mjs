@@ -2,6 +2,7 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import { createHash } from 'node:crypto'
 
 const SOURCE_URL = 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/d.json'
 const ASSET_BASE = 'https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/'
@@ -16,6 +17,7 @@ const ELEMENT_VALUES = [...ELEMENT_MAP.values()]
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '..')
 const outputPath = path.join(repoRoot, 'public/presets/rockKingdomRows.json')
+const skillOutputPath = path.join(repoRoot, 'public/presets/rockKingdomSkillRows.json')
 
 function fullUrl(assetPath) {
   if (!assetPath) return ''
@@ -57,6 +59,28 @@ function deriveTags(desc, stats = {}) {
   return tags.length > 0 ? tags : ['special']
 }
 
+function deriveSkillTags(skillTexts = []) {
+  const tags = []
+  const add = (tag) => {
+    if (!tags.includes(tag)) tags.push(tag)
+  }
+  const skillJoined = skillTexts.join('\n')
+  const physicalSkillCount = skillTexts.filter((text) => /物攻|物理|物伤/.test(text)).length
+  const magicalSkillCount = skillTexts.filter((text) => /魔攻|魔法|魔伤/.test(text)).length
+  if (physicalSkillCount > 0) add('physicalMoves')
+  if (magicalSkillCount > 0) add('magicalMoves')
+  if (physicalSkillCount >= 4 && magicalSkillCount >= 4) add('mixedMoves')
+  if (physicalSkillCount >= magicalSkillCount + 3) add('physicalLean')
+  if (magicalSkillCount >= physicalSkillCount + 3) add('magicalLean')
+  if (/先手|迅捷|速度\+|速度-/.test(skillJoined)) add('speed')
+  if (/后手|反击|受到攻击后|承受.*后/.test(skillJoined)) add('slowBenefit')
+  if (/中毒|冻结|麻痹|眩晕|恐惧|睡眠|控制|驱散|打断/.test(skillJoined)) add('control')
+  if (/回复|生命|治疗|吸血/.test(skillJoined)) add('support')
+  if (/能量|能耗|迸发|传动/.test(skillJoined)) add('energyCycle')
+  if (/防御|护盾|减伤|承伤/.test(skillJoined)) add('defense')
+  return tags
+}
+
 function pickEvoValue(detail, sourceId, key) {
   const evo = Array.isArray(detail?.evo) ? detail.evo : []
   const matched = evo.find((item) => String(item.i) === String(sourceId))
@@ -66,6 +90,63 @@ function pickEvoValue(detail, sourceId, key) {
 function parseNoFromImage(img) {
   const matched = img?.match(/NO\.(\d+)/)
   return matched ? `NO.${matched[1]}` : ''
+}
+
+function skillId(name) {
+  return `rock-skill-${createHash('sha1').update(String(name)).digest('hex').slice(0, 12)}`
+}
+
+function skillLearnTypeLabel(kind) {
+  return { s: '自带', b: '血脉', t: '技能石' }[kind] || kind
+}
+
+function skillCategoryValue(tp) {
+  if (/物理|物攻/.test(tp || '')) return 'physical'
+  if (/魔法|魔攻|特殊/.test(tp || '')) return 'magical'
+  if (/变化|状态|辅助|防御/.test(tp || '')) return 'status'
+  return ''
+}
+
+function toNumberOrBlank(value) {
+  if (value == null || value === '') return ''
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : ''
+}
+
+function parsePriority(skill) {
+  const text = [skill.ef, skill.nm].filter(Boolean).join(' ')
+  const matched = text.match(/先手\s*([+-]?\d+)/)
+  return matched ? `先手${matched[1]}` : ''
+}
+
+function skillElementValue(el) {
+  if (!el) return ''
+  return ELEMENT_MAP.get(el) || ''
+}
+
+function normalizeSkillList(detail) {
+  const result = []
+  for (const kind of ['s', 'b', 't']) {
+    const list = Array.isArray(detail?.sk?.[kind]) ? detail.sk[kind] : []
+    for (const skill of list) {
+      if (!skill?.nm) continue
+      result.push({ ...skill, learnKind: kind })
+    }
+  }
+  return result
+}
+
+function skillText(skill) {
+  const pieces = [
+    `${skillLearnTypeLabel(skill.learnKind)}${skill.lv != null ? `Lv.${skill.lv}` : ''}`,
+    skill.nm,
+    skill.tp,
+    skill.el,
+    skill.ec != null ? `能耗${skill.ec}` : '',
+    skill.pw != null ? `威力${skill.pw}` : '',
+    skill.ef,
+  ].filter(Boolean)
+  return pieces.join('｜')
 }
 
 async function loadSource() {
@@ -95,11 +176,12 @@ function assertSourceShape(data) {
   if (!Array.isArray(data?.e)) throw new Error('数据源结构异常：缺少系别数组 e')
   if (!data?._em || typeof data._em !== 'object') throw new Error('数据源结构异常：缺少系别图标映射 _em')
   if (!data?._tm || typeof data._tm !== 'object') throw new Error('数据源结构异常：缺少特性图标映射 _tm')
+  if (!data?._skm || typeof data._skm !== 'object') throw new Error('数据源结构异常：缺少技能图标映射 _skm')
 }
 
 function makeRow(data, source, base) {
   const sourceId = source.i
-  const detail = data.d[String(sourceId)] || {}
+  const detail = data.d[String(sourceId)] || source || {}
   const no = source.n || base.n || parseNoFromImage(source.img) || parseNoFromImage(base.img)
   const element = [source.e || base.e, source.e2 || base.e2].filter(Boolean).map((cn) => {
     const value = ELEMENT_MAP.get(cn)
@@ -107,6 +189,8 @@ function makeRow(data, source, base) {
     return value
   })
   const traitName = detail.tn || ''
+  const skills = normalizeSkillList(detail)
+  const skillTexts = skills.map(skillText)
   return {
     id: `rock-creature-src-${String(sourceId).padStart(3, '0')}`,
     values: {
@@ -128,6 +212,8 @@ function makeRow(data, source, base) {
       }),
       traitIcon: traitName && data._tm[traitName] ? fullUrl(data._tm[traitName]) : '',
       traitDesc: detail.te || '',
+      skillTags: deriveSkillTags(skillTexts),
+      skillRefs: [...new Set(skills.map((skill) => skillId(skill.nm)))],
       hp: detail.hp ?? 0,
       patk: detail.atk ?? 0,
       matk: detail.matk ?? 0,
@@ -136,6 +222,45 @@ function makeRow(data, source, base) {
       spd: detail.spd ?? 0,
     },
   }
+}
+
+function buildSkillRows(data) {
+  const byId = new Map()
+  for (const base of data.l) {
+    const detail = data.d[String(base.i)] || {}
+    const sources = [
+      { source: base, detail },
+      ...(detail.forms || []).map((form) => ({ source: form, detail: data.d[String(form.i)] || form })),
+    ]
+    for (const { source, detail: sourceDetail } of sources) {
+      for (const skill of normalizeSkillList(sourceDetail)) {
+        const id = skillId(skill.nm)
+        const existing = byId.get(id)
+        const learnerId = `rock-creature-src-${String(source.i).padStart(3, '0')}`
+        if (existing) {
+          if (learnerId && !existing.values.learnerRefs.includes(learnerId)) {
+            existing.values.learnerRefs.push(learnerId)
+          }
+          continue
+        }
+        byId.set(id, {
+          id,
+          values: {
+            image: skill.nm && data._skm[skill.nm] ? fullUrl(data._skm[skill.nm]) : '',
+            name: skill.nm,
+            element: skillElementValue(skill.el),
+            category: skillCategoryValue(skill.tp),
+            power: toNumberOrBlank(skill.pw),
+            cost: toNumberOrBlank(skill.ec),
+            priority: parsePriority(skill),
+            effect: skill.ef || '',
+            learnerRefs: learnerId ? [learnerId] : [],
+          },
+        })
+      }
+    }
+  }
+  return [...byId.values()].sort((a, b) => String(a.values.name).localeCompare(String(b.values.name), 'zh-Hans-CN'))
 }
 
 function buildRows(data) {
@@ -173,6 +298,9 @@ function printStats(rows, baseCount, formCount) {
 const data = await loadSource()
 assertSourceShape(data)
 const { rows, baseCount, formCount } = buildRows(data)
+const skillRows = buildSkillRows(data)
 printStats(rows, baseCount, formCount)
 await writeFile(outputPath, `${JSON.stringify(rows, null, 2)}\n`, 'utf8')
+await writeFile(skillOutputPath, `${JSON.stringify(skillRows, null, 2)}\n`, 'utf8')
 console.log(`wrote ${path.relative(repoRoot, outputPath)}`)
+console.log(`wrote ${path.relative(repoRoot, skillOutputPath)} (${skillRows.length} skills)`)

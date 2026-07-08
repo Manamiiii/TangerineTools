@@ -6,6 +6,7 @@ import {
   ELEMENT_LEGACY_DEFAULTS,
   ROCK_KINGDOM_PRESET,
   ROCK_KINGDOM_ROWS_VERSION,
+  SKILL_CATEGORY_LEGACY_DEFAULTS,
   TRAIT_TAG_LEGACY_DEFAULTS,
 } from './presets/rockKingdom.js'
 import { STOCK_FIXED_FIELDS, STOCK_TABLE_NAME } from './domain/stock.js'
@@ -35,8 +36,12 @@ export async function ensureSeeded() {
   // 以下几步在每次启动时都会执行（不受 seededRockKingdom 一次性标记限制），
   // 目的是让"已经播种过"的老用户也能安全地补齐后续新增的字段选项/预置行/默认工具，
   // 同时尊重用户已删除的场景/资料表、已有的自定义编辑，不做覆盖式重置。
+  await migrateRockKingdomStructure()
+  await migrateRockKingdomSkillReferenceFields()
+  await migrateRockKingdomSkillTableFields()
   await migrateRockKingdomFieldOptions()
   await migrateRockKingdomRows()
+  await migrateRockKingdomSkillRows()
   await migrateRockKingdomSceneTools()
 }
 
@@ -80,6 +85,84 @@ async function seedRockKingdomStructure() {
   })
 }
 
+async function migrateRockKingdomStructure() {
+  const scene = await db.scenes.get(ROCK_KINGDOM_PRESET.scene.id)
+  if (!scene) return
+  const now = nowIso()
+  const existingTables = await db.catalogTables
+    .where('sceneId')
+    .equals(ROCK_KINGDOM_PRESET.scene.id)
+    .toArray()
+  const existingTableIds = new Set(existingTables.map((table) => table.id))
+  let nextTableOrder = existingTables.length
+    ? Math.max(...existingTables.map((table) => table.order ?? 0)) + 1
+    : 0
+
+  await db.transaction('rw', db.catalogTables, db.catalogFields, async () => {
+    for (const presetTable of ROCK_KINGDOM_PRESET.tables) {
+      if (existingTableIds.has(presetTable.id)) continue
+      await db.catalogTables.put({
+        ...presetTable,
+        order: nextTableOrder,
+        createdAt: now,
+        updatedAt: now,
+      })
+      existingTableIds.add(presetTable.id)
+      nextTableOrder += 1
+    }
+
+    for (const tableId of existingTableIds) {
+      const existingFields = await db.catalogFields.where('tableId').equals(tableId).toArray()
+      const existingFieldIds = new Set(existingFields.map((field) => field.id))
+      const existingKeys = new Set(existingFields.map((field) => field.key))
+      let nextFieldOrder = existingFields.length
+        ? Math.max(...existingFields.map((field) => field.order ?? 0)) + 1
+        : 0
+      for (const presetField of ROCK_KINGDOM_PRESET.fields.filter((field) => field.tableId === tableId)) {
+        if (existingFieldIds.has(presetField.id) || existingKeys.has(presetField.key)) continue
+        await db.catalogFields.put({
+          ...presetField,
+          order: nextFieldOrder,
+          createdAt: now,
+          updatedAt: now,
+        })
+        nextFieldOrder += 1
+      }
+    }
+  })
+}
+
+async function migrateRockKingdomSkillReferenceFields() {
+  const tableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const table = await db.catalogTables.get(tableId)
+  if (!table) return
+  const deprecatedKeys = new Set(['skills', 'coreSkill'])
+  const fields = await db.catalogFields.where('tableId').equals(tableId).toArray()
+  const deprecatedFieldIds = fields
+    .filter((field) => deprecatedKeys.has(field.key))
+    .map((field) => field.id)
+  if (deprecatedFieldIds.length === 0) return
+  await db.transaction('rw', db.catalogFields, async () => {
+    await db.catalogFields.bulkDelete(deprecatedFieldIds)
+  })
+}
+
+async function migrateRockKingdomSkillTableFields() {
+  const table = ROCK_KINGDOM_PRESET.tables.find((item) => item.id === 'table-rock-kingdom-skills')
+  if (!table) return
+  const existingTable = await db.catalogTables.get(table.id)
+  if (!existingTable) return
+  const deprecatedKeys = new Set(['categoryIcon', 'learnMethod', 'learnLevel', 'learners'])
+  const fields = await db.catalogFields.where('tableId').equals(table.id).toArray()
+  const deprecatedFieldIds = fields
+    .filter((field) => deprecatedKeys.has(field.key))
+    .map((field) => field.id)
+  if (deprecatedFieldIds.length === 0) return
+  await db.transaction('rw', db.catalogFields, async () => {
+    await db.catalogFields.bulkDelete(deprecatedFieldIds)
+  })
+}
+
 // 为已存在的洛克王国字段（如特性标签）补齐预置里新增的选项，并且只在用户
 // 尚未自定义过旧选项时才更新其展示名/颜色。字段本身已被用户删除时跳过，
 // 不做任何恢复。
@@ -93,7 +176,9 @@ async function migrateRockKingdomFieldOptions() {
         ? TRAIT_TAG_LEGACY_DEFAULTS
         : presetField.key === 'element'
           ? ELEMENT_LEGACY_DEFAULTS
-          : {}
+          : presetField.tableId === 'table-rock-kingdom-skills' && presetField.key === 'category'
+            ? SKILL_CATEGORY_LEGACY_DEFAULTS
+            : {}
     const mergedOptions = mergeFieldOptions(existingField.options, presetField.options, legacyDefaults)
     if (JSON.stringify(mergedOptions) !== JSON.stringify(existingField.options)) {
       await db.catalogFields.update(presetField.id, { options: mergedOptions, updatedAt: nowIso() })
@@ -193,6 +278,35 @@ async function migrateRockKingdomRows() {
   } catch (err) {
     // 预置资料离线或抓取失败时，骨架仍应可用。不能用 mock 数据兜底。
     console.warn('加载洛克王国预置资料行失败：', err)
+  }
+}
+
+async function migrateRockKingdomSkillRows() {
+  const table = ROCK_KINGDOM_PRESET.tables.find((item) => item.id === 'table-rock-kingdom-skills')
+  if (!table) return
+  const existingTable = await db.catalogTables.get(table.id)
+  if (!existingTable) return
+  try {
+    const res = await fetch(`${import.meta.env.BASE_URL}presets/rockKingdomSkillRows.json`)
+    if (!res.ok) return
+    const presetRows = await res.json()
+    const now = nowIso()
+    const rowsToPut = (Array.isArray(presetRows) ? presetRows : [])
+      .filter((row) => row.id)
+      .map((row) => ({
+        id: row.id,
+        tableId: table.id,
+        values: row.values || {},
+        createdAt: row.createdAt || now,
+        updatedAt: row.updatedAt || now,
+      }))
+    if (rowsToPut.length === 0) return
+    await db.transaction('rw', db.catalogRows, db.meta, async () => {
+      await db.catalogRows.bulkPut(rowsToPut)
+      await db.meta.put({ key: 'rockKingdomSkillRowsVersion', value: ROCK_KINGDOM_ROWS_VERSION })
+    })
+  } catch (err) {
+    console.warn('加载洛克王国技能预置资料行失败：', err)
   }
 }
 

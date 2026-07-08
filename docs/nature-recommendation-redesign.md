@@ -170,7 +170,7 @@ type NatureEvaluation = {
 ### 顶部输入区
 
 - 左侧：六维输入，保持现有手动输入。
-- 右侧：资料库带入，保持只选择普通资料表。
+- 右侧：洛克王国精灵资料带入，固定读取「精灵基础资料」；技能通过 `skillRefs` 关联「技能资料」后自动参与分析。
 - 输入区下方：展示识别到的定位标签与一句摘要：
   - 示例：`主要定位：物攻输出 / 高速先手`
   - 示例：`理由：物攻与速度处于六维前列，特性标签也偏向先手输出。`
@@ -225,16 +225,16 @@ type NatureEvaluation = {
 - `analyzeStats(baseStats)`：输出基础强弱、速度、耐久和攻向分析。
 - `inferRoles(baseStats, traitTags)`：输出定位标签、权重和说明。
 - `evaluateNatureCandidate(candidate, context)`：评价单个候选。
-- `evaluateAllNatures(baseStats, traitTags, skillTags)`：返回全部 30 个合法候选，带结论分档、支配关系和解释。
+- `evaluateAllNatures(baseStats, traitTags, skillInfo)`：返回全部 30 个合法候选，带结论分档、支配关系、技能分析和解释。
 - 保留 `applyNatureModifier` 和 `natureName`，避免一次性牵动 UI 太多。
 
 ### 2. 组件层：`src/components/nature.jsx`
 
 分阶段改造：
-
-1. 先把候选数量从 top-N 改为全部候选。
-2. 再增加结论徽章与分组展示。
-3. 最后替换结果详情为条形六维对比 + 推荐理由 / 风险列表。
+1. 已完成：候选数量从 top-N 改为全部候选。
+2. 已完成：增加推荐 / 可保留 / 不推荐结论徽章与分组展示。
+3. 已完成：结果详情使用条形六维对比、推荐理由、风险列表、速度线与技能摘要。
+4. 下一轮重点：基于样例精灵校准规则权重、支配规则、技能质量判断和速度线公式。
 
 ### 3. 样式层：`src/styles.css`
 
