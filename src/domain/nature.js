@@ -278,12 +278,25 @@ export function analyzeSkillInfo(skillInfo = {}) {
   const magicalItems = items.filter(isMagicalItem)
   const statusItems = items.filter((item) => isStatusItem(item) && !isPhysicalItem(item) && !isMagicalItem(item))
   const attackItems = [...physicalItems, ...magicalItems]
+  const powersOf = (list) =>
+    list.map((item) => Number(item.power)).filter((value) => Number.isFinite(value) && value > 0)
   const averagePower = (list) => {
-    const powers = list.map((item) => Number(item.power)).filter((value) => Number.isFinite(value) && value > 0)
+    const powers = powersOf(list)
     return powers.length ? powers.reduce((sum, value) => sum + value, 0) / powers.length : 0
   }
+  const maxPower = (list) => Math.max(0, ...powersOf(list))
   const hasPhysical = physicalItems.length > 0 || /物理|物攻|近战|攻击技能/.test(joined)
   const hasMagical = magicalItems.length > 0 || /魔法|魔攻|法术|特殊/.test(joined)
+  const physicalAveragePower = averagePower(physicalItems)
+  const magicalAveragePower = averagePower(magicalItems)
+  const physicalMaxPower = maxPower(physicalItems)
+  const magicalMaxPower = maxPower(magicalItems)
+  const physicalQuality = physicalItems.length * 0.9 + physicalAveragePower / 45 + physicalMaxPower / 90
+  const magicalQuality = magicalItems.length * 0.9 + magicalAveragePower / 45 + magicalMaxPower / 90
+  const qualityGap = physicalQuality - magicalQuality
+  const qualityAttackMode = Math.abs(qualityGap) >= 1.4
+    ? qualityGap > 0 ? 'physical' : 'magical'
+    : hasPhysical && hasMagical ? 'mixed' : hasPhysical ? 'physical' : hasMagical ? 'magical' : 'unknown'
   const speedRequired = /先手|先于|优先|抢先|高速|先制/.test(joined)
   const backLoaded = /后手|后攻|受到攻击后|承受.*后|反击/.test(joined)
   const control = /控制|异常|中毒|麻痹|冰冻|睡眠|恐惧|混乱|沉默|束缚/.test(joined)
@@ -296,7 +309,8 @@ export function analyzeSkillInfo(skillInfo = {}) {
     texts,
     hasPhysical,
     hasMagical,
-    attackMode: hasPhysical && hasMagical ? 'mixed' : hasPhysical ? 'physical' : hasMagical ? 'magical' : 'unknown',
+    attackMode: qualityAttackMode,
+    qualityGap: Math.round(qualityGap * 10) / 10,
     speedRequired,
     backLoaded,
     control,
@@ -308,16 +322,19 @@ export function analyzeSkillInfo(skillInfo = {}) {
       magicalCount: magicalItems.length,
       statusCount: statusItems.length,
       attackCount: attackItems.length,
-      physicalAveragePower: averagePower(physicalItems),
-      magicalAveragePower: averagePower(magicalItems),
+      physicalAveragePower,
+      magicalAveragePower,
+      physicalMaxPower,
+      magicalMaxPower,
       attackAveragePower: averagePower(attackItems),
       physicalShare: attackItems.length ? physicalItems.length / attackItems.length : 0,
       magicalShare: attackItems.length ? magicalItems.length / attackItems.length : 0,
     },
     summary: texts.length > 0
       ? `已读取 ${texts.length} 条技能线索：${[
-        hasPhysical && '物理',
-        hasMagical && '魔法',
+        qualityAttackMode === 'physical' && '物理质量更高',
+        qualityAttackMode === 'magical' && '魔法质量更高',
+        qualityAttackMode === 'mixed' && '双攻',
         speedRequired && '先手',
         backLoaded && '后手',
         control && '控制',
@@ -466,9 +483,9 @@ export function inferRoles(baseStats = {}, traitTags = [], skillInfo = {}) {
     addRole('support', 1.2, '特性标签支持辅助/返场')
   }
   if (traitTags.includes('energyCycle')) addRole('energyCycle', 1.3, '特性标签支持能量循环')
-  if (skillProfile.attackMode === 'physical') addRole('physicalAttacker', 1.4, '技能线索偏物理输出')
-  if (skillProfile.attackMode === 'magical') addRole('magicalAttacker', 1.4, '技能线索偏魔法输出')
-  if (skillProfile.attackMode === 'mixed') addRole('mixedAttacker', 1.1, '技能线索同时覆盖物理与魔法')
+  if (skillProfile.attackMode === 'physical') addRole('physicalAttacker', 1.5, '技能数量与威力质量偏物理输出')
+  if (skillProfile.attackMode === 'magical') addRole('magicalAttacker', 1.5, '技能数量与威力质量偏魔法输出')
+  if (skillProfile.attackMode === 'mixed') addRole('mixedAttacker', 1.1, '技能质量同时覆盖物理与魔法')
   if (skillProfile.speedRequired || skillProfile.control) {
     addRole('fastAttacker', 1.1, '技能线索强调先手/控制节奏')
   }
@@ -578,20 +595,20 @@ export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [
     reasons.push('强化魔防可把已有魔法耐久优势做成专项防御手')
   }
   if (skillProfile.attackMode === 'physical' && candidate.raise === 'patk') {
-    score += 10
-    reasons.push('技能线索偏物理输出，强化物攻更贴合技能组')
+    score += 12
+    reasons.push(`技能数量与威力质量偏物理输出（质量差 ${skillProfile.qualityGap}），强化物攻更贴合技能组`)
   }
   if (skillProfile.attackMode === 'magical' && candidate.raise === 'matk') {
-    score += 10
-    reasons.push('技能线索偏魔法输出，强化魔攻更贴合技能组')
+    score += 12
+    reasons.push(`技能数量与威力质量偏魔法输出（质量差 ${Math.abs(skillProfile.qualityGap)}），强化魔攻更贴合技能组`)
   }
   if (skillProfile.attackMode === 'physical' && candidate.lower === 'patk') {
-    score -= 18
-    warnings.push('技能线索偏物理输出，弱化物攻存在冲突')
+    score -= 22
+    warnings.push('技能数量与威力质量偏物理输出，弱化物攻存在冲突')
   }
   if (skillProfile.attackMode === 'magical' && candidate.lower === 'matk') {
-    score -= 18
-    warnings.push('技能线索偏魔法输出，弱化魔攻存在冲突')
+    score -= 22
+    warnings.push('技能数量与威力质量偏魔法输出，弱化魔攻存在冲突')
   }
   if (skillProfile.backLoaded && candidate.lower === 'spd') {
     score += 10
