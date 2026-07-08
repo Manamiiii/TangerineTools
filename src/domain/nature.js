@@ -41,6 +41,14 @@ export const SPEED_TIER_LABELS = {
   elite: '超高速',
 }
 
+// 预置资料的速度并非连续分布，而是集中在一批固定/半固定速度点上。
+// 速度线展示时使用这些锚点，避免只按连续百分位误判“刚好跨线”的价值。
+export const SPEED_ANCHORS = [
+  26, 30, 33, 35, 36, 39, 40, 42, 44, 45, 48, 50, 51, 52, 54, 55, 56, 57, 60, 63,
+  64, 65, 66, 68, 69, 70, 72, 75, 76, 78, 80, 81, 84, 85, 88, 90, 92, 95,
+  96, 100, 104, 105, 108, 110, 115, 120, 125, 130, 135, 145,
+]
+
 export const NATURE_DECISION_LABELS = {
   recommended: '推荐',
   keepable: '可保留',
@@ -133,6 +141,20 @@ function percentileLabel(key, value) {
   return ['极低', '偏低', '中低', '中高', '较高', '顶级'][score]
 }
 
+
+export function nearestSpeedAnchor(value) {
+  const numeric = Number(value) || 0
+  return SPEED_ANCHORS.reduce((best, current) =>
+    Math.abs(current - numeric) < Math.abs(best - numeric) ? current : best,
+  )
+}
+
+export function crossedSpeedAnchors(from, to) {
+  const start = Math.min(from, to)
+  const end = Math.max(from, to)
+  return SPEED_ANCHORS.filter((anchor) => anchor > start && anchor <= end)
+}
+
 export function speedTier(value) {
   const score = percentileScore('spd', Number(value) || 0)
   return [
@@ -213,6 +235,9 @@ export function analyzeStats(baseStats = {}) {
       baseTier: speedTier(stats.spd),
       raisedTier: speedTier(Math.round(stats.spd * 1.1)),
       loweredTier: speedTier(Math.round(stats.spd * 0.9)),
+      nearestAnchor: nearestSpeedAnchor(stats.spd),
+      raisedCrossedAnchors: crossedSpeedAnchors(stats.spd, Math.round(stats.spd * 1.1)),
+      loweredCrossedAnchors: crossedSpeedAnchors(Math.round(stats.spd * 0.9), stats.spd),
     },
   }
 }
@@ -334,11 +359,11 @@ export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [
 
   if (candidate.raise === 'spd' && analysis.speed.raisedTier !== analysis.speed.baseTier) {
     score += 8
-    reasons.push(`速度 ${analysis.speed.base} → ${analysis.speed.raised}，从${analysis.speed.baseTier}提升到${analysis.speed.raisedTier}`)
+    reasons.push(`速度 ${analysis.speed.base} → ${analysis.speed.raised}，跨过速度线 ${analysis.speed.raisedCrossedAnchors.join(' / ') || '无'}，从${analysis.speed.baseTier}提升到${analysis.speed.raisedTier}`)
   }
   if (candidate.lower === 'spd' && analysis.speed.loweredTier !== analysis.speed.baseTier) {
     score -= 12
-    warnings.push(`速度 ${analysis.speed.base} → ${analysis.speed.lowered}，从${analysis.speed.baseTier}跌到${analysis.speed.loweredTier}`)
+    warnings.push(`速度 ${analysis.speed.base} → ${analysis.speed.lowered}，失去速度线 ${analysis.speed.loweredCrossedAnchors.join(' / ') || '无'}，从${analysis.speed.baseTier}跌到${analysis.speed.loweredTier}`)
   }
   if (candidate.lower === 'hp' && !traitTags.includes('support') && !traitTags.includes('pivot')) {
     score -= 10
@@ -357,10 +382,10 @@ export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [
     reasons.push('强化魔防可把已有魔法耐久优势做成专项防御手')
   }
 
-  if (raiseCore > 0.8) reasons.push(`强化${raiseLabel}命中「${roleLabels.join(' / ')}」的核心维度`)
+  if (raiseCore > 0.8) reasons.push(`强化${raiseLabel}符合当前综合定位需求`)
   if (raiseTrait > 0) reasons.push(`特性标签支持强化${raiseLabel}`)
   if (lowerExpendable > 1) reasons.push(`弱化${lowerLabel}的代价较低，适合作为当前路线的牺牲项`)
-  if (lowerCore > 1) warnings.push(`弱化${lowerLabel}会削弱「${roleLabels.join(' / ')}」的核心能力`)
+  if (lowerCore > 1) warnings.push(`弱化${lowerLabel}会削弱当前综合定位的关键能力`)
   if (lowerTrait > raiseTrait && lowerTrait > 0) warnings.push(`特性标签更需要${lowerLabel}，弱化存在冲突`)
   if (ATTACK_STAT_KEYS.includes(candidate.lower) && roles.some((r) => r.key === 'mixedAttacker')) {
     warnings.push('当前存在双攻潜力，弱化任一攻击都需要技能池证明可以转为单攻玩法')

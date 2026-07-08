@@ -27,19 +27,22 @@ const TRAIT_TAG_FIELD = { type: 'multiselect', options: TRAIT_TAG_OPTIONS }
 const TRAIT_TAG_LABELS = Object.fromEntries(TRAIT_TAG_OPTIONS.map((o) => [o.value, o.label]))
 
 export function NatureTool({ scene }) {
-  const [input, setInput] = useState({ name: '', stats: { ...EMPTY_STATS }, traitTags: [] })
+  const [draftInput, setDraftInput] = useState({ name: '', stats: { ...EMPTY_STATS }, traitTags: [] })
+  const [input, setInput] = useState(draftInput)
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   function updateStat(key, value) {
-    setInput((prev) => ({ ...prev, stats: { ...prev.stats, [key]: value } }))
+    setDraftInput((prev) => ({ ...prev, stats: { ...prev.stats, [key]: value } }))
   }
 
   function handleImport({ name, stats, traitTags }) {
-    setInput({
+    const next = {
       name: name || '',
       stats: { ...EMPTY_STATS, ...stats },
       traitTags: traitTags || [],
-    })
+    }
+    setDraftInput(next)
+    setInput(next)
     setSelectedIndex(0)
   }
 
@@ -70,8 +73,8 @@ export function NatureTool({ scene }) {
         <FormRow label="名称（可选）">
           <input
             className="input"
-            value={input.name}
-            onChange={(e) => setInput((prev) => ({ ...prev, name: e.target.value }))}
+            value={draftInput.name}
+            onChange={(e) => setDraftInput((prev) => ({ ...prev, name: e.target.value }))}
             placeholder="用于标记这次推荐，例如精灵名称"
           />
         </FormRow>
@@ -83,7 +86,7 @@ export function NatureTool({ scene }) {
               <input
                 type="number"
                 className="input"
-                value={input.stats[d.key]}
+                value={draftInput.stats[d.key]}
                 onChange={(e) => updateStat(d.key, e.target.value)}
               />
             </label>
@@ -93,10 +96,24 @@ export function NatureTool({ scene }) {
         <FormRow label="特性标签" hint="标签会影响强化/弱化方向的推荐权重">
           <FieldInput
             field={TRAIT_TAG_FIELD}
-            value={input.traitTags}
-            onChange={(tags) => setInput((prev) => ({ ...prev, traitTags: tags }))}
+            value={draftInput.traitTags}
+            onChange={(tags) => setDraftInput((prev) => ({ ...prev, traitTags: tags }))}
           />
         </FormRow>
+
+        <div className="nature-manual-actions">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              setInput(draftInput)
+              setSelectedIndex(0)
+            }}
+          >
+            计算推荐
+          </button>
+          <span>手动输入不会实时计算，点击后刷新结果。</span>
+        </div>
       </div>
 
       {hasAnyStat ? (
@@ -155,8 +172,7 @@ function RowImportPanel({ scene, onImport }) {
 
   const summaries = rows.map((row) => ({ row, summary: extractRowSummary(row, fields) }))
 
-  function handleImportClick() {
-    const target = rows.find((r) => r.id === rowId) || rows[0]
+  function importRow(target) {
     if (!target) return
     const summary = extractRowSummary(target, fields)
     const stats = extractStatsFromRow(target, fields)
@@ -183,7 +199,15 @@ function RowImportPanel({ scene, onImport }) {
             ))}
           </select>
         )}
-        <select className="select" value={rowId || ''} onChange={(e) => setRowId(e.target.value)}>
+        <select
+          className="select"
+          value={rowId || ''}
+          onChange={(e) => {
+            const nextRowId = e.target.value
+            setRowId(nextRowId)
+            importRow(rows.find((r) => r.id === nextRowId))
+          }}
+        >
           <option value="">从资料库选择一行带入</option>
           {summaries.map(({ row, summary }) => (
             <option key={row.id} value={row.id}>
@@ -191,14 +215,6 @@ function RowImportPanel({ scene, onImport }) {
             </option>
           ))}
         </select>
-        <button
-          type="button"
-          className="btn"
-          onClick={handleImportClick}
-          disabled={rows.length === 0}
-        >
-          带入
-        </button>
       </div>
     </div>
   )
@@ -241,7 +257,7 @@ function NatureCandidateList({ candidates, activeIndex, onSelect }) {
                           {NATURE_DECISION_LABELS[c.decision]}
                         </span>
                         <span className="nature-candidate-name">{natureName(c)}</span>
-                        <span className="nature-candidate-role">{c.roleLabel}</span>
+                        <span className="nature-candidate-role">{candidateBenefitSummary(c)}</span>
                         <span className="nature-candidate-score">{c.score.toFixed(1)}</span>
                       </button>
                     </li>
@@ -305,44 +321,41 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
         </div>
       </div>
 
-      <div className="nature-stats-scroll">
-        <table className="nature-stats-table">
-          <thead>
-            <tr>
-              <th />
-              {STATS_DIMENSIONS.map((d) => (
-                <th key={d.key} className={cellMarkClass(d.key, nature)}>
-                  {d.label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>原始值</td>
-              {STATS_DIMENSIONS.map((d) => (
-                <td key={d.key}>{baseStats[d.key]}</td>
-              ))}
-            </tr>
-            <tr>
-              <td>加成后</td>
-              {STATS_DIMENSIONS.map((d) => {
-                const delta = adjustedStats[d.key] - baseStats[d.key]
-                return (
-                  <td key={d.key} className={cellMarkClass(d.key, nature)}>
-                    {adjustedStats[d.key]}
-                    {delta !== 0 && (
-                      <span className="nature-mark-badge">
-                        {delta > 0 ? `+${delta}` : delta}
-                      </span>
-                    )}
-                  </td>
-                )
-              })}
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <NatureStatsBars nature={nature} baseStats={baseStats} adjustedStats={adjustedStats} />
+    </div>
+  )
+}
+
+function candidateBenefitSummary(candidate) {
+  const raiseDelta = candidate.deltas?.[candidate.raise] || 0
+  const lowerDelta = candidate.deltas?.[candidate.lower] || 0
+  const warning = candidate.dominatedBy ? `被 ${candidate.dominatedBy} 支配` : candidate.warnings?.[0]
+  if (warning && candidate.decision === 'notRecommended') return warning
+  return `增益 ${STAT_LABELS[candidate.raise]} ${raiseDelta > 0 ? `+${raiseDelta}` : raiseDelta} / 代价 ${STAT_LABELS[candidate.lower]} ${lowerDelta}`
+}
+
+function NatureStatsBars({ nature, baseStats, adjustedStats }) {
+  const maxValue = Math.max(1, ...STATS_DIMENSIONS.map((d) => baseStats[d.key] || 0), ...STATS_DIMENSIONS.map((d) => adjustedStats[d.key] || 0))
+  return (
+    <div className="nature-bars">
+      {STATS_DIMENSIONS.map((d) => {
+        const base = baseStats[d.key] || 0
+        const adjusted = adjustedStats[d.key] || 0
+        const delta = adjusted - base
+        return (
+          <div key={d.key} className={`nature-bar-row ${cellMarkClass(d.key, nature)}`}>
+            <span className="nature-bar-label">{d.label}</span>
+            <div className="nature-bar-track">
+              <span className="nature-bar-base" style={{ width: `${(base / maxValue) * 100}%` }} />
+              <span className="nature-bar-adjusted" style={{ width: `${(adjusted / maxValue) * 100}%` }} />
+            </div>
+            <span className="nature-bar-value">
+              {base} → {adjusted}
+              {delta !== 0 && <em>{delta > 0 ? `+${delta}` : delta}</em>}
+            </span>
+          </div>
+        )
+      })}
     </div>
   )
 }
