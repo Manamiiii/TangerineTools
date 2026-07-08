@@ -1,143 +1,565 @@
-// 性格推荐工具专用纯函数：基于原始六维 + 特性标签，推荐一组"强化/弱化"
-// 五维（生命之外）搭配，并生成可解释的推荐理由。不依赖 Dexie / React。
-//
-// 设计说明：特性标签只用于在多个强化/弱化组合之间挑选最贴合精灵定位的一组，
-// 不影响实际加成幅度——加成幅度固定为原始数值的 ±10%（applyNatureModifier）。
-// 本工具的性格命名为自创的"X强化 · Y弱化"体系，不套用任何其他作品的译名。
+// 性格推荐工具专用纯函数：基于原始六维 + 特性标签，评价 30 个合法性格
+// 候选，并生成可解释的推荐 / 可保留 / 不推荐结论。不依赖 Dexie / React。
 
 import { STATS_DIMENSIONS } from '../constants.js'
 import { findFieldByKeyOrName, getStatsValues, optionLabel } from '../utils.js'
+import { OWNED_NATURE_OPTIONS } from './owned.js'
 import { findNumberField } from './rockKingdom.js'
 
-// 性格系统只对生命以外的五维生效：生命数值区间大、缺乏"倾向性"语义，
-// 强化/弱化生命难以直觉比较，故排除在外。
-export const MODIFIABLE_STAT_KEYS = ['patk', 'matk', 'pdef', 'mdef', 'spd']
+const STAT_KEY_BY_CN = {
+  生命: 'hp',
+  物攻: 'patk',
+  魔攻: 'matk',
+  物防: 'pdef',
+  魔防: 'mdef',
+  速度: 'spd',
+}
+
+export const MODIFIABLE_STAT_KEYS = ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
+export const ATTACK_STAT_KEYS = ['patk', 'matk']
+export const DEFENSE_STAT_KEYS = ['hp', 'pdef', 'mdef']
 
 export const STAT_LABELS = Object.fromEntries(STATS_DIMENSIONS.map((d) => [d.key, d.label]))
 
-// 13 个特性标签对五维的倾向权重：0.5 = 轻度关联，1 = 主要关联，2 = 强关联。
-// 只用于挑选推荐的强化/弱化方向，权重设计力求可解释、非黑盒。
+// 基于当前 496 条洛克王国预置资料（排除 0 值）得到的粗分位阈值。
+// 后续若预置资料变化，可改为同步脚本生成静态统计表。
+export const STAT_PERCENTILE_BANDS = {
+  hp: { p10: 61, p25: 74, p50: 91, p75: 110, p90: 126 },
+  patk: { p10: 38, p25: 58, p50: 83, p75: 103, p90: 122 },
+  matk: { p10: 34, p25: 47, p50: 76, p75: 100, p90: 119 },
+  pdef: { p10: 55, p25: 66, p50: 82, p75: 102, p90: 121 },
+  mdef: { p10: 54, p25: 66, p50: 82, p75: 101, p90: 120 },
+  spd: { p10: 51, p25: 65, p50: 84, p75: 100, p90: 115 },
+}
+
+export const SPEED_TIER_LABELS = {
+  veryLow: '极慢',
+  low: '偏慢',
+  midLow: '中速偏慢',
+  midHigh: '中速偏快',
+  high: '高速',
+  elite: '超高速',
+}
+
+export const SPEED_CONCERN_LABELS = {
+  low: '低关注',
+  medium: '中关注',
+  high: '高关注',
+}
+
+// 预置资料的速度并非连续分布，而是集中在一批固定/半固定速度点上。
+// 速度线展示时使用这些锚点，避免只按连续百分位误判“刚好跨线”的价值。
+export const SPEED_ANCHORS = [
+  26, 30, 33, 35, 36, 39, 40, 42, 44, 45, 48, 50, 51, 52, 54, 55, 56, 57, 60, 63,
+  64, 65, 66, 68, 69, 70, 72, 75, 76, 78, 80, 81, 84, 85, 88, 90, 92, 95,
+  96, 100, 104, 105, 108, 110, 115, 120, 125, 130, 135, 145,
+]
+
+export const NATURE_DECISION_LABELS = {
+  recommended: '推荐',
+  keepable: '可保留',
+  notRecommended: '不推荐',
+}
+
+// 13 个特性标签对六维的倾向权重：0.5 = 轻度关联，1 = 主要关联，2 = 强关联。
+// 只用于评价方向，不影响 applyNatureModifier 的实际加成幅度。
 export const TRAIT_TAG_STAT_WEIGHTS = {
   attack: { patk: 1, matk: 1 },
   patkLean: { patk: 2 },
   matkLean: { matk: 2 },
   spdLean: { spd: 2 },
-  defense: { pdef: 1, mdef: 1 },
-  support: { spd: 0.5 },
-  energyCycle: { spd: 1 },
+  defense: { hp: 0.75, pdef: 1, mdef: 1 },
+  support: { hp: 0.75, pdef: 0.5, mdef: 0.5, spd: 0.5 },
+  energyCycle: { spd: 1, hp: 0.25 },
   counterGain: { patk: 0.5, matk: 0.5 },
   growth: { patk: 0.5, matk: 0.5 },
-  shieldReduce: { pdef: 1, mdef: 1 },
+  shieldReduce: { hp: 0.75, pdef: 1, mdef: 1 },
   control: { spd: 1 },
-  pivot: { spd: 1 },
+  pivot: { spd: 1, hp: 0.5 },
   special: {},
 }
 
-// 每一点权重对"评分用数值"造成的相对偏移幅度。
-const WEIGHT_UNIT = 0.15
+const ROLE_DEFINITIONS = {
+  physicalAttacker: {
+    label: '物攻输出',
+    core: { patk: 2, spd: 0.8 },
+    expendable: { matk: 1.4 },
+  },
+  magicalAttacker: {
+    label: '魔攻输出',
+    core: { matk: 2, spd: 0.8 },
+    expendable: { patk: 1.4 },
+  },
+  mixedAttacker: {
+    label: '双攻输出',
+    core: { patk: 1.4, matk: 1.4, spd: 0.6 },
+    expendable: {},
+  },
+  fastAttacker: {
+    label: '高速先手',
+    core: { spd: 1.8 },
+    expendable: {},
+  },
+  bulky: {
+    label: '耐久站场',
+    core: { hp: 1.2, pdef: 1.1, mdef: 1.1 },
+    expendable: { spd: 0.3 },
+  },
+  physicalWall: {
+    label: '物理防御手',
+    core: { hp: 0.9, pdef: 1.7 },
+    expendable: {},
+  },
+  magicalWall: {
+    label: '魔法防御手',
+    core: { hp: 0.9, mdef: 1.7 },
+    expendable: {},
+  },
+  support: {
+    label: '辅助控制',
+    core: { hp: 0.9, spd: 0.8, pdef: 0.5, mdef: 0.5 },
+    expendable: { patk: 0.4, matk: 0.4 },
+  },
+  energyCycle: {
+    label: '能量循环',
+    core: { spd: 1.3, hp: 0.5 },
+    expendable: {},
+  },
+}
 
-// 汇总多个特性标签对五维的权重，未命中的标签权重按 0 处理。
+function numericStats(baseStats = {}) {
+  return Object.fromEntries(STATS_DIMENSIONS.map((d) => [d.key, Number(baseStats[d.key]) || 0]))
+}
+
+function percentileScore(key, value) {
+  const bands = STAT_PERCENTILE_BANDS[key]
+  if (!bands || value <= 0) return 0
+  if (value >= bands.p90) return 5
+  if (value >= bands.p75) return 4
+  if (value >= bands.p50) return 3
+  if (value >= bands.p25) return 2
+  if (value >= bands.p10) return 1
+  return 0
+}
+
+function percentileLabel(key, value) {
+  const score = percentileScore(key, value)
+  return ['极低', '偏低', '中低', '中高', '较高', '顶级'][score]
+}
+
+
+export function nearestSpeedAnchor(value) {
+  const numeric = Number(value) || 0
+  return SPEED_ANCHORS.reduce((best, current) =>
+    Math.abs(current - numeric) < Math.abs(best - numeric) ? current : best,
+  )
+}
+
+export function crossedSpeedAnchors(from, to) {
+  const start = Math.min(from, to)
+  const end = Math.max(from, to)
+  return SPEED_ANCHORS.filter((anchor) => anchor > start && anchor <= end)
+}
+
+export function speedTier(value) {
+  const score = percentileScore('spd', Number(value) || 0)
+  return [
+    SPEED_TIER_LABELS.veryLow,
+    SPEED_TIER_LABELS.low,
+    SPEED_TIER_LABELS.midLow,
+    SPEED_TIER_LABELS.midHigh,
+    SPEED_TIER_LABELS.high,
+    SPEED_TIER_LABELS.elite,
+  ][score]
+}
+
+function analyzeSpeedConcern(stats, traitTags = [], roles = []) {
+  const speedScore = percentileScore('spd', stats.spd)
+  const speedTraitTags = ['spdLean', 'control', 'pivot', 'energyCycle']
+  const hasSpeedTrait = traitTags.some((tag) => speedTraitTags.includes(tag))
+  const hasSpeedRole = roles.some((role) =>
+    ['fastAttacker', 'support', 'energyCycle'].includes(role.key),
+  )
+
+  if (speedScore >= 4 || hasSpeedTrait || hasSpeedRole) {
+    return {
+      level: 'high',
+      label: SPEED_CONCERN_LABELS.high,
+      score: speedScore,
+      reason: speedScore >= 4
+        ? '基础速度已进入高速竞争圈，默认关键对手也可能满速/加速'
+        : '特性或定位依赖先手/控制/节奏，速度性格需要重点评估',
+    }
+  }
+
+  if (speedScore >= 3) {
+    return {
+      level: 'medium',
+      label: SPEED_CONCERN_LABELS.medium,
+      score: speedScore,
+      reason: '基础速度处于中速偏快区间，速度性格主要影响同档对位',
+    }
+  }
+
+  return {
+    level: 'low',
+    label: SPEED_CONCERN_LABELS.low,
+    score: speedScore,
+    reason: '基础速度未进入速度竞争圈，若无先手玩法则速度性格权重较低',
+  }
+}
+
+function topKeys(stats, keys, count = 2) {
+  return [...keys].sort((a, b) => (stats[b] || 0) - (stats[a] || 0)).slice(0, count)
+}
+
+function bottomKeys(stats, keys, count = 2) {
+  return [...keys].sort((a, b) => (stats[a] || 0) - (stats[b] || 0)).slice(0, count)
+}
+
 function sumTraitWeights(traitTags = []) {
   const totals = Object.fromEntries(MODIFIABLE_STAT_KEYS.map((k) => [k, 0]))
   for (const tag of traitTags) {
     const weights = TRAIT_TAG_STAT_WEIGHTS[tag]
     if (!weights) continue
-    for (const key of MODIFIABLE_STAT_KEYS) {
-      totals[key] += weights[key] || 0
-    }
+    for (const key of MODIFIABLE_STAT_KEYS) totals[key] += weights[key] || 0
   }
   return totals
 }
 
-// 计算所有"强化一项 + 弱化一项"组合的评分，按分数从高到低排序返回。
-// 评分只用于挑选推荐方向，不影响 applyNatureModifier 的实际加成幅度。
-// 数组第一项固定是"均衡"候选（不强化也不弱化，分数为 0）；Array#sort 是
-// 稳定排序，因此当所有组合分数都 <= 0 时，均衡会排在最前——表示没有组合
-// 能带来正向收益，建议保持均衡。
-export function calculateNatureScores(baseStats = {}, traitTags = []) {
-  const weights = sumTraitWeights(traitTags)
-  const adjusted = {}
-  for (const key of MODIFIABLE_STAT_KEYS) {
-    const base = Number(baseStats[key]) || 0
-    adjusted[key] = base * (1 + weights[key] * WEIGHT_UNIT)
-  }
-
-  const candidates = [{ raise: null, lower: null, score: 0 }]
-  for (const raise of MODIFIABLE_STAT_KEYS) {
-    for (const lower of MODIFIABLE_STAT_KEYS) {
-      if (raise === lower) continue
-      candidates.push({ raise, lower, score: adjusted[raise] - adjusted[lower] })
-    }
-  }
-
-  return candidates.sort((a, b) => b.score - a.score)
-}
-
-// 对原始六维应用性格加成：强化项 ×1.1、弱化项 ×0.9，四舍五入取整；
-// 其余维度（含生命）保持不变。均衡性格（raise/lower 均为 null）返回原值副本。
-export function applyNatureModifier(baseStats = {}, nature) {
-  const result = { ...baseStats }
-  if (!nature || nature.raise == null || nature.lower == null) return result
-  if (result[nature.raise] != null) {
-    result[nature.raise] = Math.round(Number(result[nature.raise]) * 1.1)
-  }
-  if (result[nature.lower] != null) {
-    result[nature.lower] = Math.round(Number(result[nature.lower]) * 0.9)
-  }
-  return result
-}
-
-// 性格名称：均衡性格没有强化/弱化项，直接展示"均衡"。
 export function natureName(nature) {
-  if (!nature || nature.raise == null || nature.lower == null) return '均衡'
+  if (!nature) return '未知性格'
+  if (nature.name) return nature.name
+  if (nature.raise == null || nature.lower == null) return '未知性格'
   return `${STAT_LABELS[nature.raise]}强化 · ${STAT_LABELS[nature.lower]}弱化`
 }
 
-// 生成可解释的推荐理由：先说明原始数值本身的高低对比，再补充特性标签是
-// "印证"了这个选择还是与之"冲突"（最终选择仍以综合评分为准）。
-export function explainNatureRecommendation(
-  nature,
-  baseStats = {},
-  traitTags = [],
-  traitTagLabels = {},
-) {
-  if (!nature || nature.raise == null || nature.lower == null) {
-    return '当前六维与特性标签没有明显的强弱倾向，建议保持均衡、不强化也不弱化任何一项。'
-  }
-  const raiseLabel = STAT_LABELS[nature.raise]
-  const lowerLabel = STAT_LABELS[nature.lower]
-  const raiseBase = Number(baseStats[nature.raise]) || 0
-  const lowerBase = Number(baseStats[nature.lower]) || 0
+export function parseNatureOption(option) {
+  const matched = option.label?.match(/^(.+?)（\+(.+?) -(.+?)）$/)
+  if (!matched) return null
+  const [, name, raiseCn, lowerCn] = matched
+  const raise = STAT_KEY_BY_CN[raiseCn]
+  const lower = STAT_KEY_BY_CN[lowerCn]
+  if (!raise || !lower || raise === lower) return null
+  return { id: option.value, name, label: option.label, raise, lower, color: option.color }
+}
 
+export const NATURE_CANDIDATES = OWNED_NATURE_OPTIONS.map(parseNatureOption).filter(Boolean)
+
+export function analyzeStats(baseStats = {}) {
+  const stats = numericStats(baseStats)
+  const modValues = MODIFIABLE_STAT_KEYS.map((key) => stats[key]).filter((v) => v > 0)
+  const average = modValues.length ? modValues.reduce((sum, v) => sum + v, 0) / modValues.length : 0
+  const total = MODIFIABLE_STAT_KEYS.reduce((sum, key) => sum + stats[key], 0)
+  const attackBias = stats.patk - stats.matk
+  const defenseBias = stats.pdef - stats.mdef
+  const bulkScore = stats.hp + stats.pdef + stats.mdef
+  const percentiles = Object.fromEntries(
+    MODIFIABLE_STAT_KEYS.map((key) => [
+      key,
+      { score: percentileScore(key, stats[key]), label: percentileLabel(key, stats[key]) },
+    ]),
+  )
+  return {
+    stats,
+    total,
+    average,
+    attackBias,
+    defenseBias,
+    bulkScore,
+    topStats: topKeys(stats, MODIFIABLE_STAT_KEYS, 2),
+    bottomStats: bottomKeys(stats, MODIFIABLE_STAT_KEYS, 2),
+    percentiles,
+    speed: {
+      base: stats.spd,
+      raised: Math.round(stats.spd * 1.1),
+      lowered: Math.round(stats.spd * 0.9),
+      baseTier: speedTier(stats.spd),
+      raisedTier: speedTier(Math.round(stats.spd * 1.1)),
+      loweredTier: speedTier(Math.round(stats.spd * 0.9)),
+      nearestAnchor: nearestSpeedAnchor(stats.spd),
+      raisedCrossedAnchors: crossedSpeedAnchors(stats.spd, Math.round(stats.spd * 1.1)),
+      loweredCrossedAnchors: crossedSpeedAnchors(Math.round(stats.spd * 0.9), stats.spd),
+    },
+  }
+}
+
+export function analyzeSpeedProfile(baseStats = {}, traitTags = [], roles = null) {
+  const stats = numericStats(baseStats)
+  const roleList = roles || inferRoles(stats, traitTags)
+  const speedConcern = analyzeSpeedConcern(stats, traitTags, roleList)
+  const raised = Math.round(stats.spd * 1.1)
+  const lowered = Math.round(stats.spd * 0.9)
+  return {
+    base: stats.spd,
+    raised,
+    lowered,
+    baseTier: speedTier(stats.spd),
+    raisedTier: speedTier(raised),
+    loweredTier: speedTier(lowered),
+    nearestAnchor: nearestSpeedAnchor(stats.spd),
+    raisedCrossedAnchors: crossedSpeedAnchors(stats.spd, raised),
+    loweredCrossedAnchors: crossedSpeedAnchors(lowered, stats.spd),
+    concern: speedConcern,
+    note: '速度线基于资料库基础速度近似估算；实战先后手还受个体、等级、成长/努力、技能优先级与临场速度变化影响。',
+  }
+}
+
+export function inferRoles(baseStats = {}, traitTags = []) {
+  const analysis = analyzeStats(baseStats)
+  const { stats } = analysis
+  const roles = []
+  const addRole = (key, weight, reason) => {
+    if (weight <= 0) return
+    const existing = roles.find((r) => r.key === key)
+    if (existing) {
+      existing.weight += weight
+      existing.reasons.push(reason)
+    } else {
+      roles.push({ key, label: ROLE_DEFINITIONS[key].label, weight, reasons: [reason] })
+    }
+  }
+
+  if (stats.patk >= stats.matk + 18 && stats.patk >= 70) {
+    addRole('physicalAttacker', 2, `物攻 ${stats.patk} 明显高于魔攻 ${stats.matk}`)
+  }
+  if (stats.matk >= stats.patk + 18 && stats.matk >= 70) {
+    addRole('magicalAttacker', 2, `魔攻 ${stats.matk} 明显高于物攻 ${stats.patk}`)
+  }
+  if (stats.patk >= 85 && stats.matk >= 85 && Math.abs(stats.patk - stats.matk) <= 20) {
+    addRole('mixedAttacker', 1.6, '物攻与魔攻都较高，存在双攻潜力')
+  }
+  if (stats.spd >= STAT_PERCENTILE_BANDS.spd.p75) {
+    addRole('fastAttacker', stats.spd >= STAT_PERCENTILE_BANDS.spd.p90 ? 2 : 1.4, `速度处于${analysis.speed.baseTier}档`)
+  }
+  if (analysis.bulkScore >= 285 || stats.hp >= STAT_PERCENTILE_BANDS.hp.p75) {
+    addRole('bulky', 1.2, `生命 + 双防合计 ${analysis.bulkScore}，具备站场基础`)
+  }
+  if (stats.pdef >= STAT_PERCENTILE_BANDS.pdef.p75 && stats.hp >= STAT_PERCENTILE_BANDS.hp.p50) {
+    addRole('physicalWall', 1, '物防与生命足以支撑物理防御手路线')
+  }
+  if (stats.mdef >= STAT_PERCENTILE_BANDS.mdef.p75 && stats.hp >= STAT_PERCENTILE_BANDS.hp.p50) {
+    addRole('magicalWall', 1, '魔防与生命足以支撑魔法防御手路线')
+  }
+
+  if (traitTags.includes('patkLean')) addRole('physicalAttacker', 1.6, '特性标签偏物攻输出')
+  if (traitTags.includes('matkLean')) addRole('magicalAttacker', 1.6, '特性标签偏魔攻输出')
+  if (traitTags.includes('attack')) addRole('mixedAttacker', 1.2, '特性标签支持双攻输出')
+  if (traitTags.includes('spdLean') || traitTags.includes('control')) {
+    addRole('fastAttacker', 1.4, '特性标签强调速度/先手控制')
+  }
+  if (traitTags.includes('defense') || traitTags.includes('shieldReduce')) {
+    addRole('bulky', 1.3, '特性标签支持耐久站场')
+  }
+  if (traitTags.includes('support') || traitTags.includes('pivot')) {
+    addRole('support', 1.2, '特性标签支持辅助/返场')
+  }
+  if (traitTags.includes('energyCycle')) addRole('energyCycle', 1.3, '特性标签支持能量循环')
+
+  if (roles.length === 0) addRole('support', 0.5, '没有明显输出倾向，按泛用保守路线评估')
+  return roles.sort((a, b) => b.weight - a.weight)
+}
+
+function buildContext(baseStats = {}, traitTags = []) {
+  const analysis = analyzeStats(baseStats)
+  const roles = inferRoles(baseStats, traitTags)
+  const speedProfile = analyzeSpeedProfile(baseStats, traitTags, roles)
+  const traitWeights = sumTraitWeights(traitTags)
+  const coreWeights = Object.fromEntries(MODIFIABLE_STAT_KEYS.map((key) => [key, 0]))
+  const expendableWeights = Object.fromEntries(MODIFIABLE_STAT_KEYS.map((key) => [key, 0]))
+  for (const role of roles) {
+    const def = ROLE_DEFINITIONS[role.key]
+    const roleScale = Math.min(role.weight, 2.5)
+    for (const key of MODIFIABLE_STAT_KEYS) {
+      coreWeights[key] += (def.core[key] || 0) * roleScale
+      expendableWeights[key] += (def.expendable[key] || 0) * roleScale
+    }
+  }
+  const primaryAttack = analysis.stats.patk >= analysis.stats.matk ? 'patk' : 'matk'
+  const secondaryAttack = primaryAttack === 'patk' ? 'matk' : 'patk'
+  if (Math.abs(analysis.attackBias) >= 18) expendableWeights[secondaryAttack] += 1.5
+  if (analysis.percentiles[secondaryAttack].score <= 1) expendableWeights[secondaryAttack] += 0.9
+  for (const key of analysis.bottomStats) expendableWeights[key] += key === 'hp' ? 0.1 : 0.4
+  return { analysis, roles, speedProfile, traitWeights, coreWeights, expendableWeights }
+}
+
+function statDelta(baseStats, nature) {
+  const adjusted = applyNatureModifier(baseStats, nature)
+  return Object.fromEntries(MODIFIABLE_STAT_KEYS.map((key) => [key, adjusted[key] - (baseStats[key] || 0)]))
+}
+
+function decisionFromScore(score, hardRisk) {
+  if (hardRisk || score < 35) return 'notRecommended'
+  if (score >= 90) return 'recommended'
+  return 'keepable'
+}
+
+export function evaluateNatureCandidate(candidate, baseStats = {}, traitTags = [], providedContext = null) {
+  const stats = numericStats(baseStats)
+  const context = providedContext || buildContext(stats, traitTags)
+  const { analysis, roles, speedProfile, traitWeights, coreWeights, expendableWeights } = context
+  const reasons = []
+  const warnings = []
+  const roleLabels = roles.slice(0, 2).map((r) => r.label)
+  const raiseLabel = STAT_LABELS[candidate.raise]
+  const lowerLabel = STAT_LABELS[candidate.lower]
+
+  const raiseCore = coreWeights[candidate.raise] || 0
+  const lowerCore = coreWeights[candidate.lower] || 0
+  const lowerExpendable = expendableWeights[candidate.lower] || 0
+  const raiseTrait = traitWeights[candidate.raise] || 0
+  const lowerTrait = traitWeights[candidate.lower] || 0
+  const raiseBand = analysis.percentiles[candidate.raise]?.score || 0
+  const lowerBand = analysis.percentiles[candidate.lower]?.score || 0
+
+  let score = 25
+  score += raiseCore * 11
+  score += raiseTrait * 7
+  score += Math.max(0, raiseBand - 2) * 4
+  score += lowerExpendable * 12
+  score -= lowerCore * 12
+  score -= lowerTrait * 5
+  score += Math.max(0, 2 - lowerBand) * 3
+
+  if (candidate.raise === 'spd') {
+    const speedBonus = { high: 10, medium: 4, low: -28 }[speedProfile.concern.level]
+    score += speedBonus
+    if (speedProfile.raisedTier !== speedProfile.baseTier || speedProfile.raisedCrossedAnchors.length > 0) {
+      reasons.push(
+        `基础速度 ${speedProfile.base} 属于${speedProfile.baseTier}；加速近似到 ${speedProfile.raised}，可能跨过 ${speedProfile.raisedCrossedAnchors.join(' / ') || '无'} 锚点。${speedProfile.concern.reason}`,
+      )
+    } else if (speedProfile.concern.level === 'low') {
+      warnings.push('速度未进入竞争圈，加速主要改善同档对位，通常不应优先于主攻或耐久')
+    }
+  }
+  if (candidate.lower === 'spd') {
+    const speedPenalty = { high: 14, medium: 7, low: 2 }[speedProfile.concern.level]
+    score -= speedPenalty
+    if (speedProfile.loweredTier !== speedProfile.baseTier || speedProfile.loweredCrossedAnchors.length > 0) {
+      const message = `基础速度 ${speedProfile.base} 属于${speedProfile.baseTier}；减速近似到 ${speedProfile.lowered}，会失去 ${speedProfile.loweredCrossedAnchors.join(' / ') || '无'} 锚点。${speedProfile.concern.reason}`
+      if (speedProfile.concern.level === 'low') reasons.push(`${message}，可作为低速路线的牺牲项`)
+      else warnings.push(message)
+    }
+  }
+  if (candidate.lower === 'hp' && !traitTags.includes('support') && !traitTags.includes('pivot')) {
+    score -= 10
+    warnings.push('生命会同时影响两侧承伤，缺少低血/退场收益时不宜轻易弱化')
+  }
+  if (candidate.raise === 'hp' && roles.some((r) => ['bulky', 'support'].includes(r.key))) {
+    score += 8
+    reasons.push('生命强化能同时提高物理与魔法承伤容错')
+  }
+  if (candidate.raise === 'pdef' && roles.some((r) => r.key === 'physicalWall')) {
+    score += 8
+    reasons.push('强化物防可把已有物理耐久优势做成专项防御手')
+  }
+  if (candidate.raise === 'mdef' && roles.some((r) => r.key === 'magicalWall')) {
+    score += 8
+    reasons.push('强化魔防可把已有魔法耐久优势做成专项防御手')
+  }
+
+  if (raiseCore > 0.8) reasons.push(`强化${raiseLabel}符合当前综合定位需求`)
+  if (raiseTrait > 0) reasons.push(`特性标签支持强化${raiseLabel}`)
+  if (lowerExpendable > 1) reasons.push(`弱化${lowerLabel}的代价较低，适合作为当前路线的牺牲项`)
+  if (lowerCore > 1) warnings.push(`弱化${lowerLabel}会削弱当前综合定位的关键能力`)
+  if (lowerTrait > raiseTrait && lowerTrait > 0) warnings.push(`特性标签更需要${lowerLabel}，弱化存在冲突`)
+  if (ATTACK_STAT_KEYS.includes(candidate.lower) && roles.some((r) => r.key === 'mixedAttacker')) {
+    warnings.push('当前存在双攻潜力，弱化任一攻击都需要技能池证明可以转为单攻玩法')
+  }
+
+  const hardRisk =
+    lowerCore >= 3.2 ||
+    (candidate.lower === 'spd' && roles.some((r) => ['fastAttacker', 'energyCycle'].includes(r.key))) ||
+    (candidate.lower === 'hp' && roles.some((r) => ['bulky', 'support'].includes(r.key)) && lowerExpendable < 1)
+
+  if (hardRisk) score -= 8
+
+  return {
+    ...candidate,
+    score: Math.round(score * 10) / 10,
+    decision: decisionFromScore(score, hardRisk),
+    roleTags: roles.map((r) => r.key),
+    roleLabel: roleLabels.join(' / ') || '泛用',
+    speedProfile,
+    adjustedStats: applyNatureModifier(stats, candidate),
+    deltas: statDelta(stats, candidate),
+    reasons: reasons.length ? reasons : [`强化${raiseLabel}、弱化${lowerLabel}整体收益一般`],
+    warnings,
+    hardRisk,
+  }
+}
+
+function dominanceKey(item) {
+  return `${item.raise}-${item.lower}`
+}
+
+function applyDominance(evaluations) {
+  const grouped = Map.groupBy ? Map.groupBy(evaluations, (item) => item.raise) : null
+  const groups = grouped || evaluations.reduce((map, item) => {
+    if (!map.has(item.raise)) map.set(item.raise, [])
+    map.get(item.raise).push(item)
+    return map
+  }, new Map())
+
+  const result = evaluations.map((item) => ({ ...item }))
+  const byKey = new Map(result.map((item) => [dominanceKey(item), item]))
+
+  for (const [raise, group] of groups) {
+    const safeOptions = group.filter((item) => !item.hardRisk)
+    const best = safeOptions.length > 0 ? [...safeOptions].sort((a, b) => b.score - a.score)[0] : null
+    if (!best) continue
+    for (const item of group) {
+      if (item === best) continue
+      if (item.score > best.score - 20) continue
+      if (item.reasons.some((reason) => /专项|速度 .*提升到|生命强化/.test(reason))) continue
+      const target = byKey.get(dominanceKey(item))
+      if (!target) continue
+      target.decision = 'notRecommended'
+      target.dominatedBy = natureName(best)
+      target.warnings = [
+        ...target.warnings,
+        `同样强化${STAT_LABELS[raise]}时，${natureName(best)}代价更低，因此当前组合被支配`,
+      ]
+    }
+  }
+
+  return result
+}
+
+export function evaluateAllNatures(baseStats = {}, traitTags = []) {
+  const stats = numericStats(baseStats)
+  const context = buildContext(stats, traitTags)
+  const evaluated = NATURE_CANDIDATES.map((candidate) =>
+    evaluateNatureCandidate(candidate, stats, traitTags, context),
+  )
+  return [...applyDominance(evaluated)].sort((a, b) => {
+    const decisionOrder = { recommended: 0, keepable: 1, notRecommended: 2 }
+    return decisionOrder[a.decision] - decisionOrder[b.decision] || b.score - a.score
+  })
+}
+
+// 兼容旧调用名：返回所有候选而非 top-N。
+export function calculateNatureScores(baseStats = {}, traitTags = []) {
+  return evaluateAllNatures(baseStats, traitTags)
+}
+
+// 对原始六维应用性格加成：强化项 ×1.1、弱化项 ×0.9，四舍五入取整；
+// 其余维度保持不变。
+export function applyNatureModifier(baseStats = {}, nature) {
+  const stats = numericStats(baseStats)
+  const result = { ...stats }
+  if (!nature || nature.raise == null || nature.lower == null) return result
+  if (result[nature.raise] != null) result[nature.raise] = Math.round(result[nature.raise] * 1.1)
+  if (result[nature.lower] != null) result[nature.lower] = Math.round(result[nature.lower] * 0.9)
+  return result
+}
+
+export function explainNatureRecommendation(nature) {
+  if (!nature) return '请先选择一个候选性格。'
   const segments = []
-  if (raiseBase >= lowerBase) {
-    segments.push(
-      `原始${raiseLabel} ${raiseBase} 不低于${lowerLabel} ${lowerBase}，强化更高的一项收益更明显`,
-    )
-  } else {
-    segments.push(
-      `虽然原始${raiseLabel} ${raiseBase} 低于${lowerLabel} ${lowerBase}，但特性标签的倾向权重更支持强化${raiseLabel}`,
-    )
-  }
-
-  const reinforcing = traitTags.filter(
-    (tag) => (TRAIT_TAG_STAT_WEIGHTS[tag]?.[nature.raise] || 0) > 0,
-  )
-  const conflicting = traitTags.filter(
-    (tag) =>
-      (TRAIT_TAG_STAT_WEIGHTS[tag]?.[nature.lower] || 0) >
-      (TRAIT_TAG_STAT_WEIGHTS[tag]?.[nature.raise] || 0),
-  )
-
-  if (reinforcing.length > 0) {
-    const names = reinforcing.map((t) => traitTagLabels[t] || t).join('、')
-    segments.push(`特性标签「${names}」印证了强化${raiseLabel}的选择`)
-  }
-  if (conflicting.length > 0) {
-    const names = conflicting.map((t) => traitTagLabels[t] || t).join('、')
-    segments.push(`标签「${names}」更偏向${lowerLabel}，但综合评分后${raiseLabel}仍是更优先的强化项`)
-  }
-
+  if (nature.roleLabel) segments.push(`定位：${nature.roleLabel}`)
+  if (nature.reasons?.length) segments.push(...nature.reasons)
+  if (nature.warnings?.length) segments.push(`风险：${nature.warnings.join('；')}`)
   return `${segments.join('；')}。`
 }
 
