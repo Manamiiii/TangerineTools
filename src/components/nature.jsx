@@ -9,13 +9,13 @@ import { ArrowDownCircle, ArrowUpCircle, Sparkles } from 'lucide-react'
 import { db } from '../db.js'
 import { STATS_DIMENSIONS } from '../constants.js'
 import {
-  applyNatureModifier,
-  calculateNatureScores,
+  evaluateAllNatures,
   explainNatureRecommendation,
   extractRowSummary,
   extractStatsFromRow,
   extractTraitTagsFromRow,
   natureName,
+  NATURE_DECISION_LABELS,
   STAT_LABELS,
 } from '../domain/nature.js'
 import { TRAIT_TAG_OPTIONS } from '../presets/rockKingdom.js'
@@ -25,11 +25,6 @@ import { FieldInput } from './catalog.jsx'
 const EMPTY_STATS = Object.fromEntries(STATS_DIMENSIONS.map((d) => [d.key, '']))
 const TRAIT_TAG_FIELD = { type: 'multiselect', options: TRAIT_TAG_OPTIONS }
 const TRAIT_TAG_LABELS = Object.fromEntries(TRAIT_TAG_OPTIONS.map((o) => [o.value, o.label]))
-
-// 候选清单的展示条数：首个作为「推荐」呈现，之后 N-1 个作为「可选」。
-// 组合总数 = 1（均衡） + 5×4（强化+弱化）= 21，取前 6 条覆盖典型搭配，
-// 又不至于让页面过长。
-const CANDIDATE_LIMIT = 6
 
 export function NatureTool({ scene }) {
   const [input, setInput] = useState({ name: '', stats: { ...EMPTY_STATS }, traitTags: [] })
@@ -54,7 +49,7 @@ export function NatureTool({ scene }) {
   )
   const hasAnyStat = STATS_DIMENSIONS.some((d) => numericStats[d.key] > 0)
   const candidates = useMemo(
-    () => calculateNatureScores(numericStats, input.traitTags).slice(0, CANDIDATE_LIMIT),
+    () => evaluateAllNatures(numericStats, input.traitTags),
     [numericStats, input.traitTags],
   )
   // 输入变化后如果原选中下标越界（例如输入被清空、候选变少），回退到首选。
@@ -63,9 +58,9 @@ export function NatureTool({ scene }) {
   }, [candidates.length, selectedIndex])
 
   const activeIndex = Math.min(selectedIndex, Math.max(candidates.length - 1, 0))
-  const nature = candidates[activeIndex] || { raise: null, lower: null, score: 0 }
-  const adjustedStats = applyNatureModifier(numericStats, nature)
-  const reasoning = explainNatureRecommendation(nature, numericStats, input.traitTags, TRAIT_TAG_LABELS)
+  const nature = candidates[activeIndex] || null
+  const adjustedStats = nature?.adjustedStats || numericStats
+  const reasoning = explainNatureRecommendation(nature, TRAIT_TAG_LABELS)
 
   return (
     <div className="nature-tool">
@@ -209,66 +204,106 @@ function RowImportPanel({ scene, onImport }) {
   )
 }
 
-// 候选清单：首行标记「推荐」，之后是「可选」。点击某项即把它作为主结果。
-// 分数保留一位小数，便于对比但不显得数据太满；均衡候选（raise=null）显示为 0.0。
+// 候选清单：展示全部 30 个合法性格，并按「推荐 / 可保留 / 不推荐」分组。
 function NatureCandidateList({ candidates, activeIndex, onSelect }) {
   if (!candidates || candidates.length === 0) return null
+  const activeCandidate = candidates[activeIndex]
+  const groups = [
+    ['recommended', '推荐'],
+    ['keepable', '可保留'],
+    ['notRecommended', '不推荐'],
+  ]
   return (
     <div className="nature-candidates">
-      <div className="nature-candidates-title">候选方案</div>
-      <ul className="nature-candidates-list">
-        {candidates.map((c, index) => {
-          const label = index === 0 ? '推荐' : '可选'
-          const isActive = index === activeIndex
+      <div className="nature-candidates-title">全部性格候选</div>
+      <div className="nature-candidates-groups">
+        {groups.map(([decision, label]) => {
+          const items = candidates.filter((c) => c.decision === decision)
+          if (items.length === 0) return null
           return (
-            <li key={`${c.raise ?? 'none'}-${c.lower ?? 'none'}`}>
-              <button
-                type="button"
-                className={`nature-candidate ${isActive ? 'active' : ''}`}
-                onClick={() => onSelect(index)}
-              >
-                <span
-                  className={`nature-candidate-tag ${
-                    index === 0 ? 'recommended' : 'alternative'
-                  }`}
-                >
-                  {label}
-                </span>
-                <span className="nature-candidate-name">{natureName(c)}</span>
-                <span className="nature-candidate-score">{c.score.toFixed(1)}</span>
-              </button>
-            </li>
+            <section key={decision} className="nature-candidate-group">
+              <div className="nature-candidate-group-title">
+                <span className={`nature-candidate-tag ${decision}`}>{label}</span>
+                <span>{items.length} 个</span>
+              </div>
+              <ul className="nature-candidates-list">
+                {items.map((c) => {
+                  const candidateIndex = candidates.indexOf(c)
+                  const isActive = c === activeCandidate
+                  return (
+                    <li key={c.id || `${c.raise}-${c.lower}`}>
+                      <button
+                        type="button"
+                        className={`nature-candidate ${isActive ? 'active' : ''}`}
+                        onClick={() => onSelect(candidateIndex)}
+                      >
+                        <span className={`nature-candidate-tag ${c.decision}`}>
+                          {NATURE_DECISION_LABELS[c.decision]}
+                        </span>
+                        <span className="nature-candidate-name">{natureName(c)}</span>
+                        <span className="nature-candidate-role">{c.roleLabel}</span>
+                        <span className="nature-candidate-score">{c.score.toFixed(1)}</span>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            </section>
           )
         })}
-      </ul>
+      </div>
     </div>
   )
 }
 
 function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
-  const isNeutral = nature.raise == null || nature.lower == null
+  if (!nature) return null
 
   return (
     <div className="nature-result">
       <div className="nature-result-header">
         <Sparkles size={18} />
         <span className="nature-result-title">{natureName(nature)}</span>
+        <span className={`nature-candidate-tag ${nature.decision}`}>
+          {NATURE_DECISION_LABELS[nature.decision]}
+        </span>
       </div>
 
-      {!isNeutral && (
-        <div className="nature-result-badges">
-          <span className="nature-badge nature-badge-raise">
-            <ArrowUpCircle size={14} />
-            强化：{STAT_LABELS[nature.raise]}（{baseStats[nature.raise]} → {adjustedStats[nature.raise]}）
-          </span>
-          <span className="nature-badge nature-badge-lower">
-            <ArrowDownCircle size={14} />
-            弱化：{STAT_LABELS[nature.lower]}（{baseStats[nature.lower]} → {adjustedStats[nature.lower]}）
-          </span>
-        </div>
-      )}
+      <div className="nature-result-badges">
+        <span className="nature-badge nature-badge-raise">
+          <ArrowUpCircle size={14} />
+          强化：{STAT_LABELS[nature.raise]}（{baseStats[nature.raise]} → {adjustedStats[nature.raise]}）
+        </span>
+        <span className="nature-badge nature-badge-lower">
+          <ArrowDownCircle size={14} />
+          弱化：{STAT_LABELS[nature.lower]}（{baseStats[nature.lower]} → {adjustedStats[nature.lower]}）
+        </span>
+      </div>
 
       <p className="nature-result-reason">{reasoning}</p>
+
+      <div className="nature-explain-grid">
+        <div>
+          <div className="nature-explain-title">推荐理由</div>
+          <ul className="nature-explain-list">
+            {nature.reasons.map((reason) => (
+              <li key={reason}>{reason}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <div className="nature-explain-title">风险提示</div>
+          {nature.warnings.length > 0 ? (
+            <ul className="nature-explain-list warning">
+              {nature.warnings.map((warning) => (
+                <li key={warning}>{warning}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="nature-explain-empty">暂无明显硬性风险。</p>
+          )}
+        </div>
+      </div>
 
       <div className="nature-stats-scroll">
         <table className="nature-stats-table">
@@ -291,13 +326,19 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
             </tr>
             <tr>
               <td>加成后</td>
-              {STATS_DIMENSIONS.map((d) => (
-                <td key={d.key} className={cellMarkClass(d.key, nature)}>
-                  {adjustedStats[d.key]}
-                  {d.key === nature.raise && <span className="nature-mark-badge">↑</span>}
-                  {d.key === nature.lower && <span className="nature-mark-badge">↓</span>}
-                </td>
-              ))}
+              {STATS_DIMENSIONS.map((d) => {
+                const delta = adjustedStats[d.key] - baseStats[d.key]
+                return (
+                  <td key={d.key} className={cellMarkClass(d.key, nature)}>
+                    {adjustedStats[d.key]}
+                    {delta !== 0 && (
+                      <span className="nature-mark-badge">
+                        {delta > 0 ? `+${delta}` : delta}
+                      </span>
+                    )}
+                  </td>
+                )
+              })}
             </tr>
           </tbody>
         </table>
