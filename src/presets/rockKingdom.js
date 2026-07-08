@@ -94,6 +94,20 @@ export const TRAIT_TAG_LEGACY_DEFAULTS = {
   special: { label: '特殊', color: '#d97706' },
 }
 
+const SKILL_TAG_OPTIONS = [
+  { value: 'physicalMoves', label: '物攻技能', color: '#ea580c', image: '' },
+  { value: 'magicalMoves', label: '魔攻技能', color: '#c026d3', image: '' },
+  { value: 'mixedMoves', label: '双攻技能池', color: '#dc2626', image: '' },
+  { value: 'physicalLean', label: '物攻技能偏多', color: '#f97316', image: '' },
+  { value: 'magicalLean', label: '魔攻技能偏多', color: '#d946ef', image: '' },
+  { value: 'speed', label: '速度/先手', color: '#eab308', image: '' },
+  { value: 'slowBenefit', label: '后手收益', color: '#64748b', image: '' },
+  { value: 'control', label: '控制/异常', color: '#7c3aed', image: '' },
+  { value: 'support', label: '回复辅助', color: '#059669', image: '' },
+  { value: 'energyCycle', label: '能量循环', color: '#0d9488', image: '' },
+  { value: 'defense', label: '防御减伤', color: '#2563eb', image: '' },
+]
+
 function makeField(partial, order, tableId = TABLE_ID, idPrefix = 'field-rock') {
   return normalizeField({
     id: `${idPrefix}-${partial.key}`,
@@ -138,13 +152,14 @@ const fields = [
   ),
   makeField({ key: 'traitIcon', name: '特性图标', type: 'image' }, 10),
   makeField({ key: 'traitDesc', name: '特性描述', type: 'longtext' }, 11),
-  makeField({ key: 'skillRefs', name: '可用技能', type: 'references', referenceTableId: SKILL_TABLE_ID }, 12),
-  makeField({ key: 'hp', name: '生命', type: 'number', hidden: true }, 13),
-  makeField({ key: 'patk', name: '物攻', type: 'number', hidden: true }, 14),
-  makeField({ key: 'matk', name: '魔攻', type: 'number', hidden: true }, 15),
-  makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 16),
-  makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 17),
-  makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 18),
+  makeField({ key: 'skillTags', name: '技能标签', type: 'multiselect', options: SKILL_TAG_OPTIONS }, 12),
+  makeField({ key: 'skillRefs', name: '可用技能', type: 'references', referenceTableId: SKILL_TABLE_ID }, 13),
+  makeField({ key: 'hp', name: '生命', type: 'number', hidden: true }, 14),
+  makeField({ key: 'patk', name: '物攻', type: 'number', hidden: true }, 15),
+  makeField({ key: 'matk', name: '魔攻', type: 'number', hidden: true }, 16),
+  makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 17),
+  makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 18),
+  makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 19),
 ]
 
 const skillFields = [
