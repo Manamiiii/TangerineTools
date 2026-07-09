@@ -516,8 +516,16 @@ export function inferRoles(baseStats = {}, traitTags = [], skillInfo = {}) {
   if (traitTags.includes('spdLean') || traitTags.includes('control')) {
     addRole('fastAttacker', 1.4, '特性标签强调速度/先手控制')
   }
-  if (traitTags.includes('defense') || traitTags.includes('shieldReduce')) {
-    addRole('bulky', 1.3, '特性标签支持耐久站场')
+  if (traitTags.includes('shieldReduce')) {
+    addRole('bulky', 1.3, '特性标签支持护盾/减伤机制')
+  }
+  if (traitTags.includes('defense')) {
+    const hasBulkFoundation = analysis.bulkScore >= 285 || stats.hp >= STAT_PERCENTILE_BANDS.hp.p50
+    if (hasBulkFoundation) {
+      addRole('bulky', 1.3, '特性标签支持耐久站场，且生命/双防综合具备基础')
+    } else {
+      addRole('bulky', 0.5, `物防/魔防存在单项亮点，但生命 ${stats.hp} 偏低，耐久定位需谨慎`)
+    }
   }
   if (traitTags.includes('support') || traitTags.includes('pivot')) {
     addRole('support', 1.2, '特性标签支持辅助/返场')
@@ -613,13 +621,15 @@ function roleAwareStatWarning(roles = [], statKey, statLabel) {
 }
 
 
-function isSingleDefenseRaiseSoftCapped(candidate, roles = [], traitTags = []) {
+function isSingleDefenseRaiseSoftCapped(candidate, roles = [], traitTags = [], analysis = null) {
   if (!['pdef', 'mdef'].includes(candidate.raise)) return false
   const topRoles = roles.slice(0, 2)
   const topRolesNeedDefense = topRoles.some((role) => (ROLE_DEFINITIONS[role.key]?.core?.[candidate.raise] || 0) > 0)
-  if (topRolesNeedDefense) return false
-  const hasDefenseTrait = traitTags.some((tag) => ['defense', 'shieldReduce'].includes(tag))
-  if (hasDefenseTrait) return false
+  const hasMechanicDefenseTrait = traitTags.includes('shieldReduce')
+  const hasBulkFoundation =
+    analysis && (analysis.bulkScore >= 285 || analysis.stats.hp >= STAT_PERCENTILE_BANDS.hp.p50)
+  if (topRolesNeedDefense && (hasMechanicDefenseTrait || hasBulkFoundation)) return false
+  if (hasMechanicDefenseTrait) return false
   return roles.some((role) => (ROLE_DEFINITIONS[role.key]?.core?.[candidate.raise] || 0) > 0)
 }
 
@@ -773,13 +783,13 @@ export function evaluateNatureCandidate(
     lowerCore >= 3.2 ||
     (candidate.lower === 'spd' && roles.some((r) => ['fastAttacker', 'energyCycle'].includes(r.key))) ||
     (candidate.lower === 'hp' && roles.some((r) => ['bulky', 'support'].includes(r.key)) && lowerExpendable < 1)
-  const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, traitTags)
+  const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, traitTags, analysis)
 
   if (hardRisk) score -= 8
   let decision = decisionFromScore(score, hardRisk)
   if (singleDefenseSoftCap && decision === 'recommended') {
     decision = 'keepable'
-    warnings.push('单防强化主要来自次要防御/辅助线索，主定位未明确要求该防御项，默认降为可保留')
+    warnings.push('单防强化需要生命/双防综合基础或明确护盾减伤机制支撑；当前证据不足，默认降为可保留')
   }
 
   return applyNaturePreference({

@@ -42,7 +42,7 @@ function deriveTags(desc, stats = {}) {
   if (matk >= patk + 15 && matk >= 85) add('matkLean')
   if (Math.abs(patk - matk) <= 15 && patk >= 85 && matk >= 85) add('attack')
   if (spd >= 95 || (spd >= 85 && spd >= topAttack - 5)) add('spdLean')
-  if (bulk >= 300 || pdef >= 105 || mdef >= 105 || hp >= 120) add('defense')
+  if (bulk >= 300 || hp >= 120 || (hp >= 90 && (pdef >= 105 || mdef >= 105))) add('defense')
 
   if (desc) {
     if (/回复|恢复|生命|治疗|回血|保留1点生命/.test(desc)) add('support')
