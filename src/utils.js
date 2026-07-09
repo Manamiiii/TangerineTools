@@ -113,6 +113,29 @@ export function stringifyCellValue(raw, field) {
   return String(raw)
 }
 
+
+function isBlankSortValue(value) {
+  return value == null || value === ''
+}
+
+function numericSortValue(value) {
+  if (isBlankSortValue(value)) return null
+  const numeric = typeof value === 'number' ? value : Number(String(value).trim())
+  return Number.isFinite(numeric) ? numeric : null
+}
+
+function compareNumberValues(a, b, direction = 'asc') {
+  const av = numericSortValue(a)
+  const bv = numericSortValue(b)
+  const aBlank = av == null
+  const bBlank = bv == null
+  if (aBlank && bBlank) return 0
+  if (aBlank) return 1
+  if (bBlank) return -1
+  const dir = direction === 'desc' ? -1 : 1
+  return (av - bv) * dir
+}
+
 // 自然排序比较：数字段落按数值比较，其余按本地化字符串比较。
 export function naturalCompare(a, b) {
   if (a == null && b == null) return 0
@@ -160,12 +183,18 @@ export function findDefaultSortField(fields) {
 
 export function compareRowsBySort(a, b, sort, fields) {
   if (sort && sort.fieldKey) {
+    const field = fields.find((f) => f.key === sort.fieldKey)
+    if (field?.type === 'number') {
+      return compareNumberValues(a.values?.[sort.fieldKey], b.values?.[sort.fieldKey], sort.direction)
+    }
     const dir = sort.direction === 'desc' ? -1 : 1
     return naturalCompare(a.values?.[sort.fieldKey], b.values?.[sort.fieldKey]) * dir
   }
   const defaultField = findDefaultSortField(fields)
   if (defaultField) {
-    return naturalCompare(a.values?.[defaultField.key], b.values?.[defaultField.key])
+    return defaultField.type === 'number'
+      ? compareNumberValues(a.values?.[defaultField.key], b.values?.[defaultField.key], 'asc')
+      : naturalCompare(a.values?.[defaultField.key], b.values?.[defaultField.key])
   }
   return naturalCompare(a.createdAt, b.createdAt)
 }
