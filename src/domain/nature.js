@@ -245,7 +245,8 @@ function sumTraitWeights(traitTags = []) {
 function normalizeSkillItems(skillInfo = {}) {
   if (!skillInfo) return []
   const source = Array.isArray(skillInfo) ? skillInfo : skillInfo.skills || skillInfo.moves || []
-  const list = Array.isArray(source) ? source : [source]
+  const list = [...(Array.isArray(source) ? source : [source])]
+  if (!Array.isArray(skillInfo) && skillInfo.traitText) list.push({ category: 'status', text: skillInfo.traitText })
   return list.map((item) => {
     if (item && typeof item === 'object') return item
     return { text: item == null ? '' : String(item) }
@@ -279,6 +280,7 @@ function deriveSkillEffectTags(item) {
   if (/偷取.*能量|失去\d*能量|扣.*能量|能量减少/.test(text)) tags.add('energyDrain')
   if (/能耗[+-]|费用[+-]|消耗[+-]|全技能能耗/.test(text)) tags.add('costChange')
   if (/物攻\+|魔攻\+|双攻\+|物防\+|魔防\+|双防\+|威力\+|强化|提升|增加/.test(text)) tags.add('statBoost')
+  if (/继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(text)) tags.add('boostTransfer')
   if (/物攻-|魔攻-|双攻-|物防-|魔防-|双防-|速度-|削弱|降低|减少/.test(text)) tags.add('statDebuff')
   if (/中毒|剧毒|灼烧|烧伤|冻结|冰冻|睡眠|恐惧|麻痹|混乱|沉默|束缚|异常|控制/.test(text)) tags.add('control')
   if (/应对攻击|反击|受到攻击后|承受.*后/.test(text)) tags.add('counterAttack')
@@ -334,7 +336,8 @@ export function analyzeSkillInfo(skillInfo = {}) {
   const backLoaded = Boolean(effectTagCounts.counterAttack)
   const control = Boolean(effectTagCounts.control)
   const sustain = Boolean(effectTagCounts.healing || effectTagCounts.damageReduction)
-  const support = Boolean(sustain || effectTagCounts.statBoost || effectTagCounts.pivot)
+  const boostTransfer = Boolean(effectTagCounts.boostTransfer)
+  const support = Boolean(sustain || effectTagCounts.statBoost || effectTagCounts.pivot || boostTransfer)
   const defense = Boolean(effectTagCounts.damageReduction || effectTagCounts.counterDefense)
   const energy = Boolean(effectTagCounts.energyGain || effectTagCounts.energyDrain || effectTagCounts.costChange)
 
@@ -350,6 +353,7 @@ export function analyzeSkillInfo(skillInfo = {}) {
     control,
     support,
     sustain,
+    boostTransfer,
     defense,
     energy,
     effectTagCounts,
@@ -374,6 +378,7 @@ export function analyzeSkillInfo(skillInfo = {}) {
         control && '控制',
         sustain && '续航/减伤',
         support && '辅助',
+        boostTransfer && '强化传递',
         energy && '能量',
       ].filter(Boolean).join(' / ') || '暂无明确标签'}`
       : '未读取到技能字段，暂按六维与特性标签评估',
@@ -734,6 +739,17 @@ export function evaluateNatureCandidate(
   if (skillProfile.backLoaded && candidate.lower === 'spd') {
     score += 10
     reasons.push('技能线索存在后手/反击收益，减速可作为战术牺牲项')
+  }
+  if (skillProfile.boostTransfer && candidate.lower === 'spd') {
+    score += 8
+    reasons.push('技能或特性存在强化传递，慢速脱离可降低下个入场精灵承伤风险')
+  }
+  if (skillProfile.boostTransfer && DEFENSE_STAT_KEYS.includes(candidate.raise)) {
+    score += 4
+    reasons.push('强化传递需要先站住并完成交接，生命或防御强化可提高传递稳定性')
+  }
+  if (skillProfile.boostTransfer && candidate.raise === 'spd') {
+    warnings.push('强化传递玩法有时需要慢速交接，强化速度是否有利需结合出手顺序确认')
   }
   if (skillProfile.speedRequired && candidate.raise === 'spd') {
     score += 10

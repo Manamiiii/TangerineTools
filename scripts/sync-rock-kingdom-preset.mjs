@@ -96,6 +96,7 @@ function deriveSkillEffectTags(skill = {}) {
   if (/偷取.*能量|失去\d*能量|扣.*能量|能量减少/.test(text)) add('energyDrain')
   if (/能耗[+-]|费用[+-]|消耗[+-]|全技能能耗/.test(text)) add('costChange')
   if (/物攻\+|魔攻\+|双攻\+|物防\+|魔防\+|双防\+|威力\+|强化|提升|增加/.test(text)) add('statBoost')
+  if (/继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(text)) add('boostTransfer')
   if (/物攻-|魔攻-|双攻-|物防-|魔防-|双防-|速度-|削弱|降低|减少/.test(text)) add('statDebuff')
   if (/中毒|剧毒|灼烧|烧伤|冻结|冰冻|睡眠|恐惧|麻痹|混乱|沉默|束缚|异常|控制/.test(text)) add('control')
   if (/应对攻击|反击|受到攻击后|承受.*后/.test(text)) add('counterAttack')

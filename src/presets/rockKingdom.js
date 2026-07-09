@@ -137,6 +137,7 @@ export const SKILL_EFFECT_TAG_OPTIONS = [
   { value: 'energyDrain', label: '能量干扰', color: '#0891b2', image: '' },
   { value: 'costChange', label: '能耗变化', color: '#14b8a6', image: '' },
   { value: 'statBoost', label: '自身强化', color: '#65a30d', image: '' },
+  { value: 'boostTransfer', label: '强化传递', color: '#22c55e', image: '' },
   { value: 'statDebuff', label: '削弱对手', color: '#9333ea', image: '' },
   { value: 'control', label: '异常控制', color: '#7c3aed', image: '' },
   { value: 'counterAttack', label: '应对攻击', color: '#dc2626', image: '' },

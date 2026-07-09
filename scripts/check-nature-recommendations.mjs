@@ -124,7 +124,11 @@ function buildSkillInfo(row, skillById) {
       effect: values.effect,
       description: values.effect,
     }))
-  return { skills }
+  const traitText = [row.values?.traitName, row.values?.traitDesc].filter(Boolean).join('：')
+  return {
+    skills,
+    traitText: /继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(traitText) ? traitText : '',
+  }
 }
 
 function renderDecisionList(items, limit = 5) {

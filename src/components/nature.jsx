@@ -202,7 +202,16 @@ function RowImportPanel({ scene, onImport }) {
     const skillInfo = referencedSkillRows.length > 0
       ? extractSkillInfoFromReferenceRows(referencedSkillRows)
       : extractSkillInfoFromRow(target, fields)
-    onImport({ name: summary.name, stats, traitTags, skillInfo })
+    const traitDesc = target.values?.traitDesc || ''
+    const traitText = /继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(traitDesc)
+      ? traitDesc
+      : ''
+    onImport({
+      name: summary.name,
+      stats,
+      traitTags,
+      skillInfo: traitText ? { ...skillInfo, traitText } : skillInfo,
+    })
   }
 
   return (
