@@ -128,7 +128,7 @@ export const SKILL_CATEGORY_LEGACY_DEFAULTS = {
   status: { label: '状态', color: '#64748b' },
 }
 
-const SKILL_EFFECT_TAG_OPTIONS = [
+export const SKILL_EFFECT_TAG_OPTIONS = [
   { value: 'priority', label: '先手优先', color: '#eab308', image: '' },
   { value: 'speed', label: '速度节奏', color: '#facc15', image: '' },
   { value: 'healing', label: '回复吸血', color: '#16a34a', image: '' },

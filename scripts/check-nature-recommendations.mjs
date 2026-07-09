@@ -7,7 +7,10 @@ import {
   STAT_LABELS,
   evaluateAllNatures,
   analyzeSkillInfo,
+  inferRoles,
+  TRAIT_TAG_STAT_WEIGHTS,
 } from '../src/domain/nature.js'
+import { TRAIT_TAG_OPTIONS, SKILL_EFFECT_TAG_OPTIONS } from '../src/presets/rockKingdom.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '..')
@@ -15,6 +18,24 @@ const rowsPath = path.join(repoRoot, 'public/presets/rockKingdomRows.json')
 const skillRowsPath = path.join(repoRoot, 'public/presets/rockKingdomSkillRows.json')
 const samplesPath = path.join(repoRoot, 'scripts/data/natureCalibrationSamples.json')
 const reportPath = path.join(repoRoot, 'docs/nature-calibration-report.md')
+
+const TRAIT_LABELS = Object.fromEntries(TRAIT_TAG_OPTIONS.map((option) => [option.value, option.label]))
+const EFFECT_LABELS = Object.fromEntries(SKILL_EFFECT_TAG_OPTIONS.map((option) => [option.value, option.label]))
+
+function tagLabel(tag, labels) {
+  return `${labels[tag] || '未知标签'}（${tag}）`
+}
+
+function statWeightText(weights = {}) {
+  return Object.entries(weights)
+    .filter(([, value]) => value)
+    .map(([key, value]) => `${STAT_LABELS[key] || key}+${value}`)
+    .join(' / ') || '暂无六维倾向'
+}
+
+function listText(items = []) {
+  return items.length ? items.join('；') : '无'
+}
 
 function pickArgValue(name) {
   const prefix = `${name}=`
@@ -39,13 +60,6 @@ function natureShort(item) {
   return `${item.name}（+${raise} -${lower}，${item.score}）`
 }
 
-function topReason(item) {
-  return item.reasons?.[0] || '暂无推荐理由'
-}
-
-function topWarning(item) {
-  return item.warnings?.[0] || '暂无明显风险'
-}
 
 function groupByDecision(evaluations) {
   return evaluations.reduce((groups, item) => {
@@ -82,14 +96,15 @@ function buildSkillInfo(row, skillById) {
 
 function renderDecisionList(items, limit = 5) {
   if (!items?.length) return '- 无'
-  return items.slice(0, limit).map((item, index) => (
-    `${index + 1}. ${natureShort(item)} — ${topReason(item)}${item.warnings?.length ? `；风险：${topWarning(item)}` : ''}`
-  )).join('\n')
+  return items.slice(0, limit).map((item, index) => {
+    const decision = NATURE_DECISION_LABELS[item.decision] || item.decision
+    return `${index + 1}. ${natureShort(item)}｜${decision}｜定位：${item.roleLabel || '泛用'}｜理由：${listText(item.reasons)}｜风险：${listText(item.warnings)}`
+  }).join('\n')
 }
 
 function renderEvaluationLine(item) {
   const decision = NATURE_DECISION_LABELS[item.decision] || item.decision
-  return `- ${natureShort(item)}｜${decision}｜${topReason(item)}${item.warnings?.length ? `；风险：${topWarning(item)}` : ''}`
+  return `- ${natureShort(item)}｜${decision}｜定位：${item.roleLabel || '泛用'}｜理由：${listText(item.reasons)}｜风险：${listText(item.warnings)}`
 }
 
 function renderRaiseGroups(evaluations) {
@@ -109,28 +124,55 @@ function renderRaiseGroups(evaluations) {
     .join('\n\n')
 }
 
+function renderTraitTagDetails(traitTags = []) {
+  if (!traitTags.length) return '- 无'
+  return traitTags.map((tag) => `- ${tagLabel(tag, TRAIT_LABELS)} → ${statWeightText(TRAIT_TAG_STAT_WEIGHTS[tag])}`).join('\n')
+}
+
+function renderRoleBreakdown(roles = []) {
+  if (!roles.length) return '- 无'
+  return roles.map((role) => `- ${role.label}（权重 ${Math.round(role.weight * 10) / 10}）：${role.reasons.join('；')}`).join('\n')
+}
+
+function renderSkillExamples(skillInfo) {
+  const skills = skillInfo.skills || []
+  if (!skills.length) return '- 无技能资料'
+  return skills.slice(0, 8).map((skill) => {
+    const tags = (skill.effectTags || []).map((tag) => tagLabel(tag, EFFECT_LABELS)).join(' / ') || '无效果标签'
+    return `- ${skill.name || '未知技能'}：${skill.category || '未知类型'} / 威力${skill.power || 0} / 能耗${skill.cost || 0} / 先制${skill.priority || 0}；标签：${tags}；效果：${skill.effect || '无'}`
+  }).join('\n') + (skills.length > 8 ? `\n- ……其余 ${skills.length - 8} 条技能已参与统计` : '')
+}
+
 function renderSample({ sample, row, skillInfo, evaluations }) {
   const groups = groupByDecision(evaluations)
   const skillProfile = analyzeSkillInfo(skillInfo)
   const counts = Object.entries(skillProfile.effectTagCounts || {})
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .map(([tag, count]) => `${tag}×${count}`)
+    .map(([tag, count]) => `${tagLabel(tag, EFFECT_LABELS)}×${count}`)
     .join(' / ') || '暂无效果标签'
   const recommended = groups.recommended || []
   const keepable = groups.keepable || []
   const notRecommended = groups.notRecommended || []
   const topRecommended = recommended.slice(0, 5).map(natureShort).join(' / ') || '无'
+  const traitTags = Array.isArray(row.values?.traitTags) ? row.values.traitTags : []
+  const roles = inferRoles(row.values || {}, traitTags, skillInfo)
+  const traitTagText = traitTags.map((tag) => tagLabel(tag, TRAIT_LABELS)).join(' / ') || '无'
 
   return `## ${sample.name}${row.values?.form ? `（${row.values.form}）` : ''}\n\n` +
     `- 校准关注：${sample.focus || '未填写'}\n` +
     `- 备注：${sample.notes || '未填写'}\n` +
     `- 编号：${row.values?.no || '未知'}\n` +
     `- 六维：${statSummary(row.values)}\n` +
-    `- 特性标签：${(row.values?.traitTags || []).join(' / ') || '无'}\n` +
+    `- 特性名称：${row.values?.traitName || '无'}\n` +
+    `- 特性效果原文：${row.values?.traitDesc || '无'}\n` +
+    `- 特性标签：${traitTagText}\n` +
     `- 技能摘要：${skillProfile.summary}\n` +
     `- 效果标签计数：${counts}\n` +
     `- 分布：${NATURE_DECISION_LABELS.recommended} ${recommended.length} / ${NATURE_DECISION_LABELS.keepable} ${keepable.length} / ${NATURE_DECISION_LABELS.notRecommended} ${notRecommended.length}\n\n` +
     `- 推荐摘要：${topRecommended}\n\n` +
+    `### 特性标签倾向\n\n${renderTraitTagDetails(traitTags)}\n\n` +
+    `### 技能摘要明细\n\n${renderSkillExamples(skillInfo)}\n\n` +
+    `### 综合定位拆解\n\n${renderRoleBreakdown(roles)}\n\n` +
     `### 按增益维度对比（全部 30 个性格）\n\n${renderRaiseGroups(evaluations)}\n\n` +
     `### 最终分档摘要\n\n` +
     `#### 推荐（前 5）\n\n${renderDecisionList(recommended, 5)}\n\n` +

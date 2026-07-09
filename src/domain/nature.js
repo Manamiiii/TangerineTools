@@ -701,10 +701,10 @@ export function evaluateNatureCandidate(
     warnings.push('技能线索依赖先手/优先节奏，弱化速度风险较高')
   }
 
-  if (raiseCore > 0.8) reasons.push(`强化${raiseLabel}符合当前综合定位需求`)
+  if (raiseCore > 0.8) reasons.push(`当前综合定位为${roleLabels.join(' / ') || '泛用'}，强化${raiseLabel}符合该定位的核心需求`)
   if (raiseTrait > 0) reasons.push(`特性标签支持强化${raiseLabel}`)
   if (lowerExpendable > 1) reasons.push(`弱化${lowerLabel}的代价较低，适合作为当前路线的牺牲项`)
-  if (lowerCore > 1) warnings.push(`弱化${lowerLabel}会削弱当前综合定位的关键能力`)
+  if (lowerCore > 1) warnings.push(`当前综合定位为${roleLabels.join(' / ') || '泛用'}，弱化${lowerLabel}会削弱该定位的关键能力`)
   if (lowerTrait > raiseTrait && lowerTrait > 0) warnings.push(`特性标签更需要${lowerLabel}，弱化存在冲突`)
   if (ATTACK_STAT_KEYS.includes(candidate.lower) && roles.some((r) => r.key === 'mixedAttacker')) {
     warnings.push('当前存在双攻潜力，弱化任一攻击都需要技能池证明可以转为单攻玩法')
