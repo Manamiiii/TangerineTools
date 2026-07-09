@@ -607,6 +607,17 @@ function roleAwareStatWarning(roles = [], statKey, statLabel) {
   return `弱化${statLabel}会削弱当前路线的局部能力`
 }
 
+
+function isSingleDefenseRaiseSoftCapped(candidate, roles = [], traitTags = []) {
+  if (!['pdef', 'mdef'].includes(candidate.raise)) return false
+  const topRoles = roles.slice(0, 2)
+  const topRolesNeedDefense = topRoles.some((role) => (ROLE_DEFINITIONS[role.key]?.core?.[candidate.raise] || 0) > 0)
+  if (topRolesNeedDefense) return false
+  const hasDefenseTrait = traitTags.some((tag) => ['defense', 'shieldReduce'].includes(tag))
+  if (hasDefenseTrait) return false
+  return roles.some((role) => (ROLE_DEFINITIONS[role.key]?.core?.[candidate.raise] || 0) > 0)
+}
+
 function applyNaturePreference(evaluation, preference = {}) {
   const normalized = normalizeNaturePreference(preference)
   const shouldKeep =
@@ -746,13 +757,19 @@ export function evaluateNatureCandidate(
     lowerCore >= 3.2 ||
     (candidate.lower === 'spd' && roles.some((r) => ['fastAttacker', 'energyCycle'].includes(r.key))) ||
     (candidate.lower === 'hp' && roles.some((r) => ['bulky', 'support'].includes(r.key)) && lowerExpendable < 1)
+  const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, traitTags)
 
   if (hardRisk) score -= 8
+  let decision = decisionFromScore(score, hardRisk)
+  if (singleDefenseSoftCap && decision === 'recommended') {
+    decision = 'keepable'
+    warnings.push('单防强化主要来自次要防御/辅助线索，主定位未明确要求该防御项，默认降为可保留')
+  }
 
   return applyNaturePreference({
     ...candidate,
     score: Math.round(score * 10) / 10,
-    decision: decisionFromScore(score, hardRisk),
+    decision,
     roleTags: roles.map((r) => r.key),
     roleLabel: roleLabels.join(' / ') || '泛用',
     speedProfile,

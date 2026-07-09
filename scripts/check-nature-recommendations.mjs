@@ -146,25 +146,53 @@ function renderEvaluationBlock(item, sharedReasons = []) {
     `  - 风险：\n${renderIndentedList(warnings)}`
 }
 
-function renderRaiseGroups(evaluations) {
-  const statOrder = ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
-  const byRaise = evaluations.reduce((groups, item) => {
-    groups[item.raise] ||= []
-    groups[item.raise].push(item)
+function renderNatureComparisonGroups(evaluations, groupKey, statOrder, titlePrefix, sharedTitle, sharedField, renderBlock) {
+  const byStat = evaluations.reduce((groups, item) => {
+    groups[item[groupKey]] ||= []
+    groups[item[groupKey]].push(item)
     return groups
   }, {})
   return statOrder
-    .map((raise) => {
-      const items = [...(byRaise[raise] || [])].sort((a, b) => b.score - a.score)
+    .map((stat) => {
+      const items = [...(byStat[stat] || [])].sort((a, b) => b.score - a.score)
       if (items.length === 0) return ''
-      const sharedReasons = commonItems(items.map((item) => item.reasons || []))
-      const sharedText = sharedReasons.length
-        ? `**本组公共强化理由**\n\n${sharedReasons.map((reason) => `- ${reason}`).join('\n')}\n\n`
+      const sharedItems = commonItems(items.map((item) => item[sharedField] || []))
+      const sharedText = sharedItems.length
+        ? `**${sharedTitle}**\n\n${sharedItems.map((item) => `- ${item}`).join('\n')}\n\n`
         : ''
-      return `#### 强化${STAT_LABELS[raise] || raise}\n\n${sharedText}${items.map((item) => renderEvaluationBlock(item, sharedReasons)).join('\n\n')}`
+      return `#### ${titlePrefix}${STAT_LABELS[stat] || stat}\n\n${sharedText}${items.map((item) => renderBlock(item, sharedItems)).join('\n\n')}`
     })
     .filter(Boolean)
     .join('\n\n')
+}
+
+function renderRaiseGroups(evaluations) {
+  const statOrder = ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
+  return renderNatureComparisonGroups(
+    evaluations,
+    'raise',
+    statOrder,
+    '强化',
+    '本组公共强化理由',
+    'reasons',
+    renderEvaluationBlock,
+  )
+}
+
+function renderLowerGroups(evaluations) {
+  const statOrder = ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
+  return renderNatureComparisonGroups(
+    evaluations,
+    'lower',
+    statOrder,
+    '弱化',
+    '本组公共牺牲风险',
+    'warnings',
+    (item, sharedWarnings) => renderEvaluationBlock({
+      ...item,
+      warnings: uniqueItems(item.warnings).filter((warning) => !sharedWarnings.includes(warning)),
+    }),
+  )
 }
 
 function renderTraitTagDetails(traitTags = []) {
@@ -218,6 +246,7 @@ function renderSample({ sample, row, skillInfo, evaluations }) {
     `### 技能摘要明细\n\n${renderSkillExamples(skillInfo)}\n\n` +
     `### 综合定位拆解\n\n${renderRoleBreakdown(roles)}\n\n` +
     `### 按增益维度对比（全部 30 个性格）\n\n${renderRaiseGroups(evaluations)}\n\n` +
+    `### 按牺牲维度对比（同减益横向比较）\n\n${renderLowerGroups(evaluations)}\n\n` +
     `### 最终分档摘要\n\n` +
     `#### 推荐（前 5）\n\n${renderDecisionList(recommended, 5)}\n\n` +
     `#### 可保留（前 6）\n\n${renderDecisionList(keepable, 6)}\n\n` +
