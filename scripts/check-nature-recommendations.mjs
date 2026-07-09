@@ -183,20 +183,54 @@ function renderRaiseGroups(evaluations) {
   )
 }
 
-function renderLowerGroups(evaluations) {
+function routeLabelForCandidate(item) {
+  if (item.raise === 'spd') return '速度/节奏'
+  if (['patk', 'matk'].includes(item.raise)) return '输出强化'
+  if (item.raise === 'hp') return '平衡容错'
+  if (['pdef', 'mdef'].includes(item.raise)) return '专项肉度'
+  return '其他路线'
+}
+
+function isMeaningfulLowerGroup(lower, items) {
+  const viable = items.filter((item) => item.decision !== 'notRecommended')
+  const viableRoutes = new Set(viable.map(routeLabelForCandidate))
+  const hasCheapSacrifice = items.some((item) => (item.reasons || []).some((reason) => /代价较低|牺牲项/.test(reason)))
+  const hasSpecialSpeedContext = lower === 'spd' && items.some((item) => (
+    [...(item.reasons || []), ...(item.warnings || [])].some((text) => /后手|强化传递|速度线|先手|节奏/.test(text))
+  ))
+  return viable.length >= 2 || (viable.length >= 1 && viableRoutes.size >= 2 && hasCheapSacrifice) || hasSpecialSpeedContext
+}
+
+function renderLowerSummary(evaluations) {
   const statOrder = ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
-  return renderNatureComparisonGroups(
-    evaluations,
-    'lower',
-    statOrder,
-    '弱化',
-    '本组公共牺牲风险',
-    'warnings',
-    (item, sharedWarnings) => renderEvaluationBlock({
-      ...item,
-      warnings: uniqueItems(item.warnings).filter((warning) => !sharedWarnings.includes(warning)),
-    }),
-  )
+  const byLower = evaluations.reduce((groups, item) => {
+    groups[item.lower] ||= []
+    groups[item.lower].push(item)
+    return groups
+  }, {})
+  const sections = statOrder
+    .map((lower) => {
+      const items = [...(byLower[lower] || [])].sort((a, b) => b.score - a.score)
+      if (items.length === 0 || !isMeaningfulLowerGroup(lower, items)) return ''
+      const viable = items.filter((item) => item.decision !== 'notRecommended')
+      const routeText = [...new Set(viable.map(routeLabelForCandidate))].join(' / ') || '暂无可保留路线'
+      const showReason = viable.length >= 2
+        ? '该牺牲项下存在需要横向比较的可保留/推荐路线。'
+        : lower === 'spd'
+          ? '速度牺牲涉及后手/强化传递/先手节奏冲突，保留摘要用于人工确认。'
+          : '该牺牲项下存在特殊机制或路线差异，保留摘要用于人工确认。'
+      const lines = items.map((item) => {
+        const decision = NATURE_DECISION_LABELS[item.decision] || item.decision
+        const keyReasons = uniqueItems(item.reasons).filter((reason) => /符合|更贴合|容错|稳定性|代价较低|强化传递|速度/.test(reason)).slice(0, 2)
+        const keyWarnings = uniqueItems(item.warnings).filter((warning) => /风险|削弱|冲突|支配|慢速|速度/.test(warning)).slice(0, 2)
+        return `- ${natureShort(item)}｜${decision}｜${routeLabelForCandidate(item)}｜理由：${keyReasons.join('；') || '见增益组'}｜风险：${keyWarnings.join('；') || '无'}`
+      }).join('\n')
+      return `#### 弱化${STAT_LABELS[lower] || lower}\n\n- 展示原因：${showReason}\n- 主要路线：${routeText}\n\n${lines}`
+    })
+    .filter(Boolean)
+  return sections.length
+    ? sections.join('\n\n')
+    : '本样例的同减益视角没有产生额外结论，已在“按增益维度对比”中通过支配/风险说明覆盖。'
 }
 
 function renderTraitTagDetails(traitTags = []) {
@@ -250,7 +284,7 @@ function renderSample({ sample, row, skillInfo, evaluations }) {
     `### 技能摘要明细\n\n${renderSkillExamples(skillInfo)}\n\n` +
     `### 综合定位拆解\n\n${renderRoleBreakdown(roles)}\n\n` +
     `### 按增益维度对比（全部 30 个性格）\n\n${renderRaiseGroups(evaluations)}\n\n` +
-    `### 按牺牲维度对比（同减益横向比较）\n\n${renderLowerGroups(evaluations)}\n\n` +
+    `### 关键牺牲项摘要（仅展示有额外信息的同减益对比）\n\n${renderLowerSummary(evaluations)}\n\n` +
     `### 最终分档摘要\n\n` +
     `#### 推荐（前 5）\n\n${renderDecisionList(recommended, 5)}\n\n` +
     `#### 可保留（前 6）\n\n${renderDecisionList(keepable, 6)}\n\n` +
