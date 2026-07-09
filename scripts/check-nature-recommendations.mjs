@@ -33,8 +33,18 @@ function statWeightText(weights = {}) {
     .join(' / ') || '暂无六维倾向'
 }
 
-function listText(items = []) {
-  return items.length ? items.join('；') : '无'
+function uniqueItems(items = []) {
+  return [...new Set(items.filter(Boolean))]
+}
+
+function commonItems(lists = []) {
+  if (!lists.length) return []
+  const [first, ...rest] = lists.map(uniqueItems)
+  return first.filter((item) => rest.every((list) => list.includes(item)))
+}
+
+function renderIndentedList(items = [], emptyText = '无') {
+  return items.length ? items.map((item) => `    - ${item}`).join('\n') : `    - ${emptyText}`
 }
 
 function pickArgValue(name) {
@@ -98,13 +108,19 @@ function renderDecisionList(items, limit = 5) {
   if (!items?.length) return '- 无'
   return items.slice(0, limit).map((item, index) => {
     const decision = NATURE_DECISION_LABELS[item.decision] || item.decision
-    return `${index + 1}. ${natureShort(item)}｜${decision}｜定位：${item.roleLabel || '泛用'}｜理由：${listText(item.reasons)}｜风险：${listText(item.warnings)}`
+    return `${index + 1}. **${natureShort(item)}**｜${decision}｜定位：${item.roleLabel || '泛用'}\n` +
+      `   - 理由：\n${renderIndentedList(uniqueItems(item.reasons))}\n` +
+      `   - 风险：\n${renderIndentedList(uniqueItems(item.warnings))}`
   }).join('\n')
 }
 
-function renderEvaluationLine(item) {
+function renderEvaluationBlock(item, sharedReasons = []) {
   const decision = NATURE_DECISION_LABELS[item.decision] || item.decision
-  return `- ${natureShort(item)}｜${decision}｜定位：${item.roleLabel || '泛用'}｜理由：${listText(item.reasons)}｜风险：${listText(item.warnings)}`
+  const reasons = uniqueItems(item.reasons).filter((reason) => !sharedReasons.includes(reason))
+  const warnings = uniqueItems(item.warnings)
+  return `- **${natureShort(item)}**｜${decision}｜定位：${item.roleLabel || '泛用'}\n` +
+    `  - 个性理由：\n${renderIndentedList(reasons, '无额外理由，主要参考本组公共理由')}\n` +
+    `  - 风险：\n${renderIndentedList(warnings)}`
 }
 
 function renderRaiseGroups(evaluations) {
@@ -118,7 +134,11 @@ function renderRaiseGroups(evaluations) {
     .map((raise) => {
       const items = [...(byRaise[raise] || [])].sort((a, b) => b.score - a.score)
       if (items.length === 0) return ''
-      return `#### 强化${STAT_LABELS[raise] || raise}\n\n${items.map(renderEvaluationLine).join('\n')}`
+      const sharedReasons = commonItems(items.map((item) => item.reasons || []))
+      const sharedText = sharedReasons.length
+        ? `**本组公共强化理由**\n\n${sharedReasons.map((reason) => `- ${reason}`).join('\n')}\n\n`
+        : ''
+      return `#### 强化${STAT_LABELS[raise] || raise}\n\n${sharedText}${items.map((item) => renderEvaluationBlock(item, sharedReasons)).join('\n\n')}`
     })
     .filter(Boolean)
     .join('\n\n')
