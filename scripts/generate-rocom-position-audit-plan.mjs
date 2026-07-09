@@ -21,6 +21,64 @@ const P75_PDEF = 102
 const P75_MDEF = 101
 const P75_SPD = 100
 
+const EXTERNAL_AUDIT_FINDINGS = {
+  '音速犬::最终形态': {
+    status: '已核对-无差异',
+    summary: '外部资料多将音速犬定位为先手输出：新资料推荐开朗优先、固执备选；旧资料也强调物攻与速度优秀。与本地“物攻输出 / 高速先手”一致。',
+    source: '豌豆荚：https://m.wandoujia.com/apps/8100514/12274742904409534266.html；4399：https://news.4399.com/luoke/cwlianji/201008-10-75122.html；搜索日期：2026-07-09',
+  },
+  '彩蝶鲨::最终形态': {
+    status: '待人工确认',
+    summary: '外部性格推荐胆小、聪明，支持速度/魔攻路线；本地推荐还出现生命/魔防保留，需后续确认耐久与能量标签是否过强。',
+    source: '3DM：https://ol.3dmgame.com/gl/337408.html；BWIKI：https://wiki.biligame.com/rocom/彩蝶鲨；搜索日期：2026-07-09',
+  },
+  '白金独角兽::最终形态': {
+    status: '已核对-无差异',
+    summary: '外部资料推荐保守/胆小，强调极高魔攻和速度；与本地“魔攻输出 / 高速先手”一致。',
+    source: '豌豆荚：https://m.wandoujia.com/apps/8100514/8804251513711481370.html；搜狐：https://www.sohu.com/a/890910762_121963726；搜索日期：2026-07-09',
+  },
+  '黑猫巫师::最终形态': {
+    status: '已核对-无差异',
+    summary: '外部资料推荐聪明、胆小，并描述为高速魔攻/速攻魔宠；与本地魔攻输出、高速线一致。',
+    source: '3DM：https://ol.3dmgame.com/gl/337516.html；豌豆荚：https://m.wandoujia.com/apps/8100514/1054053429764449975.html；搜索日期：2026-07-09',
+  },
+  '影狸::最终形态': {
+    status: '待人工确认',
+    summary: '外部推荐胆小、开朗或描述为开朗物理攻速宠；本地因双攻和防御标签只给出较少推荐，需确认双攻/耐久标签是否压低了常见速度性格。',
+    source: '3DM：https://ol.3dmgame.com/gl/337518.html；豌豆荚：https://m.wandoujia.com/apps/8100514/6375325330263313946.html；搜索日期：2026-07-09',
+  },
+  '圣羽翼王::最终形态': {
+    status: '待人工确认',
+    summary: '外部资料存在分歧：新攻略偏淘气/慎重/开朗以保证启动，旧攻略偏魔攻/速度；本地暂无推荐，需确认世界版本定位与旧版翼王资料是否应分开处理。',
+    source: '什么值得买：https://post.smzdm.com/p/az8w3635；7k7k：https://news.7k7k.com/roco/chongwu/20140920-672520.html；搜索日期：2026-07-09',
+  },
+  '圆号鱼::最终形态': {
+    status: '核对中',
+    summary: '已找到图鉴/技能搭配资料，外部更强调水火技能和喧哗干扰，但缺少稳定性格结论；需继续搜索视频/社区来源。',
+    source: '17173：https://news.17173.com/z/lkwgsj/content/04232025/110938055.shtml；BWIKI：https://wiki.biligame.com/rocom/圆号鱼；搜索日期：2026-07-09',
+  },
+  '迷迷箱怪::最终形态': {
+    status: '待人工确认',
+    summary: '外部资料分歧明显：3DM 推荐勇敢/固执/聪明，17173 推荐胆小/保守并称偏魔法输出；本地暂无推荐，需确认技能/版本口径。',
+    source: '3DM：https://ol.3dmgame.com/gl/337695.html；17173：https://news.17173.com/z/lkwgsj/content/04232025/215208821.shtml；搜索日期：2026-07-09',
+  },
+  '裘卡::最终形态': {
+    status: '待人工确认',
+    summary: '新资料推荐胆小、开朗，旧资料认为可双攻但不要削弱速度；与本地重视速度大体一致，但需确认物攻/魔攻路线。',
+    source: '3DM：https://ol.3dmgame.com/gl/337720.html；7k7k：https://news.7k7k.com/roco/20150126-698890.html；搜索日期：2026-07-09',
+  },
+  '冰钻布鲁斯::最终形态': {
+    status: '待人工确认',
+    summary: '外部性格结论不统一：有资料推荐固执/勇敢，也有资料推荐淘气(+物防-魔攻)；结合用户反馈“评价很脆”，需要继续核对社区/视频对低生命的评价。',
+    source: '3DM：https://ol.3dmgame.com/gl/337722.html；豌豆荚：https://m.wandoujia.com/apps/8100514/7748344484480778216.html；BWIKI：https://wiki.biligame.com/rocom/冰钻布鲁斯；搜索日期：2026-07-09',
+  },
+  '寂灭骨龙::最终形态': {
+    status: '已核对-无差异',
+    summary: '旧资料推荐固执/开朗，现代资料集中在技能与机制；本地推荐开朗、固执、平和，主物攻方向一致，后手/耐久仍可继续细核。',
+    source: '4399：https://news.4399.com/gonglue/luoke/wenda/201306-28-276697.html；豌豆荚：https://m.wandoujia.com/apps/8100514/11262448109933625767.html；搜索日期：2026-07-09',
+  },
+}
+
 function readJson(filePath) {
   return readFile(filePath, 'utf8').then((text) => JSON.parse(text))
 }
@@ -113,10 +171,11 @@ function tableRows(rows, skillById, calibrationKeys) {
         roles: topRoles(values, traits, skills),
         recommendations: recommendedSummary(values, traits, skills),
         focus,
+        finding: EXTERNAL_AUDIT_FINDINGS[rowKey(row)] || null,
       }
     })
     .sort((a, b) => batchSortValue(a.batch) - batchSortValue(b.batch) || a.no.localeCompare(b.no, 'zh-Hans-CN'))
-    .map((item) => `| ${md(item.batch)} | 待外部核对 | ${md(item.no)} | ${md(item.name)} | ${md(item.form)} | ${md(item.stats)} | ${md(item.tags)} | ${md(item.roles)} | ${md(item.recommendations)} | ${md(item.focus)} | 待补充 | 待补充 |`)
+    .map((item) => `| ${md(item.batch)} | ${md(item.finding?.status || '待外部核对')} | ${md(item.no)} | ${md(item.name)} | ${md(item.form)} | ${md(item.stats)} | ${md(item.tags)} | ${md(item.roles)} | ${md(item.recommendations)} | ${md(item.focus)} | ${md(item.finding?.summary || '待补充')} | ${md(item.finding?.source || '待补充')} |`)
 }
 
 async function main() {
@@ -176,6 +235,10 @@ async function main() {
 | 核对重点 | 本批次应重点验证的问题。 |
 | 外部定位摘要 | 后续搜索后填写。 |
 | 来源 | URL、查询关键词、访问日期。 |
+
+## 第 1 批执行记录
+
+本次已先执行第 1 批外部搜索。外部资料多为攻略站、BWIKI 图鉴和视频索引摘要；其中 4 条暂判无差异，6 条进入待人工确认，1 条仍处于核对中。后续处理顺序建议：先确认待人工确认样例是否需要规则调整，再进入第 2 批低生命高单防样例。
 
 ## 全量核对清单
 
