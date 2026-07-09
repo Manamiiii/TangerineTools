@@ -7,6 +7,7 @@ import {
   STAT_LABELS,
   evaluateAllNatures,
   analyzeSkillInfo,
+  analyzeStats,
   inferRoles,
   TRAIT_TAG_STAT_WEIGHTS,
 } from '../src/domain/nature.js'
@@ -51,6 +52,28 @@ function pickArgValue(name) {
   const prefix = `${name}=`
   const matched = process.argv.find((arg) => arg.startsWith(prefix))
   return matched ? matched.slice(prefix.length) : ''
+}
+
+
+function percentileBandText(score) {
+  return [
+    '后10%档（低于 P10）',
+    'P10-P25 偏低档',
+    'P25-P50 中低档',
+    'P50-P75 中高档',
+    'P75-P90 较高档',
+    '前10%档（达到 P90）',
+  ][score] || '未知档位'
+}
+
+function renderStatDistribution(values = {}) {
+  const analysis = analyzeStats(values)
+  const header = '| 维度 | 数值 | 分布位置 | 粗分位档 |\n| --- | ---: | --- | --- |'
+  const rows = ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd'].map((key) => {
+    const percentile = analysis.percentiles[key]
+    return `| ${STAT_LABELS[key] || key} | ${analysis.stats[key] || 0} | ${percentile.label} | ${percentileBandText(percentile.score)} |`
+  })
+  return [header, ...rows].join('\n')
 }
 
 function statSummary(values = {}) {
@@ -183,6 +206,7 @@ function renderSample({ sample, row, skillInfo, evaluations }) {
     `- 备注：${sample.notes || '未填写'}\n` +
     `- 编号：${row.values?.no || '未知'}\n` +
     `- 六维：${statSummary(row.values)}\n` +
+    `\n### 六维分布\n\n${renderStatDistribution(row.values)}\n\n` +
     `- 特性名称：${row.values?.traitName || '无'}\n` +
     `- 特性效果原文：${row.values?.traitDesc || '无'}\n` +
     `- 特性标签：${traitTagText}\n` +

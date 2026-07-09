@@ -10,6 +10,7 @@ import { db } from '../db.js'
 import { STATS_DIMENSIONS } from '../constants.js'
 import {
   evaluateAllNatures,
+  analyzeStats,
   explainNatureRecommendation,
   extractSkillInfoFromReferenceRows,
   extractSkillRefsFromRow,
@@ -312,6 +313,8 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
 
       <p className="nature-result-reason">{reasoning}</p>
 
+      <NatureStatDistribution stats={baseStats} />
+
       {nature.skillProfile && (
         <div className="nature-skill-note">
           <strong>技能线索</strong>
@@ -367,6 +370,49 @@ function natureModifierSummary(candidate) {
   const raiseText = `${STAT_LABELS[candidate.raise]} ${raiseDelta > 0 ? `+${raiseDelta}` : raiseDelta}`
   const lowerText = `${STAT_LABELS[candidate.lower]} ${lowerDelta}`
   return `${raiseText} / ${lowerText}`
+}
+
+
+function percentileBandText(score) {
+  return [
+    '后10%档',
+    'P10-P25',
+    'P25-P50',
+    'P50-P75',
+    'P75-P90',
+    '前10%档',
+  ][score] || '未知档位'
+}
+
+function NatureStatDistribution({ stats }) {
+  const analysis = useMemo(() => analyzeStats(stats), [stats])
+  return (
+    <div className="nature-stats-scroll nature-stat-distribution">
+      <table className="nature-stats-table">
+        <thead>
+          <tr>
+            <th>维度</th>
+            <th>数值</th>
+            <th>分布位置</th>
+            <th>粗分位档</th>
+          </tr>
+        </thead>
+        <tbody>
+          {STATS_DIMENSIONS.map((d) => {
+            const percentile = analysis.percentiles[d.key]
+            return (
+              <tr key={d.key}>
+                <td>{d.label}</td>
+                <td>{analysis.stats[d.key] || 0}</td>
+                <td>{percentile.label}</td>
+                <td>{percentileBandText(percentile.score)}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
 }
 
 function NatureStatsBars({ nature, baseStats, adjustedStats }) {
