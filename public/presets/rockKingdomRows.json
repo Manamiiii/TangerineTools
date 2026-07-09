@@ -196,7 +196,6 @@
       "traitName": "氧循环",
       "traitTags": [
         "attack",
-        "defense",
         "support"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%B0%A7%E5%BE%AA%E7%8E%AF.png",
@@ -3674,7 +3673,6 @@
       "shiny": "no",
       "traitName": "毒蘑菇",
       "traitTags": [
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%AF%92%E8%98%91%E8%8F%87.png",
@@ -8595,7 +8593,6 @@
       "traitTags": [
         "matkLean",
         "spdLean",
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%83%8A%E5%90%93.png",
@@ -12471,8 +12468,7 @@
       "traitName": "电流刺激",
       "traitTags": [
         "attack",
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%94%B5%E6%B5%81%E5%88%BA%E6%BF%80.png",
       "traitDesc": "携带的攻击技能获得迸发：威力+40。",
@@ -12561,8 +12557,7 @@
       "traitName": "电流刺激",
       "traitTags": [
         "attack",
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%94%B5%E6%B5%81%E5%88%BA%E6%BF%80.png",
       "traitDesc": "携带的攻击技能获得迸发：威力+40。",
@@ -13709,7 +13704,6 @@
       "traitName": "木桶戏法",
       "traitTags": [
         "matkLean",
-        "defense",
         "pivot"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%9C%A8%E6%A1%B6%E6%88%8F%E6%B3%95.png",
@@ -17203,7 +17197,6 @@
       "shiny": "no",
       "traitName": "毒牙",
       "traitTags": [
-        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%AF%92%E7%89%99.png",
@@ -21861,7 +21854,6 @@
       "shiny": "no",
       "traitName": "消波块",
       "traitTags": [
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%B6%88%E6%B3%A2%E5%9D%97.png",
@@ -21950,7 +21942,6 @@
       "shiny": "no",
       "traitName": "消波块",
       "traitTags": [
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%B6%88%E6%B3%A2%E5%9D%97.png",
@@ -23803,7 +23794,6 @@
       "traitName": "保卫",
       "traitTags": [
         "patkLean",
-        "defense",
         "shieldReduce"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E4%BF%9D%E5%8D%AB.png",
@@ -23897,7 +23887,6 @@
       "traitName": "保卫",
       "traitTags": [
         "patkLean",
-        "defense",
         "shieldReduce"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E4%BF%9D%E5%8D%AB.png",
@@ -24732,7 +24721,7 @@
       "shiny": "no",
       "traitName": "营养液泡",
       "traitTags": [
-        "defense"
+        "special"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E8%90%A5%E5%85%BB%E6%B6%B2%E6%B3%A1.png",
       "traitDesc": "获得增益时，额外获得层数+2。",
@@ -26828,8 +26817,7 @@
       "shiny": "no",
       "traitName": "蒸汽膨胀",
       "traitTags": [
-        "patkLean",
-        "defense"
+        "patkLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E8%92%B8%E6%B1%BD%E8%86%A8%E8%83%80.png",
       "traitDesc": "己方精灵每使用1次火系技能，自己入场时获得全技能威力+10。",
@@ -27094,7 +27082,6 @@
       "traitTags": [
         "matkLean",
         "spdLean",
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%8F%8A%E7%91%9A%E9%AA%A8.png",
@@ -27534,7 +27521,6 @@
       "traitName": "定向精炼",
       "traitTags": [
         "patkLean",
-        "defense",
         "shieldReduce"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%AE%9A%E5%90%91%E7%B2%BE%E7%82%BC.png",
@@ -31521,7 +31507,6 @@
       "traitName": "冰钻",
       "traitTags": [
         "patkLean",
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%86%B0%E9%92%BB.png",
@@ -37027,8 +37012,7 @@
       "shiny": "yes",
       "traitName": "绒粉星光",
       "traitTags": [
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "",
       "traitDesc": "攻击时，若敌方血脉是非本系的系别血脉，技能威力+100%。",
@@ -39880,7 +39864,6 @@
       "traitTags": [
         "matkLean",
         "spdLean",
-        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%A4%A9%E9%80%9A%E5%9C%B0%E6%98%8E.png",
@@ -40403,8 +40386,7 @@
       "traitName": "守望星",
       "traitTags": [
         "matkLean",
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%AE%88%E6%9C%9B%E6%98%9F.png",
       "traitDesc": "触发星陨时消耗一半层数，仍造成满层伤害。",
@@ -41199,8 +41181,7 @@
       "shiny": "yes",
       "traitName": "大火球",
       "traitTags": [
-        "patkLean",
-        "defense"
+        "patkLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%A4%A7%E7%81%AB%E7%90%83.png",
       "traitDesc": "自己使用2次不同的火系技能后，下次技能无需蓄力，随后特性重置。",
@@ -42336,7 +42317,6 @@
       "traitTags": [
         "matkLean",
         "spdLean",
-        "defense",
         "pivot"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%AE%89%E5%8F%AF.png",
@@ -42679,7 +42659,6 @@
       "shiny": "yes",
       "traitName": "盲从",
       "traitTags": [
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%9B%B2%E4%BB%8E.png",
