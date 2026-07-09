@@ -805,7 +805,7 @@ function applyDominance(evaluations) {
       if (item === best) continue
       if (item.lineupKeep) continue
       if (item.score > best.score - 20) continue
-      if (item.reasons.some((reason) => /专项|速度 .*提升到|生命强化/.test(reason))) continue
+      if (item.reasons.some((reason) => /专项|速度 .*提升到/.test(reason))) continue
       const target = byKey.get(dominanceKey(item))
       if (!target) continue
       target.decision = 'notRecommended'
