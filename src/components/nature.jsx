@@ -10,6 +10,7 @@ import { db } from '../db.js'
 import { STATS_DIMENSIONS } from '../constants.js'
 import {
   evaluateAllNatures,
+  analyzeStats,
   explainNatureRecommendation,
   extractSkillInfoFromReferenceRows,
   extractSkillRefsFromRow,
@@ -20,6 +21,7 @@ import {
   natureName,
   NATURE_DECISION_LABELS,
   STAT_LABELS,
+  groupRejectedNatures,
 } from '../domain/nature.js'
 import { TRAIT_TAG_OPTIONS } from '../presets/rockKingdom.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
@@ -201,7 +203,16 @@ function RowImportPanel({ scene, onImport }) {
     const skillInfo = referencedSkillRows.length > 0
       ? extractSkillInfoFromReferenceRows(referencedSkillRows)
       : extractSkillInfoFromRow(target, fields)
-    onImport({ name: summary.name, stats, traitTags, skillInfo })
+    const traitDesc = target.values?.traitDesc || ''
+    const traitText = /继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(traitDesc)
+      ? traitDesc
+      : ''
+    onImport({
+      name: summary.name,
+      stats,
+      traitTags,
+      skillInfo: traitText ? { ...skillInfo, traitText } : skillInfo,
+    })
   }
 
   return (
@@ -250,32 +261,80 @@ function NatureCandidateList({ candidates, activeIndex, onSelect }) {
                 <span className={`nature-candidate-tag ${decision}`}>{label}</span>
                 <span>{items.length} 个</span>
               </div>
-              <ul className="nature-candidates-list">
-                {items.map((c) => {
-                  const candidateIndex = candidates.indexOf(c)
-                  const isActive = c === activeCandidate
-                  return (
-                    <li key={c.id || `${c.raise}-${c.lower}`}>
-                      <button
-                        type="button"
-                        className={`nature-candidate ${isActive ? 'active' : ''}`}
-                        onClick={() => onSelect(candidateIndex)}
-                      >
-                        <span className={`nature-candidate-tag ${c.decision}`}>
-                          {NATURE_DECISION_LABELS[c.decision]}
-                        </span>
-                        <span className="nature-candidate-name">{natureName(c)}</span>
-                        <span className="nature-candidate-role">{natureModifierSummary(c)}</span>
-                        <span className="nature-candidate-score">{c.score.toFixed(1)}</span>
-                      </button>
-                    </li>
-                  )
-                })}
-              </ul>
+              {decision === 'notRecommended' ? (
+                <RejectedCandidateGroups
+                  candidates={candidates}
+                  activeCandidate={activeCandidate}
+                  onSelect={onSelect}
+                />
+              ) : (
+                <ul className="nature-candidates-list">
+                  {items.map((c) => (
+                    <NatureCandidateListItem
+                      key={c.id || `${c.raise}-${c.lower}`}
+                      candidate={c}
+                      candidates={candidates}
+                      activeCandidate={activeCandidate}
+                      onSelect={onSelect}
+                    />
+                  ))}
+                </ul>
+              )}
             </section>
           )
         })}
       </div>
+    </div>
+  )
+}
+
+
+function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSelect }) {
+  const candidateIndex = candidates.indexOf(candidate)
+  const isActive = candidate === activeCandidate
+  return (
+    <li>
+      <button
+        type="button"
+        className={`nature-candidate ${isActive ? 'active' : ''}`}
+        onClick={() => onSelect(candidateIndex)}
+      >
+        <span className={`nature-candidate-tag ${candidate.decision}`}>
+          {NATURE_DECISION_LABELS[candidate.decision]}
+        </span>
+        <span className="nature-candidate-name">{natureName(candidate)}</span>
+        <span className="nature-candidate-role">{natureModifierSummary(candidate)}</span>
+        <span className="nature-candidate-score">{candidate.score.toFixed(1)}</span>
+      </button>
+    </li>
+  )
+}
+
+function RejectedCandidateGroups({ candidates, activeCandidate, onSelect }) {
+  const groups = groupRejectedNatures(candidates)
+  if (groups.length === 0) return null
+  return (
+    <div className="nature-rejection-groups">
+      {groups.map((group) => (
+        <section key={group.key} className="nature-rejection-group">
+          <div className="nature-rejection-group-title">
+            <span>{group.title}</span>
+            <span>{group.items.length} 个</span>
+          </div>
+          <p className="nature-rejection-group-desc">{group.description}</p>
+          <ul className="nature-candidates-list nature-candidates-list-compact">
+            {group.items.map((c) => (
+              <NatureCandidateListItem
+                key={c.id || `${c.raise}-${c.lower}`}
+                candidate={c}
+                candidates={candidates}
+                activeCandidate={activeCandidate}
+                onSelect={onSelect}
+              />
+            ))}
+          </ul>
+        </section>
+      ))}
     </div>
   )
 }
@@ -311,6 +370,8 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
       </div>
 
       <p className="nature-result-reason">{reasoning}</p>
+
+      <NatureStatDistribution stats={baseStats} />
 
       {nature.skillProfile && (
         <div className="nature-skill-note">
@@ -367,6 +428,49 @@ function natureModifierSummary(candidate) {
   const raiseText = `${STAT_LABELS[candidate.raise]} ${raiseDelta > 0 ? `+${raiseDelta}` : raiseDelta}`
   const lowerText = `${STAT_LABELS[candidate.lower]} ${lowerDelta}`
   return `${raiseText} / ${lowerText}`
+}
+
+
+function percentileBandText(score) {
+  return [
+    '后10%档',
+    'P10-P25',
+    'P25-P50',
+    'P50-P75',
+    'P75-P90',
+    '前10%档',
+  ][score] || '未知档位'
+}
+
+function NatureStatDistribution({ stats }) {
+  const analysis = useMemo(() => analyzeStats(stats), [stats])
+  return (
+    <div className="nature-stats-scroll nature-stat-distribution">
+      <table className="nature-stats-table">
+        <thead>
+          <tr>
+            <th>维度</th>
+            <th>数值</th>
+            <th>分布位置</th>
+            <th>粗分位档</th>
+          </tr>
+        </thead>
+        <tbody>
+          {STATS_DIMENSIONS.map((d) => {
+            const percentile = analysis.percentiles[d.key]
+            return (
+              <tr key={d.key}>
+                <td>{d.label}</td>
+                <td>{analysis.stats[d.key] || 0}</td>
+                <td>{percentile.label}</td>
+                <td>{percentileBandText(percentile.score)}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
 }
 
 function NatureStatsBars({ nature, baseStats, adjustedStats }) {

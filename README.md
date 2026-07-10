@@ -125,10 +125,14 @@ npm run sync:rock scripts/data/rockKingdom.d.json
 
 ## 维护文档
 
+- [`AGENTS.md`](AGENTS.md)：长期有效的 Codex/agent 开发边界、必读文件与测试命令。
+- [`docs/README.md`](docs/README.md)：`docs/` 文件用途索引，说明哪些是长期维护文档、哪些是生成报告。
 - [`docs/system-capabilities.md`](docs/system-capabilities.md)：当前已实现能力与明确排除范围。
 - [`docs/data-sync.md`](docs/data-sync.md)：数据模型、导入/导出、预置资料同步与迁移语义。
-- [`docs/session-start-prompt.md`](docs/session-start-prompt.md)：下一轮 session 启动提示与开发约束。
+- [`docs/session-start-prompt.md`](docs/session-start-prompt.md)：下一轮 session 启动提示、代码地图和阶段重点。
 - [`docs/nature-recommendation-redesign.md`](docs/nature-recommendation-redesign.md)：性格推荐规则设计草案，下一轮规则调参从这里继续。
+- [`docs/rocom-position-audit-plan.md`](docs/rocom-position-audit-plan.md)：洛克王国世界外部定位核对计划和批次台账。
+- [`docs/nature-calibration-report.md`](docs/nature-calibration-report.md)：由 `npm run check:nature` 生成的性格推荐校准报告。
 
 ## 部署
 

@@ -1,10 +1,10 @@
 # TangerineTools · 后续 Session 启动提示
 
-这份文档用于新 session 快速接手当前分支。开始编码前请先读完，避免推翻已有数据模型、预置资料迁移与性格推荐原型。
+这份文档用于新 session 快速接手当前分支，补充项目背景、代码地图和阶段性接手说明。长期有效的 Codex 开发边界、必读文件与测试命令已整理到仓库根目录 `AGENTS.md`。
 
 ## 项目现状
 
-TangerineTools 是本地优先的个人资料管理 Web App（Vite + React 19 + Dexie.js），纯静态、无后端。当前默认演示场景为「洛克王国」，工作台包含四个工具：
+TangerineTools 是本地优先的个人资料管理 Web App（Vite + React 19 + Dexie.js），纯静态、无后端。当前默认演示场景为「洛克王国世界」，工作台包含四个工具：
 
 - 资料库 `catalog`
 - 收集记录 `owned`
@@ -17,29 +17,20 @@ TangerineTools 是本地优先的个人资料管理 Web App（Vite + React 19 + 
 - `public/presets/rockKingdomSkillRows.json`：技能资料。
 - `scripts/data/rockKingdom.d.json`：本地可信源文件，用于当前环境无法访问官方源时复现同步。
 
-## 开发前必读
+## 开发前先看
 
-1. `docs/system-capabilities.md` —— 当前功能范围与明确不做的事。
-2. `docs/data-sync.md` —— Dexie schema、导出/导入合并语义、预置资料迁移。
-3. `docs/nature-recommendation-redesign.md` —— 性格推荐规则原型与下一轮调参背景。
-4. 当前 PR 描述、最近 commit、review comments。
+1. `AGENTS.md` —— 长期有效的 Codex 开发边界、数据安全约束、必读文件与测试命令。
+2. `docs/system-capabilities.md` —— 当前功能范围与明确不做的事。
+3. `docs/data-sync.md` —— Dexie schema、导出/导入合并语义、预置资料迁移。
+4. `docs/nature-recommendation-redesign.md` —— 性格推荐规则原型与下一轮调参背景。
+5. 当前 PR 描述、最近 commit、review comments。
 
-## 环境要求
+## 当前阶段重点
 
-- Node 版本必须满足 `>=20.19.0`（见 `package.json` 与 `.nvmrc`）。
-- 开发前先执行 `node -v`。
-- 修改后至少运行 `npm run build` 和 `npm run lint`。
-- 涉及洛克王国预置资料时运行 `npm run sync:rock scripts/data/rockKingdom.d.json`。
-
-## 当前重要边界
-
-- 不要引入 Dexie schema 版本变更，除非用户明确要求。
-- 不要删除用户 owned / stock 数据。
-- owned / stock 稳定 id 幂等与旧随机 id 兼容逻辑不能破坏。
-- 导入仍是“同 id 覆盖，文件中缺失的本地数据保留”，不要改成清空替换。
-- 洛克王国预置资料必须来自官方公开 d.json 或用户提供的可信 d.json；不要生成 mock / 占位 / 程序化假数据。
-- 预置资料迁移只能安全补齐 / 修正明确官方字段，不能覆盖用户自定义非空值。
-- 性格推荐资料带入固定读取洛克王国「精灵基础资料」，技能分析通过 `skillRefs` 引用「技能资料」。
+- 性格推荐仍处于规则校准阶段；日常核对改为随捕捉进度从图鉴前部开始“一只精灵一轮”分析，先给出当下捕捉性格取舍，再判断是否需要沉淀为通用规则。
+- 外部资料核对只关注洛克王国世界对精灵定位、机制和实战评价的描述；旧网页游戏洛克王国资料不作为新游定位依据。
+- 全量本地审计台账保留为索引和专题回归工具；当多只精灵暴露同类问题时，再按低生命高单防、速度线、双攻路线等专题批次统一修规则。
+- 预置资料仍以官方 `d.json` / 本地可信 `scripts/data/rockKingdom.d.json` 为准。
 
 ## 代码地图
 
@@ -73,7 +64,7 @@ scripts/
   data/rockKingdom.d.json      # 可信 d.json 源文件
   sync-rock-kingdom-preset.mjs # 生成 rows / skillRows 的同步脚本
 docs/
-  system-capabilities.md / data-sync.md / nature-recommendation-redesign.md / session-start-prompt.md
+  README.md / system-capabilities.md / data-sync.md / nature-recommendation-redesign.md / session-start-prompt.md / rocom-position-audit-plan.md
 ```
 
 ## 关键约定 / 容易踩的坑
@@ -94,24 +85,28 @@ docs/
 请继续开发 GitHub 仓库 Manamiiii/TangerineTools 当前 PR / 功能分支。
 
 开始前请阅读：
-1. docs/session-start-prompt.md
-2. docs/system-capabilities.md
-3. docs/data-sync.md
-4. docs/nature-recommendation-redesign.md
-5. 当前 PR 描述、最近 commit、review comments
+1. AGENTS.md
+2. docs/session-start-prompt.md
+3. docs/system-capabilities.md
+4. docs/data-sync.md
+5. docs/nature-recommendation-redesign.md
+6. 当前 PR 描述、最近 commit、review comments
 
-本轮目标建议：单独讨论并优化「性格推荐规则」。
+本轮目标建议：按捕捉进度做「单只精灵性格取舍核对」。
 
 背景：
 - 性格推荐原型已实现全部 30 个合法性格候选展示。
 - 精灵基础资料已通过 skillRefs 引用技能资料；技能资料已生成并可参与分析。
 - traitTags 与 skillTags 已分离；推荐引擎会读取六维、traitTags、skillRefs 对应技能行。
 - 最终速度公式入口已预留，但具体固定参数仍未确认。
+- 外部资料只用于理解洛克王国世界里的定位、机制和玩家评价，不直接照抄外部推荐性格。
 
-本轮请优先做规则讨论和样例校准：
-- 逐个精灵检查推荐 / 可保留 / 不推荐是否符合直觉。
-- 调整速度、主攻、双攻、耐久、防御手、后手收益、技能质量等权重。
-- 不要再扩展大型资料结构，除非先确认范围。
-- 不要引入 Dexie schema 版本变更。
-- 修改后运行 npm run build 和 npm run lint；涉及预置资料则运行 npm run sync:rock scripts/data/rockKingdom.d.json。
+本轮请按一只精灵闭环：
+1. 我会给出编号/名称/形态，以及捕捉时遇到的候选性格。
+2. 先读取本地六维、特性、技能摘要、综合定位和当前推荐/可保留/不推荐结果。
+3. 再搜索洛克王国世界资料，提炼外部对该精灵定位、机制、强弱评价的描述，排除旧网页游戏洛克王国资料。
+4. 输出本轮捕捉建议：哪些性格推荐、哪些可保留、哪些不建议保留；说明本地依据、外部依据和风险。
+5. 如果发现规则偏差，先问我确认玩法口径；确认是通用问题后再改规则并重跑 check:nature / audit:rocom / lint / build / git diff --check。
+
+边界：不引入 Dexie schema 版本变更；不做战斗模拟、阵容系统或属性克制；不做硬编码单只精灵特判。
 ```

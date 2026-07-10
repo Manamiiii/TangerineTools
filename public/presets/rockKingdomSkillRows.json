@@ -7320,6 +7320,8 @@
       "cost": 0,
       "priority": "",
       "effectTags": [
+        "priority",
+        "swift",
         "speed"
       ],
       "effect": "✦迅捷，驱散敌方1种增益。",
@@ -7686,6 +7688,8 @@
       "cost": 2,
       "priority": "",
       "effectTags": [
+        "priority",
+        "swift",
         "speed",
         "damageReduction",
         "counterAttack"
@@ -11257,6 +11261,7 @@
       "cost": 3,
       "priority": "",
       "effectTags": [
+        "boostTransfer",
         "pivot"
       ],
       "effect": "✦自己脱离，下个入场精灵继承自己增益。",
@@ -11581,6 +11586,8 @@
       "cost": 0,
       "priority": "",
       "effectTags": [
+        "priority",
+        "swift",
         "speed",
         "costChange"
       ],
@@ -15460,6 +15467,8 @@
       "cost": 5,
       "priority": "",
       "effectTags": [
+        "priority",
+        "swift",
         "speed",
         "counterStatus"
       ],
@@ -28898,6 +28907,8 @@
       "cost": 3,
       "priority": "",
       "effectTags": [
+        "priority",
+        "swift",
         "speed"
       ],
       "effect": "✦造成魔伤，迅捷。",
@@ -30042,6 +30053,8 @@
       "cost": 2,
       "priority": "",
       "effectTags": [
+        "priority",
+        "swift",
         "speed",
         "statBoost"
       ],

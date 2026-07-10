@@ -12,7 +12,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "sync:rock": "node scripts/sync-rock-kingdom-preset.mjs",
-    "check:nature": "node scripts/check-nature-recommendations.mjs"
+    "check:nature": "node scripts/check-nature-recommendations.mjs",
+    "audit:rocom": "node scripts/generate-rocom-position-audit-plan.mjs"
   },
   "dependencies": {
     "dexie": "^4.4.4",

@@ -55,7 +55,7 @@ const SHINY_OPTIONS = [
   { value: 'yes', label: '异色', color: '#db2777', image: '' },
 ]
 
-// 特性标签：13 类倾向标签，用于多选描述精灵在队伍里的定位/资源循环特点。
+// 特性标签：14 类倾向标签，用于多选描述精灵在队伍里的定位/资源循环特点。
 // 其中 attack/control/support/defense/special 是第一轮就存在的旧值，
 // 这里只更新了展示名称与配色（新语义更细），value 保持不变，
 // 已保存的旧标签数据可以继续正常展示、不会变成空白或 undefined。
@@ -64,7 +64,9 @@ export const TRAIT_TAG_OPTIONS = [
   { value: 'patkLean', label: '物攻输出', color: '#ea580c', image: '' },
   { value: 'matkLean', label: '魔攻输出', color: '#c026d3', image: '' },
   { value: 'spdLean', label: '高速先手', color: '#eab308', image: '' },
-  { value: 'defense', label: '耐久坦克', color: '#2563eb', image: '' },
+  { value: 'conditionalSpeedBoost', label: '条件加速', color: '#f59e0b', image: '' },
+  { value: 'swiftSkill', label: '迅捷触发', color: '#facc15', image: '' },
+  { value: 'defense', label: '耐久基础', color: '#2563eb', image: '' },
   { value: 'support', label: '回复辅助', color: '#059669', image: '' },
   { value: 'energyCycle', label: '能量循环', color: '#0d9488', image: '' },
   { value: 'counterGain', label: '克制收益', color: '#4f46e5', image: '' },
@@ -128,8 +130,9 @@ export const SKILL_CATEGORY_LEGACY_DEFAULTS = {
   status: { label: '状态', color: '#64748b' },
 }
 
-const SKILL_EFFECT_TAG_OPTIONS = [
+export const SKILL_EFFECT_TAG_OPTIONS = [
   { value: 'priority', label: '先手优先', color: '#eab308', image: '' },
+  { value: 'swift', label: '迅捷先手', color: '#f59e0b', image: '' },
   { value: 'speed', label: '速度节奏', color: '#facc15', image: '' },
   { value: 'healing', label: '回复吸血', color: '#16a34a', image: '' },
   { value: 'damageReduction', label: '护盾减伤', color: '#2563eb', image: '' },
@@ -137,6 +140,7 @@ const SKILL_EFFECT_TAG_OPTIONS = [
   { value: 'energyDrain', label: '能量干扰', color: '#0891b2', image: '' },
   { value: 'costChange', label: '能耗变化', color: '#14b8a6', image: '' },
   { value: 'statBoost', label: '自身强化', color: '#65a30d', image: '' },
+  { value: 'boostTransfer', label: '强化传递', color: '#22c55e', image: '' },
   { value: 'statDebuff', label: '削弱对手', color: '#9333ea', image: '' },
   { value: 'control', label: '异常控制', color: '#7c3aed', image: '' },
   { value: 'counterAttack', label: '应对攻击', color: '#dc2626', image: '' },

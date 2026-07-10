@@ -2115,6 +2115,44 @@ img {
   gap: 8px;
 }
 
+
+.nature-rejection-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nature-rejection-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: #f8fafc;
+}
+
+.nature-rejection-group-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.nature-rejection-group-desc {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.nature-candidates-list-compact {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
 .nature-candidate-group-title {
   display: flex;
   align-items: center;

@@ -32,6 +32,8 @@ export const STAT_PERCENTILE_BANDS = {
   spd: { p10: 51, p25: 65, p50: 84, p75: 100, p90: 115 },
 }
 
+export const BULK_PERCENTILE_BANDS = { p75: 301, p90: 338 }
+
 export const SPEED_TIER_LABELS = {
   veryLow: '极慢',
   low: '偏慢',
@@ -70,19 +72,21 @@ export const NATURE_DECISION_LABELS = {
   notRecommended: '不推荐',
 }
 
-// 13 个特性标签对六维的倾向权重：0.5 = 轻度关联，1 = 主要关联，2 = 强关联。
+// 特性标签对六维的倾向权重：0.5 = 轻度关联，1 = 主要关联，2 = 强关联。
 // 只用于评价方向，不影响 applyNatureModifier 的实际加成幅度。
 export const TRAIT_TAG_STAT_WEIGHTS = {
   attack: { patk: 1, matk: 1 },
   patkLean: { patk: 2 },
   matkLean: { matk: 2 },
   spdLean: { spd: 2 },
-  defense: { hp: 0.75, pdef: 1, mdef: 1 },
+  conditionalSpeedBoost: { spd: 1.2 },
+  swiftSkill: { spd: 1.5 },
+  defense: { hp: 1, pdef: 0.9, mdef: 0.9 },
   support: { hp: 0.75, pdef: 0.5, mdef: 0.5, spd: 0.5 },
   energyCycle: { spd: 1, hp: 0.25 },
   counterGain: { patk: 0.5, matk: 0.5 },
   growth: { patk: 0.5, matk: 0.5 },
-  shieldReduce: { hp: 0.75, pdef: 1, mdef: 1 },
+  shieldReduce: { hp: 1, pdef: 0.9, mdef: 0.9 },
   control: { spd: 1 },
   pivot: { spd: 1, hp: 0.5 },
   special: {},
@@ -111,7 +115,7 @@ const ROLE_DEFINITIONS = {
   },
   bulky: {
     label: '耐久站场',
-    core: { hp: 1.2, pdef: 1.1, mdef: 1.1 },
+    core: { hp: 1.3, pdef: 1, mdef: 1 },
     expendable: { spd: 0.3 },
   },
   physicalWall: {
@@ -190,7 +194,7 @@ export function speedTier(value) {
 
 function analyzeSpeedConcern(stats, traitTags = [], roles = []) {
   const speedScore = percentileScore('spd', stats.spd)
-  const speedTraitTags = ['spdLean', 'control', 'pivot', 'energyCycle']
+  const speedTraitTags = ['spdLean', 'conditionalSpeedBoost', 'swiftSkill', 'control', 'pivot', 'energyCycle']
   const hasSpeedTrait = traitTags.some((tag) => speedTraitTags.includes(tag))
   const hasSpeedRole = roles.some((role) =>
     ['fastAttacker', 'support', 'energyCycle'].includes(role.key),
@@ -245,7 +249,8 @@ function sumTraitWeights(traitTags = []) {
 function normalizeSkillItems(skillInfo = {}) {
   if (!skillInfo) return []
   const source = Array.isArray(skillInfo) ? skillInfo : skillInfo.skills || skillInfo.moves || []
-  const list = Array.isArray(source) ? source : [source]
+  const list = [...(Array.isArray(source) ? source : [source])]
+  if (!Array.isArray(skillInfo) && skillInfo.traitText) list.push({ category: 'status', text: skillInfo.traitText })
   return list.map((item) => {
     if (item && typeof item === 'object') return item
     return { text: item == null ? '' : String(item) }
@@ -271,7 +276,8 @@ function deriveSkillEffectTags(item) {
   const explicit = Array.isArray(item.effectTags) ? item.effectTags : []
   const tags = new Set(explicit)
   const text = skillItemText(item)
-  if (/先手|优先|抢先/.test(text)) tags.add('priority')
+  if (/先手|优先|抢先|迅捷/.test(text)) tags.add('priority')
+  if (/迅捷/.test(text)) tags.add('swift')
   if (/迅捷|速度[+-]|速度提升|速度降低|先手|高速/.test(text)) tags.add('speed')
   if (/回复|恢复|治疗|吸血|生命/.test(text)) tags.add('healing')
   if (/防御|护盾|减伤|承伤|抵抗|免疫/.test(text)) tags.add('damageReduction')
@@ -279,6 +285,7 @@ function deriveSkillEffectTags(item) {
   if (/偷取.*能量|失去\d*能量|扣.*能量|能量减少/.test(text)) tags.add('energyDrain')
   if (/能耗[+-]|费用[+-]|消耗[+-]|全技能能耗/.test(text)) tags.add('costChange')
   if (/物攻\+|魔攻\+|双攻\+|物防\+|魔防\+|双防\+|威力\+|强化|提升|增加/.test(text)) tags.add('statBoost')
+  if (/继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(text)) tags.add('boostTransfer')
   if (/物攻-|魔攻-|双攻-|物防-|魔防-|双防-|速度-|削弱|降低|减少/.test(text)) tags.add('statDebuff')
   if (/中毒|剧毒|灼烧|烧伤|冻结|冰冻|睡眠|恐惧|麻痹|混乱|沉默|束缚|异常|控制/.test(text)) tags.add('control')
   if (/应对攻击|反击|受到攻击后|承受.*后/.test(text)) tags.add('counterAttack')
@@ -334,7 +341,8 @@ export function analyzeSkillInfo(skillInfo = {}) {
   const backLoaded = Boolean(effectTagCounts.counterAttack)
   const control = Boolean(effectTagCounts.control)
   const sustain = Boolean(effectTagCounts.healing || effectTagCounts.damageReduction)
-  const support = Boolean(sustain || effectTagCounts.statBoost || effectTagCounts.pivot)
+  const boostTransfer = Boolean(effectTagCounts.boostTransfer)
+  const support = Boolean(sustain || effectTagCounts.statBoost || effectTagCounts.pivot || boostTransfer)
   const defense = Boolean(effectTagCounts.damageReduction || effectTagCounts.counterDefense)
   const energy = Boolean(effectTagCounts.energyGain || effectTagCounts.energyDrain || effectTagCounts.costChange)
 
@@ -350,6 +358,7 @@ export function analyzeSkillInfo(skillInfo = {}) {
     control,
     support,
     sustain,
+    boostTransfer,
     defense,
     energy,
     effectTagCounts,
@@ -374,6 +383,7 @@ export function analyzeSkillInfo(skillInfo = {}) {
         control && '控制',
         sustain && '续航/减伤',
         support && '辅助',
+        boostTransfer && '强化传递',
         energy && '能量',
       ].filter(Boolean).join(' / ') || '暂无明确标签'}`
       : '未读取到技能字段，暂按六维与特性标签评估',
@@ -495,8 +505,15 @@ export function inferRoles(baseStats = {}, traitTags = [], skillInfo = {}) {
   if (stats.spd >= STAT_PERCENTILE_BANDS.spd.p75) {
     addRole('fastAttacker', stats.spd >= STAT_PERCENTILE_BANDS.spd.p90 ? 2 : 1.4, `速度处于${analysis.speed.baseTier}档`)
   }
-  if (analysis.bulkScore >= 285 || stats.hp >= STAT_PERCENTILE_BANDS.hp.p75) {
-    addRole('bulky', 1.2, `生命 + 双防合计 ${analysis.bulkScore}，具备站场基础`)
+  const hasTopBulk = analysis.bulkScore >= BULK_PERCENTILE_BANDS.p90 || stats.hp >= STAT_PERCENTILE_BANDS.hp.p90
+  const hasBalancedBulk =
+    (analysis.bulkScore >= BULK_PERCENTILE_BANDS.p75 && stats.hp >= STAT_PERCENTILE_BANDS.hp.p50) ||
+    (stats.hp >= STAT_PERCENTILE_BANDS.hp.p75 &&
+      (stats.pdef >= STAT_PERCENTILE_BANDS.pdef.p50 || stats.mdef >= STAT_PERCENTILE_BANDS.mdef.p50))
+  if (hasTopBulk) {
+    addRole('bulky', 1.4, `生命 + 双防合计 ${analysis.bulkScore} 达到头部耐久区间`)
+  } else if (hasBalancedBulk) {
+    addRole('bulky', 0.8, `生命 + 双防合计 ${analysis.bulkScore} 接近上四分位，具备一定站场基础`)
   }
   if (stats.pdef >= STAT_PERCENTILE_BANDS.pdef.p75 && stats.hp >= STAT_PERCENTILE_BANDS.hp.p50) {
     addRole('physicalWall', 1, '物防与生命足以支撑物理防御手路线')
@@ -511,8 +528,23 @@ export function inferRoles(baseStats = {}, traitTags = [], skillInfo = {}) {
   if (traitTags.includes('spdLean') || traitTags.includes('control')) {
     addRole('fastAttacker', 1.4, '特性标签强调速度/先手控制')
   }
-  if (traitTags.includes('defense') || traitTags.includes('shieldReduce')) {
-    addRole('bulky', 1.3, '特性标签支持耐久站场')
+  if (traitTags.includes('conditionalSpeedBoost')) {
+    addRole('fastAttacker', 1, '特性存在条件加速，触发后需要比较速度线')
+  }
+  if (traitTags.includes('swiftSkill')) {
+    addRole('fastAttacker', 1.3, '特性或技能机制可获得迅捷，切换入场后会触发先手技能并比较速度线')
+  }
+  if (traitTags.includes('shieldReduce')) {
+    addRole('bulky', 1.3, '特性标签支持护盾/减伤机制')
+  }
+  if (traitTags.includes('defense')) {
+    if (hasTopBulk) {
+      addRole('bulky', 1.3, '特性标签支持耐久站场，且三防处于头部区间')
+    } else if (hasBalancedBulk) {
+      addRole('bulky', 0.7, '特性标签支持耐久基础，但三防仍需结合主定位判断')
+    } else {
+      addRole('bulky', 0.3, `物防/魔防存在单项亮点，但生命 ${stats.hp} 或综合三防不足，耐久定位需谨慎`)
+    }
   }
   if (traitTags.includes('support') || traitTags.includes('pivot')) {
     addRole('support', 1.2, '特性标签支持辅助/返场')
@@ -573,6 +605,68 @@ function normalizeNaturePreference(preference = {}) {
     keepNatureNames: new Set(preference.keepNatureNames || []),
     reason: preference.reason || '阵容上下文需要保留该性格',
   }
+}
+
+function coreRoleLabelsForStat(roles = [], statKey) {
+  return roles
+    .filter((role) => (ROLE_DEFINITIONS[role.key]?.core?.[statKey] || 0) > 0)
+    .map((role) => role.label)
+}
+
+function roleAwareStatReason(roles = [], statKey, statLabel, action) {
+  const topRoleLabels = roles.slice(0, 2).map((role) => role.label)
+  const supportingLabels = coreRoleLabelsForStat(roles, statKey)
+  const topSupportingLabels = supportingLabels.filter((label) => topRoleLabels.includes(label))
+  if (topSupportingLabels.length > 0) {
+    return `当前综合定位为${topRoleLabels.join(' / ') || '泛用'}，${action}${statLabel}符合该定位的核心需求`
+  }
+  if (supportingLabels.length > 0) {
+    return `次要定位线索（${supportingLabels.slice(0, 2).join(' / ')}）支持${action}${statLabel}，但需确认是否服务于主输出路线`
+  }
+  return `${action}${statLabel}符合当前路线的局部需求`
+}
+
+function roleAwareStatWarning(roles = [], statKey, statLabel) {
+  const topRoleLabels = roles.slice(0, 2).map((role) => role.label)
+  const supportingLabels = coreRoleLabelsForStat(roles, statKey)
+  const topSupportingLabels = supportingLabels.filter((label) => topRoleLabels.includes(label))
+  if (topSupportingLabels.length > 0) {
+    return `当前综合定位为${topRoleLabels.join(' / ') || '泛用'}，弱化${statLabel}会削弱该定位的关键能力`
+  }
+  if (supportingLabels.length > 0) {
+    return `弱化${statLabel}会削弱次要定位线索（${supportingLabels.slice(0, 2).join(' / ')}）的关键能力`
+  }
+  return `弱化${statLabel}会削弱当前路线的局部能力`
+}
+
+
+function isSingleDefenseRaiseSoftCapped(candidate, roles = [], traitTags = [], analysis = null) {
+  if (!['pdef', 'mdef'].includes(candidate.raise)) return false
+  const topRoles = roles.slice(0, 2)
+  const topRolesNeedDefense = topRoles.some((role) => (ROLE_DEFINITIONS[role.key]?.core?.[candidate.raise] || 0) > 0)
+  const hasMechanicDefenseTrait = traitTags.includes('shieldReduce')
+  const hasBulkFoundation =
+    analysis &&
+    ((analysis.bulkScore >= BULK_PERCENTILE_BANDS.p75 && analysis.stats.hp >= STAT_PERCENTILE_BANDS.hp.p50) ||
+      analysis.stats.hp >= STAT_PERCENTILE_BANDS.hp.p75)
+  if (topRolesNeedDefense && (hasMechanicDefenseTrait || hasBulkFoundation)) return false
+  if (hasMechanicDefenseTrait) return false
+  return roles.some((role) => (ROLE_DEFINITIONS[role.key]?.core?.[candidate.raise] || 0) > 0)
+}
+
+
+function isSkillProvedSingleAttackRoute(candidate, roles = [], skillProfile = {}) {
+  if (!ATTACK_STAT_KEYS.includes(candidate.lower)) return false
+  if (!roles.some((role) => role.key === 'mixedAttacker')) return false
+  const breakdown = skillProfile.breakdown || {}
+  const routeGap = Math.abs(Number(skillProfile.routeGap) || 0)
+  if (skillProfile.attackMode === 'physical' && candidate.lower === 'matk') {
+    return routeGap >= 4 && (breakdown.physicalShare >= 0.65 || breakdown.magicalCount <= 3)
+  }
+  if (skillProfile.attackMode === 'magical' && candidate.lower === 'patk') {
+    return routeGap >= 4 && (breakdown.magicalShare >= 0.65 || breakdown.physicalCount <= 3)
+  }
+  return false
 }
 
 function applyNaturePreference(evaluation, preference = {}) {
@@ -688,9 +782,36 @@ export function evaluateNatureCandidate(
     score += 5
     reasons.push('技能效果包含异常/控制，强化速度有助于先手施压')
   }
+  if (traitTags.includes('conditionalSpeedBoost') && candidate.raise === 'spd') {
+    score += 6
+    reasons.push('特性存在条件加速，强化速度可提高触发后的速度线')
+  }
+  if (traitTags.includes('swiftSkill') && candidate.raise === 'spd') {
+    score += 8
+    reasons.push('特性或技能机制可获得迅捷；迅捷技能必定先手，迅捷对位仍会比较速度，强化速度可提高同迅捷对位')
+  }
+  if (traitTags.includes('conditionalSpeedBoost') && candidate.lower === 'spd') {
+    score -= 8
+    warnings.push('特性存在条件加速，弱化速度会降低触发后的速度线')
+  }
+  if (traitTags.includes('swiftSkill') && candidate.lower === 'spd') {
+    score -= 10
+    warnings.push('特性或技能机制依赖迅捷；迅捷技能对位仍会拼速度，弱化速度会降低同迅捷对位能力')
+  }
   if (skillProfile.backLoaded && candidate.lower === 'spd') {
     score += 10
     reasons.push('技能线索存在后手/反击收益，减速可作为战术牺牲项')
+  }
+  if (skillProfile.boostTransfer && candidate.lower === 'spd') {
+    score += 8
+    reasons.push('技能或特性存在强化传递，慢速脱离可降低下个入场精灵承伤风险')
+  }
+  if (skillProfile.boostTransfer && DEFENSE_STAT_KEYS.includes(candidate.raise)) {
+    score += 4
+    reasons.push('强化传递需要先站住并完成交接，生命或防御强化可提高传递稳定性')
+  }
+  if (skillProfile.boostTransfer && candidate.raise === 'spd') {
+    warnings.push('强化传递玩法有时需要慢速交接，强化速度是否有利需结合出手顺序确认')
   }
   if (skillProfile.speedRequired && candidate.raise === 'spd') {
     score += 10
@@ -701,26 +822,53 @@ export function evaluateNatureCandidate(
     warnings.push('技能线索依赖先手/优先节奏，弱化速度风险较高')
   }
 
-  if (raiseCore > 0.8) reasons.push(`强化${raiseLabel}符合当前综合定位需求`)
+  if (raiseCore > 0.8) reasons.push(roleAwareStatReason(roles, candidate.raise, raiseLabel, '强化'))
   if (raiseTrait > 0) reasons.push(`特性标签支持强化${raiseLabel}`)
   if (lowerExpendable > 1) reasons.push(`弱化${lowerLabel}的代价较低，适合作为当前路线的牺牲项`)
-  if (lowerCore > 1) warnings.push(`弱化${lowerLabel}会削弱当前综合定位的关键能力`)
+  if (lowerCore > 1) warnings.push(roleAwareStatWarning(roles, candidate.lower, lowerLabel))
   if (lowerTrait > raiseTrait && lowerTrait > 0) warnings.push(`特性标签更需要${lowerLabel}，弱化存在冲突`)
+  const skillProvedSingleAttackRoute = isSkillProvedSingleAttackRoute(candidate, roles, skillProfile)
+  if (skillProvedSingleAttackRoute) {
+    score += 14
+    reasons.push(`技能组明显偏${skillProfile.attackMode === 'physical' ? '物理' : '魔法'}路线，弱化${lowerLabel}可作为单攻分支，但仍需保留双攻面板的玩法可能`)
+  }
   if (ATTACK_STAT_KEYS.includes(candidate.lower) && roles.some((r) => r.key === 'mixedAttacker')) {
-    warnings.push('当前存在双攻潜力，弱化任一攻击都需要技能池证明可以转为单攻玩法')
+    warnings.push(skillProvedSingleAttackRoute
+      ? '当前仍有双攻面板，弱化另一攻不应视为完全无代价，建议至少作为可保留路线人工确认'
+      : '当前存在双攻潜力，弱化任一攻击都需要技能池证明可以转为单攻玩法')
   }
 
   const hardRisk =
-    lowerCore >= 3.2 ||
+    (lowerCore >= 3.2 && !skillProvedSingleAttackRoute) ||
     (candidate.lower === 'spd' && roles.some((r) => ['fastAttacker', 'energyCycle'].includes(r.key))) ||
     (candidate.lower === 'hp' && roles.some((r) => ['bulky', 'support'].includes(r.key)) && lowerExpendable < 1)
+  const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, traitTags, analysis)
 
   if (hardRisk) score -= 8
+  let decision = decisionFromScore(score, hardRisk)
+  if (singleDefenseSoftCap && decision === 'recommended') {
+    decision = 'keepable'
+    warnings.push('单防强化需要生命/双防综合基础或明确护盾减伤机制支撑；当前证据不足，默认降为可保留')
+  }
+  if (skillProvedSingleAttackRoute && decision === 'recommended') {
+    const raisesPrimaryRoute =
+      candidate.raise === 'spd' ||
+      (skillProfile.attackMode === 'physical' && candidate.raise === 'patk') ||
+      (skillProfile.attackMode === 'magical' && candidate.raise === 'matk')
+    if (!raisesPrimaryRoute) {
+      decision = 'keepable'
+      warnings.push('弱化另一攻主要服务单攻分支，但当前强化项不是主攻/速度，默认保留而非主推')
+    }
+  }
+  if (skillProvedSingleAttackRoute && decision === 'notRecommended' && score >= 55) {
+    decision = 'keepable'
+    warnings.push('技能已证明可走单攻分支，当前组合不应直接判死，降级为可保留')
+  }
 
   return applyNaturePreference({
     ...candidate,
     score: Math.round(score * 10) / 10,
-    decision: decisionFromScore(score, hardRisk),
+    decision,
     roleTags: roles.map((r) => r.key),
     roleLabel: roleLabels.join(' / ') || '泛用',
     speedProfile,
@@ -756,7 +904,7 @@ function applyDominance(evaluations) {
       if (item === best) continue
       if (item.lineupKeep) continue
       if (item.score > best.score - 20) continue
-      if (item.reasons.some((reason) => /专项|速度 .*提升到|生命强化/.test(reason))) continue
+      if (item.reasons.some((reason) => /专项|速度 .*提升到/.test(reason))) continue
       const target = byKey.get(dominanceKey(item))
       if (!target) continue
       target.decision = 'notRecommended'
@@ -769,6 +917,130 @@ function applyDominance(evaluations) {
   }
 
   return result
+}
+
+
+function isOffRouteAttackNature(nature = {}) {
+  const roleTags = nature.roleTags || []
+  const skillMode = nature.skillProfile?.attackMode
+  const hasMixedRole = roleTags.includes('mixedAttacker')
+  const hasPhysicalRoute = roleTags.includes('physicalAttacker') || skillMode === 'physical'
+  const hasMagicalRoute = roleTags.includes('magicalAttacker') || skillMode === 'magical'
+  if (nature.raise === 'matk' && hasPhysicalRoute && !hasMagicalRoute && !hasMixedRole) return true
+  if (nature.raise === 'patk' && hasMagicalRoute && !hasPhysicalRoute && !hasMixedRole) return true
+  return false
+}
+
+export function rejectionGroupForNature(nature = {}) {
+  const warnings = nature.warnings || []
+  const text = warnings.join('；')
+  const hasSpeedLowerRisk = nature.lower === 'spd' || /弱化速度|减速|失去 .*锚点|降低.*速度线|同迅捷/.test(text)
+  const hasSkillOutputConflict = /技能效果标签偏物理输出，弱化物攻|技能效果标签偏魔法输出，弱化魔攻|技能.*冲突/.test(text)
+  const hasMixedAttackConflict = /双攻|任一攻击|单攻/.test(text)
+  const hasBulkConflict = /生命|耐久|承伤/.test(text) || nature.lower === 'hp'
+
+  if (nature.hardRisk && hasSpeedLowerRisk) {
+    return {
+      key: 'hard-speed',
+      title: '速度/先手硬风险',
+      description: '弱化速度会破坏高速、先手、迅捷或节奏定位。',
+    }
+  }
+  if (nature.hardRisk && hasSkillOutputConflict) {
+    return {
+      key: 'skill-output-conflict',
+      title: '技能输出方向冲突',
+      description: '技能组已经明显偏向某个输出侧，弱化该侧会和技能路线冲突。',
+    }
+  }
+  if (nature.hardRisk && hasMixedAttackConflict) {
+    return {
+      key: 'hard-mixed-attack',
+      title: '双攻路线冲突',
+      description: '当前仍有双攻潜力，弱化任一攻击需要更强技能组证据。',
+    }
+  }
+  if (nature.hardRisk && hasBulkConflict) {
+    return {
+      key: 'hard-bulk',
+      title: '生命/耐久硬风险',
+      description: '弱化生命或核心耐久项会明显降低站场与容错。',
+    }
+  }
+  if (nature.hardRisk) {
+    return {
+      key: 'hard-role',
+      title: '核心定位硬风险',
+      description: '弱化项会削弱当前综合定位的关键能力。',
+    }
+  }
+  if (isOffRouteAttackNature(nature)) {
+    return {
+      key: 'off-route-attack-raise',
+      title: '强化方向偏离主输出',
+      description: '当前主定位或技能组偏单侧输出，强化另一攻通常不是主要路线；若同时被支配，支配关系保留在候选风险里。',
+    }
+  }
+  if (hasSkillOutputConflict) {
+    return {
+      key: 'skill-output-conflict',
+      title: '技能输出方向冲突',
+      description: '技能组已经明显偏向某个输出侧，弱化该侧会和技能路线冲突。',
+    }
+  }
+  if (nature.dominatedBy) {
+    return {
+      key: `dominated:${nature.dominatedBy}`,
+      title: `被 ${nature.dominatedBy} 支配`,
+      description: '同一强化项下已有代价更低或风险更少的选择，通常优先保留支配方。',
+    }
+  }
+  if (hasSpeedLowerRisk) {
+    return {
+      key: 'speed-risk',
+      title: '速度/先手风险',
+      description: '速度弱化或速度线损失需要结合对位确认。',
+    }
+  }
+  if (/生命|耐久|承伤|防御|单防/.test(text) || ['hp', 'pdef', 'mdef'].includes(nature.lower)) {
+    return {
+      key: 'bulk-risk',
+      title: '生命/防御风险',
+      description: '防御侧取舍会影响承伤目标，通常需要明确场景。',
+    }
+  }
+  if (hasMixedAttackConflict) {
+    return {
+      key: 'mixed-attack-risk',
+      title: '双攻取舍风险',
+      description: '面板或技能仍存在双攻可能，弱化另一攻需要保留风险提示。',
+    }
+  }
+  return {
+    key: 'other-risk',
+    title: '其他低收益/局部风险',
+    description: '整体收益不足或风险较分散，作为低优先级候选处理。',
+  }
+}
+
+export function groupRejectedNatures(candidates = []) {
+  const rejected = candidates.filter((item) => item.decision === 'notRecommended')
+  const grouped = new Map()
+  for (const item of rejected) {
+    const group = rejectionGroupForNature(item)
+    if (!grouped.has(group.key)) grouped.set(group.key, { ...group, items: [] })
+    grouped.get(group.key).items.push(item)
+  }
+  const order = ['hard-speed', 'hard-mixed-attack', 'hard-bulk', 'hard-role', 'off-route-attack-raise', 'skill-output-conflict', 'dominated:', 'speed-risk', 'bulk-risk', 'mixed-attack-risk', 'other-risk']
+  return [...grouped.values()]
+    .map((group) => ({ ...group, items: [...group.items].sort((a, b) => b.score - a.score) }))
+    .sort((a, b) => {
+      const indexOf = (key) => {
+        const matched = order.findIndex((prefix) => key.startsWith(prefix))
+        return matched === -1 ? order.length : matched
+      }
+      return indexOf(a.key) - indexOf(b.key) || b.items.length - a.items.length || a.title.localeCompare(b.title)
+    })
 }
 
 export function evaluateAllNatures(baseStats = {}, traitTags = [], skillInfo = {}, preference = {}) {
