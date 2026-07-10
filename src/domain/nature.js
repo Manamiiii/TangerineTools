@@ -920,7 +920,74 @@ function applyDominance(evaluations) {
 }
 
 
+function isOffRouteAttackNature(nature = {}) {
+  const roleTags = nature.roleTags || []
+  const skillMode = nature.skillProfile?.attackMode
+  const hasMixedRole = roleTags.includes('mixedAttacker')
+  const hasPhysicalRoute = roleTags.includes('physicalAttacker') || skillMode === 'physical'
+  const hasMagicalRoute = roleTags.includes('magicalAttacker') || skillMode === 'magical'
+  if (nature.raise === 'matk' && hasPhysicalRoute && !hasMagicalRoute && !hasMixedRole) return true
+  if (nature.raise === 'patk' && hasMagicalRoute && !hasPhysicalRoute && !hasMixedRole) return true
+  return false
+}
+
 export function rejectionGroupForNature(nature = {}) {
+  const warnings = nature.warnings || []
+  const text = warnings.join('；')
+  const hasSpeedLowerRisk = nature.lower === 'spd' || /弱化速度|减速|失去 .*锚点|降低.*速度线|同迅捷/.test(text)
+  const hasSkillOutputConflict = /技能效果标签偏物理输出，弱化物攻|技能效果标签偏魔法输出，弱化魔攻|技能.*冲突/.test(text)
+  const hasMixedAttackConflict = /双攻|任一攻击|单攻/.test(text)
+  const hasBulkConflict = /生命|耐久|承伤/.test(text) || nature.lower === 'hp'
+
+  if (nature.hardRisk && hasSpeedLowerRisk) {
+    return {
+      key: 'hard-speed',
+      title: '速度/先手硬风险',
+      description: '弱化速度会破坏高速、先手、迅捷或节奏定位。',
+    }
+  }
+  if (nature.hardRisk && hasSkillOutputConflict) {
+    return {
+      key: 'skill-output-conflict',
+      title: '技能输出方向冲突',
+      description: '技能组已经明显偏向某个输出侧，弱化该侧会和技能路线冲突。',
+    }
+  }
+  if (nature.hardRisk && hasMixedAttackConflict) {
+    return {
+      key: 'hard-mixed-attack',
+      title: '双攻路线冲突',
+      description: '当前仍有双攻潜力，弱化任一攻击需要更强技能组证据。',
+    }
+  }
+  if (nature.hardRisk && hasBulkConflict) {
+    return {
+      key: 'hard-bulk',
+      title: '生命/耐久硬风险',
+      description: '弱化生命或核心耐久项会明显降低站场与容错。',
+    }
+  }
+  if (nature.hardRisk) {
+    return {
+      key: 'hard-role',
+      title: '核心定位硬风险',
+      description: '弱化项会削弱当前综合定位的关键能力。',
+    }
+  }
+  if (isOffRouteAttackNature(nature)) {
+    return {
+      key: 'off-route-attack-raise',
+      title: '强化方向偏离主输出',
+      description: '当前主定位或技能组偏单侧输出，强化另一攻通常不是主要路线；若同时被支配，支配关系保留在候选风险里。',
+    }
+  }
+  if (hasSkillOutputConflict) {
+    return {
+      key: 'skill-output-conflict',
+      title: '技能输出方向冲突',
+      description: '技能组已经明显偏向某个输出侧，弱化该侧会和技能路线冲突。',
+    }
+  }
   if (nature.dominatedBy) {
     return {
       key: `dominated:${nature.dominatedBy}`,
@@ -928,44 +995,7 @@ export function rejectionGroupForNature(nature = {}) {
       description: '同一强化项下已有代价更低或风险更少的选择，通常优先保留支配方。',
     }
   }
-  const warnings = nature.warnings || []
-  const text = warnings.join('；')
-  if (nature.hardRisk) {
-    if (/速度|先手|迅捷|节奏/.test(text) || nature.lower === 'spd') {
-      return {
-        key: 'hard-speed',
-        title: '速度/先手硬风险',
-        description: '弱化速度会破坏高速、先手、迅捷或节奏定位。',
-      }
-    }
-    if (/双攻|任一攻击|单攻/.test(text)) {
-      return {
-        key: 'hard-mixed-attack',
-        title: '双攻路线冲突',
-        description: '当前仍有双攻潜力，弱化任一攻击需要更强技能组证据。',
-      }
-    }
-    if (/生命|耐久|承伤/.test(text) || nature.lower === 'hp') {
-      return {
-        key: 'hard-bulk',
-        title: '生命/耐久硬风险',
-        description: '弱化生命或核心耐久项会明显降低站场与容错。',
-      }
-    }
-    return {
-      key: 'hard-role',
-      title: '核心定位硬风险',
-      description: '弱化项会削弱当前综合定位的关键能力。',
-    }
-  }
-  if (/技能效果标签偏物理输出，弱化物攻|技能效果标签偏魔法输出，弱化魔攻|技能.*冲突/.test(text)) {
-    return {
-      key: 'skill-output-conflict',
-      title: '技能输出方向冲突',
-      description: '技能组已经明显偏向某个输出侧，弱化该侧会和技能路线冲突。',
-    }
-  }
-  if (/速度|先手|迅捷|节奏/.test(text) || nature.lower === 'spd') {
+  if (hasSpeedLowerRisk) {
     return {
       key: 'speed-risk',
       title: '速度/先手风险',
@@ -979,7 +1009,7 @@ export function rejectionGroupForNature(nature = {}) {
       description: '防御侧取舍会影响承伤目标，通常需要明确场景。',
     }
   }
-  if (/双攻|任一攻击|单攻/.test(text)) {
+  if (hasMixedAttackConflict) {
     return {
       key: 'mixed-attack-risk',
       title: '双攻取舍风险',
@@ -1001,7 +1031,7 @@ export function groupRejectedNatures(candidates = []) {
     if (!grouped.has(group.key)) grouped.set(group.key, { ...group, items: [] })
     grouped.get(group.key).items.push(item)
   }
-  const order = ['dominated:', 'hard-speed', 'hard-mixed-attack', 'hard-bulk', 'hard-role', 'skill-output-conflict', 'speed-risk', 'bulk-risk', 'mixed-attack-risk', 'other-risk']
+  const order = ['hard-speed', 'hard-mixed-attack', 'hard-bulk', 'hard-role', 'off-route-attack-raise', 'skill-output-conflict', 'dominated:', 'speed-risk', 'bulk-risk', 'mixed-attack-risk', 'other-risk']
   return [...grouped.values()]
     .map((group) => ({ ...group, items: [...group.items].sort((a, b) => b.score - a.score) }))
     .sort((a, b) => {
