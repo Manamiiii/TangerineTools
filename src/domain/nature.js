@@ -649,6 +649,21 @@ function isSingleDefenseRaiseSoftCapped(candidate, roles = [], traitTags = [], a
   return roles.some((role) => (ROLE_DEFINITIONS[role.key]?.core?.[candidate.raise] || 0) > 0)
 }
 
+
+function isSkillProvedSingleAttackRoute(candidate, roles = [], skillProfile = {}) {
+  if (!ATTACK_STAT_KEYS.includes(candidate.lower)) return false
+  if (!roles.some((role) => role.key === 'mixedAttacker')) return false
+  const breakdown = skillProfile.breakdown || {}
+  const routeGap = Math.abs(Number(skillProfile.routeGap) || 0)
+  if (skillProfile.attackMode === 'physical' && candidate.lower === 'matk') {
+    return routeGap >= 4 && (breakdown.physicalShare >= 0.65 || breakdown.magicalCount <= 3)
+  }
+  if (skillProfile.attackMode === 'magical' && candidate.lower === 'patk') {
+    return routeGap >= 4 && (breakdown.magicalShare >= 0.65 || breakdown.physicalCount <= 3)
+  }
+  return false
+}
+
 function applyNaturePreference(evaluation, preference = {}) {
   const normalized = normalizeNaturePreference(preference)
   const shouldKeep =
@@ -799,12 +814,19 @@ export function evaluateNatureCandidate(
   if (lowerExpendable > 1) reasons.push(`弱化${lowerLabel}的代价较低，适合作为当前路线的牺牲项`)
   if (lowerCore > 1) warnings.push(roleAwareStatWarning(roles, candidate.lower, lowerLabel))
   if (lowerTrait > raiseTrait && lowerTrait > 0) warnings.push(`特性标签更需要${lowerLabel}，弱化存在冲突`)
+  const skillProvedSingleAttackRoute = isSkillProvedSingleAttackRoute(candidate, roles, skillProfile)
+  if (skillProvedSingleAttackRoute) {
+    score += 14
+    reasons.push(`技能组明显偏${skillProfile.attackMode === 'physical' ? '物理' : '魔法'}路线，弱化${lowerLabel}可作为单攻分支，但仍需保留双攻面板的玩法可能`)
+  }
   if (ATTACK_STAT_KEYS.includes(candidate.lower) && roles.some((r) => r.key === 'mixedAttacker')) {
-    warnings.push('当前存在双攻潜力，弱化任一攻击都需要技能池证明可以转为单攻玩法')
+    warnings.push(skillProvedSingleAttackRoute
+      ? '当前仍有双攻面板，弱化另一攻不应视为完全无代价，建议至少作为可保留路线人工确认'
+      : '当前存在双攻潜力，弱化任一攻击都需要技能池证明可以转为单攻玩法')
   }
 
   const hardRisk =
-    lowerCore >= 3.2 ||
+    (lowerCore >= 3.2 && !skillProvedSingleAttackRoute) ||
     (candidate.lower === 'spd' && roles.some((r) => ['fastAttacker', 'energyCycle'].includes(r.key))) ||
     (candidate.lower === 'hp' && roles.some((r) => ['bulky', 'support'].includes(r.key)) && lowerExpendable < 1)
   const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, traitTags, analysis)
@@ -814,6 +836,20 @@ export function evaluateNatureCandidate(
   if (singleDefenseSoftCap && decision === 'recommended') {
     decision = 'keepable'
     warnings.push('单防强化需要生命/双防综合基础或明确护盾减伤机制支撑；当前证据不足，默认降为可保留')
+  }
+  if (skillProvedSingleAttackRoute && decision === 'recommended') {
+    const raisesPrimaryRoute =
+      candidate.raise === 'spd' ||
+      (skillProfile.attackMode === 'physical' && candidate.raise === 'patk') ||
+      (skillProfile.attackMode === 'magical' && candidate.raise === 'matk')
+    if (!raisesPrimaryRoute) {
+      decision = 'keepable'
+      warnings.push('弱化另一攻主要服务单攻分支，但当前强化项不是主攻/速度，默认保留而非主推')
+    }
+  }
+  if (skillProvedSingleAttackRoute && decision === 'notRecommended' && score >= 55) {
+    decision = 'keepable'
+    warnings.push('技能已证明可走单攻分支，当前组合不应直接判死，降级为可保留')
   }
 
   return applyNaturePreference({
