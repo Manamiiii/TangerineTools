@@ -55,7 +55,7 @@ const SHINY_OPTIONS = [
   { value: 'yes', label: '异色', color: '#db2777', image: '' },
 ]
 
-// 特性标签：13 类倾向标签，用于多选描述精灵在队伍里的定位/资源循环特点。
+// 特性标签：14 类倾向标签，用于多选描述精灵在队伍里的定位/资源循环特点。
 // 其中 attack/control/support/defense/special 是第一轮就存在的旧值，
 // 这里只更新了展示名称与配色（新语义更细），value 保持不变，
 // 已保存的旧标签数据可以继续正常展示、不会变成空白或 undefined。
@@ -64,6 +64,7 @@ export const TRAIT_TAG_OPTIONS = [
   { value: 'patkLean', label: '物攻输出', color: '#ea580c', image: '' },
   { value: 'matkLean', label: '魔攻输出', color: '#c026d3', image: '' },
   { value: 'spdLean', label: '高速先手', color: '#eab308', image: '' },
+  { value: 'conditionalSpeedBoost', label: '条件加速', color: '#f59e0b', image: '' },
   { value: 'defense', label: '耐久基础', color: '#2563eb', image: '' },
   { value: 'support', label: '回复辅助', color: '#059669', image: '' },
   { value: 'energyCycle', label: '能量循环', color: '#0d9488', image: '' },

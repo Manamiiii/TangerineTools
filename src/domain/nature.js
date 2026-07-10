@@ -72,13 +72,14 @@ export const NATURE_DECISION_LABELS = {
   notRecommended: '不推荐',
 }
 
-// 13 个特性标签对六维的倾向权重：0.5 = 轻度关联，1 = 主要关联，2 = 强关联。
+// 特性标签对六维的倾向权重：0.5 = 轻度关联，1 = 主要关联，2 = 强关联。
 // 只用于评价方向，不影响 applyNatureModifier 的实际加成幅度。
 export const TRAIT_TAG_STAT_WEIGHTS = {
   attack: { patk: 1, matk: 1 },
   patkLean: { patk: 2 },
   matkLean: { matk: 2 },
   spdLean: { spd: 2 },
+  conditionalSpeedBoost: { spd: 1.2 },
   defense: { hp: 1, pdef: 0.9, mdef: 0.9 },
   support: { hp: 0.75, pdef: 0.5, mdef: 0.5, spd: 0.5 },
   energyCycle: { spd: 1, hp: 0.25 },
@@ -192,7 +193,7 @@ export function speedTier(value) {
 
 function analyzeSpeedConcern(stats, traitTags = [], roles = []) {
   const speedScore = percentileScore('spd', stats.spd)
-  const speedTraitTags = ['spdLean', 'control', 'pivot', 'energyCycle']
+  const speedTraitTags = ['spdLean', 'conditionalSpeedBoost', 'control', 'pivot', 'energyCycle']
   const hasSpeedTrait = traitTags.some((tag) => speedTraitTags.includes(tag))
   const hasSpeedRole = roles.some((role) =>
     ['fastAttacker', 'support', 'energyCycle'].includes(role.key),
@@ -525,6 +526,9 @@ export function inferRoles(baseStats = {}, traitTags = [], skillInfo = {}) {
   if (traitTags.includes('spdLean') || traitTags.includes('control')) {
     addRole('fastAttacker', 1.4, '特性标签强调速度/先手控制')
   }
+  if (traitTags.includes('conditionalSpeedBoost')) {
+    addRole('fastAttacker', 1, '特性存在条件加速，触发后需要比较速度线')
+  }
   if (traitTags.includes('shieldReduce')) {
     addRole('bulky', 1.3, '特性标签支持护盾/减伤机制')
   }
@@ -757,6 +761,14 @@ export function evaluateNatureCandidate(
   if (skillProfile.control && candidate.raise === 'spd') {
     score += 5
     reasons.push('技能效果包含异常/控制，强化速度有助于先手施压')
+  }
+  if (traitTags.includes('conditionalSpeedBoost') && candidate.raise === 'spd') {
+    score += 6
+    reasons.push('特性存在条件加速，强化速度可提高触发后的速度线')
+  }
+  if (traitTags.includes('conditionalSpeedBoost') && candidate.lower === 'spd') {
+    score -= 8
+    warnings.push('特性存在条件加速，弱化速度会降低触发后的速度线')
   }
   if (skillProfile.backLoaded && candidate.lower === 'spd') {
     score += 10

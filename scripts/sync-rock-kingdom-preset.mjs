@@ -59,6 +59,7 @@ function deriveTags(desc, stats = {}) {
     if (/回复|恢复|生命|治疗|回血|保留1点生命/.test(desc)) add('support')
     if (/能量|能耗|回复\d*能量|获得\d*能量/.test(desc)) add('energyCycle')
     if (/克制|抵触/.test(desc)) add('counterGain')
+    if (/速度\+\d+|获得速度|速度提升/.test(desc)) add('conditionalSpeedBoost')
     if (/强化|永久\+|\+20%|\+70%|提升|增加/.test(desc)) add('growth')
     if (/护盾|减伤|防御|免疫|抵免/.test(desc)) add('shieldReduce')
     if (/冻结|中毒|灼烧|异常|恐惧|控制|污染|睡眠|麻醉/.test(desc)) add('control')

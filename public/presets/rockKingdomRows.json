@@ -16658,7 +16658,8 @@
       "traitName": "预警",
       "traitTags": [
         "matkLean",
-        "defense"
+        "defense",
+        "conditionalSpeedBoost"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E9%A2%84%E8%AD%A6.png",
       "traitDesc": "若敌方技能足够击败自己，回合开始时自己获得速度+50。",
@@ -16741,7 +16742,8 @@
       "traitName": "预警",
       "traitTags": [
         "matkLean",
-        "defense"
+        "defense",
+        "conditionalSpeedBoost"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E9%A2%84%E8%AD%A6.png",
       "traitDesc": "若敌方技能足够击败自己，回合开始时自己获得速度+50。",
@@ -16824,7 +16826,8 @@
       "traitName": "先知",
       "traitTags": [
         "matkLean",
-        "defense"
+        "defense",
+        "conditionalSpeedBoost"
       ],
       "traitIcon": "",
       "traitDesc": "若敌方技能足够击败自己，回合开始时自己获得速度+50，双攻+50%。",
@@ -33103,7 +33106,8 @@
       "traitName": "哨兵",
       "traitTags": [
         "matkLean",
-        "spdLean"
+        "spdLean",
+        "conditionalSpeedBoost"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%93%A8%E5%85%B5.png",
       "traitDesc": "回合开始时若敌方技能足够击败自己，自己获得速度+50，行动后脱离。",
@@ -33188,7 +33192,8 @@
       "traitTags": [
         "matkLean",
         "spdLean",
-        "defense"
+        "defense",
+        "conditionalSpeedBoost"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%93%A8%E5%85%B5.png",
       "traitDesc": "回合开始时若敌方技能足够击败自己，自己获得速度+50，行动后脱离。",
