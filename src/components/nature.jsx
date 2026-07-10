@@ -21,6 +21,7 @@ import {
   natureName,
   NATURE_DECISION_LABELS,
   STAT_LABELS,
+  groupRejectedNatures,
 } from '../domain/nature.js'
 import { TRAIT_TAG_OPTIONS } from '../presets/rockKingdom.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
@@ -260,32 +261,80 @@ function NatureCandidateList({ candidates, activeIndex, onSelect }) {
                 <span className={`nature-candidate-tag ${decision}`}>{label}</span>
                 <span>{items.length} 个</span>
               </div>
-              <ul className="nature-candidates-list">
-                {items.map((c) => {
-                  const candidateIndex = candidates.indexOf(c)
-                  const isActive = c === activeCandidate
-                  return (
-                    <li key={c.id || `${c.raise}-${c.lower}`}>
-                      <button
-                        type="button"
-                        className={`nature-candidate ${isActive ? 'active' : ''}`}
-                        onClick={() => onSelect(candidateIndex)}
-                      >
-                        <span className={`nature-candidate-tag ${c.decision}`}>
-                          {NATURE_DECISION_LABELS[c.decision]}
-                        </span>
-                        <span className="nature-candidate-name">{natureName(c)}</span>
-                        <span className="nature-candidate-role">{natureModifierSummary(c)}</span>
-                        <span className="nature-candidate-score">{c.score.toFixed(1)}</span>
-                      </button>
-                    </li>
-                  )
-                })}
-              </ul>
+              {decision === 'notRecommended' ? (
+                <RejectedCandidateGroups
+                  candidates={candidates}
+                  activeCandidate={activeCandidate}
+                  onSelect={onSelect}
+                />
+              ) : (
+                <ul className="nature-candidates-list">
+                  {items.map((c) => (
+                    <NatureCandidateListItem
+                      key={c.id || `${c.raise}-${c.lower}`}
+                      candidate={c}
+                      candidates={candidates}
+                      activeCandidate={activeCandidate}
+                      onSelect={onSelect}
+                    />
+                  ))}
+                </ul>
+              )}
             </section>
           )
         })}
       </div>
+    </div>
+  )
+}
+
+
+function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSelect }) {
+  const candidateIndex = candidates.indexOf(candidate)
+  const isActive = candidate === activeCandidate
+  return (
+    <li>
+      <button
+        type="button"
+        className={`nature-candidate ${isActive ? 'active' : ''}`}
+        onClick={() => onSelect(candidateIndex)}
+      >
+        <span className={`nature-candidate-tag ${candidate.decision}`}>
+          {NATURE_DECISION_LABELS[candidate.decision]}
+        </span>
+        <span className="nature-candidate-name">{natureName(candidate)}</span>
+        <span className="nature-candidate-role">{natureModifierSummary(candidate)}</span>
+        <span className="nature-candidate-score">{candidate.score.toFixed(1)}</span>
+      </button>
+    </li>
+  )
+}
+
+function RejectedCandidateGroups({ candidates, activeCandidate, onSelect }) {
+  const groups = groupRejectedNatures(candidates)
+  if (groups.length === 0) return null
+  return (
+    <div className="nature-rejection-groups">
+      {groups.map((group) => (
+        <section key={group.key} className="nature-rejection-group">
+          <div className="nature-rejection-group-title">
+            <span>{group.title}</span>
+            <span>{group.items.length} 个</span>
+          </div>
+          <p className="nature-rejection-group-desc">{group.description}</p>
+          <ul className="nature-candidates-list nature-candidates-list-compact">
+            {group.items.map((c) => (
+              <NatureCandidateListItem
+                key={c.id || `${c.raise}-${c.lower}`}
+                candidate={c}
+                candidates={candidates}
+                activeCandidate={activeCandidate}
+                onSelect={onSelect}
+              />
+            ))}
+          </ul>
+        </section>
+      ))}
     </div>
   )
 }

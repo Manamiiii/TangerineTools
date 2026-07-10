@@ -10,6 +10,7 @@ import {
   analyzeStats,
   inferRoles,
   TRAIT_TAG_STAT_WEIGHTS,
+  groupRejectedNatures,
 } from '../src/domain/nature.js'
 import { TRAIT_TAG_OPTIONS, SKILL_EFFECT_TAG_OPTIONS } from '../src/presets/rockKingdom.js'
 
@@ -129,6 +130,20 @@ function buildSkillInfo(row, skillById) {
     skills,
     traitText: /继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(traitText) ? traitText : '',
   }
+}
+
+
+function renderRejectionGroups(evaluations, limitPerGroup = 5) {
+  const groups = groupRejectedNatures(evaluations)
+  if (!groups.length) return '- 无'
+  return groups.map((group) => {
+    const lines = group.items.slice(0, limitPerGroup).map((item) => {
+      const warnings = uniqueItems(item.warnings).slice(0, 2).join('；') || '无'
+      return `  - ${natureShort(item)}｜风险：${warnings}`
+    }).join('\n')
+    const omitted = group.items.length > limitPerGroup ? `\n  - ……其余 ${group.items.length - limitPerGroup} 个同组候选已省略` : ''
+    return `- **${group.title}**（${group.items.length} 个）：${group.description}\n${lines}${omitted}`
+  }).join('\n')
 }
 
 function renderDecisionList(items, limit = 5) {
@@ -288,7 +303,7 @@ function renderSample({ sample, row, skillInfo, evaluations }) {
     `### 最终分档摘要\n\n` +
     `#### 推荐（前 5）\n\n${renderDecisionList(recommended, 5)}\n\n` +
     `#### 可保留（前 6）\n\n${renderDecisionList(keepable, 6)}\n\n` +
-    `#### 不推荐（前 5）\n\n${renderDecisionList(notRecommended, 5)}\n`
+    `#### 不推荐理由分组\n\n${renderRejectionGroups(evaluations)}\n`
 }
 
 async function main() {

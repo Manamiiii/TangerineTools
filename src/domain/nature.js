@@ -919,6 +919,100 @@ function applyDominance(evaluations) {
   return result
 }
 
+
+export function rejectionGroupForNature(nature = {}) {
+  if (nature.dominatedBy) {
+    return {
+      key: `dominated:${nature.dominatedBy}`,
+      title: `被 ${nature.dominatedBy} 支配`,
+      description: '同一强化项下已有代价更低或风险更少的选择，通常优先保留支配方。',
+    }
+  }
+  const warnings = nature.warnings || []
+  const text = warnings.join('；')
+  if (nature.hardRisk) {
+    if (/速度|先手|迅捷|节奏/.test(text) || nature.lower === 'spd') {
+      return {
+        key: 'hard-speed',
+        title: '速度/先手硬风险',
+        description: '弱化速度会破坏高速、先手、迅捷或节奏定位。',
+      }
+    }
+    if (/双攻|任一攻击|单攻/.test(text)) {
+      return {
+        key: 'hard-mixed-attack',
+        title: '双攻路线冲突',
+        description: '当前仍有双攻潜力，弱化任一攻击需要更强技能组证据。',
+      }
+    }
+    if (/生命|耐久|承伤/.test(text) || nature.lower === 'hp') {
+      return {
+        key: 'hard-bulk',
+        title: '生命/耐久硬风险',
+        description: '弱化生命或核心耐久项会明显降低站场与容错。',
+      }
+    }
+    return {
+      key: 'hard-role',
+      title: '核心定位硬风险',
+      description: '弱化项会削弱当前综合定位的关键能力。',
+    }
+  }
+  if (/技能效果标签偏物理输出，弱化物攻|技能效果标签偏魔法输出，弱化魔攻|技能.*冲突/.test(text)) {
+    return {
+      key: 'skill-output-conflict',
+      title: '技能输出方向冲突',
+      description: '技能组已经明显偏向某个输出侧，弱化该侧会和技能路线冲突。',
+    }
+  }
+  if (/速度|先手|迅捷|节奏/.test(text) || nature.lower === 'spd') {
+    return {
+      key: 'speed-risk',
+      title: '速度/先手风险',
+      description: '速度弱化或速度线损失需要结合对位确认。',
+    }
+  }
+  if (/生命|耐久|承伤|防御|单防/.test(text) || ['hp', 'pdef', 'mdef'].includes(nature.lower)) {
+    return {
+      key: 'bulk-risk',
+      title: '生命/防御风险',
+      description: '防御侧取舍会影响承伤目标，通常需要明确场景。',
+    }
+  }
+  if (/双攻|任一攻击|单攻/.test(text)) {
+    return {
+      key: 'mixed-attack-risk',
+      title: '双攻取舍风险',
+      description: '面板或技能仍存在双攻可能，弱化另一攻需要保留风险提示。',
+    }
+  }
+  return {
+    key: 'other-risk',
+    title: '其他低收益/局部风险',
+    description: '整体收益不足或风险较分散，作为低优先级候选处理。',
+  }
+}
+
+export function groupRejectedNatures(candidates = []) {
+  const rejected = candidates.filter((item) => item.decision === 'notRecommended')
+  const grouped = new Map()
+  for (const item of rejected) {
+    const group = rejectionGroupForNature(item)
+    if (!grouped.has(group.key)) grouped.set(group.key, { ...group, items: [] })
+    grouped.get(group.key).items.push(item)
+  }
+  const order = ['dominated:', 'hard-speed', 'hard-mixed-attack', 'hard-bulk', 'hard-role', 'skill-output-conflict', 'speed-risk', 'bulk-risk', 'mixed-attack-risk', 'other-risk']
+  return [...grouped.values()]
+    .map((group) => ({ ...group, items: [...group.items].sort((a, b) => b.score - a.score) }))
+    .sort((a, b) => {
+      const indexOf = (key) => {
+        const matched = order.findIndex((prefix) => key.startsWith(prefix))
+        return matched === -1 ? order.length : matched
+      }
+      return indexOf(a.key) - indexOf(b.key) || b.items.length - a.items.length || a.title.localeCompare(b.title)
+    })
+}
+
 export function evaluateAllNatures(baseStats = {}, traitTags = [], skillInfo = {}, preference = {}) {
   const stats = numericStats(baseStats)
   const context = buildContext(stats, traitTags, skillInfo)
