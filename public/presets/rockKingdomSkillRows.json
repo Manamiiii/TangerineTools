@@ -11257,6 +11257,7 @@
       "cost": 3,
       "priority": "",
       "effectTags": [
+        "boostTransfer",
         "pivot"
       ],
       "effect": "✦自己脱离，下个入场精灵继承自己增益。",

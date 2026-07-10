@@ -32,6 +32,8 @@ export const STAT_PERCENTILE_BANDS = {
   spd: { p10: 51, p25: 65, p50: 84, p75: 100, p90: 115 },
 }
 
+export const BULK_PERCENTILE_BANDS = { p75: 301, p90: 338 }
+
 export const SPEED_TIER_LABELS = {
   veryLow: '极慢',
   low: '偏慢',
@@ -77,12 +79,12 @@ export const TRAIT_TAG_STAT_WEIGHTS = {
   patkLean: { patk: 2 },
   matkLean: { matk: 2 },
   spdLean: { spd: 2 },
-  defense: { hp: 0.75, pdef: 1, mdef: 1 },
+  defense: { hp: 1, pdef: 0.9, mdef: 0.9 },
   support: { hp: 0.75, pdef: 0.5, mdef: 0.5, spd: 0.5 },
   energyCycle: { spd: 1, hp: 0.25 },
   counterGain: { patk: 0.5, matk: 0.5 },
   growth: { patk: 0.5, matk: 0.5 },
-  shieldReduce: { hp: 0.75, pdef: 1, mdef: 1 },
+  shieldReduce: { hp: 1, pdef: 0.9, mdef: 0.9 },
   control: { spd: 1 },
   pivot: { spd: 1, hp: 0.5 },
   special: {},
@@ -111,7 +113,7 @@ const ROLE_DEFINITIONS = {
   },
   bulky: {
     label: '耐久站场',
-    core: { hp: 1.2, pdef: 1.1, mdef: 1.1 },
+    core: { hp: 1.3, pdef: 1, mdef: 1 },
     expendable: { spd: 0.3 },
   },
   physicalWall: {
@@ -500,8 +502,15 @@ export function inferRoles(baseStats = {}, traitTags = [], skillInfo = {}) {
   if (stats.spd >= STAT_PERCENTILE_BANDS.spd.p75) {
     addRole('fastAttacker', stats.spd >= STAT_PERCENTILE_BANDS.spd.p90 ? 2 : 1.4, `速度处于${analysis.speed.baseTier}档`)
   }
-  if (analysis.bulkScore >= 285 || stats.hp >= STAT_PERCENTILE_BANDS.hp.p75) {
-    addRole('bulky', 1.2, `生命 + 双防合计 ${analysis.bulkScore}，具备站场基础`)
+  const hasTopBulk = analysis.bulkScore >= BULK_PERCENTILE_BANDS.p90 || stats.hp >= STAT_PERCENTILE_BANDS.hp.p90
+  const hasBalancedBulk =
+    (analysis.bulkScore >= BULK_PERCENTILE_BANDS.p75 && stats.hp >= STAT_PERCENTILE_BANDS.hp.p50) ||
+    (stats.hp >= STAT_PERCENTILE_BANDS.hp.p75 &&
+      (stats.pdef >= STAT_PERCENTILE_BANDS.pdef.p50 || stats.mdef >= STAT_PERCENTILE_BANDS.mdef.p50))
+  if (hasTopBulk) {
+    addRole('bulky', 1.4, `生命 + 双防合计 ${analysis.bulkScore} 达到头部耐久区间`)
+  } else if (hasBalancedBulk) {
+    addRole('bulky', 0.8, `生命 + 双防合计 ${analysis.bulkScore} 接近上四分位，具备一定站场基础`)
   }
   if (stats.pdef >= STAT_PERCENTILE_BANDS.pdef.p75 && stats.hp >= STAT_PERCENTILE_BANDS.hp.p50) {
     addRole('physicalWall', 1, '物防与生命足以支撑物理防御手路线')
@@ -520,11 +529,12 @@ export function inferRoles(baseStats = {}, traitTags = [], skillInfo = {}) {
     addRole('bulky', 1.3, '特性标签支持护盾/减伤机制')
   }
   if (traitTags.includes('defense')) {
-    const hasBulkFoundation = analysis.bulkScore >= 285 || stats.hp >= STAT_PERCENTILE_BANDS.hp.p50
-    if (hasBulkFoundation) {
-      addRole('bulky', 1.3, '特性标签支持耐久站场，且生命/双防综合具备基础')
+    if (hasTopBulk) {
+      addRole('bulky', 1.3, '特性标签支持耐久站场，且三防处于头部区间')
+    } else if (hasBalancedBulk) {
+      addRole('bulky', 0.7, '特性标签支持耐久基础，但三防仍需结合主定位判断')
     } else {
-      addRole('bulky', 0.5, `物防/魔防存在单项亮点，但生命 ${stats.hp} 偏低，耐久定位需谨慎`)
+      addRole('bulky', 0.3, `物防/魔防存在单项亮点，但生命 ${stats.hp} 或综合三防不足，耐久定位需谨慎`)
     }
   }
   if (traitTags.includes('support') || traitTags.includes('pivot')) {
@@ -627,7 +637,9 @@ function isSingleDefenseRaiseSoftCapped(candidate, roles = [], traitTags = [], a
   const topRolesNeedDefense = topRoles.some((role) => (ROLE_DEFINITIONS[role.key]?.core?.[candidate.raise] || 0) > 0)
   const hasMechanicDefenseTrait = traitTags.includes('shieldReduce')
   const hasBulkFoundation =
-    analysis && (analysis.bulkScore >= 285 || analysis.stats.hp >= STAT_PERCENTILE_BANDS.hp.p50)
+    analysis &&
+    ((analysis.bulkScore >= BULK_PERCENTILE_BANDS.p75 && analysis.stats.hp >= STAT_PERCENTILE_BANDS.hp.p50) ||
+      analysis.stats.hp >= STAT_PERCENTILE_BANDS.hp.p75)
   if (topRolesNeedDefense && (hasMechanicDefenseTrait || hasBulkFoundation)) return false
   if (hasMechanicDefenseTrait) return false
   return roles.some((role) => (ROLE_DEFINITIONS[role.key]?.core?.[candidate.raise] || 0) > 0)

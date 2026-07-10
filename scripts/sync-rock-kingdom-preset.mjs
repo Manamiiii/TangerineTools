@@ -13,6 +13,12 @@ const ELEMENT_MAP = new Map([
   ['翼', 'flying'], ['萌', 'cute'], ['幽', 'ghost'], ['恶', 'dark'], ['机械', 'mech'], ['幻', 'illusion'],
 ])
 const ELEMENT_VALUES = [...ELEMENT_MAP.values()]
+const STAT_THRESHOLDS = {
+  hp: { p50: 91, p75: 110, p90: 126 },
+  pdef: { p50: 82, p75: 102, p90: 121 },
+  mdef: { p50: 82, p75: 101, p90: 120 },
+  bulk: { p75: 301, p90: 338 },
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '..')
@@ -42,7 +48,12 @@ function deriveTags(desc, stats = {}) {
   if (matk >= patk + 15 && matk >= 85) add('matkLean')
   if (Math.abs(patk - matk) <= 15 && patk >= 85 && matk >= 85) add('attack')
   if (spd >= 95 || (spd >= 85 && spd >= topAttack - 5)) add('spdLean')
-  if (bulk >= 300 || hp >= 120 || (hp >= 90 && (pdef >= 105 || mdef >= 105))) add('defense')
+  const hasTopBulk = bulk >= STAT_THRESHOLDS.bulk.p90 || hp >= STAT_THRESHOLDS.hp.p90
+  const hasBalancedBulk =
+    (bulk >= STAT_THRESHOLDS.bulk.p75 && hp >= STAT_THRESHOLDS.hp.p50 &&
+      (pdef >= STAT_THRESHOLDS.pdef.p75 || mdef >= STAT_THRESHOLDS.mdef.p75)) ||
+    (hp >= STAT_THRESHOLDS.hp.p75 && (pdef >= STAT_THRESHOLDS.pdef.p50 || mdef >= STAT_THRESHOLDS.mdef.p50))
+  if (hasTopBulk || hasBalancedBulk) add('defense')
 
   if (desc) {
     if (/回复|恢复|生命|治疗|回血|保留1点生命/.test(desc)) add('support')

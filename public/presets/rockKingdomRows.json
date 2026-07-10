@@ -637,6 +637,7 @@
       "traitTags": [
         "patkLean",
         "spdLean",
+        "defense",
         "growth"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%8A%A9%E7%87%83.png",
@@ -721,7 +722,8 @@
       "traitName": "爆燃",
       "traitTags": [
         "patkLean",
-        "spdLean"
+        "spdLean",
+        "defense"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%88%86%E7%87%83.png",
       "traitDesc": "使用火系技能后，获得双攻+30%。",
@@ -888,7 +890,6 @@
       "traitName": "浸润",
       "traitTags": [
         "matkLean",
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%B5%B8%E6%B6%A6.png",
@@ -1494,7 +1495,6 @@
       "traitTags": [
         "matkLean",
         "spdLean",
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%8C%BA%E8%B5%B7%E8%83%B8%E8%84%AF.png",
@@ -1889,7 +1889,6 @@
       "traitName": "缩壳",
       "traitTags": [
         "matkLean",
-        "defense",
         "energyCycle",
         "shieldReduce"
       ],
@@ -3158,8 +3157,7 @@
       "traitName": "顺风",
       "traitTags": [
         "patkLean",
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E9%A1%BA%E9%A3%8E.png",
       "traitDesc": "若先于敌方攻击，本次技能威力+50%。",
@@ -3498,8 +3496,7 @@
       "traitName": "破空",
       "traitTags": [
         "patkLean",
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "",
       "traitDesc": "若先于敌方攻击，本次技能威力+75%。",
@@ -8336,6 +8333,7 @@
       "shiny": "yes",
       "traitName": "复方汤剂",
       "traitTags": [
+        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%A4%8D%E6%96%B9%E6%B1%A4%E5%89%82.png",
@@ -9052,8 +9050,8 @@
       "traitTags": [
         "matkLean",
         "spdLean",
-        "energyCycle",
-        "pivot"
+        "defense",
+        "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%81%9A%E5%99%A9%E6%A2%A6.png",
       "traitDesc": "敌方精灵离场后，更换入场的精灵失去3能量。",
@@ -10249,7 +10247,6 @@
       "traitName": "生物碱",
       "traitTags": [
         "attack",
-        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%94%9F%E7%89%A9%E7%A2%B1.png",
@@ -10343,7 +10340,6 @@
       "traitName": "生物碱",
       "traitTags": [
         "attack",
-        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%94%9F%E7%89%A9%E7%A2%B1.png",
@@ -10437,7 +10433,6 @@
       "traitName": "生物碱",
       "traitTags": [
         "attack",
-        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%94%9F%E7%89%A9%E7%A2%B1.png",
@@ -10531,7 +10526,6 @@
       "traitName": "生物碱",
       "traitTags": [
         "attack",
-        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%94%9F%E7%89%A9%E7%A2%B1.png",
@@ -10626,7 +10620,6 @@
       "traitTags": [
         "attack",
         "spdLean",
-        "defense",
         "control"
       ],
       "traitIcon": "",
@@ -12208,8 +12201,7 @@
       "shiny": "yes",
       "traitName": "无忧无虑",
       "traitTags": [
-        "matkLean",
-        "defense"
+        "matkLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%97%A0%E5%BF%A7%E6%97%A0%E8%99%91.png",
       "traitDesc": "可获得的萌化层数不受限制。",
@@ -13352,7 +13344,6 @@
       "traitName": "洁癖",
       "traitTags": [
         "spdLean",
-        "defense",
         "pivot"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%B4%81%E7%99%96.png",
@@ -13615,6 +13606,7 @@
       "traitName": "快锤",
       "traitTags": [
         "spdLean",
+        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%BF%AB%E9%94%A4.png",
@@ -14932,7 +14924,6 @@
       "traitName": "石头大餐",
       "traitTags": [
         "patkLean",
-        "defense",
         "support",
         "energyCycle"
       ],
@@ -15191,7 +15182,6 @@
       "traitName": "水翼推进",
       "traitTags": [
         "spdLean",
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%B0%B4%E7%BF%BC%E6%8E%A8%E8%BF%9B.png",
@@ -15277,7 +15267,6 @@
       "traitName": "水翼飞升",
       "traitTags": [
         "spdLean",
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%B0%B4%E7%BF%BC%E9%A3%9E%E5%8D%87.png",
@@ -15451,7 +15440,6 @@
       "traitTags": [
         "attack",
         "spdLean",
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%9F%B3%E5%A4%A9%E5%B9%B3.png",
@@ -16503,8 +16491,7 @@
       "traitName": "共鸣",
       "traitTags": [
         "matkLean",
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%85%B1%E9%B8%A3.png",
       "traitDesc": "携带的【虫鸣】技能威力+20。",
@@ -17015,8 +17002,8 @@
       "traitTags": [
         "attack",
         "spdLean",
-        "defense",
-        "control"
+        "control",
+        "pivot"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E4%B8%8B%E9%BB%91%E6%89%8B.png",
       "traitDesc": "敌方精灵离场后，更换入场的精灵获得5层中毒。",
@@ -17289,7 +17276,6 @@
       "traitTags": [
         "attack",
         "spdLean",
-        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%AF%92%E7%89%99.png",
@@ -17644,7 +17630,8 @@
       "traitName": "悲悯",
       "traitTags": [
         "patkLean",
-        "spdLean"
+        "spdLean",
+        "defense"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%82%B2%E6%82%AF.png",
       "traitDesc": "己方队伍中每有1只力竭的精灵，自己获得双攻+30%。",
@@ -17730,7 +17717,8 @@
       "traitName": "悼亡",
       "traitTags": [
         "patkLean",
-        "spdLean"
+        "spdLean",
+        "defense"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%82%BC%E4%BA%A1.png",
       "traitDesc": "双方队伍中每有1只力竭的精灵，自己获得双攻+30%。",
@@ -17905,7 +17893,6 @@
       "traitTags": [
         "matkLean",
         "spdLean",
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E8%B6%85%E8%B4%9F%E8%8D%B7.png",
@@ -19054,7 +19041,6 @@
       "shiny": "no",
       "traitName": "机械变式",
       "traitTags": [
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%9C%BA%E6%A2%B0%E5%8F%98%E5%BC%8F.png",
@@ -20128,7 +20114,8 @@
       "shiny": "no",
       "traitName": "圣火骑士",
       "traitTags": [
-        "matkLean"
+        "matkLean",
+        "defense"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%9C%A3%E7%81%AB%E9%AA%91%E5%A3%AB.png",
       "traitDesc": "应对成功后，下次攻击威力翻倍。",
@@ -20779,8 +20766,7 @@
       "traitName": "威慑",
       "traitTags": [
         "attack",
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%A8%81%E6%85%91.png",
       "traitDesc": "打断敌方时，被打断的技能进入2回合冷却。",
@@ -21236,8 +21222,7 @@
       "traitName": "乘风连击",
       "traitTags": [
         "patkLean",
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E4%B9%98%E9%A3%8E%E8%BF%9E%E5%87%BB.png",
       "traitDesc": "使用翼系技能后，获得连击数+1。",
@@ -22300,6 +22285,7 @@
       "shiny": "no",
       "traitName": "多人宿舍",
       "traitTags": [
+        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%A4%9A%E4%BA%BA%E5%AE%BF%E8%88%8D.png",
@@ -22748,7 +22734,8 @@
       "traitName": "得寸进尺",
       "traitTags": [
         "patkLean",
-        "spdLean"
+        "spdLean",
+        "defense"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%BE%97%E5%AF%B8%E8%BF%9B%E5%B0%BA.png",
       "traitDesc": "天气为雨天，或处于其他水系环境中时，获得双攻+100%。",
@@ -22926,7 +22913,6 @@
       "traitTags": [
         "attack",
         "spdLean",
-        "defense",
         "growth"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E8%BA%AB%E7%BB%8F%E7%99%BE%E7%BB%83.png",
@@ -24547,7 +24533,6 @@
       "traitTags": [
         "matkLean",
         "spdLean",
-        "defense",
         "shieldReduce"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%A5%94%E6%B3%A2%E5%91%BD.png",
@@ -24810,8 +24795,7 @@
       "traitName": "营养液泡",
       "traitTags": [
         "attack",
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E8%90%A5%E5%85%BB%E6%B6%B2%E6%B3%A1.png",
       "traitDesc": "获得增益时，额外获得层数+2。",
@@ -25080,8 +25064,8 @@
       "traitTags": [
         "attack",
         "spdLean",
-        "defense",
-        "energyCycle"
+        "energyCycle",
+        "growth"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E9%BC%93%E6%B0%94.png",
       "traitDesc": "使用能耗为3的技能时，获得攻防+20%。",
@@ -25171,8 +25155,8 @@
       "traitTags": [
         "attack",
         "spdLean",
-        "defense",
-        "energyCycle"
+        "energyCycle",
+        "growth"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E4%B8%89%E9%BC%93%E4%BD%9C%E6%B0%94.png",
       "traitDesc": "使用能耗为3的技能时，获得攻防永久+20%。",
@@ -25522,7 +25506,8 @@
       "shiny": "no",
       "traitName": "游弋",
       "traitTags": [
-        "matkLean"
+        "matkLean",
+        "defense"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%B8%B8%E5%BC%8B.png",
       "traitDesc": "蓄力时可使用任一携带技能，且获得双防+100%。",
@@ -25605,7 +25590,8 @@
       "shiny": "no",
       "traitName": "嫉妒",
       "traitTags": [
-        "matkLean"
+        "matkLean",
+        "defense"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%AB%89%E5%A6%92.png",
       "traitDesc": "蓄力状态下，可以使用任一携带技能。",
@@ -26441,8 +26427,7 @@
       "shiny": "no",
       "traitName": "拨浪鼓",
       "traitTags": [
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%8B%A8%E6%B5%AA%E9%BC%93.png",
       "traitDesc": "己方精灵每使用1次状态技能，自己入场时毒系和萌系技能威力+10。",
@@ -27348,7 +27333,6 @@
       "traitTags": [
         "matkLean",
         "spdLean",
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%8F%8A%E7%91%9A%E9%AA%A8.png",
@@ -28033,7 +28017,6 @@
       "traitTags": [
         "patkLean",
         "spdLean",
-        "defense",
         "growth"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E8%93%84%E7%94%B5%E6%B1%A0.png",
@@ -28121,7 +28104,6 @@
       "traitTags": [
         "patkLean",
         "spdLean",
-        "defense",
         "growth"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E8%B6%85%E7%BA%A7%E7%94%B5%E6%B1%A0.png",
@@ -28558,8 +28540,7 @@
       "shiny": "no",
       "traitName": "起飞加速",
       "traitTags": [
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E8%B5%B7%E9%A3%9E%E5%8A%A0%E9%80%9F.png",
       "traitDesc": "本场战斗首次使用的技能获得迅捷。",
@@ -29006,6 +28987,7 @@
       "traitTags": [
         "attack",
         "spdLean",
+        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%8A%A0%E4%B8%AA%E9%9B%AA%E7%90%83.png",
@@ -29186,6 +29168,7 @@
       "traitTags": [
         "attack",
         "spdLean",
+        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%8A%A0%E4%B8%AA%E9%9B%AA%E7%90%83.png",
@@ -29276,6 +29259,7 @@
       "traitTags": [
         "attack",
         "spdLean",
+        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%8A%A0%E4%B8%AA%E9%9B%AA%E7%90%83.png",
@@ -29366,6 +29350,7 @@
       "traitTags": [
         "attack",
         "spdLean",
+        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%8A%A0%E4%B8%AA%E9%9B%AA%E7%90%83.png",
@@ -29547,6 +29532,7 @@
       "traitTags": [
         "attack",
         "spdLean",
+        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%8A%A0%E4%B8%AA%E9%9B%AA%E7%90%83.png",
@@ -29727,6 +29713,7 @@
       "traitTags": [
         "attack",
         "spdLean",
+        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%8A%A0%E4%B8%AA%E9%9B%AA%E7%90%83.png",
@@ -30364,7 +30351,6 @@
       "traitTags": [
         "attack",
         "spdLean",
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%B4%84%E6%B8%B8.png",
@@ -30547,7 +30533,6 @@
       "traitTags": [
         "attack",
         "spdLean",
-        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%94%9F%E7%89%A9%E7%94%B5.png",
@@ -30638,7 +30623,6 @@
       "shiny": "no",
       "traitName": "扩散侵蚀",
       "traitTags": [
-        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%89%A9%E6%95%A3%E4%BE%B5%E8%9A%80.png",
@@ -32444,7 +32428,8 @@
       "shiny": "no",
       "traitName": "翼轴",
       "traitTags": [
-        "spdLean"
+        "spdLean",
+        "defense"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%BF%BC%E8%BD%B4.png",
       "traitDesc": "1号位技能获得迅捷和传动1。",
@@ -33628,7 +33613,6 @@
       "traitName": "生长",
       "traitTags": [
         "matkLean",
-        "defense",
         "support"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%94%9F%E9%95%BF.png",
@@ -34226,6 +34210,7 @@
       "traitTags": [
         "patkLean",
         "spdLean",
+        "defense",
         "energyCycle"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E8%AD%A6%E6%83%95.png",
@@ -34485,7 +34470,7 @@
       "shiny": "no",
       "traitName": "涂鸦",
       "traitTags": [
-        "defense"
+        "attack"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E6%B6%82%E9%B8%A6.png",
       "traitDesc": "使用非本系技能时威力+50%。",
@@ -34656,8 +34641,7 @@
       "traitName": "绝对秩序",
       "traitTags": [
         "patkLean",
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E7%BB%9D%E5%AF%B9%E7%A7%A9%E5%BA%8F.png",
       "traitDesc": "受到非敌方系别的技能攻击时伤害-50%。",
@@ -35778,8 +35762,7 @@
       "shiny": "no",
       "traitName": "付给恶魔的赎价",
       "traitTags": [
-        "patkLean",
-        "defense"
+        "patkLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E4%BB%98%E7%BB%99%E6%81%B6%E9%AD%94%E7%9A%84%E8%B5%8E%E4%BB%B7.png",
       "traitDesc": "击败敌方精灵时，敌方额外损失1点魔力。被敌方精灵击败时，自己额外损失1点魔力。",
@@ -37355,8 +37338,7 @@
       "traitName": "月光审判",
       "traitTags": [
         "patkLean",
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "",
       "traitDesc": "攻击时，若敌方血脉是首领血脉，技能威力+100%。",
@@ -38417,8 +38399,7 @@
       "traitName": "血型吸引",
       "traitTags": [
         "attack",
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E8%A1%80%E5%9E%8B%E5%90%B8%E5%BC%95.png",
       "traitDesc": "敌方每携带1种系别的技能，自己攻击时威力+10。",
@@ -39440,8 +39421,7 @@
       "traitName": "双向光速",
       "traitTags": [
         "matkLean",
-        "spdLean",
-        "defense"
+        "spdLean"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%8F%8C%E5%90%91%E5%85%89%E9%80%9F.png",
       "traitDesc": "在场时，所有回合结束时触发，触发次数+1。",
@@ -39694,7 +39674,8 @@
       "traitName": "张弛有度",
       "traitTags": [
         "patkLean",
-        "spdLean"
+        "spdLean",
+        "defense"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%BC%A0%E5%BC%9B%E6%9C%89%E5%BA%A6.png",
       "traitDesc": "周末时自己获得双攻+40%，其他时间获得双防+40%。",
@@ -41003,7 +40984,6 @@
       "shiny": "yes",
       "traitName": "大雪球",
       "traitTags": [
-        "defense",
         "control"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E5%A4%A7%E9%9B%AA%E7%90%83.png",
@@ -42140,7 +42120,7 @@
       "shiny": "yes",
       "traitName": "魔术帽",
       "traitTags": [
-        "defense"
+        "special"
       ],
       "traitIcon": "https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/t/%E9%AD%94%E6%9C%AF%E5%B8%BD.png",
       "traitDesc": "在场时，场上双方携带的技能获得巧变：同系别技能。",

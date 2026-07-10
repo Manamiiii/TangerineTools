@@ -64,7 +64,7 @@ export const TRAIT_TAG_OPTIONS = [
   { value: 'patkLean', label: '物攻输出', color: '#ea580c', image: '' },
   { value: 'matkLean', label: '魔攻输出', color: '#c026d3', image: '' },
   { value: 'spdLean', label: '高速先手', color: '#eab308', image: '' },
-  { value: 'defense', label: '耐久坦克', color: '#2563eb', image: '' },
+  { value: 'defense', label: '耐久基础', color: '#2563eb', image: '' },
   { value: 'support', label: '回复辅助', color: '#059669', image: '' },
   { value: 'energyCycle', label: '能量循环', color: '#0d9488', image: '' },
   { value: 'counterGain', label: '克制收益', color: '#4f46e5', image: '' },
