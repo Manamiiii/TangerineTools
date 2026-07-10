@@ -65,6 +65,7 @@ export const TRAIT_TAG_OPTIONS = [
   { value: 'matkLean', label: '魔攻输出', color: '#c026d3', image: '' },
   { value: 'spdLean', label: '高速先手', color: '#eab308', image: '' },
   { value: 'conditionalSpeedBoost', label: '条件加速', color: '#f59e0b', image: '' },
+  { value: 'swiftSkill', label: '迅捷触发', color: '#facc15', image: '' },
   { value: 'defense', label: '耐久基础', color: '#2563eb', image: '' },
   { value: 'support', label: '回复辅助', color: '#059669', image: '' },
   { value: 'energyCycle', label: '能量循环', color: '#0d9488', image: '' },
@@ -131,6 +132,7 @@ export const SKILL_CATEGORY_LEGACY_DEFAULTS = {
 
 export const SKILL_EFFECT_TAG_OPTIONS = [
   { value: 'priority', label: '先手优先', color: '#eab308', image: '' },
+  { value: 'swift', label: '迅捷先手', color: '#f59e0b', image: '' },
   { value: 'speed', label: '速度节奏', color: '#facc15', image: '' },
   { value: 'healing', label: '回复吸血', color: '#16a34a', image: '' },
   { value: 'damageReduction', label: '护盾减伤', color: '#2563eb', image: '' },

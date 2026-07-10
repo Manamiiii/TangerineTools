@@ -80,6 +80,7 @@ export const TRAIT_TAG_STAT_WEIGHTS = {
   matkLean: { matk: 2 },
   spdLean: { spd: 2 },
   conditionalSpeedBoost: { spd: 1.2 },
+  swiftSkill: { spd: 1.5 },
   defense: { hp: 1, pdef: 0.9, mdef: 0.9 },
   support: { hp: 0.75, pdef: 0.5, mdef: 0.5, spd: 0.5 },
   energyCycle: { spd: 1, hp: 0.25 },
@@ -193,7 +194,7 @@ export function speedTier(value) {
 
 function analyzeSpeedConcern(stats, traitTags = [], roles = []) {
   const speedScore = percentileScore('spd', stats.spd)
-  const speedTraitTags = ['spdLean', 'conditionalSpeedBoost', 'control', 'pivot', 'energyCycle']
+  const speedTraitTags = ['spdLean', 'conditionalSpeedBoost', 'swiftSkill', 'control', 'pivot', 'energyCycle']
   const hasSpeedTrait = traitTags.some((tag) => speedTraitTags.includes(tag))
   const hasSpeedRole = roles.some((role) =>
     ['fastAttacker', 'support', 'energyCycle'].includes(role.key),
@@ -275,7 +276,8 @@ function deriveSkillEffectTags(item) {
   const explicit = Array.isArray(item.effectTags) ? item.effectTags : []
   const tags = new Set(explicit)
   const text = skillItemText(item)
-  if (/先手|优先|抢先/.test(text)) tags.add('priority')
+  if (/先手|优先|抢先|迅捷/.test(text)) tags.add('priority')
+  if (/迅捷/.test(text)) tags.add('swift')
   if (/迅捷|速度[+-]|速度提升|速度降低|先手|高速/.test(text)) tags.add('speed')
   if (/回复|恢复|治疗|吸血|生命/.test(text)) tags.add('healing')
   if (/防御|护盾|减伤|承伤|抵抗|免疫/.test(text)) tags.add('damageReduction')
@@ -529,6 +531,9 @@ export function inferRoles(baseStats = {}, traitTags = [], skillInfo = {}) {
   if (traitTags.includes('conditionalSpeedBoost')) {
     addRole('fastAttacker', 1, '特性存在条件加速，触发后需要比较速度线')
   }
+  if (traitTags.includes('swiftSkill')) {
+    addRole('fastAttacker', 1.3, '特性或技能机制可获得迅捷，切换入场后会触发先手技能并比较速度线')
+  }
   if (traitTags.includes('shieldReduce')) {
     addRole('bulky', 1.3, '特性标签支持护盾/减伤机制')
   }
@@ -781,9 +786,17 @@ export function evaluateNatureCandidate(
     score += 6
     reasons.push('特性存在条件加速，强化速度可提高触发后的速度线')
   }
+  if (traitTags.includes('swiftSkill') && candidate.raise === 'spd') {
+    score += 8
+    reasons.push('特性或技能机制可获得迅捷；迅捷技能必定先手，迅捷对位仍会比较速度，强化速度可提高同迅捷对位')
+  }
   if (traitTags.includes('conditionalSpeedBoost') && candidate.lower === 'spd') {
     score -= 8
     warnings.push('特性存在条件加速，弱化速度会降低触发后的速度线')
+  }
+  if (traitTags.includes('swiftSkill') && candidate.lower === 'spd') {
+    score -= 10
+    warnings.push('特性或技能机制依赖迅捷；迅捷技能对位仍会拼速度，弱化速度会降低同迅捷对位能力')
   }
   if (skillProfile.backLoaded && candidate.lower === 'spd') {
     score += 10

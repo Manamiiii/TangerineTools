@@ -60,6 +60,7 @@ function deriveTags(desc, stats = {}) {
     if (/能量|能耗|回复\d*能量|获得\d*能量/.test(desc)) add('energyCycle')
     if (/克制|抵触/.test(desc)) add('counterGain')
     if (/速度\+\d+|获得速度|速度提升/.test(desc)) add('conditionalSpeedBoost')
+    if (/迅捷/.test(desc)) add('swiftSkill')
     if (/强化|永久\+|\+20%|\+70%|提升|增加/.test(desc)) add('growth')
     if (/护盾|减伤|防御|免疫|抵免/.test(desc)) add('shieldReduce')
     if (/冻结|中毒|灼烧|异常|恐惧|控制|污染|睡眠|麻醉/.test(desc)) add('control')
@@ -100,7 +101,8 @@ function deriveSkillEffectTags(skill = {}) {
   }
   const text = [skill.nm, skill.tp, skill.ef].filter(Boolean).join(' ')
 
-  if (/先手|优先|抢先/.test(text)) add('priority')
+  if (/先手|优先|抢先|迅捷/.test(text)) add('priority')
+  if (/迅捷/.test(text)) add('swift')
   if (/迅捷|速度[+-]|速度提升|速度降低|先手|高速/.test(text)) add('speed')
   if (/回复|恢复|治疗|吸血|生命/.test(text)) add('healing')
   if (/防御|护盾|减伤|承伤|抵抗|免疫/.test(text)) add('damageReduction')
