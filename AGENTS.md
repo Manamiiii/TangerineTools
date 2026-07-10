@@ -69,7 +69,8 @@ Run the checks relevant to the files changed. If a command cannot run because of
 - When changing recommendation logic, regenerate `docs/nature-calibration-report.md` with `npm run check:nature`.
 - Reports should make rule causes inspectable: stat distribution, trait/effect labels, role breakdown, candidate reasons, and risks.
 - Keep 洛克王国世界 preset data based on official sync results; external materials may inspire audits but must not replace official preset rows.
-- For external positioning audits, proceed in batches. Resolve rule questions from one batch before broadly applying conclusions to all creatures.
+- For external positioning audits, default to one creature per turn following the user's capture progress; keep batch fields for thematic regression and backlog triage.
+- When several single-creature audits reveal the same rule issue, pause for user confirmation, then apply a rule-level change and rerun the relevant full reports.
 - If external materials conflict with local roles or with each other, mark the case for user confirmation before changing broad rules.
 
 ## Documentation workflow
