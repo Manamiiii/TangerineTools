@@ -4,7 +4,7 @@
 
 ## 项目现状
 
-TangerineTools 是本地优先的个人资料管理 Web App（Vite + React 19 + Dexie.js），纯静态、无后端。当前默认演示场景为「洛克王国」，工作台包含四个工具：
+TangerineTools 是本地优先的个人资料管理 Web App（Vite + React 19 + Dexie.js），纯静态、无后端。当前默认演示场景为「洛克王国世界」，工作台包含四个工具：
 
 - 资料库 `catalog`
 - 收集记录 `owned`
@@ -64,7 +64,7 @@ scripts/
   data/rockKingdom.d.json      # 可信 d.json 源文件
   sync-rock-kingdom-preset.mjs # 生成 rows / skillRows 的同步脚本
 docs/
-  system-capabilities.md / data-sync.md / nature-recommendation-redesign.md / session-start-prompt.md / rocom-position-audit-plan.md
+  README.md / system-capabilities.md / data-sync.md / nature-recommendation-redesign.md / session-start-prompt.md / rocom-position-audit-plan.md
 ```
 
 ## 关键约定 / 容易踩的坑
