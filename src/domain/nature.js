@@ -1019,8 +1019,21 @@ function dominanceKey(item) {
   return `${item.raise}-${item.lower}`
 }
 
+function lowersOffRouteAttack(item) {
+  const mode = item.skillProfile?.attackMode
+  return (mode === 'physical' && item.lower === 'matk') || (mode === 'magical' && item.lower === 'patk')
+}
+
+function shouldHardDominateWithOffRouteAttack(item, best) {
+  if (!lowersOffRouteAttack(best) || lowersOffRouteAttack(item)) return false
+  if (best.hardRisk || best.warnings.length > 0) return false
+  if (item.lower === best.raise) return false
+  return ['hp', 'pdef', 'mdef', 'spd', 'patk', 'matk'].includes(item.lower)
+}
+
 function canKeepDominatedCandidate(item, best) {
   if (item.decision !== 'keepable' || item.score < 45 || item.hardRisk) return false
+  if (shouldHardDominateWithOffRouteAttack(item, best)) return false
   if (item.raise === 'spd' && item.speedProfile?.concern?.level === 'low') return false
   if (lowersCurrentShortDefense(item)) return false
   const bestLowerIsSpeedForLowConcern =
@@ -1069,7 +1082,9 @@ function applyDominance(evaluations) {
       target.dominatedBy = natureName(best)
       target.warnings = [
         ...target.warnings,
-        `同样强化${STAT_LABELS[raise]}时，${natureName(best)}代价更低，因此当前组合被支配`,
+        shouldHardDominateWithOffRouteAttack(target, best)
+          ? `同样强化${STAT_LABELS[raise]}时，${natureName(best)}已牺牲明确非主路线攻击项；当前组合削弱仍有用途的${STAT_LABELS[target.lower]}，因此被硬支配`
+          : `同样强化${STAT_LABELS[raise]}时，${natureName(best)}代价更低，因此当前组合被支配`,
       ]
     }
   }
