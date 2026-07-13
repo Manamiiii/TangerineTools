@@ -376,45 +376,54 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
         <div className="nature-skill-note">
           <strong>技能线索</strong>
           <span>{nature.skillProfile.summary}</span>
-          <span className="nature-skill-breakdown">
-            物攻 {nature.skillProfile.breakdown.physicalCount} 个 / 魔攻 {nature.skillProfile.breakdown.magicalCount} 个 / 状态 {nature.skillProfile.breakdown.statusCount} 个；
-            攻击技能平均威力 {nature.skillProfile.breakdown.attackAveragePower.toFixed(0)}
-          </span>
+          <details className="nature-inline-disclosure nature-skill-breakdown">
+            <summary>技能明细</summary>
+            <span>
+              物攻 {nature.skillProfile.breakdown.physicalCount} 个 / 魔攻 {nature.skillProfile.breakdown.magicalCount} 个 / 状态 {nature.skillProfile.breakdown.statusCount} 个；
+              攻击技能平均威力 {nature.skillProfile.breakdown.attackAveragePower.toFixed(0)}
+            </span>
+          </details>
         </div>
       )}
 
       {speedProfile && (
         <div className={`nature-speed-note ${speedProfile.concern.level}`}>
           <strong>速度线：{speedProfile.concern.label}</strong>
-          <span>
-            基础速度 {speedProfile.base}（{speedProfile.baseTier}，最近锚点 {speedProfile.nearestAnchor}）。
-            {speedProfile.concern.reason}；{speedProfile.note}
-          </span>
+          <span>基础速度 {speedProfile.base}（{speedProfile.baseTier}）。</span>
+          <details className="nature-inline-disclosure">
+            <summary>查看速度线解释</summary>
+            <span>
+              最近锚点 {speedProfile.nearestAnchor}。{speedProfile.concern.reason}；{speedProfile.note}
+            </span>
+          </details>
         </div>
       )}
 
-      <div className="nature-explain-grid">
-        <div>
-          <div className="nature-explain-title">推荐理由</div>
-          <ul className="nature-explain-list">
-            {nature.reasons.map((reason) => (
-              <li key={reason}>{reason}</li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <div className="nature-explain-title">风险提示</div>
-          {nature.warnings.length > 0 ? (
-            <ul className="nature-explain-list warning">
-              {nature.warnings.map((warning) => (
-                <li key={warning}>{warning}</li>
+      <details className="nature-detail-disclosure">
+        <summary>查看完整推荐理由 / 风险</summary>
+        <div className="nature-explain-grid">
+          <div>
+            <div className="nature-explain-title">推荐理由</div>
+            <ul className="nature-explain-list">
+              {nature.reasons.map((reason) => (
+                <li key={reason}>{reason}</li>
               ))}
             </ul>
-          ) : (
-            <p className="nature-explain-empty">暂无明显硬性风险。</p>
-          )}
+          </div>
+          <div>
+            <div className="nature-explain-title">风险提示</div>
+            {nature.warnings.length > 0 ? (
+              <ul className="nature-explain-list warning">
+                {nature.warnings.map((warning) => (
+                  <li key={warning}>{warning}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="nature-explain-empty">暂无明显硬性风险。</p>
+            )}
+          </div>
         </div>
-      </div>
+      </details>
 
       <NatureStatsBars nature={nature} baseStats={baseStats} adjustedStats={adjustedStats} />
     </div>
@@ -430,7 +439,7 @@ function NaturePveOverview({ candidates }) {
     <section className={`nature-pve-note ${summary.level}`} aria-label="PVE 培养投入提示">
       <div className="nature-pve-note-header">
         <strong>PVE 培养投入</strong>
-        <span>{summary.badge}</span>
+        <span className="nature-pve-rating">{summary.badge}</span>
       </div>
       <p>{summary.summary}</p>
       <div className="nature-pve-note-grid">
@@ -443,9 +452,10 @@ function NaturePveOverview({ candidates }) {
           <span>{summary.investment}</span>
         </div>
       </div>
-      <p className="nature-pve-note-footnote">
-        PVP 属性会自动平衡，不作为资源投入依据；异色/炫彩是否培养，仍需结合精灵本身 PVE 强度、机制价值和队伍需求。
-      </p>
+      <details className="nature-inline-disclosure nature-pve-note-footnote">
+        <summary>查看判断口径</summary>
+        <span>PVP 属性会自动平衡，不作为资源投入依据；异色/炫彩是否培养，仍需结合精灵本身 PVE 强度、机制价值和队伍需求。</span>
+      </details>
     </section>
   )
 }
