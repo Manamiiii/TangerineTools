@@ -443,8 +443,8 @@ function NaturePveOverview({ candidates }) {
       </div>
       <div className="nature-pve-verdict">{summary.verdict}</div>
       <div className="nature-pve-meta">
+        <span>主属性：{summary.primaryStat}</span>
         <span>主性格：{summary.capture}</span>
-        <span>可留：{summary.keepableCount} 个</span>
       </div>
       <details className="nature-inline-disclosure nature-pve-note-footnote">
         <summary>口径</summary>
@@ -469,7 +469,7 @@ function pveOverviewSummary(candidates = []) {
       badge: '不建议培养',
       verdict: '先收藏，不投入 PVE 资源。',
       capture: '无',
-      keepableCount: keepable.length,
+      primaryStat: '无',
     }
   }
 
@@ -479,7 +479,7 @@ function pveOverviewSummary(candidates = []) {
       badge: '按需培养',
       verdict: '功能/站场向；有需求再培养。',
       capture: primaryName,
-      keepableCount: keepable.length,
+      primaryStat: STAT_LABELS[best.raise],
     }
   }
 
@@ -490,7 +490,7 @@ function pveOverviewSummary(candidates = []) {
         badge: '优先培养',
         verdict: `${natureName(best)}方向成立；主输出证据充分。`,
         capture: primaryName,
-        keepableCount: keepable.length,
+        primaryStat: STAT_LABELS[best.raise],
       }
     }
 
@@ -499,7 +499,7 @@ function pveOverviewSummary(candidates = []) {
       badge: '可培养但非优先',
       verdict: `${natureName(best)}方向成立；非主 C 默认不优先投入。`,
       capture: primaryName,
-      keepableCount: keepable.length,
+      primaryStat: STAT_LABELS[best.raise],
     }
   }
 
@@ -508,7 +508,7 @@ function pveOverviewSummary(candidates = []) {
     badge: '可留非优先',
     verdict: '可留；不建议优先投入。',
     capture: primaryName,
-    keepableCount: keepable.length,
+    primaryStat: STAT_LABELS[best.raise],
   }
 }
 
