@@ -2184,16 +2184,22 @@ img {
 }
 
 
-.nature-candidates-groups {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.nature-decision-groups {
+  display: grid;
+  gap: 8px;
 }
 
-.nature-candidate-group {
+.nature-decision-group {
+  display: grid;
+  gap: 6px;
+}
+
+.nature-decision-group-title {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
 }
 
 .nature-raise-groups {
@@ -2220,50 +2226,6 @@ img {
 }
 
 
-.nature-rejection-groups {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.nature-rejection-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 8px;
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
-  background: #f8fafc;
-}
-
-.nature-rejection-group-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.nature-rejection-group-desc {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.nature-candidates-list-compact {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.nature-candidate-group-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--text-muted);
-}
 
 .nature-candidate-role {
   min-width: 0;
