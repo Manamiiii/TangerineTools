@@ -1879,13 +1879,35 @@ img {
   font-weight: 700;
 }
 
-.nature-pve-note p,
-.nature-pve-note ul {
+.nature-pve-note p {
   margin: 0;
 }
 
-.nature-pve-note ul {
-  padding-left: 18px;
+.nature-pve-note-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.nature-pve-note-grid div {
+  display: grid;
+  gap: 3px;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.nature-pve-note-grid b {
+  font-size: 11px;
+}
+
+.nature-pve-note-grid span,
+.nature-pve-note-footnote {
+  font-size: 11px;
+}
+
+.nature-pve-note-footnote {
+  opacity: 0.88;
 }
 
 .nature-pve-note.good {

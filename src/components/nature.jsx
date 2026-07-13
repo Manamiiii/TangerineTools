@@ -134,19 +134,22 @@ export function NatureTool({ scene }) {
       </div>
 
       {hasAnyStat ? (
-        <div className="nature-workbench">
-          <NatureCandidateList
-            candidates={candidates}
-            activeIndex={activeIndex}
-            onSelect={setSelectedIndex}
-          />
-          <NatureResult
-            nature={nature}
-            baseStats={numericStats}
-            adjustedStats={adjustedStats}
-            reasoning={reasoning}
-          />
-        </div>
+        <>
+          <NaturePveOverview candidates={candidates} />
+          <div className="nature-workbench">
+            <NatureCandidateList
+              candidates={candidates}
+              activeIndex={activeIndex}
+              onSelect={setSelectedIndex}
+            />
+            <NatureResult
+              nature={nature}
+              baseStats={numericStats}
+              adjustedStats={adjustedStats}
+              reasoning={reasoning}
+            />
+          </div>
+        </>
       ) : (
         <EmptyState
           title="填写六维后查看推荐"
@@ -353,8 +356,6 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
 
       <p className="nature-result-reason">{reasoning}</p>
 
-      <NaturePveInvestmentNote nature={nature} />
-
       {highlights.length > 0 && (
         <div className="nature-highlight-card">
           <div className="nature-highlight-title">解析重点</div>
@@ -420,54 +421,80 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
   )
 }
 
-function NaturePveInvestmentNote({ nature }) {
-  const note = pveInvestmentNote(nature)
+function NaturePveOverview({ candidates }) {
+  const summary = pveOverviewSummary(candidates)
+
+  if (!summary) return null
 
   return (
-    <section className={`nature-pve-note ${note.level}`} aria-label="PVE 培养提示">
+    <section className={`nature-pve-note ${summary.level}`} aria-label="PVE 培养投入提示">
       <div className="nature-pve-note-header">
-        <strong>PVE 培养提示</strong>
-        <span>{note.badge}</span>
+        <strong>PVE 培养投入</strong>
+        <span>{summary.badge}</span>
       </div>
-      <p>{note.summary}</p>
-      <ul>
-        <li>当前“推荐 / 可保留 / 不推荐”优先回答捕捉时该性格是否值得保留。</li>
-        <li>PVP 会自动平衡精灵属性，不作为培养资源投入依据。</li>
-        <li>异色/炫彩是否投入 PVE 资源，应再比较主 C 强度、机制价值和队伍需求。</li>
-      </ul>
+      <p>{summary.summary}</p>
+      <div className="nature-pve-note-grid">
+        <div>
+          <b>捕捉保留</b>
+          <span>{summary.capture}</span>
+        </div>
+        <div>
+          <b>培养判断</b>
+          <span>{summary.investment}</span>
+        </div>
+      </div>
+      <p className="nature-pve-note-footnote">
+        PVP 属性会自动平衡，不作为资源投入依据；异色/炫彩是否培养，仍需结合精灵本身 PVE 强度、机制价值和队伍需求。
+      </p>
     </section>
   )
 }
 
-function pveInvestmentNote(nature) {
-  if (nature.decision === 'notRecommended') {
+function pveOverviewSummary(candidates = []) {
+  if (candidates.length === 0) return null
+  const recommended = candidates.filter((item) => item.decision === 'recommended')
+  const keepable = candidates.filter((item) => item.decision === 'keepable')
+  const best = recommended[0] || keepable[0] || candidates[0]
+  const names = recommended.slice(0, 3).map(natureName).join('、') || '暂无推荐性格'
+  const outputOrSpeed = recommended.some((item) => ['patk', 'matk', 'spd'].includes(item.raise))
+  const defensiveOnly = recommended.length > 0 && recommended.every((item) => ['hp', 'pdef', 'mdef'].includes(item.raise))
+
+  if (recommended.length === 0) {
     return {
       level: 'risk',
-      badge: '不建议投入',
-      summary: '当前性格已进入“不推荐”，即使是异色/炫彩，也更适合先收藏或等待更合适性格。',
+      badge: '先收藏',
+      summary: '当前没有进入“推荐”的性格，不建议把本次结果直接作为 PVE 培养投入依据。',
+      capture: `可保留 ${keepable.length} 个；其余优先放弃。`,
+      investment: '即使是异色/炫彩，也建议先收藏，等更合适性格或明确机制需求后再投入。',
     }
   }
 
-  if (nature.decision === 'keepable') {
+  if (defensiveOnly) {
     return {
       level: 'warn',
-      badge: '可留非优先',
-      summary: '当前性格可以作为捕捉备选保留，但通常不应仅凭这个性格直接优先投入 PVE 培养资源。',
+      badge: '功能/站场候选',
+      summary: '推荐性格集中在耐久强化，说明捕捉方向更偏站场或功能收益，不等于主 C 优先培养。',
+      capture: `推荐 ${names}；另有 ${keepable.length} 个可保留。`,
+      investment: '异色/炫彩可以先留，是否投入 PVE 资源应看该精灵是否提供稳定机制或队伍缺口。',
     }
   }
 
-  if (['patk', 'matk', 'spd'].includes(nature.raise)) {
+  if (outputOrSpeed) {
     return {
       level: 'good',
       badge: 'PVE 候选',
-      summary: '当前性格方向适合捕捉保留；若是异色/炫彩，可作为 PVE 培养候选，但仍需和高攻增伤主 C / 强机制精灵比较。',
+      summary: `当前首选为 ${natureName(best)}，捕捉性格方向成立；但这仍只是“可作为 PVE 候选”，不是自动主力培养结论。`,
+      capture: `推荐 ${names}；另有 ${keepable.length} 个可保留。`,
+      investment: '若精灵本身不是高攻增伤主 C 或强机制核心，异色/炫彩通常按“可培养但非优先”处理。',
     }
   }
 
   return {
     level: 'warn',
-    badge: '站场/功能向',
-    summary: '当前性格偏站场或功能收益，推荐保留不等于主 C 优先投入；异色/炫彩可先留，再按 PVE 需求决定是否培养。',
+    badge: '可留非优先',
+    summary: '当前有可用捕捉性格，但培养投入需要单独判断，不应和推荐理由混为一谈。',
+    capture: `推荐 ${names}；另有 ${keepable.length} 个可保留。`,
+    investment: '先看 PVE 定位与资源成本；仅凭性格合格不代表值得优先培养。',
   }
 }
 
