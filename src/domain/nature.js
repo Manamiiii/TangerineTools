@@ -883,6 +883,14 @@ export function evaluateNatureCandidate(
       ? '功能站场型双攻接近，弱化魔攻有代价但不应按单攻冲突处理'
       : '技能效果标签偏魔法输出，弱化魔攻存在冲突')
   }
+  if (
+    functionalBalancedMixedAttack &&
+    ATTACK_STAT_KEYS.includes(candidate.raise) &&
+    ATTACK_STAT_KEYS.includes(candidate.lower)
+  ) {
+    score = Math.max(score, 32)
+    reasons.push('功能站场型双攻接近，强化一攻并弱化另一攻可作为输出分支保留')
+  }
   if (skillProfile.sustain && DEFENSE_STAT_KEYS.includes(candidate.raise)) {
     score += 6
     reasons.push('技能效果包含回复/减伤，强化耐久项更容易放大站场收益')
