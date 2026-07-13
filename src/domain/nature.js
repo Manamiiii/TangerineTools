@@ -706,6 +706,15 @@ function isFunctionalBalancedMixedAttack(analysis = {}, roles = [], skillProfile
   return balancedSkillCounts && balancedStats && hasFunctionalRole
 }
 
+
+function hasFunctionalMixedOutputFloor(stats = {}, skillProfile = {}) {
+  const breakdown = skillProfile.breakdown || {}
+  const maxAttackStat = Math.max(Number(stats.patk) || 0, Number(stats.matk) || 0)
+  const attackCount = Number(breakdown.attackCount) || 0
+  const attackAveragePower = Number(breakdown.attackAveragePower) || 0
+  return maxAttackStat >= 85 && attackCount >= 8 && attackAveragePower >= 55
+}
+
 function formulaRouteSupportsSingleAttack(candidate, formulaAssist = {}) {
   if (!ATTACK_STAT_KEYS.includes(candidate.lower)) return false
   if (formulaAssist.routeHint === 'physical') return candidate.lower === 'matk'
@@ -885,6 +894,7 @@ export function evaluateNatureCandidate(
   }
   if (
     functionalBalancedMixedAttack &&
+    hasFunctionalMixedOutputFloor(stats, skillProfile) &&
     ATTACK_STAT_KEYS.includes(candidate.raise) &&
     ATTACK_STAT_KEYS.includes(candidate.lower)
   ) {
