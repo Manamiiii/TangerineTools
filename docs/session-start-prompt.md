@@ -33,7 +33,7 @@ TangerineTools 是本地优先的个人资料管理 Web App（Vite + React 19 + 
 - 性格推荐仍处于规则校准阶段；日常核对改为随捕捉进度从图鉴前部开始“一只精灵一轮”分析，先给出当下捕捉性格取舍，再判断是否需要沉淀为通用规则。
 - 外部资料核对只关注洛克王国世界对精灵定位、机制和实战评价的描述；旧网页游戏洛克王国资料不作为新游定位依据。
 - 全量本地审计台账保留为索引和专题回归工具；当多只精灵暴露同类问题时，再按低生命高单防、速度线、双攻路线等专题批次统一修规则。
-- 单只精灵核对请严格沿用 `docs/nature-single-creature-template.md`，并参考 `docs/nature-calibration-report.md` 的完整样式输出：六维分布、技能摘要/明细、综合定位、公式辅助指标、按强化维度列出全部 30 个候选的公共理由/个性理由/风险、最终捕捉建议和规则影响记录都要保留；不要只给摘要版。发现规则偏差先登记 `docs/nature-rule-iteration-log.md`，用户确认最终分档后再写入 `docs/nature-confirmed-results.md`，后续规则调整必须回归这些已确认结论。
+- 单只精灵核对请严格沿用 `docs/nature-single-creature-template.md`，并参考 `docs/nature-calibration-report.md` 的完整样式输出：六维分布、技能摘要/明细、综合定位、公式辅助指标、按强化维度列出全部 30 个候选的公共理由/个性理由/风险、PVE 培养投入判断、最终捕捉建议和规则影响记录都要保留；不要只给摘要版。推荐性格只表示捕捉保留方向正确，不自动等于值得投入 PVE 资源；若用户讨论异色/炫彩培养，需明确 PVP 属性自动平衡、不作为培养依据，并单独判断 PVE 投入优先级。发现规则偏差先登记 `docs/nature-rule-iteration-log.md`，用户确认最终分档后再写入 `docs/nature-confirmed-results.md`，后续规则调整必须回归这些已确认结论。
 - 预置资料仍以官方 `d.json` / 本地可信 `scripts/data/rockKingdom.d.json` 为准。
 
 ## 代码地图
