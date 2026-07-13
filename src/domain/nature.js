@@ -1067,7 +1067,12 @@ function applyDominance(evaluations) {
       if (item === best) continue
       if (item.lineupKeep) continue
       if (item.score > best.score - 20) continue
-      if (item.reasons.some((reason) => /专项|速度 .*提升到/.test(reason)) && !lowersCurrentShortDefense(item)) continue
+      const hardDominatedByOffRouteAttack = shouldHardDominateWithOffRouteAttack(item, best)
+      if (
+        item.reasons.some((reason) => /专项|速度 .*提升到/.test(reason)) &&
+        !lowersCurrentShortDefense(item) &&
+        !hardDominatedByOffRouteAttack
+      ) continue
       if (item.score >= 25 && item.reasons.some((reason) => /公式辅助输出线偏.*单攻分支/.test(reason))) continue
       const target = byKey.get(dominanceKey(item))
       if (!target) continue
