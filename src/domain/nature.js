@@ -791,6 +791,10 @@ export function evaluateNatureCandidate(
     if (speedProfile.concern.level === 'low' && stats.spd < STAT_PERCENTILE_BANDS.spd.p25) {
       score -= 10
       warnings.push('基础速度低于 P25 且主定位不抢速，加速收益默认低于主攻、生命或防御强化')
+      if (lowerCore > 0.8 || DEFENSE_STAT_KEYS.includes(candidate.lower)) {
+        score -= 12
+        warnings.push('低速非抢速定位不宜为了加速牺牲攻击、生命或防御核心项')
+      }
     }
     if (speedProfile.raisedTier !== speedProfile.baseTier || speedProfile.raisedCrossedAnchors.length > 0) {
       reasons.push(
@@ -1018,15 +1022,17 @@ function dominanceKey(item) {
 function canKeepDominatedCandidate(item, best) {
   if (item.decision !== 'keepable' || item.score < 45 || item.hardRisk) return false
   if (item.raise === 'spd' && item.speedProfile?.concern?.level === 'low') return false
-  const lowersCurrentShortDefense =
-    DEFENSE_STAT_KEYS.includes(item.lower) &&
-    item.lower !== 'hp' &&
-    item.warnings.some((warning) => /耐久短板/.test(warning))
-  if (lowersCurrentShortDefense) return false
+  if (lowersCurrentShortDefense(item)) return false
   const bestLowerIsSpeedForLowConcern =
     best.lower === 'spd' && best.speedProfile?.concern?.level === 'low'
   if (bestLowerIsSpeedForLowConcern && ATTACK_STAT_KEYS.includes(item.lower)) return false
   return true
+}
+
+function lowersCurrentShortDefense(item) {
+  return DEFENSE_STAT_KEYS.includes(item.lower) &&
+    item.lower !== 'hp' &&
+    item.warnings.some((warning) => /耐久短板/.test(warning))
 }
 
 function applyDominance(evaluations) {
@@ -1048,7 +1054,7 @@ function applyDominance(evaluations) {
       if (item === best) continue
       if (item.lineupKeep) continue
       if (item.score > best.score - 20) continue
-      if (item.reasons.some((reason) => /专项|速度 .*提升到/.test(reason))) continue
+      if (item.reasons.some((reason) => /专项|速度 .*提升到/.test(reason)) && !lowersCurrentShortDefense(item)) continue
       if (item.score >= 25 && item.reasons.some((reason) => /公式辅助输出线偏.*单攻分支/.test(reason))) continue
       const target = byKey.get(dominanceKey(item))
       if (!target) continue
