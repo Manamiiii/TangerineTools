@@ -443,7 +443,7 @@ function NaturePveOverview({ candidates }) {
       </div>
       <div className="nature-pve-verdict">{summary.verdict}</div>
       <div className="nature-pve-meta">
-        <span>推荐：{summary.capture}</span>
+        <span>主性格：{summary.capture}</span>
         <span>可留：{summary.keepableCount} 个</span>
       </div>
       <details className="nature-inline-disclosure nature-pve-note-footnote">
@@ -459,7 +459,7 @@ function pveOverviewSummary(candidates = []) {
   const recommended = candidates.filter((item) => item.decision === 'recommended')
   const keepable = candidates.filter((item) => item.decision === 'keepable')
   const best = recommended[0] || keepable[0] || candidates[0]
-  const names = recommended.slice(0, 3).map(natureName).join('、') || '暂无推荐性格'
+  const primaryName = recommended[0] ? natureName(recommended[0]) : '暂无推荐性格'
   const outputOrSpeed = recommended.some((item) => ['patk', 'matk', 'spd'].includes(item.raise))
   const defensiveOnly = recommended.length > 0 && recommended.every((item) => ['hp', 'pdef', 'mdef'].includes(item.raise))
 
@@ -478,7 +478,7 @@ function pveOverviewSummary(candidates = []) {
       level: 'warn',
       badge: '按需培养',
       verdict: '功能/站场向；有需求再培养。',
-      capture: names,
+      capture: primaryName,
       keepableCount: keepable.length,
     }
   }
@@ -489,7 +489,7 @@ function pveOverviewSummary(candidates = []) {
         level: 'priority',
         badge: '优先培养',
         verdict: `${natureName(best)}方向成立；主输出证据充分。`,
-        capture: names,
+        capture: primaryName,
         keepableCount: keepable.length,
       }
     }
@@ -498,7 +498,7 @@ function pveOverviewSummary(candidates = []) {
       level: 'good',
       badge: '可培养但非优先',
       verdict: `${natureName(best)}方向成立；非主 C 默认不优先投入。`,
-      capture: names,
+      capture: primaryName,
       keepableCount: keepable.length,
     }
   }
@@ -507,7 +507,7 @@ function pveOverviewSummary(candidates = []) {
     level: 'warn',
     badge: '可留非优先',
     verdict: '可留；不建议优先投入。',
-    capture: names,
+    capture: primaryName,
     keepableCount: keepable.length,
   }
 }
