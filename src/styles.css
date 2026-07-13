@@ -1844,6 +1844,78 @@ img {
   top: 12px;
 }
 
+
+.nature-pve-note {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-lg);
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.nature-pve-note-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.nature-pve-note-header strong {
+  color: #78350f;
+  font-size: 13px;
+}
+
+.nature-pve-note-header span {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 2px 8px;
+  background: #d97706;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.nature-pve-note p,
+.nature-pve-note ul {
+  margin: 0;
+}
+
+.nature-pve-note ul {
+  padding-left: 18px;
+}
+
+.nature-pve-note.good {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.nature-pve-note.good .nature-pve-note-header strong {
+  color: #14532d;
+}
+
+.nature-pve-note.good .nature-pve-note-header span {
+  background: var(--success);
+}
+
+.nature-pve-note.risk {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.nature-pve-note.risk .nature-pve-note-header strong {
+  color: #7f1d1d;
+}
+
+.nature-pve-note.risk .nature-pve-note-header span {
+  background: var(--danger);
+}
+
 .nature-highlight-card {
   display: grid;
   gap: 8px;

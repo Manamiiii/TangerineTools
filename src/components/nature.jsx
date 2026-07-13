@@ -353,6 +353,8 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
 
       <p className="nature-result-reason">{reasoning}</p>
 
+      <NaturePveInvestmentNote nature={nature} />
+
       {highlights.length > 0 && (
         <div className="nature-highlight-card">
           <div className="nature-highlight-title">解析重点</div>
@@ -416,6 +418,57 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
       <NatureStatsBars nature={nature} baseStats={baseStats} adjustedStats={adjustedStats} />
     </div>
   )
+}
+
+function NaturePveInvestmentNote({ nature }) {
+  const note = pveInvestmentNote(nature)
+
+  return (
+    <section className={`nature-pve-note ${note.level}`} aria-label="PVE 培养提示">
+      <div className="nature-pve-note-header">
+        <strong>PVE 培养提示</strong>
+        <span>{note.badge}</span>
+      </div>
+      <p>{note.summary}</p>
+      <ul>
+        <li>当前“推荐 / 可保留 / 不推荐”优先回答捕捉时该性格是否值得保留。</li>
+        <li>PVP 会自动平衡精灵属性，不作为培养资源投入依据。</li>
+        <li>异色/炫彩是否投入 PVE 资源，应再比较主 C 强度、机制价值和队伍需求。</li>
+      </ul>
+    </section>
+  )
+}
+
+function pveInvestmentNote(nature) {
+  if (nature.decision === 'notRecommended') {
+    return {
+      level: 'risk',
+      badge: '不建议投入',
+      summary: '当前性格已进入“不推荐”，即使是异色/炫彩，也更适合先收藏或等待更合适性格。',
+    }
+  }
+
+  if (nature.decision === 'keepable') {
+    return {
+      level: 'warn',
+      badge: '可留非优先',
+      summary: '当前性格可以作为捕捉备选保留，但通常不应仅凭这个性格直接优先投入 PVE 培养资源。',
+    }
+  }
+
+  if (['patk', 'matk', 'spd'].includes(nature.raise)) {
+    return {
+      level: 'good',
+      badge: 'PVE 候选',
+      summary: '当前性格方向适合捕捉保留；若是异色/炫彩，可作为 PVE 培养候选，但仍需和高攻增伤主 C / 强机制精灵比较。',
+    }
+  }
+
+  return {
+    level: 'warn',
+    badge: '站场/功能向',
+    summary: '当前性格偏站场或功能收益，推荐保留不等于主 C 优先投入；异色/炫彩可先留，再按 PVE 需求决定是否培养。',
+  }
 }
 
 function natureHighlights(nature) {
