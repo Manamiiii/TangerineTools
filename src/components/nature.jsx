@@ -441,20 +441,14 @@ function NaturePveOverview({ candidates }) {
         <strong>PVE 培养投入</strong>
         <span className="nature-pve-rating">{summary.badge}</span>
       </div>
-      <p>{summary.summary}</p>
-      <div className="nature-pve-note-grid">
-        <div>
-          <b>捕捉保留</b>
-          <span>{summary.capture}</span>
-        </div>
-        <div>
-          <b>培养判断</b>
-          <span>{summary.investment}</span>
-        </div>
+      <div className="nature-pve-verdict">{summary.verdict}</div>
+      <div className="nature-pve-meta">
+        <span>推荐：{summary.capture}</span>
+        <span>可留：{summary.keepableCount} 个</span>
       </div>
       <details className="nature-inline-disclosure nature-pve-note-footnote">
-        <summary>查看判断口径</summary>
-        <span>PVP 属性会自动平衡，不作为资源投入依据；异色/炫彩是否培养，仍需结合精灵本身 PVE 强度、机制价值和队伍需求。</span>
+        <summary>口径</summary>
+        <span>PVP 不计培养投入；异色/炫彩是否培养，看 PVE 强度、机制和队伍需求。</span>
       </details>
     </section>
   )
@@ -472,39 +466,39 @@ function pveOverviewSummary(candidates = []) {
   if (recommended.length === 0) {
     return {
       level: 'risk',
-      badge: '先收藏',
-      summary: '当前没有进入“推荐”的性格，不建议把本次结果直接作为 PVE 培养投入依据。',
-      capture: `可保留 ${keepable.length} 个；其余优先放弃。`,
-      investment: '即使是异色/炫彩，也建议先收藏，等更合适性格或明确机制需求后再投入。',
+      badge: '不建议培养',
+      verdict: '先收藏，不投入 PVE 资源。',
+      capture: '无',
+      keepableCount: keepable.length,
     }
   }
 
   if (defensiveOnly) {
     return {
       level: 'warn',
-      badge: '功能/站场候选',
-      summary: '推荐性格集中在耐久强化，说明捕捉方向更偏站场或功能收益，不等于主 C 优先培养。',
-      capture: `推荐 ${names}；另有 ${keepable.length} 个可保留。`,
-      investment: '异色/炫彩可以先留，是否投入 PVE 资源应看该精灵是否提供稳定机制或队伍缺口。',
+      badge: '按需培养',
+      verdict: '功能/站场向；有需求再培养。',
+      capture: names,
+      keepableCount: keepable.length,
     }
   }
 
   if (outputOrSpeed) {
     return {
       level: 'good',
-      badge: 'PVE 候选',
-      summary: `当前首选为 ${natureName(best)}，捕捉性格方向成立；但这仍只是“可作为 PVE 候选”，不是自动主力培养结论。`,
-      capture: `推荐 ${names}；另有 ${keepable.length} 个可保留。`,
-      investment: '若精灵本身不是高攻增伤主 C 或强机制核心，异色/炫彩通常按“可培养但非优先”处理。',
+      badge: '可培养但非优先',
+      verdict: `${natureName(best)}方向成立；非主 C 默认不优先投入。`,
+      capture: names,
+      keepableCount: keepable.length,
     }
   }
 
   return {
     level: 'warn',
     badge: '可留非优先',
-    summary: '当前有可用捕捉性格，但培养投入需要单独判断，不应和推荐理由混为一谈。',
-    capture: `推荐 ${names}；另有 ${keepable.length} 个可保留。`,
-    investment: '先看 PVE 定位与资源成本；仅凭性格合格不代表值得优先培养。',
+    verdict: '可留；不建议优先投入。',
+    capture: names,
+    keepableCount: keepable.length,
   }
 }
 
