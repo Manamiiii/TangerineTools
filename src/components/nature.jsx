@@ -135,7 +135,7 @@ export function NatureTool({ scene }) {
       </div>
 
       {hasAnyStat ? (
-        <>
+        <div className="nature-workbench">
           <NatureCandidateList
             candidates={candidates}
             activeIndex={activeIndex}
@@ -147,7 +147,7 @@ export function NatureTool({ scene }) {
             adjustedStats={adjustedStats}
             reasoning={reasoning}
           />
-        </>
+        </div>
       ) : (
         <EmptyState
           title="填写六维后查看推荐"
@@ -268,17 +268,12 @@ function NatureCandidateList({ candidates, activeIndex, onSelect }) {
                   onSelect={onSelect}
                 />
               ) : (
-                <ul className="nature-candidates-list">
-                  {items.map((c) => (
-                    <NatureCandidateListItem
-                      key={c.id || `${c.raise}-${c.lower}`}
-                      candidate={c}
-                      candidates={candidates}
-                      activeCandidate={activeCandidate}
-                      onSelect={onSelect}
-                    />
-                  ))}
-                </ul>
+                <CandidateRaiseGroups
+                  candidates={candidates}
+                  items={items}
+                  activeCandidate={activeCandidate}
+                  onSelect={onSelect}
+                />
               )}
             </section>
           )
@@ -286,6 +281,43 @@ function NatureCandidateList({ candidates, activeIndex, onSelect }) {
       </div>
     </div>
   )
+}
+
+function CandidateRaiseGroups({ candidates, items, activeCandidate, onSelect }) {
+  const groups = groupByRaise(items)
+  return (
+    <div className="nature-raise-groups">
+      {groups.map((group) => (
+        <section key={group.raise} className="nature-raise-group">
+          <div className="nature-raise-group-title">
+            <span>强化{STAT_LABELS[group.raise]}</span>
+            <span>{group.items.length} 个</span>
+          </div>
+          <ul className="nature-candidates-list">
+            {group.items.map((c) => (
+              <NatureCandidateListItem
+                key={c.id || `${c.raise}-${c.lower}`}
+                candidate={c}
+                candidates={candidates}
+                activeCandidate={activeCandidate}
+                onSelect={onSelect}
+              />
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  )
+}
+
+function groupByRaise(items = []) {
+  const order = ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
+  return order
+    .map((raise) => ({
+      raise,
+      items: items.filter((item) => item.raise === raise),
+    }))
+    .filter((group) => group.items.length > 0)
 }
 
 
@@ -342,6 +374,7 @@ function RejectedCandidateGroups({ candidates, activeCandidate, onSelect }) {
 function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
   if (!nature) return null
   const speedProfile = nature.speedProfile
+  const highlights = natureHighlights(nature)
 
   return (
     <div className="nature-result">
@@ -370,6 +403,20 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
       </div>
 
       <p className="nature-result-reason">{reasoning}</p>
+
+      {highlights.length > 0 && (
+        <div className="nature-highlight-card">
+          <div className="nature-highlight-title">解析重点</div>
+          <ul className="nature-highlight-list">
+            {highlights.map((item) => (
+              <li key={`${item.type}-${item.text}`} className={`nature-highlight-item ${item.type}`}>
+                <span>{item.label}</span>
+                <strong>{item.text}</strong>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <NatureStatDistribution stats={baseStats} />
 
@@ -420,6 +467,32 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
       <NatureStatsBars nature={nature} baseStats={baseStats} adjustedStats={adjustedStats} />
     </div>
   )
+}
+
+function natureHighlights(nature) {
+  const highlights = []
+  const push = (type, label, text) => {
+    if (!text || highlights.some((item) => item.text === text)) return
+    highlights.push({ type, label, text })
+  }
+  if (nature.dominatedBy) {
+    push('risk', '支配', `同类强化里 ${nature.dominatedBy} 代价更低`)
+  }
+  if (nature.decision === 'notRecommended') {
+    const mainWarning = nature.warnings.find((warning) => /支配|硬性|核心|短板|生命|速度|魔防|物防|冲突/.test(warning))
+    push('risk', '不推荐', mainWarning || nature.warnings[0])
+  } else if (nature.decision === 'recommended') {
+    const mainReason = nature.reasons.find((reason) => /低成本|核心|代价较低|公式辅助|技能|生命|速度/.test(reason))
+    push('good', '首选', mainReason || nature.reasons[0])
+  } else {
+    const mainReason = nature.reasons.find((reason) => /低成本|可保留|单攻|公式辅助|技能|生命|耐久/.test(reason))
+    push('good', '可留依据', mainReason || nature.reasons[0])
+    const mainWarning = nature.warnings.find((warning) => /风险|冲突|短板|核心|双攻|不应|削弱/.test(warning))
+    push('warn', '主要风险', mainWarning || nature.warnings[0])
+  }
+  const lowerWarning = nature.warnings.find((warning) => warning.includes(`弱化${STAT_LABELS[nature.lower]}`))
+  push('warn', '牺牲项', lowerWarning)
+  return highlights.slice(0, 3)
 }
 
 function natureModifierSummary(candidate) {

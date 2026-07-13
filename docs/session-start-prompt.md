@@ -1,6 +1,6 @@
 # TangerineTools · 后续 Session 启动提示
 
-这份文档用于新 session 快速接手当前分支，补充项目背景、代码地图和阶段性接手说明。长期有效的 Codex 开发边界、必读文件与测试命令已整理到仓库根目录 `AGENTS.md`。
+这份文档用于新 session 快速接手当前分支，补充项目背景、代码地图和阶段性接手说明。长期有效的 Codex 开发边界、必读文件与测试命令已整理到仓库根目录 `AGENTS.md`，因此未来启动新任务时通常只需要引用本文件并写清本轮目标，不需要重复粘贴完整背景。
 
 ## 项目现状
 
@@ -23,13 +23,17 @@ TangerineTools 是本地优先的个人资料管理 Web App（Vite + React 19 + 
 2. `docs/system-capabilities.md` —— 当前功能范围与明确不做的事。
 3. `docs/data-sync.md` —— Dexie schema、导出/导入合并语义、预置资料迁移。
 4. `docs/nature-recommendation-redesign.md` —— 性格推荐规则原型与下一轮调参背景。
-5. 当前 PR 描述、最近 commit、review comments。
+5. `docs/nature-single-creature-template.md` —— 单只精灵性格核对输出模板。
+6. `docs/nature-rule-iteration-log.md` —— 已发现的通用规则问题与处理状态。
+7. `docs/nature-confirmed-results.md` —— 用户确认过、规则调整后需要回归的单只结论。
+8. 当前 PR 描述、最近 commit、review comments。
 
 ## 当前阶段重点
 
 - 性格推荐仍处于规则校准阶段；日常核对改为随捕捉进度从图鉴前部开始“一只精灵一轮”分析，先给出当下捕捉性格取舍，再判断是否需要沉淀为通用规则。
 - 外部资料核对只关注洛克王国世界对精灵定位、机制和实战评价的描述；旧网页游戏洛克王国资料不作为新游定位依据。
 - 全量本地审计台账保留为索引和专题回归工具；当多只精灵暴露同类问题时，再按低生命高单防、速度线、双攻路线等专题批次统一修规则。
+- 单只精灵核对请沿用 `docs/nature-single-creature-template.md`；发现规则偏差先登记 `docs/nature-rule-iteration-log.md`，用户确认最终分档后再写入 `docs/nature-confirmed-results.md`，后续规则调整必须回归这些已确认结论。
 - 预置资料仍以官方 `d.json` / 本地可信 `scripts/data/rockKingdom.d.json` 为准。
 
 ## 代码地图
@@ -64,7 +68,9 @@ scripts/
   data/rockKingdom.d.json      # 可信 d.json 源文件
   sync-rock-kingdom-preset.mjs # 生成 rows / skillRows 的同步脚本
 docs/
-  README.md / system-capabilities.md / data-sync.md / nature-recommendation-redesign.md / session-start-prompt.md / rocom-position-audit-plan.md
+  README.md / system-capabilities.md / data-sync.md / nature-recommendation-redesign.md / session-start-prompt.md
+  nature-single-creature-template.md / nature-confirmed-results.md / nature-rule-iteration-log.md
+  rocom-position-audit-plan.md
 ```
 
 ## 关键约定 / 容易踩的坑

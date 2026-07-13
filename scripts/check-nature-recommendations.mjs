@@ -7,6 +7,7 @@ import {
   STAT_LABELS,
   evaluateAllNatures,
   analyzeSkillInfo,
+  analyzeFormulaAssist,
   analyzeStats,
   inferRoles,
   TRAIT_TAG_STAT_WEIGHTS,
@@ -258,6 +259,30 @@ function renderRoleBreakdown(roles = []) {
   return roles.map((role) => `- ${role.label}（权重 ${Math.round(role.weight * 10) / 10}）：${role.reasons.join('；')}`).join('\n')
 }
 
+function formulaRouteLabel(routeHint) {
+  return {
+    physical: '物理线更强',
+    magical: '魔法线更强',
+    mixed: '物理/魔法接近',
+    unknown: '缺少攻击技能线索',
+  }[routeHint] || routeHint
+}
+
+function renderFormulaAssist(values = {}, skillProfile = {}) {
+  const assist = analyzeFormulaAssist(values, skillProfile)
+  const ratio = assist.outputRatio == null ? '无' : assist.outputRatio
+  return [
+    '| 指标 | 数值 | 说明 |',
+    '|---|---:|---|',
+    `| 物理有效输出线 | ${assist.physicalOutput} | 近似为物攻 × 物理攻击技能平均威力，仅作路线校准，不代表实战伤害 |`,
+    `| 魔法有效输出线 | ${assist.magicalOutput} | 近似为魔攻 × 魔法攻击技能平均威力，仅作路线校准，不代表实战伤害 |`,
+    `| 物理/魔法输出比 | ${ratio} | ${formulaRouteLabel(assist.routeHint)} |`,
+    `| 物理有效耐久 | ${assist.physicalBulk} | 近似为生命 × 物防，用于识别物理承伤基础 |`,
+    `| 魔法有效耐久 | ${assist.magicalBulk} | 近似为生命 × 魔防，用于识别魔法承伤基础 |`,
+    `| 综合短板耐久 | ${assist.balancedBulk} | 近似为生命 × 较低防御，用于识别低血高单防或单侧短板 |`,
+  ].join('\n')
+}
+
 function renderSkillExamples(skillInfo) {
   const skills = skillInfo.skills || []
   if (!skills.length) return '- 无技能资料'
@@ -298,6 +323,7 @@ function renderSample({ sample, row, skillInfo, evaluations }) {
     `### 特性标签倾向\n\n${renderTraitTagDetails(traitTags)}\n\n` +
     `### 技能摘要明细\n\n${renderSkillExamples(skillInfo)}\n\n` +
     `### 综合定位拆解\n\n${renderRoleBreakdown(roles)}\n\n` +
+    `### 公式辅助指标（只作定位线校准）\n\n${renderFormulaAssist(row.values || {}, skillProfile)}\n\n` +
     `### 按增益维度对比（全部 30 个性格）\n\n${renderRaiseGroups(evaluations)}\n\n` +
     `### 关键牺牲项摘要（仅展示有额外信息的同减益对比）\n\n${renderLowerSummary(evaluations)}\n\n` +
     `### 最终分档摘要\n\n` +
@@ -340,7 +366,8 @@ async function main() {
   const now = new Date().toISOString()
   const report = `# 洛克王国性格推荐校准报告\n\n` +
     `生成时间：${now}\n\n` +
-    `本报告由 \`npm run check:nature\` 生成，用于人工校准性格推荐规则。它只读取官方 \`d.json\` 同步出的预置精灵与技能资料，不引入阵容、属性克制或战斗模拟。\n\n` +
+    `> 本报告由 \`npm run check:nature\` 生成，请不要手工编辑正文；需要调整样例或口径时优先修改脚本、样例数据或推荐规则后重新生成。\n\n` +
+    `本报告用于人工校准性格推荐规则。它只读取官方 \`d.json\` 同步出的预置精灵与技能资料，不引入阵容、属性克制或战斗模拟。\n\n` +
     `> 样例口径：本轮跳过迪莫。迪莫只有单只、不涉及捕捉保留，并且特性会随战斗叠加攻防速，基础面板性格校准容易把特殊机制误当成通用规则。\n\n` +
     `> 技能口径：技能摘要按官方预置可学技能池统计；血脉类/互斥技能若同一精灵只能选择一种，当前资料源没有可稳定识别的互斥分组字段，因此报告仅作为候选线索，不把全部技能视为可同时携带。后续若官方同步结果提供血脉标记，再按分组单独校准。\n\n` +
     `## 使用方式\n\n` +
