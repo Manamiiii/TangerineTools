@@ -606,6 +606,7 @@ export function inferRoles(baseStats = {}, traitTags = [], skillInfo = {}) {
 function buildContext(baseStats = {}, traitTags = [], skillInfo = {}) {
   const analysis = analyzeStats(baseStats)
   const skillProfile = analyzeSkillInfo(skillInfo)
+  const formulaAssist = analyzeFormulaAssist(baseStats, skillProfile)
   const roles = inferRoles(baseStats, traitTags, skillInfo)
   const speedProfile = analyzeSpeedProfile(baseStats, traitTags, roles, skillProfile)
   const traitWeights = sumTraitWeights(traitTags)
@@ -624,7 +625,7 @@ function buildContext(baseStats = {}, traitTags = [], skillInfo = {}) {
   if (Math.abs(analysis.attackBias) >= 18) expendableWeights[secondaryAttack] += 1.5
   if (analysis.percentiles[secondaryAttack].score <= 1) expendableWeights[secondaryAttack] += 0.9
   for (const key of analysis.bottomStats) expendableWeights[key] += key === 'hp' ? 0.1 : 0.4
-  return { analysis, roles, speedProfile, skillProfile, traitWeights, coreWeights, expendableWeights }
+  return { analysis, roles, speedProfile, skillProfile, formulaAssist, traitWeights, coreWeights, expendableWeights }
 }
 
 function statDelta(baseStats, nature) {
@@ -694,25 +695,41 @@ function isSingleDefenseRaiseSoftCapped(candidate, roles = [], traitTags = [], a
 }
 
 
-function isSkillProvedSingleAttackRoute(candidate, roles = [], skillProfile = {}) {
+function formulaRouteSupportsSingleAttack(candidate, formulaAssist = {}) {
+  if (!ATTACK_STAT_KEYS.includes(candidate.lower)) return false
+  if (formulaAssist.routeHint === 'physical') return candidate.lower === 'matk'
+  if (formulaAssist.routeHint === 'magical') return candidate.lower === 'patk'
+  return false
+}
+
+function formulaRouteConflictsWithCandidate(candidate, formulaAssist = {}) {
+  if (formulaAssist.routeHint === 'physical') return candidate.lower === 'patk'
+  if (formulaAssist.routeHint === 'magical') return candidate.lower === 'matk'
+  return false
+}
+
+function isSkillProvedSingleAttackRoute(candidate, roles = [], skillProfile = {}, formulaAssist = {}) {
   if (!ATTACK_STAT_KEYS.includes(candidate.lower)) return false
   if (!roles.some((role) => role.key === 'mixedAttacker')) return false
   const breakdown = skillProfile.breakdown || {}
   const routeGap = Math.abs(Number(skillProfile.routeGap) || 0)
+  const formulaSupportsRoute = formulaRouteSupportsSingleAttack(candidate, formulaAssist)
   if (skillProfile.attackMode === 'physical' && candidate.lower === 'matk') {
-    return routeGap >= 4 && (breakdown.physicalShare >= 0.65 || breakdown.magicalCount <= 3)
+    return routeGap >= 4 && (formulaSupportsRoute || breakdown.physicalShare >= 0.65 || breakdown.magicalCount <= 3)
   }
   if (skillProfile.attackMode === 'magical' && candidate.lower === 'patk') {
-    return routeGap >= 4 && (breakdown.magicalShare >= 0.65 || breakdown.physicalCount <= 3)
+    return routeGap >= 4 && (formulaSupportsRoute || breakdown.magicalShare >= 0.65 || breakdown.physicalCount <= 3)
   }
   return false
 }
 
-function isSkillPlausibleSingleAttackRoute(candidate, roles = [], skillProfile = {}) {
+function isSkillPlausibleSingleAttackRoute(candidate, roles = [], skillProfile = {}, formulaAssist = {}) {
   if (!ATTACK_STAT_KEYS.includes(candidate.lower)) return false
   if (!roles.some((role) => role.key === 'mixedAttacker')) return false
-  if (isSkillProvedSingleAttackRoute(candidate, roles, skillProfile)) return true
+  if (isSkillProvedSingleAttackRoute(candidate, roles, skillProfile, formulaAssist)) return true
+  if (formulaRouteConflictsWithCandidate(candidate, formulaAssist)) return false
   const routeGap = Math.abs(Number(skillProfile.routeGap) || 0)
+  if (formulaRouteSupportsSingleAttack(candidate, formulaAssist)) return true
   if (routeGap < 2) return false
   if (skillProfile.attackMode === 'physical' && candidate.lower === 'matk') return true
   if (skillProfile.attackMode === 'magical' && candidate.lower === 'patk') return true
@@ -744,7 +761,7 @@ export function evaluateNatureCandidate(
 ) {
   const stats = numericStats(baseStats)
   const context = providedContext || buildContext(stats, traitTags, skillInfo)
-  const { analysis, roles, speedProfile, skillProfile, traitWeights, coreWeights, expendableWeights } = context
+  const { analysis, roles, speedProfile, skillProfile, formulaAssist, traitWeights, coreWeights, expendableWeights } = context
   const reasons = []
   const warnings = []
   const roleLabels = roles.slice(0, 2).map((r) => r.label)
@@ -771,6 +788,10 @@ export function evaluateNatureCandidate(
   if (candidate.raise === 'spd') {
     const speedBonus = { high: 10, medium: 4, low: -28 }[speedProfile.concern.level]
     score += speedBonus
+    if (speedProfile.concern.level === 'low' && stats.spd < STAT_PERCENTILE_BANDS.spd.p25) {
+      score -= 10
+      warnings.push('基础速度低于 P25 且主定位不抢速，加速收益默认低于主攻、生命或防御强化')
+    }
     if (speedProfile.raisedTier !== speedProfile.baseTier || speedProfile.raisedCrossedAnchors.length > 0) {
       reasons.push(
         `基础速度 ${speedProfile.base} 属于${speedProfile.baseTier}；加速近似到 ${speedProfile.raised}，可能跨过 ${speedProfile.raisedCrossedAnchors.join(' / ') || '无'} 锚点。${speedProfile.concern.reason}`,
@@ -789,7 +810,7 @@ export function evaluateNatureCandidate(
     }
   }
   if (candidate.lower === 'spd' && roles.slice(0, 2).some((r) => r.key === 'bulky') && speedProfile.concern.level === 'low') {
-    score += 12
+    score += 16
     reasons.push('当前主定位偏耐久站场且速度未进入竞争圈，减速可作为捕捉时的低成本牺牲项')
   }
   if (candidate.lower === 'hp' && !traitTags.includes('support') && !traitTags.includes('pivot')) {
@@ -808,6 +829,22 @@ export function evaluateNatureCandidate(
     score += 8
     reasons.push('强化魔防可把已有魔法耐久优势做成专项防御手')
   }
+  if (formulaAssist?.routeHint === 'physical' && candidate.raise === 'patk') {
+    score += 6
+    reasons.push('公式辅助输出线偏物理，强化物攻更贴近当前技能威力结构')
+  }
+  if (formulaAssist?.routeHint === 'magical' && candidate.raise === 'matk') {
+    score += 6
+    reasons.push('公式辅助输出线偏魔法，强化魔攻更贴近当前技能威力结构')
+  }
+  if (formulaRouteSupportsSingleAttack(candidate, formulaAssist)) {
+    score += 9
+    reasons.push(`公式辅助输出线偏${formulaAssist.routeHint === 'physical' ? '物理' : '魔法'}，弱化${lowerLabel}可作为单攻分支线索`)
+  }
+  if (formulaRouteConflictsWithCandidate(candidate, formulaAssist)) {
+    score -= 18
+    warnings.push(`公式辅助输出线偏${formulaAssist.routeHint === 'physical' ? '物理' : '魔法'}，弱化${lowerLabel}会削弱更高质量的输出侧`)
+  }
   if (skillProfile.attackMode === 'physical' && candidate.raise === 'patk') {
     score += 10
     reasons.push('技能效果标签偏物理输出，强化物攻更贴合技能组')
@@ -817,11 +854,13 @@ export function evaluateNatureCandidate(
     reasons.push('技能效果标签偏魔法输出，强化魔攻更贴合技能组')
   }
   if (skillProfile.attackMode === 'physical' && candidate.lower === 'patk') {
-    score -= 18
+    const penalty = formulaAssist?.routeHint === 'magical' ? 4 : 18
+    score -= penalty
     warnings.push('技能效果标签偏物理输出，弱化物攻存在冲突')
   }
   if (skillProfile.attackMode === 'magical' && candidate.lower === 'matk') {
-    score -= 18
+    const penalty = formulaAssist?.routeHint === 'physical' ? 4 : 18
+    score -= penalty
     warnings.push('技能效果标签偏魔法输出，弱化魔攻存在冲突')
   }
   if (skillProfile.sustain && DEFENSE_STAT_KEYS.includes(candidate.raise)) {
@@ -833,8 +872,11 @@ export function evaluateNatureCandidate(
     reasons.push('技能效果涉及能量循环，速度或生命强化有助于维持节奏')
   }
   if (skillProfile.control && candidate.raise === 'spd') {
-    score += 5
-    reasons.push('技能效果包含异常/控制，强化速度有助于先手施压')
+    const controlSpeedBonus = speedProfile.concern.level === 'low' ? 1 : 5
+    score += controlSpeedBonus
+    reasons.push(speedProfile.concern.level === 'low'
+      ? '技能效果包含异常/控制，但基础速度未进入竞争圈，速度强化仅作为低权重节奏收益'
+      : '技能效果包含异常/控制，强化速度有助于先手施压')
   }
   if (traitTags.includes('conditionalSpeedBoost') && candidate.raise === 'spd') {
     score += 6
@@ -868,8 +910,11 @@ export function evaluateNatureCandidate(
     warnings.push('强化传递玩法有时需要慢速交接，强化速度是否有利需结合出手顺序确认')
   }
   if (skillProfile.speedRequired && candidate.raise === 'spd') {
-    score += 10
-    reasons.push('技能线索依赖先手/优先节奏，强化速度更有价值')
+    const speedRequiredBonus = { high: 10, medium: 6, low: 2 }[speedProfile.concern.level]
+    score += speedRequiredBonus
+    reasons.push(speedProfile.concern.level === 'low'
+      ? '技能线索有先手/优先节奏，但基础速度偏低，强化速度只作低权重保留依据'
+      : '技能线索依赖先手/优先节奏，强化速度更有价值')
   }
   if (skillProfile.speedRequired && candidate.lower === 'spd' && speedProfile.concern.level !== 'low') {
     score -= 12
@@ -881,8 +926,17 @@ export function evaluateNatureCandidate(
   if (lowerExpendable > 1) reasons.push(`弱化${lowerLabel}的代价较低，适合作为当前路线的牺牲项`)
   if (lowerCore > 1) warnings.push(roleAwareStatWarning(roles, candidate.lower, lowerLabel))
   if (lowerTrait > raiseTrait && lowerTrait > 0) warnings.push(`特性标签更需要${lowerLabel}，弱化存在冲突`)
-  const skillProvedSingleAttackRoute = isSkillProvedSingleAttackRoute(candidate, roles, skillProfile)
-  const skillPlausibleSingleAttackRoute = isSkillPlausibleSingleAttackRoute(candidate, roles, skillProfile)
+  const lowersShortDefense =
+    DEFENSE_STAT_KEYS.includes(candidate.lower) &&
+    candidate.lower !== 'hp' &&
+    analysis.bottomStats.includes(candidate.lower) &&
+    roles.some((role) => ['bulky', 'support', 'physicalWall', 'magicalWall'].includes(role.key))
+  if (lowersShortDefense) {
+    score -= 14
+    warnings.push(`弱化${lowerLabel}会扩大当前耐久短板，站场型精灵应优先选择降速度或降非主攻`)
+  }
+  const skillProvedSingleAttackRoute = isSkillProvedSingleAttackRoute(candidate, roles, skillProfile, formulaAssist)
+  const skillPlausibleSingleAttackRoute = isSkillPlausibleSingleAttackRoute(candidate, roles, skillProfile, formulaAssist)
   if (skillProvedSingleAttackRoute) {
     score += 14
     reasons.push(`技能组明显偏${skillProfile.attackMode === 'physical' ? '物理' : '魔法'}路线，弱化${lowerLabel}可作为单攻分支，但仍需保留双攻面板的玩法可能`)
@@ -961,6 +1015,20 @@ function dominanceKey(item) {
   return `${item.raise}-${item.lower}`
 }
 
+function canKeepDominatedCandidate(item, best) {
+  if (item.decision !== 'keepable' || item.score < 45 || item.hardRisk) return false
+  if (item.raise === 'spd' && item.speedProfile?.concern?.level === 'low') return false
+  const lowersCurrentShortDefense =
+    DEFENSE_STAT_KEYS.includes(item.lower) &&
+    item.lower !== 'hp' &&
+    item.warnings.some((warning) => /耐久短板/.test(warning))
+  if (lowersCurrentShortDefense) return false
+  const bestLowerIsSpeedForLowConcern =
+    best.lower === 'spd' && best.speedProfile?.concern?.level === 'low'
+  if (bestLowerIsSpeedForLowConcern && ATTACK_STAT_KEYS.includes(item.lower)) return false
+  return true
+}
+
 function applyDominance(evaluations) {
   const grouped = Map.groupBy ? Map.groupBy(evaluations, (item) => item.raise) : null
   const groups = grouped || evaluations.reduce((map, item) => {
@@ -981,9 +1049,10 @@ function applyDominance(evaluations) {
       if (item.lineupKeep) continue
       if (item.score > best.score - 20) continue
       if (item.reasons.some((reason) => /专项|速度 .*提升到/.test(reason))) continue
+      if (item.score >= 25 && item.reasons.some((reason) => /公式辅助输出线偏.*单攻分支/.test(reason))) continue
       const target = byKey.get(dominanceKey(item))
       if (!target) continue
-      if (target.decision === 'keepable' && target.score >= 45 && !target.hardRisk) {
+      if (canKeepDominatedCandidate(target, best)) {
         target.warnings = [
           ...target.warnings,
           `同样强化${STAT_LABELS[raise]}时，${natureName(best)}代价更低；但当前组合仍有保留依据，捕捉时可作为低优先级可保留`,
