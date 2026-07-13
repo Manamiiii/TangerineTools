@@ -1921,6 +1921,21 @@ img {
   background: var(--success);
 }
 
+.nature-pve-note.priority {
+  border-color: #86efac;
+  background: linear-gradient(135deg, #ecfdf5 0%, #dcfce7 100%);
+  color: #14532d;
+}
+
+.nature-pve-note.priority .nature-pve-note-header strong {
+  color: #14532d;
+}
+
+.nature-pve-note.priority .nature-pve-rating {
+  background: #15803d;
+  box-shadow: 0 8px 18px rgba(21, 128, 61, 0.22);
+}
+
 .nature-pve-note.risk {
   border-color: #fecaca;
   background: #fef2f2;

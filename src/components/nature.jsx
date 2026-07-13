@@ -484,6 +484,16 @@ function pveOverviewSummary(candidates = []) {
   }
 
   if (outputOrSpeed) {
+    if (isPriorityPveCandidate(best)) {
+      return {
+        level: 'priority',
+        badge: '优先培养',
+        verdict: `${natureName(best)}方向成立；主输出证据充分。`,
+        capture: names,
+        keepableCount: keepable.length,
+      }
+    }
+
     return {
       level: 'good',
       badge: '可培养但非优先',
@@ -500,6 +510,31 @@ function pveOverviewSummary(candidates = []) {
     capture: names,
     keepableCount: keepable.length,
   }
+}
+
+
+function isPriorityPveCandidate(candidate) {
+  const mode = candidate.skillProfile?.attackMode
+  const breakdown = candidate.skillProfile?.breakdown || {}
+  const raisesMainAttack =
+    (mode === 'physical' && candidate.raise === 'patk') ||
+    (mode === 'magical' && candidate.raise === 'matk')
+  const raisesHighValueSpeed = candidate.raise === 'spd' && candidate.speedProfile?.concern?.level !== 'low'
+  const hasOutputRole = candidate.roleTags?.some((role) => ['physicalAttacker', 'magicalAttacker', 'fastAttacker'].includes(role))
+  const hasStrongSkillEvidence =
+    Number(breakdown.attackAveragePower) >= 85 ||
+    Number(breakdown.attackCount) >= 4 ||
+    Number(breakdown.physicalShare) >= 0.75 ||
+    Number(breakdown.magicalShare) >= 0.75
+
+  return (
+    candidate.score >= 82 &&
+    !candidate.hardRisk &&
+    candidate.warnings.length === 0 &&
+    hasOutputRole &&
+    hasStrongSkillEvidence &&
+    (raisesMainAttack || raisesHighValueSpeed)
+  )
 }
 
 function natureHighlights(nature) {
