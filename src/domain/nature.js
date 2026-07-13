@@ -695,6 +695,17 @@ function isSingleDefenseRaiseSoftCapped(candidate, roles = [], traitTags = [], a
 }
 
 
+
+function isFunctionalBalancedMixedAttack(analysis = {}, roles = [], skillProfile = {}) {
+  const breakdown = skillProfile.breakdown || {}
+  const physicalShare = Number(breakdown.physicalShare)
+  const magicalShare = Number(breakdown.magicalShare)
+  const balancedSkillCounts = physicalShare >= 0.4 && physicalShare <= 0.6 && magicalShare >= 0.4 && magicalShare <= 0.6
+  const balancedStats = Math.abs(Number(analysis.attackBias) || 0) <= 12
+  const hasFunctionalRole = roles.some((role) => ['bulky', 'support', 'energyCycle', 'physicalWall', 'magicalWall'].includes(role.key))
+  return balancedSkillCounts && balancedStats && hasFunctionalRole
+}
+
 function formulaRouteSupportsSingleAttack(candidate, formulaAssist = {}) {
   if (!ATTACK_STAT_KEYS.includes(candidate.lower)) return false
   if (formulaAssist.routeHint === 'physical') return candidate.lower === 'matk'
@@ -857,15 +868,20 @@ export function evaluateNatureCandidate(
     score += 10
     reasons.push('技能效果标签偏魔法输出，强化魔攻更贴合技能组')
   }
+  const functionalBalancedMixedAttack = isFunctionalBalancedMixedAttack(analysis, roles, skillProfile)
   if (skillProfile.attackMode === 'physical' && candidate.lower === 'patk') {
-    const penalty = formulaAssist?.routeHint === 'magical' ? 4 : 18
+    const penalty = functionalBalancedMixedAttack ? 0 : (formulaAssist?.routeHint === 'magical' ? 4 : 18)
     score -= penalty
-    warnings.push('技能效果标签偏物理输出，弱化物攻存在冲突')
+    warnings.push(functionalBalancedMixedAttack
+      ? '功能站场型双攻接近，弱化物攻有代价但不应按单攻冲突处理'
+      : '技能效果标签偏物理输出，弱化物攻存在冲突')
   }
   if (skillProfile.attackMode === 'magical' && candidate.lower === 'matk') {
-    const penalty = formulaAssist?.routeHint === 'physical' ? 4 : 18
+    const penalty = functionalBalancedMixedAttack ? 0 : (formulaAssist?.routeHint === 'physical' ? 4 : 18)
     score -= penalty
-    warnings.push('技能效果标签偏魔法输出，弱化魔攻存在冲突')
+    warnings.push(functionalBalancedMixedAttack
+      ? '功能站场型双攻接近，弱化魔攻有代价但不应按单攻冲突处理'
+      : '技能效果标签偏魔法输出，弱化魔攻存在冲突')
   }
   if (skillProfile.sustain && DEFENSE_STAT_KEYS.includes(candidate.raise)) {
     score += 6
