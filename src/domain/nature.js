@@ -735,7 +735,7 @@ function hasFunctionalMixedOutputFloor(stats = {}, skillProfile = {}) {
   const maxAttackStat = Math.max(Number(stats.patk) || 0, Number(stats.matk) || 0)
   const attackCount = Number(breakdown.attackCount) || 0
   const attackAveragePower = Number(breakdown.attackAveragePower) || 0
-  return maxAttackStat >= 85 && attackCount >= 8 && attackAveragePower >= 55
+  return maxAttackStat >= 80 && attackCount >= 8 && attackAveragePower >= 55
 }
 
 function isLowOutputFunctionalMixedAttack(analysis = {}, roles = [], skillProfile = {}) {
@@ -1082,6 +1082,16 @@ export function evaluateNatureCandidate(
   if (singleDefenseSoftCap && decision === 'recommended') {
     decision = 'keepable'
     warnings.push('单防强化需要生命/双防综合基础或明确护盾减伤机制支撑；当前证据不足，默认降为可保留')
+  }
+  const midSpeedFunctionalTempo =
+    candidate.raise === 'spd' &&
+    decision === 'recommended' &&
+    stats.spd < STAT_PERCENTILE_BANDS.spd.p50 &&
+    roles.some((role) => ['bulky', 'support', 'energyCycle'].includes(role.key)) &&
+    !roles.slice(0, 2).some((role) => role.key === 'fastAttacker')
+  if (midSpeedFunctionalTempo) {
+    decision = 'keepable'
+    warnings.push('中速以下的功能/站场定位可保留速度节奏分支，但不应与主攻或耐久强化同级首推')
   }
   if (lowersShortDefense && decision === 'keepable') {
     decision = 'notRecommended'
