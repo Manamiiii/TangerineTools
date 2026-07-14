@@ -367,6 +367,7 @@ export function analyzeSkillInfo(skillInfo = {}) {
       magicalCount: magicalItems.length,
       statusCount: statusItems.length,
       attackCount: attackItems.length,
+      attackShare: texts.length ? attackItems.length / texts.length : 0,
       physicalAveragePower,
       magicalAveragePower,
       attackAveragePower: averagePower(attackItems),
@@ -715,6 +716,17 @@ function hasFunctionalMixedOutputFloor(stats = {}, skillProfile = {}) {
   return maxAttackStat >= 85 && attackCount >= 8 && attackAveragePower >= 55
 }
 
+function isLowOutputFunctionalMixedAttack(analysis = {}, roles = [], skillProfile = {}) {
+  const breakdown = skillProfile.breakdown || {}
+  const attackShare = Number(breakdown.attackShare) || 0
+  return (
+    isFunctionalBalancedMixedAttack(analysis, roles, skillProfile) &&
+    !hasFunctionalMixedOutputFloor(analysis.stats || {}, skillProfile) &&
+    attackShare > 0 &&
+    attackShare < 0.45
+  )
+}
+
 function formulaRouteSupportsSingleAttack(candidate, formulaAssist = {}) {
   if (!ATTACK_STAT_KEYS.includes(candidate.lower)) return false
   if (formulaAssist.routeHint === 'physical') return candidate.lower === 'matk'
@@ -878,6 +890,7 @@ export function evaluateNatureCandidate(
     reasons.push('技能效果标签偏魔法输出，强化魔攻更贴合技能组')
   }
   const functionalBalancedMixedAttack = isFunctionalBalancedMixedAttack(analysis, roles, skillProfile)
+  const lowOutputFunctionalMixedAttack = isLowOutputFunctionalMixedAttack(analysis, roles, skillProfile)
   if (skillProfile.attackMode === 'physical' && candidate.lower === 'patk') {
     const penalty = functionalBalancedMixedAttack ? 0 : (formulaAssist?.routeHint === 'magical' ? 4 : 18)
     score -= penalty
@@ -900,6 +913,28 @@ export function evaluateNatureCandidate(
   ) {
     score = Math.max(score, 32)
     reasons.push('功能站场型双攻接近，强化一攻并弱化另一攻可作为输出分支保留')
+  }
+  if (lowOutputFunctionalMixedAttack && ATTACK_STAT_KEYS.includes(candidate.raise)) {
+    score -= 14
+    warnings.push('攻击技能占整体技能池比例偏低且双攻面板未过输出底线，强化攻击仅作为低优先玩法分支')
+  }
+  if (
+    lowOutputFunctionalMixedAttack &&
+    ATTACK_STAT_KEYS.includes(candidate.raise) &&
+    ATTACK_STAT_KEYS.includes(candidate.lower)
+  ) {
+    score = Math.max(score, 30)
+    reasons.push('低输出功能位仍有双攻技能分支，强化一攻并弱化另一攻可低优先保留')
+  }
+  const lowOutputQuickTriggerBranch =
+    lowOutputFunctionalMixedAttack &&
+    ATTACK_STAT_KEYS.includes(candidate.raise) &&
+    candidate.lower === 'hp' &&
+    traitTags.includes('shieldReduce')
+  if (lowOutputQuickTriggerBranch) {
+    score = Math.max(score, 28)
+    reasons.push('存在护盾/免死类机制时，降生命可作为快速触发机制的特殊玩法分支')
+    warnings.push('该分支不代表 PVE 常规培养价值，需用户明确选择快速触发/快速退场玩法')
   }
   if (skillProfile.sustain && DEFENSE_STAT_KEYS.includes(candidate.raise)) {
     score += 6
@@ -973,6 +1008,15 @@ export function evaluateNatureCandidate(
     score -= 14
     warnings.push(`弱化${lowerLabel}会扩大当前耐久短板，站场型精灵应优先选择降速度或降非主攻`)
   }
+  if (
+    lowOutputFunctionalMixedAttack &&
+    DEFENSE_STAT_KEYS.includes(candidate.lower) &&
+    candidate.lower !== 'hp' &&
+    !ATTACK_STAT_KEYS.includes(candidate.raise)
+  ) {
+    score -= 16
+    warnings.push('低输出功能位不宜为了泛用强化牺牲双防；优先选择降攻击或明确特殊分支')
+  }
   const skillProvedSingleAttackRoute = isSkillProvedSingleAttackRoute(candidate, roles, skillProfile, formulaAssist)
   const skillPlausibleSingleAttackRoute = isSkillPlausibleSingleAttackRoute(candidate, roles, skillProfile, formulaAssist)
   if (skillProvedSingleAttackRoute) {
@@ -1012,6 +1056,19 @@ export function evaluateNatureCandidate(
   if (lowersShortDefense && decision === 'keepable') {
     decision = 'notRecommended'
     warnings.push('弱化当前耐久短板不作为可保留输出分支，除非存在明确低耐久收益')
+  }
+  if (
+    lowOutputFunctionalMixedAttack &&
+    DEFENSE_STAT_KEYS.includes(candidate.lower) &&
+    candidate.lower !== 'hp' &&
+    !ATTACK_STAT_KEYS.includes(candidate.raise) &&
+    decision === 'keepable'
+  ) {
+    decision = 'notRecommended'
+    warnings.push('低输出功能位的泛用可保留不应以牺牲双防为代价')
+  }
+  if (lowOutputQuickTriggerBranch && decision === 'notRecommended') {
+    decision = 'keepable'
   }
   if (
     decision === 'recommended' &&
@@ -1074,6 +1131,7 @@ function canKeepDominatedCandidate(item, best) {
   if (shouldHardDominateWithOffRouteAttack(item, best)) return false
   if (item.raise === 'spd' && item.speedProfile?.concern?.level === 'low') return false
   if (lowersCurrentShortDefense(item)) return false
+  if (item.warnings.some((warning) => /低输出功能位不宜为了泛用强化牺牲双防/.test(warning))) return false
   const bestLowerIsSpeedForLowConcern =
     best.lower === 'spd' && best.speedProfile?.concern?.level === 'low'
   if (bestLowerIsSpeedForLowConcern && ATTACK_STAT_KEYS.includes(item.lower)) return false
