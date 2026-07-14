@@ -538,6 +538,7 @@ function NaturePveOverview({ candidates }) {
         {summary.role && <span>定位：{summary.role}</span>}
         <span>主属性：{summary.primaryStat}</span>
         <span>主性格：{summary.capture}</span>
+        {summary.alternatives && <span>备选：{summary.alternatives}</span>}
       </div>
       <details className="nature-inline-disclosure nature-pve-note-footnote">
         <summary>详细依据 / 口径</summary>
@@ -562,8 +563,10 @@ function pveOverviewSummary(candidates = []) {
   const pvePool = [...recommended, ...keepable]
   const profile = pveSpeciesProfile(candidates)
   const best = bestPveCandidate(pvePool, profile) || recommended[0] || keepable[0] || candidates[0]
-  const primaryName = best ? natureName(best) : '暂无推荐性格'
-  const primaryStat = STAT_LABELS[best?.raise] || '无'
+  const pairCandidates = pvePairedCandidates(pvePool, profile, best)
+  const primaryName = pveNatureSummary(best, pairCandidates) || '暂无推荐性格'
+  const primaryStat = pvePrimaryStatSummary(best, pairCandidates)
+  const alternatives = pveAlternativeSummary(best, pairCandidates)
   const hasViableNature = pvePool.some((item) => item && !item.hardRisk)
   const detail = profile.basis.length ? `依据：${profile.basis.join('；')}。` : ''
   const tier = PVE_TIER_SCALE.find((item) => item.key === profile.tier) || PVE_TIER_SCALE.at(-1)
@@ -580,6 +583,7 @@ function pveOverviewSummary(candidates = []) {
       capture: '无',
       primaryStat: '无',
       role: profile.label,
+      alternatives: '',
       tags: profile.tags,
       detail,
       tierKey: profile.score >= 5 ? 'skip' : tier.key,
@@ -596,6 +600,7 @@ function pveOverviewSummary(candidates = []) {
       capture: primaryName,
       primaryStat,
       role: profile.label,
+      alternatives,
       tags: profile.tags,
       detail,
       tierKey: tier.key,
@@ -612,6 +617,7 @@ function pveOverviewSummary(candidates = []) {
       capture: primaryName,
       primaryStat,
       role: profile.label,
+      alternatives,
       tags: profile.tags,
       detail,
       tierKey: tier.key,
@@ -628,6 +634,7 @@ function pveOverviewSummary(candidates = []) {
       capture: primaryName,
       primaryStat,
       role: profile.label,
+      alternatives,
       tags: profile.tags,
       detail,
       tierKey: tier.key,
@@ -643,12 +650,43 @@ function pveOverviewSummary(candidates = []) {
     capture: primaryName,
     primaryStat,
     role: profile.label,
+    alternatives,
     tags: profile.tags,
     detail,
     tierKey: tier.key,
     tierIndex,
     tierTotal,
   }
+}
+
+function pvePairedCandidates(candidates = [], profile = null, best = null) {
+  if (profile?.mechanism !== 'carry') return []
+  const stats = profile?.pairedStats || []
+  return stats
+    .map((stat) => bestPveCandidate(candidates.filter((candidate) => candidate.raise === stat), profile))
+    .filter((candidate) => candidate && candidate !== best)
+    .filter((candidate, index, list) => list.findIndex((item) => natureName(item) === natureName(candidate)) === index)
+}
+
+function pveNatureSummary(best, alternatives = []) {
+  const names = [best, ...alternatives].filter(Boolean).map(natureName)
+  return [...new Set(names)].join(' / ')
+}
+
+function pvePrimaryStatSummary(best, alternatives = []) {
+  const stats = [best, ...alternatives]
+    .filter(Boolean)
+    .map((candidate) => STAT_LABELS[candidate.raise])
+    .filter(Boolean)
+  return [...new Set(stats)].join(' / ') || '无'
+}
+
+function pveAlternativeSummary(best, alternatives = []) {
+  const bestName = best ? natureName(best) : ''
+  const names = alternatives
+    .map(natureName)
+    .filter((name) => name && name !== bestName)
+  return [...new Set(names)].join(' / ')
 }
 
 function bestPveCandidate(candidates = [], profile = null) {
@@ -768,6 +806,7 @@ function pveSpeciesProfile(candidates = []) {
       mechanism: 'carry',
       label: hasFastRole ? '高速主 C / 清场输出' : '主 C 输出',
       preferredStats: pvePreferredStats(skillProfile, stats, 'carry'),
+      pairedStats: pveCarryPairedStats(skillProfile, stats),
       score: 8 + mechanismScore,
       basis,
       tags,
@@ -809,6 +848,7 @@ function pveSpeciesProfile(candidates = []) {
       mechanism: highOutputEvidence ? 'carry' : 'utility',
       label: highOutputEvidence ? '输出补位' : '功能补位',
       preferredStats: pvePreferredStats(skillProfile, stats, highOutputEvidence ? 'carry' : 'utility'),
+      pairedStats: highOutputEvidence ? pveCarryPairedStats(skillProfile, stats) : [],
       score: 3 + mechanismScore,
       basis,
       tags,
@@ -868,6 +908,16 @@ function pvePreferredStats(skillProfile = {}, stats = {}, mechanism = 'utility')
     attackStat,
     'pdef',
     'mdef',
+  ].filter(Boolean)
+}
+
+function pveCarryPairedStats(skillProfile = {}, stats = {}) {
+  const mode = skillProfile.attackMode
+  const attackStat = mode === 'physical' ? 'patk' : mode === 'magical' ? 'matk' : null
+  const speedUseful = (stats.spd || 0) >= 95 || skillProfile.speedRequired || skillProfile.control
+  return [
+    speedUseful && 'spd',
+    attackStat,
   ].filter(Boolean)
 }
 
