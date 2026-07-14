@@ -559,6 +559,10 @@ export function inferRoles(baseStats = {}, traitTags = [], skillInfo = {}) {
   if (stats.mdef >= STAT_PERCENTILE_BANDS.mdef.p75 && stats.hp >= STAT_PERCENTILE_BANDS.hp.p50) {
     addRole('magicalWall', 1, '魔防与生命足以支撑魔法防御手路线')
   }
+  if (hasBalancedDefenseWallFoundation(stats, analysis, traitTags)) {
+    addRole('physicalWall', 0.8, '物防/魔防接近且生命与防御特性支撑，按均衡双防模板保留物理防御手路线')
+    addRole('magicalWall', 0.8, '物防/魔防接近且生命与防御特性支撑，按均衡双防模板保留魔法防御手路线')
+  }
 
   if (traitTags.includes('patkLean')) addRole('physicalAttacker', 1.6, '特性标签偏物攻输出')
   if (traitTags.includes('matkLean')) addRole('magicalAttacker', 1.6, '特性标签偏魔攻输出')
@@ -678,6 +682,22 @@ function roleAwareStatWarning(roles = [], statKey, statLabel) {
     return `弱化${statLabel}会削弱次要定位线索（${supportingLabels.slice(0, 2).join(' / ')}）的关键能力`
   }
   return `弱化${statLabel}会削弱当前路线的局部能力`
+}
+
+function hasBalancedDefenseWallFoundation(stats = {}, analysis = {}, traitTags = []) {
+  const pdef = Number(stats.pdef) || 0
+  const mdef = Number(stats.mdef) || 0
+  const hp = Number(stats.hp) || 0
+  const defenseGap = Math.abs(pdef - mdef)
+  const hasDefenseTrait = traitTags.includes('defense') || traitTags.includes('shieldReduce')
+  const hasBulkFoundation =
+    (Number(analysis.bulkScore) || 0) >= BULK_PERCENTILE_BANDS.p75 &&
+    hp >= STAT_PERCENTILE_BANDS.hp.p50
+  const nearWallLine =
+    Math.max(pdef, mdef) >=
+    Math.min(STAT_PERCENTILE_BANDS.pdef.p75, STAT_PERCENTILE_BANDS.mdef.p75) - 1
+
+  return defenseGap <= 5 && hasDefenseTrait && hasBulkFoundation && nearWallLine
 }
 
 
@@ -891,6 +911,14 @@ export function evaluateNatureCandidate(
   }
   const functionalBalancedMixedAttack = isFunctionalBalancedMixedAttack(analysis, roles, skillProfile)
   const lowOutputFunctionalMixedAttack = isLowOutputFunctionalMixedAttack(analysis, roles, skillProfile)
+  const balancedDefenseWall = hasBalancedDefenseWallFoundation(stats, analysis, traitTags)
+  if (balancedDefenseWall && ['hp', 'pdef', 'mdef'].includes(candidate.raise)) {
+    reasons.push('生命与双防接近标准肉盾模板，强化耐久项可服务均衡双防站场')
+  }
+  if (balancedDefenseWall && ['pdef', 'mdef'].includes(candidate.lower)) {
+    score -= 10
+    warnings.push(`物防/魔防接近且特性指向双防，弱化${lowerLabel}会破坏均衡肉盾模板`)
+  }
   if (skillProfile.attackMode === 'physical' && candidate.lower === 'patk') {
     const penalty = functionalBalancedMixedAttack ? 0 : (formulaAssist?.routeHint === 'magical' ? 4 : 18)
     score -= penalty
@@ -1056,6 +1084,10 @@ export function evaluateNatureCandidate(
   if (lowersShortDefense && decision === 'keepable') {
     decision = 'notRecommended'
     warnings.push('弱化当前耐久短板不作为可保留输出分支，除非存在明确低耐久收益')
+  }
+  if (balancedDefenseWall && ['pdef', 'mdef'].includes(candidate.lower) && decision === 'keepable') {
+    decision = 'notRecommended'
+    warnings.push('标准均衡肉盾不应为了泛用强化牺牲任一侧防御')
   }
   if (
     lowOutputFunctionalMixedAttack &&
