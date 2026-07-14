@@ -1159,11 +1159,19 @@ function shouldHardDominateWithOffRouteAttack(item, best) {
 }
 
 function canKeepDominatedCandidate(item, best) {
-  if (item.decision !== 'keepable' || item.score < 45 || item.hardRisk) return false
+  const functionalMixedAttackTradeoff =
+    ATTACK_STAT_KEYS.includes(item.raise) &&
+    ATTACK_STAT_KEYS.includes(item.lower) &&
+    item.reasons.some((reason) =>
+      /功能站场型双攻接近|低输出功能位仍有双攻技能分支/.test(reason),
+    )
+  if (item.decision !== 'keepable' || item.hardRisk) return false
+  if (!functionalMixedAttackTradeoff && item.score < 45) return false
   if (shouldHardDominateWithOffRouteAttack(item, best)) return false
   if (item.raise === 'spd' && item.speedProfile?.concern?.level === 'low') return false
   if (lowersCurrentShortDefense(item)) return false
   if (item.warnings.some((warning) => /低输出功能位不宜为了泛用强化牺牲双防/.test(warning))) return false
+  if (functionalMixedAttackTradeoff) return true
   const bestLowerIsSpeedForLowConcern =
     best.lower === 'spd' && best.speedProfile?.concern?.level === 'low'
   if (bestLowerIsSpeedForLowConcern && ATTACK_STAT_KEYS.includes(item.lower)) return false

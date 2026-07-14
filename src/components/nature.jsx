@@ -458,12 +458,22 @@ function pveOverviewSummary(candidates = []) {
   if (candidates.length === 0) return null
   const recommended = candidates.filter((item) => item.decision === 'recommended')
   const keepable = candidates.filter((item) => item.decision === 'keepable')
-  const best = recommended[0] || keepable[0] || candidates[0]
-  const primaryName = recommended[0] ? natureName(recommended[0]) : '暂无推荐性格'
+  const pvePool = [...recommended, ...keepable]
+  const best = bestPveCandidate(pvePool) || recommended[0] || keepable[0] || candidates[0]
+  const primaryName = best ? natureName(best) : '暂无推荐性格'
   const outputOrSpeed = recommended.some((item) => ['patk', 'matk', 'spd'].includes(item.raise))
   const defensiveOnly = recommended.length > 0 && recommended.every((item) => ['hp', 'pdef', 'mdef'].includes(item.raise))
 
   if (recommended.length === 0) {
+    if (keepable.length > 0) {
+      return {
+        level: ['hp', 'pdef', 'mdef'].includes(best.raise) ? 'warn' : 'good',
+        badge: ['hp', 'pdef', 'mdef'].includes(best.raise) ? '按需培养' : '可培养但非优先',
+        verdict: `${natureName(best)}方向可留；PVE 投入按主属性与队伍需求决定。`,
+        capture: primaryName,
+        primaryStat: STAT_LABELS[best.raise],
+      }
+    }
     return {
       level: 'risk',
       badge: '不建议培养',
@@ -510,6 +520,42 @@ function pveOverviewSummary(candidates = []) {
     capture: primaryName,
     primaryStat: STAT_LABELS[best.raise],
   }
+}
+
+function bestPveCandidate(candidates = []) {
+  return [...candidates]
+    .filter((candidate) => candidate && !candidate.hardRisk)
+    .sort((a, b) => pveCandidateRank(b) - pveCandidateRank(a) || b.score - a.score)[0] || null
+}
+
+function pveCandidateRank(candidate) {
+  const breakdown = candidate.skillProfile?.breakdown || {}
+  const raisesAttack = ['patk', 'matk'].includes(candidate.raise)
+  const raisesSpeed = candidate.raise === 'spd'
+  const raisesBulk = ['hp', 'pdef', 'mdef'].includes(candidate.raise)
+  const hasOutputRole = candidate.roleTags?.some((role) =>
+    ['mixedAttacker', 'physicalAttacker', 'magicalAttacker'].includes(role),
+  )
+  const hasBulkRole = candidate.roleTags?.some((role) =>
+    ['bulky', 'support', 'physicalWall', 'magicalWall'].includes(role),
+  )
+  const hasSpeedRole = candidate.roleTags?.some((role) => role === 'fastAttacker')
+  const strongOutput =
+    Number(breakdown.attackAveragePower) >= 80 &&
+    Number(breakdown.attackCount) >= 8 &&
+    hasOutputRole
+  const riskySpeedBranch =
+    raisesSpeed &&
+    candidate.warnings.some((warning) => /双攻|弱化另一攻|削弱.*攻击|冲突/.test(warning))
+
+  let rank = candidate.score
+  if (raisesAttack && strongOutput) rank += 45
+  if (raisesBulk && hasBulkRole) rank += 24
+  if (raisesSpeed && hasSpeedRole) rank += 18
+  if (raisesSpeed && !hasSpeedRole) rank -= 28
+  if (riskySpeedBranch) rank -= 26
+  if (candidate.warnings.length > 0) rank -= Math.min(candidate.warnings.length * 4, 24)
+  return rank
 }
 
 
