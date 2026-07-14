@@ -764,6 +764,12 @@ function pveSpeciesProfile(candidates = []) {
   )
   const attackCount = Number(breakdown.attackCount) || 0
   const attackAveragePower = Number(breakdown.attackAveragePower) || 0
+  const physicalCount = Number(breakdown.physicalCount) || 0
+  const magicalCount = Number(breakdown.magicalCount) || 0
+  const physicalShare = Number(breakdown.physicalShare) || 0
+  const magicalShare = Number(breakdown.magicalShare) || 0
+  const physicalRouteScore = Number(breakdown.physicalRouteScore) || 0
+  const magicalRouteScore = Number(breakdown.magicalRouteScore) || 0
   const strongAttackStat = Math.max(stats.patk || 0, stats.matk || 0)
   const hasSingleOutputRole = roleTags.some((role) => ['physicalAttacker', 'magicalAttacker'].includes(role))
   const hasFastRole = roleTags.includes('fastAttacker')
@@ -780,11 +786,24 @@ function pveSpeciesProfile(candidates = []) {
   const hasSustain = Boolean(skillProfile.sustain || skillProfile.defense)
   const hasControl = Boolean(skillProfile.control)
   const hasAdvancedMechanism = hasDot || hasPercentOrTrueDamage || hasTeamUtility
+  const hasFocusedOutputRoute =
+    (
+      (stats.patk || 0) >= 120 &&
+      physicalCount >= 8 &&
+      physicalShare >= 0.65 &&
+      physicalRouteScore >= 12
+    ) ||
+    (
+      (stats.matk || 0) >= 120 &&
+      magicalCount >= 8 &&
+      magicalShare >= 0.65 &&
+      magicalRouteScore >= 12
+    )
   const highOutputEvidence =
     hasSingleOutputRole &&
     strongAttackStat >= 115 &&
     attackCount >= 4 &&
-    attackAveragePower >= 75
+    (attackAveragePower >= 75 || hasFocusedOutputRoute)
   const fastCarryEvidence =
     highOutputEvidence &&
     hasFastRole &&
