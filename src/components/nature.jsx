@@ -776,7 +776,7 @@ function pveSpeciesProfile(candidates = []) {
   const hasDot = dotCount >= 4 && (dotShare >= 0.18 || dotCount >= 8)
   const hasPercentOrTrueDamage = /百分比|最大生命|生命值上限|真实伤害|真伤|固定伤害/.test(joined)
   const hasLoop = Boolean(skillProfile.energy || /能耗-|能耗降低|回复\d*能量|获得\d*能量|自动回能|技能循环|连续释放/.test(joined))
-  const hasTeamUtility = Boolean(skillProfile.boostTransfer || /继承|传递|给予队友|下个入场|队友|全队/.test(joined))
+  const hasTeamUtility = Boolean(skillProfile.boostTransfer)
   const hasSustain = Boolean(skillProfile.sustain || skillProfile.defense)
   const hasControl = Boolean(skillProfile.control)
   const hasAdvancedMechanism = hasDot || hasPercentOrTrueDamage || hasTeamUtility
@@ -790,6 +790,9 @@ function pveSpeciesProfile(candidates = []) {
     hasFastRole &&
     (stats.spd || 0) >= 110 &&
     hasRecommendedCore
+  const carrySuitableEvidence =
+    highOutputEvidence &&
+    (hasFastRole || strongAttackStat >= 130 || attackAveragePower >= 90)
   const mechanismScore =
     (hasDot ? 2 : 0) +
     (hasPercentOrTrueDamage ? 2 : 0) +
@@ -825,6 +828,19 @@ function pveSpeciesProfile(candidates = []) {
       score: 8 + mechanismScore,
       basis,
       tags,
+    }
+  }
+
+  if (carrySuitableEvidence) {
+    return {
+      tier: 'suitable',
+      mechanism: 'carry',
+      label: hasFastRole ? '高速输出 / PVE 打手' : '输出打手 / PVE 补强',
+      preferredStats: pvePreferredStats(skillProfile, stats, 'carry'),
+      pairedStats: pveCarryPairedStats(skillProfile, stats),
+      score: 6 + mechanismScore,
+      basis,
+      tags: tags.filter((tag) => tag !== '续航站场' && tag !== '控制异常'),
     }
   }
 
