@@ -1009,6 +1009,10 @@ export function evaluateNatureCandidate(
     decision = 'keepable'
     warnings.push('单防强化需要生命/双防综合基础或明确护盾减伤机制支撑；当前证据不足，默认降为可保留')
   }
+  if (lowersShortDefense && decision === 'keepable') {
+    decision = 'notRecommended'
+    warnings.push('弱化当前耐久短板不作为可保留输出分支，除非存在明确低耐久收益')
+  }
   if (
     decision === 'recommended' &&
     warnings.some((warning) => /削弱|冲突|风险|双攻|弱化另一攻/.test(warning))
