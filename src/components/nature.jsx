@@ -656,8 +656,8 @@ function pveOverviewSummary(candidates = []) {
 }
 
 function pvePairedCandidates(candidates = [], profile = null, best = null) {
-  if (profile?.mechanism !== 'carry') return []
   const stats = profile?.pairedStats || []
+  if (stats.length === 0) return []
   return stats
     .map((stat) => bestPveCandidate(candidates.filter((candidate) => candidate.raise === stat), profile))
     .filter((candidate) => candidate && candidate !== best)
@@ -754,7 +754,10 @@ function pveSpeciesProfile(candidates = []) {
   const hasBulkRole = roleTags.some((role) =>
     ['bulky', 'support', 'physicalWall', 'magicalWall', 'energyCycle'].includes(role),
   )
-  const hasDot = /中毒|剧毒|灼烧|烧伤|寄生|星陨|持续伤害|灼烧.*层|中毒.*层|回合结束.*(?:中毒|灼烧|寄生|星陨|持续伤害|伤害)/.test(joined)
+  const dotPattern = /中毒|剧毒|灼烧|烧伤|寄生|星陨|持续伤害|灼烧.*层|中毒.*层|回合结束.*(?:中毒|灼烧|寄生|星陨|持续伤害|伤害)/
+  const dotCount = texts.filter((text) => dotPattern.test(text)).length
+  const dotShare = texts.length ? dotCount / texts.length : 0
+  const hasDot = dotCount >= 4 && (dotShare >= 0.18 || dotCount >= 8)
   const hasPercentOrTrueDamage = /百分比|最大生命|生命值上限|真实伤害|真伤|固定伤害/.test(joined)
   const hasLoop = Boolean(skillProfile.energy || /能耗-|能耗降低|回复\d*能量|获得\d*能量|自动回能|技能循环|连续释放/.test(joined))
   const hasTeamUtility = Boolean(skillProfile.boostTransfer || /继承|传递|给予队友|下个入场|队友|全队|换入/.test(joined))
@@ -819,6 +822,7 @@ function pveSpeciesProfile(candidates = []) {
       mechanism: hasDot || hasPercentOrTrueDamage ? 'dot' : 'utility',
       label,
       preferredStats: pvePreferredStats(skillProfile, stats, hasDot || hasPercentOrTrueDamage ? 'dot' : 'utility'),
+      pairedStats: highOutputEvidence ? pveCarryPairedStats(skillProfile, stats) : [],
       score: 6 + mechanismScore,
       basis,
       tags,
@@ -831,6 +835,7 @@ function pveSpeciesProfile(candidates = []) {
       mechanism: hasLoop && hasControl ? 'utility' : 'tank',
       label: hasLoop && hasControl ? '功能循环 / 对策位' : '站场功能 / 按需承伤位',
       preferredStats: pvePreferredStats(skillProfile, stats, hasLoop && hasControl ? 'utility' : 'tank'),
+      pairedStats: highOutputEvidence ? pveCarryPairedStats(skillProfile, stats) : [],
       score: 4 + mechanismScore,
       basis,
       tags,
