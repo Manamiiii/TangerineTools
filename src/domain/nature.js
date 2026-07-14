@@ -1085,13 +1085,27 @@ export function evaluateNatureCandidate(
   }
   const midSpeedFunctionalTempo =
     candidate.raise === 'spd' &&
-    decision === 'recommended' &&
+    decision !== 'notRecommended' &&
     stats.spd < STAT_PERCENTILE_BANDS.spd.p50 &&
     roles.some((role) => ['bulky', 'support', 'energyCycle'].includes(role.key)) &&
     !roles.slice(0, 2).some((role) => role.key === 'fastAttacker')
   if (midSpeedFunctionalTempo) {
-    decision = 'keepable'
-    warnings.push('中速以下的功能/站场定位可保留速度节奏分支，但不应与主攻或耐久强化同级首推')
+    const lowersAttackSide = ATTACK_STAT_KEYS.includes(candidate.lower)
+    const lowersSkillOffRouteAttack =
+      (skillProfile.attackMode === 'physical' && candidate.lower === 'matk') ||
+      (skillProfile.attackMode === 'magical' && candidate.lower === 'patk')
+    const lowersSafeAttackBranch =
+      skillPlausibleSingleAttackRoute ||
+      formulaRouteSupportsSingleAttack(candidate, formulaAssist) ||
+      lowersSkillOffRouteAttack ||
+      (skillProfile.attackMode === 'mixed' && lowersAttackSide)
+    if (lowersSafeAttackBranch) {
+      decision = 'keepable'
+      warnings.push('中速以下的功能/站场定位可保留低代价速度节奏分支，但不应与主攻或耐久强化同级首推')
+    } else {
+      decision = 'notRecommended'
+      warnings.push('中速以下的功能/站场加速只能保留低代价攻击牺牲项；不宜为了加速牺牲主路线输出、生命或防御')
+    }
   }
   if (lowersShortDefense && decision === 'keepable') {
     decision = 'notRecommended'
@@ -1181,7 +1195,11 @@ function canKeepDominatedCandidate(item, best) {
   if (item.decision !== 'keepable' || item.hardRisk) return false
   if (!functionalMixedAttackTradeoff && item.score < 45) return false
   if (shouldHardDominateWithOffRouteAttack(item, best)) return false
-  if (item.raise === 'spd' && item.speedProfile?.concern?.level === 'low') return false
+  if (
+    item.raise === 'spd' &&
+    item.speedProfile?.concern?.level === 'low' &&
+    !item.warnings.some((warning) => /低代价速度节奏分支/.test(warning))
+  ) return false
   if (lowersCurrentShortDefense(item)) return false
   if (item.warnings.some((warning) => /低输出功能位不宜为了泛用强化牺牲双防/.test(warning))) return false
   if (functionalMixedAttackTradeoff) return true
