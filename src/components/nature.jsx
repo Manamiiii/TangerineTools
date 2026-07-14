@@ -517,21 +517,43 @@ function NaturePveOverview({ candidates }) {
     <section className={`nature-pve-note ${summary.level}`} aria-label="PVE 培养投入提示">
       <div className="nature-pve-note-header">
         <strong>PVE 培养投入</strong>
-        <span className="nature-pve-rating">{summary.badge}</span>
+        <span className="nature-pve-rating">{summary.badge} · {summary.tierIndex}/{summary.tierTotal}</span>
       </div>
       <div className="nature-pve-verdict">{summary.verdict}</div>
+      <div className="nature-pve-tier-track" aria-label={`PVE 档位：${summary.tierIndex}/${summary.tierTotal}`}>
+        {PVE_TIER_SCALE.map((tier) => (
+          <span
+            key={tier.key}
+            className={`nature-pve-tier-dot ${tier.key === summary.tierKey ? 'active' : ''}`}
+            title={tier.label}
+          />
+        ))}
+      </div>
+      {summary.tags.length > 0 && (
+        <div className="nature-pve-tags">
+          {summary.tags.map((tag) => <span key={tag}>{tag}</span>)}
+        </div>
+      )}
       <div className="nature-pve-meta">
         {summary.role && <span>定位：{summary.role}</span>}
         <span>主属性：{summary.primaryStat}</span>
         <span>主性格：{summary.capture}</span>
       </div>
       <details className="nature-inline-disclosure nature-pve-note-footnote">
-        <summary>口径</summary>
-        <span>PVP 不计培养投入；异色/炫彩是否培养，看 PVE 强度、机制和队伍需求。</span>
+        <summary>详细依据 / 口径</summary>
+        <span>{summary.detail || '暂无额外机制依据。'} PVP 不计培养投入；异色/炫彩是否培养，看 PVE 强度、机制和队伍需求。</span>
       </details>
     </section>
   )
 }
+
+const PVE_TIER_SCALE = [
+  { key: 'priority', label: '优先培养', level: 'priority' },
+  { key: 'suitable', label: '适合培养', level: 'good' },
+  { key: 'situational', label: '按需培养', level: 'situational' },
+  { key: 'watch', label: '可留观望', level: 'watch' },
+  { key: 'skip', label: '不建议投入', level: 'risk' },
+]
 
 function pveOverviewSummary(candidates = []) {
   if (candidates.length === 0) return null
@@ -543,18 +565,26 @@ function pveOverviewSummary(candidates = []) {
   const primaryName = best ? natureName(best) : '暂无推荐性格'
   const primaryStat = STAT_LABELS[best?.raise] || '无'
   const hasViableNature = pvePool.some((item) => item && !item.hardRisk)
-  const basis = profile.basis.length ? `依据：${profile.basis.join('；')}。` : ''
+  const detail = profile.basis.length ? `依据：${profile.basis.join('；')}。` : ''
+  const tier = PVE_TIER_SCALE.find((item) => item.key === profile.tier) || PVE_TIER_SCALE.at(-1)
+  const tierIndex = PVE_TIER_SCALE.findIndex((item) => item.key === tier.key) + 1
+  const tierTotal = PVE_TIER_SCALE.length
 
   if (!hasViableNature) {
     return {
       level: 'risk',
       badge: profile.score >= 5 ? '需换性格' : '不建议投入',
       verdict: profile.score >= 5
-        ? `精灵机制有 PVE 价值，但当前候选性格风险过高，建议另抓。${basis}`
-        : `当前未发现足够 PVE 机制或可用性格，先收藏不投入。${basis}`,
+        ? '精灵机制有 PVE 价值，但当前候选性格风险过高，建议另抓。'
+        : '当前未发现足够 PVE 机制或可用性格，先收藏不投入。',
       capture: '无',
       primaryStat: '无',
       role: profile.label,
+      tags: profile.tags,
+      detail,
+      tierKey: profile.score >= 5 ? 'skip' : tier.key,
+      tierIndex: PVE_TIER_SCALE.length,
+      tierTotal,
     }
   }
 
@@ -562,10 +592,15 @@ function pveOverviewSummary(candidates = []) {
     return {
       level: 'priority',
       badge: '优先培养',
-      verdict: `${profile.label}，资源投入优先级高；从可用性格中优先看${primaryName}。${basis}`,
+      verdict: `${profile.label}，资源投入优先级高；优先看${primaryName}。`,
       capture: primaryName,
       primaryStat,
       role: profile.label,
+      tags: profile.tags,
+      detail,
+      tierKey: tier.key,
+      tierIndex,
+      tierTotal,
     }
   }
 
@@ -573,31 +608,46 @@ function pveOverviewSummary(candidates = []) {
     return {
       level: 'good',
       badge: '适合培养',
-      verdict: `${profile.label}，适合 PVE 投入；性格从可用分支中选${primaryName}。${basis}`,
+      verdict: `${profile.label}，适合 PVE 投入；性格看${primaryName}。`,
       capture: primaryName,
       primaryStat,
       role: profile.label,
+      tags: profile.tags,
+      detail,
+      tierKey: tier.key,
+      tierIndex,
+      tierTotal,
     }
   }
 
   if (profile.tier === 'situational') {
     return {
-      level: 'warn',
+      level: 'situational',
       badge: '按需培养',
-      verdict: `${profile.label}，有对应副本/队伍需求再投入；当前性格可看${primaryName}。${basis}`,
+      verdict: `${profile.label}，有对应副本/队伍需求再投入；当前可看${primaryName}。`,
       capture: primaryName,
       primaryStat,
       role: profile.label,
+      tags: profile.tags,
+      detail,
+      tierKey: tier.key,
+      tierIndex,
+      tierTotal,
     }
   }
 
   return {
-    level: 'warn',
+    level: 'watch',
     badge: '可留观望',
-    verdict: `${profile.label}，捕捉可留不等于 PVE 优先；先收藏，等队伍需求再决定。${basis}`,
+    verdict: `${profile.label}，捕捉可留不等于 PVE 优先；先收藏观望。`,
     capture: primaryName,
     primaryStat,
     role: profile.label,
+    tags: profile.tags,
+    detail,
+    tierKey: tier.key,
+    tierIndex,
+    tierTotal,
   }
 }
 
@@ -702,6 +752,15 @@ function pveSpeciesProfile(candidates = []) {
     hasSustain && '存在续航/减伤/站场线索',
     hasControl && '存在控制/异常线索',
   ].filter(Boolean)
+  const tags = [
+    hasDot && 'DOT/层数',
+    hasPercentOrTrueDamage && '百分比/真伤',
+    hasLoop && '能量循环',
+    hasTeamUtility && '队伍插件',
+    hasSustain && '续航站场',
+    hasControl && '控制异常',
+    highOutputEvidence && '输出补位',
+  ].filter(Boolean)
 
   if (fastCarryEvidence || (highOutputEvidence && hasRecommendedCore && mechanismScore < 2.5)) {
     return {
@@ -711,28 +770,36 @@ function pveSpeciesProfile(candidates = []) {
       preferredStats: pvePreferredStats(skillProfile, stats, 'carry'),
       score: 8 + mechanismScore,
       basis,
+      tags,
     }
   }
 
-  if (hasPercentOrTrueDamage || hasTeamUtility || (hasDot && mechanismScore >= 3.5) || (hasLoop && hasControl)) {
+  if (hasPercentOrTrueDamage || hasTeamUtility || (hasDot && mechanismScore >= 3.5) || (hasLoop && hasControl && hasSustain)) {
+    const label = hasDot
+      ? 'DOT 消耗位'
+      : hasPercentOrTrueDamage
+        ? '机制消耗位'
+        : '功能循环 / 队伍插件'
     return {
       tier: 'suitable',
       mechanism: hasDot || hasPercentOrTrueDamage ? 'dot' : 'utility',
-      label: hasDot || hasPercentOrTrueDamage ? 'DOT / 机制消耗位' : '功能循环 / 队伍插件',
+      label,
       preferredStats: pvePreferredStats(skillProfile, stats, hasDot || hasPercentOrTrueDamage ? 'dot' : 'utility'),
       score: 6 + mechanismScore,
       basis,
+      tags,
     }
   }
 
-  if (hasBulkRole && (hasSustain || mechanismScore >= 1.5)) {
+  if ((hasBulkRole && (hasSustain || mechanismScore >= 1.5)) || (hasLoop && hasControl)) {
     return {
       tier: 'situational',
-      mechanism: 'tank',
-      label: '站场功能 / 按需承伤位',
-      preferredStats: pvePreferredStats(skillProfile, stats, 'tank'),
+      mechanism: hasLoop && hasControl ? 'utility' : 'tank',
+      label: hasLoop && hasControl ? '功能循环 / 对策位' : '站场功能 / 按需承伤位',
+      preferredStats: pvePreferredStats(skillProfile, stats, hasLoop && hasControl ? 'utility' : 'tank'),
       score: 4 + mechanismScore,
       basis,
+      tags,
     }
   }
 
@@ -744,6 +811,7 @@ function pveSpeciesProfile(candidates = []) {
       preferredStats: pvePreferredStats(skillProfile, stats, highOutputEvidence ? 'carry' : 'utility'),
       score: 3 + mechanismScore,
       basis,
+      tags,
     }
   }
 
@@ -754,6 +822,7 @@ function pveSpeciesProfile(candidates = []) {
     preferredStats: [],
     score: mechanismScore,
     basis,
+    tags,
   }
 }
 
