@@ -640,6 +640,22 @@ function pveOverviewSummary(candidates = []) {
     }
   }
 
+  if (profile.tier === 'skip') {
+    return {
+      level: 'risk',
+      badge: '不建议投入',
+      verdict: '当前没有识别到足够 PVE 投入价值；捕捉可留不等于值得培养。',
+      capture: primaryName,
+      primaryStat,
+      role: profile.label,
+      alternatives,
+      tags: profile.tags,
+      detail,
+      tierKey: tier.key,
+      stars,
+    }
+  }
+
   return {
     level: 'watch',
     badge: '可留观望',
@@ -760,9 +776,10 @@ function pveSpeciesProfile(candidates = []) {
   const hasDot = dotCount >= 4 && (dotShare >= 0.18 || dotCount >= 8)
   const hasPercentOrTrueDamage = /百分比|最大生命|生命值上限|真实伤害|真伤|固定伤害/.test(joined)
   const hasLoop = Boolean(skillProfile.energy || /能耗-|能耗降低|回复\d*能量|获得\d*能量|自动回能|技能循环|连续释放/.test(joined))
-  const hasTeamUtility = Boolean(skillProfile.boostTransfer || /继承|传递|给予队友|下个入场|队友|全队|换入/.test(joined))
+  const hasTeamUtility = Boolean(skillProfile.boostTransfer || /继承|传递|给予队友|下个入场|队友|全队/.test(joined))
   const hasSustain = Boolean(skillProfile.sustain || skillProfile.defense)
   const hasControl = Boolean(skillProfile.control)
+  const hasAdvancedMechanism = hasDot || hasPercentOrTrueDamage || hasTeamUtility
   const highOutputEvidence =
     hasSingleOutputRole &&
     strongAttackStat >= 115 &&
@@ -811,7 +828,7 @@ function pveSpeciesProfile(candidates = []) {
     }
   }
 
-  if (hasPercentOrTrueDamage || hasTeamUtility || (hasDot && mechanismScore >= 3.5) || (hasLoop && hasControl && hasSustain)) {
+  if (hasPercentOrTrueDamage || hasTeamUtility || (hasDot && mechanismScore >= 3.5)) {
     const label = hasDot
       ? 'DOT 消耗位'
       : hasPercentOrTrueDamage
@@ -829,12 +846,17 @@ function pveSpeciesProfile(candidates = []) {
     }
   }
 
-  if ((hasBulkRole && (hasSustain || mechanismScore >= 1.5)) || (hasLoop && hasControl)) {
+  if (
+    (hasBulkRole && (hasSustain || mechanismScore >= 1.5)) ||
+    (hasLoop && hasControl) ||
+    (hasLoop && hasSustain)
+  ) {
+    const utilityLabel = hasAdvancedMechanism ? '功能循环 / 机制位' : '功能循环 / 对策位'
     return {
       tier: 'situational',
-      mechanism: hasLoop && hasControl ? 'utility' : 'tank',
-      label: hasLoop && hasControl ? '功能循环 / 对策位' : '站场功能 / 按需承伤位',
-      preferredStats: pvePreferredStats(skillProfile, stats, hasLoop && hasControl ? 'utility' : 'tank'),
+      mechanism: hasLoop && (hasControl || hasSustain) ? 'utility' : 'tank',
+      label: hasLoop && (hasControl || hasSustain) ? utilityLabel : '站场功能 / 按需承伤位',
+      preferredStats: pvePreferredStats(skillProfile, stats, hasLoop && (hasControl || hasSustain) ? 'utility' : 'tank'),
       pairedStats: highOutputEvidence ? pveCarryPairedStats(skillProfile, stats) : [],
       score: 4 + mechanismScore,
       basis,
