@@ -373,17 +373,7 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
       <NatureStatDistribution stats={baseStats} />
 
       {nature.skillProfile && (
-        <div className="nature-skill-note">
-          <strong>技能线索</strong>
-          <span>{nature.skillProfile.summary}</span>
-          <details className="nature-inline-disclosure nature-skill-breakdown">
-            <summary>技能明细</summary>
-            <span>
-              物攻 {nature.skillProfile.breakdown.physicalCount} 个 / 魔攻 {nature.skillProfile.breakdown.magicalCount} 个 / 状态 {nature.skillProfile.breakdown.statusCount} 个；
-              攻击技能平均威力 {nature.skillProfile.breakdown.attackAveragePower.toFixed(0)}
-            </span>
-          </details>
-        </div>
+        <NatureSkillInsight skillProfile={nature.skillProfile} formulaAssist={nature.formulaAssist} />
       )}
 
       {speedProfile && (
@@ -428,6 +418,94 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
       <NatureStatsBars nature={nature} baseStats={baseStats} adjustedStats={adjustedStats} />
     </div>
   )
+}
+
+
+function NatureSkillInsight({ skillProfile, formulaAssist }) {
+  const breakdown = skillProfile.breakdown || {}
+  const routeLabel = {
+    physical: '物理路线',
+    magical: '魔法路线',
+    mixed: '双攻接近',
+    unknown: '未知',
+  }[skillProfile.attackMode] || '未知'
+  const formulaRouteLabel = {
+    physical: '物理更高',
+    magical: '魔法更高',
+    mixed: '物理/魔法接近',
+    unknown: '未知',
+  }[formulaAssist?.routeHint] || '未知'
+
+  return (
+    <div className="nature-skill-note">
+      <strong>技能线索</strong>
+      <span>{skillProfile.summary}</span>
+      <details className="nature-inline-disclosure nature-skill-breakdown">
+        <summary>技能数值 / 公式辅助</summary>
+        <div className="nature-skill-metrics">
+          <div>
+            <span>技能路线</span>
+            <strong>{routeLabel}</strong>
+            <small>路线差 {formatSignedNumber(skillProfile.routeGap)}</small>
+          </div>
+          <div>
+            <span>技能数量</span>
+            <strong>物理 {breakdown.physicalCount || 0} / 魔法 {breakdown.magicalCount || 0}</strong>
+            <small>状态 {breakdown.statusCount || 0}；攻击占比 {formatPercent(breakdown.attackShare)}</small>
+          </div>
+          <div>
+            <span>攻击占比</span>
+            <strong>物理 {formatPercent(breakdown.physicalShare)} / 魔法 {formatPercent(breakdown.magicalShare)}</strong>
+            <small>路线分 {formatNumber(breakdown.physicalRouteScore)} : {formatNumber(breakdown.magicalRouteScore)}</small>
+          </div>
+          <div>
+            <span>平均威力</span>
+            <strong>物理 {formatNumber(breakdown.physicalAveragePower)} / 魔法 {formatNumber(breakdown.magicalAveragePower)}</strong>
+            <small>攻击均值 {formatNumber(breakdown.attackAveragePower)}</small>
+          </div>
+          {formulaAssist && (
+            <div>
+              <span>公式辅助</span>
+              <strong>{formulaRouteLabel}</strong>
+              <small>
+                物理线 {formatNumber(formulaAssist.physicalOutput)} / 魔法线 {formatNumber(formulaAssist.magicalOutput)}
+                {formulaAssist.outputRatio != null ? `；比值 ${formatNumber(formulaAssist.outputRatio)}` : ''}
+              </small>
+            </div>
+          )}
+          {formulaAssist && (
+            <div>
+              <span>耐久辅助</span>
+              <strong>物耐 {formatNumber(formulaAssist.physicalBulk)} / 魔耐 {formatNumber(formulaAssist.magicalBulk)}</strong>
+              <small>短板耐久 {formatNumber(formulaAssist.balancedBulk)}</small>
+            </div>
+          )}
+        </div>
+      </details>
+    </div>
+  )
+}
+
+function formatNumber(value) {
+  const number = Number(value)
+  if (!Number.isFinite(number)) return '0'
+  if (Math.abs(number) >= 1000) return Math.round(number).toLocaleString('zh-CN')
+  return Number.isInteger(number) ? String(number) : number.toFixed(1)
+}
+
+function formatSignedNumber(value) {
+  const number = Number(value)
+  if (!Number.isFinite(number)) return '0'
+  const text = formatNumber(Math.abs(number))
+  if (number > 0) return `+${text}`
+  if (number < 0) return `-${text}`
+  return text
+}
+
+function formatPercent(value) {
+  const number = Number(value)
+  if (!Number.isFinite(number)) return '0%'
+  return `${Math.round(number * 100)}%`
 }
 
 function NaturePveOverview({ candidates }) {

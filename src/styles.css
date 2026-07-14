@@ -3125,3 +3125,37 @@ img {
   border-color: var(--danger);
   background: #fee2e2;
 }
+
+.nature-skill-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.nature-skill-metrics div {
+  display: grid;
+  gap: 2px;
+  padding: 8px;
+  border: 1px solid #ddd6fe;
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.nature-skill-metrics span {
+  margin: 0;
+  color: #7c3aed;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.nature-skill-metrics strong {
+  color: #4c1d95;
+  font-size: 12px;
+}
+
+.nature-skill-metrics small {
+  color: #6d28d9;
+  font-size: 11px;
+  line-height: 1.4;
+}

@@ -373,6 +373,8 @@ export function analyzeSkillInfo(skillInfo = {}) {
       attackAveragePower: averagePower(attackItems),
       physicalShare: attackItems.length ? physicalItems.length / attackItems.length : 0,
       magicalShare: attackItems.length ? magicalItems.length / attackItems.length : 0,
+      physicalRouteScore: Math.round(physicalRouteScore * 10) / 10,
+      magicalRouteScore: Math.round(magicalRouteScore * 10) / 10,
     },
     summary: texts.length > 0
       ? `已读取 ${texts.length} 条技能线索：${[
@@ -1134,6 +1136,7 @@ export function evaluateNatureCandidate(
     roleLabel: roleLabels.join(' / ') || '泛用',
     speedProfile,
     skillProfile,
+    formulaAssist,
     adjustedStats: applyNatureModifier(stats, candidate),
     deltas: statDelta(stats, candidate),
     reasons: reasons.length ? reasons : [`强化${raiseLabel}、弱化${lowerLabel}整体收益一般`],
