@@ -521,6 +521,7 @@ function NaturePveOverview({ candidates }) {
       </div>
       <div className="nature-pve-verdict">{summary.verdict}</div>
       <div className="nature-pve-meta">
+        {summary.role && <span>定位：{summary.role}</span>}
         <span>主属性：{summary.primaryStat}</span>
         <span>主性格：{summary.capture}</span>
       </div>
@@ -537,76 +538,86 @@ function pveOverviewSummary(candidates = []) {
   const recommended = candidates.filter((item) => item.decision === 'recommended')
   const keepable = candidates.filter((item) => item.decision === 'keepable')
   const pvePool = [...recommended, ...keepable]
-  const best = bestPveCandidate(pvePool) || recommended[0] || keepable[0] || candidates[0]
+  const profile = pveSpeciesProfile(candidates)
+  const best = bestPveCandidate(pvePool, profile) || recommended[0] || keepable[0] || candidates[0]
   const primaryName = best ? natureName(best) : '暂无推荐性格'
-  const outputOrSpeed = recommended.some((item) => ['patk', 'matk', 'spd'].includes(item.raise))
-  const defensiveOnly = recommended.length > 0 && recommended.every((item) => ['hp', 'pdef', 'mdef'].includes(item.raise))
+  const primaryStat = STAT_LABELS[best?.raise] || '无'
+  const hasViableNature = pvePool.some((item) => item && !item.hardRisk)
+  const basis = profile.basis.length ? `依据：${profile.basis.join('；')}。` : ''
 
-  if (recommended.length === 0) {
-    if (keepable.length > 0) {
-      return {
-        level: ['hp', 'pdef', 'mdef'].includes(best.raise) ? 'warn' : 'good',
-        badge: ['hp', 'pdef', 'mdef'].includes(best.raise) ? '按需培养' : '可培养但非优先',
-        verdict: `${natureName(best)}方向可留；PVE 投入按主属性与队伍需求决定。`,
-        capture: primaryName,
-        primaryStat: STAT_LABELS[best.raise],
-      }
-    }
+  if (!hasViableNature) {
     return {
       level: 'risk',
-      badge: '不建议培养',
-      verdict: '先收藏，不投入 PVE 资源。',
+      badge: profile.score >= 5 ? '需换性格' : '不建议投入',
+      verdict: profile.score >= 5
+        ? `精灵机制有 PVE 价值，但当前候选性格风险过高，建议另抓。${basis}`
+        : `当前未发现足够 PVE 机制或可用性格，先收藏不投入。${basis}`,
       capture: '无',
       primaryStat: '无',
+      role: profile.label,
     }
   }
 
-  if (defensiveOnly) {
+  if (profile.tier === 'priority') {
+    return {
+      level: 'priority',
+      badge: '优先培养',
+      verdict: `${profile.label}，资源投入优先级高；从可用性格中优先看${primaryName}。${basis}`,
+      capture: primaryName,
+      primaryStat,
+      role: profile.label,
+    }
+  }
+
+  if (profile.tier === 'suitable') {
+    return {
+      level: 'good',
+      badge: '适合培养',
+      verdict: `${profile.label}，适合 PVE 投入；性格从可用分支中选${primaryName}。${basis}`,
+      capture: primaryName,
+      primaryStat,
+      role: profile.label,
+    }
+  }
+
+  if (profile.tier === 'situational') {
     return {
       level: 'warn',
       badge: '按需培养',
-      verdict: '功能/站场向；有需求再培养。',
+      verdict: `${profile.label}，有对应副本/队伍需求再投入；当前性格可看${primaryName}。${basis}`,
       capture: primaryName,
-      primaryStat: STAT_LABELS[best.raise],
-    }
-  }
-
-  if (outputOrSpeed) {
-    if (isPriorityPveCandidate(best)) {
-      return {
-        level: 'priority',
-        badge: '优先培养',
-        verdict: `${natureName(best)}方向成立；主输出证据充分。`,
-        capture: primaryName,
-        primaryStat: STAT_LABELS[best.raise],
-      }
-    }
-
-    return {
-      level: 'good',
-      badge: '可培养但非优先',
-      verdict: `${natureName(best)}方向成立；非主 C 默认不优先投入。`,
-      capture: primaryName,
-      primaryStat: STAT_LABELS[best.raise],
+      primaryStat,
+      role: profile.label,
     }
   }
 
   return {
     level: 'warn',
-    badge: '可留非优先',
-    verdict: '可留；不建议优先投入。',
+    badge: '可留观望',
+    verdict: `${profile.label}，捕捉可留不等于 PVE 优先；先收藏，等队伍需求再决定。${basis}`,
     capture: primaryName,
-    primaryStat: STAT_LABELS[best.raise],
+    primaryStat,
+    role: profile.label,
   }
 }
 
-function bestPveCandidate(candidates = []) {
+function bestPveCandidate(candidates = [], profile = null) {
+  const preferredStats = profile?.preferredStats || []
   return [...candidates]
     .filter((candidate) => candidate && !candidate.hardRisk)
-    .sort((a, b) => pveCandidateRank(b) - pveCandidateRank(a) || b.score - a.score)[0] || null
+    .sort((a, b) => {
+      const preferredDiff = preferredStatRank(b, preferredStats) - preferredStatRank(a, preferredStats)
+      if (preferredDiff !== 0) return preferredDiff
+      return pveCandidateRank(b, profile) - pveCandidateRank(a, profile) || b.score - a.score
+    })[0] || null
 }
 
-function pveCandidateRank(candidate) {
+function preferredStatRank(candidate, preferredStats = []) {
+  const index = preferredStats.indexOf(candidate?.raise)
+  return index < 0 ? 0 : preferredStats.length - index
+}
+
+function pveCandidateRank(candidate, profile = null) {
   const breakdown = candidate.skillProfile?.breakdown || {}
   const raisesAttack = ['patk', 'matk'].includes(candidate.raise)
   const raisesSpeed = candidate.raise === 'spd'
@@ -627,38 +638,168 @@ function pveCandidateRank(candidate) {
     candidate.warnings.some((warning) => /双攻|弱化另一攻|削弱.*攻击|冲突/.test(warning))
 
   let rank = candidate.score
-  if (raisesAttack && strongOutput) rank += 45
-  if (raisesBulk && hasBulkRole) rank += 24
-  if (raisesSpeed && hasSpeedRole) rank += 18
+  if (raisesAttack && strongOutput && profile?.tier === 'priority') rank += 36
+  if (raisesAttack && strongOutput && profile?.tier !== 'priority') rank += 16
+  if (raisesBulk && hasBulkRole) rank += profile?.mechanism === 'tank' ? 36 : 24
+  if (raisesSpeed && hasSpeedRole) rank += profile?.mechanism === 'carry' ? 18 : 10
   if (raisesSpeed && !hasSpeedRole) rank -= 28
   if (riskySpeedBranch) rank -= 26
   if (candidate.warnings.length > 0) rank -= Math.min(candidate.warnings.length * 4, 24)
   return rank
 }
 
-
-function isPriorityPveCandidate(candidate) {
-  const mode = candidate.skillProfile?.attackMode
-  const breakdown = candidate.skillProfile?.breakdown || {}
-  const raisesMainAttack =
-    (mode === 'physical' && candidate.raise === 'patk') ||
-    (mode === 'magical' && candidate.raise === 'matk')
-  const raisesHighValueSpeed = candidate.raise === 'spd' && candidate.speedProfile?.concern?.level !== 'low'
-  const hasOutputRole = candidate.roleTags?.some((role) => ['physicalAttacker', 'magicalAttacker', 'fastAttacker'].includes(role))
-  const hasStrongSkillEvidence =
-    Number(breakdown.attackAveragePower) >= 85 ||
-    Number(breakdown.attackCount) >= 4 ||
-    Number(breakdown.physicalShare) >= 0.75 ||
-    Number(breakdown.magicalShare) >= 0.75
-
-  return (
-    candidate.score >= 82 &&
-    !candidate.hardRisk &&
-    candidate.warnings.length === 0 &&
-    hasOutputRole &&
-    hasStrongSkillEvidence &&
-    (raisesMainAttack || raisesHighValueSpeed)
+function pveSpeciesProfile(candidates = []) {
+  const sample = candidates.find(Boolean) || {}
+  const skillProfile = sample.skillProfile || {}
+  const breakdown = skillProfile.breakdown || {}
+  const roleTags = sample.roleTags || []
+  const stats = baseStatsFromCandidate(sample)
+  const texts = skillProfile.texts || []
+  const joined = texts.join('；')
+  const hasRecommendedCore = candidates.some((item) =>
+    item.decision === 'recommended' &&
+    !item.hardRisk &&
+    ['patk', 'matk', 'spd'].includes(item.raise) &&
+    item.warnings.length === 0
   )
+  const attackCount = Number(breakdown.attackCount) || 0
+  const attackAveragePower = Number(breakdown.attackAveragePower) || 0
+  const strongAttackStat = Math.max(stats.patk || 0, stats.matk || 0)
+  const hasSingleOutputRole = roleTags.some((role) => ['physicalAttacker', 'magicalAttacker'].includes(role))
+  const hasFastRole = roleTags.includes('fastAttacker')
+  const hasBulkRole = roleTags.some((role) =>
+    ['bulky', 'support', 'physicalWall', 'magicalWall', 'energyCycle'].includes(role),
+  )
+  const hasDot = /中毒|剧毒|灼烧|烧伤|寄生|星陨|持续伤害|回合结束.*触发|触发次数|每回合.*伤害|每有.*层/.test(joined)
+  const hasPercentOrTrueDamage = /百分比|最大生命|生命值上限|真实伤害|真伤|固定伤害/.test(joined)
+  const hasLoop = Boolean(skillProfile.energy || /能耗-|能耗降低|回复\d*能量|获得\d*能量|自动回能|技能循环|连续释放/.test(joined))
+  const hasTeamUtility = Boolean(skillProfile.boostTransfer || /继承|传递|给予队友|下个入场|队友|全队|换入/.test(joined))
+  const hasSustain = Boolean(skillProfile.sustain || skillProfile.defense)
+  const hasControl = Boolean(skillProfile.control)
+  const highOutputEvidence =
+    hasSingleOutputRole &&
+    strongAttackStat >= 115 &&
+    attackCount >= 4 &&
+    attackAveragePower >= 75
+  const fastCarryEvidence =
+    highOutputEvidence &&
+    hasFastRole &&
+    (stats.spd || 0) >= 110 &&
+    hasRecommendedCore
+  const mechanismScore =
+    (hasDot ? 2 : 0) +
+    (hasPercentOrTrueDamage ? 2 : 0) +
+    (hasLoop ? 1.5 : 0) +
+    (hasTeamUtility ? 2 : 0) +
+    (hasSustain ? 1 : 0) +
+    (hasControl ? 0.8 : 0)
+  const basis = [
+    highOutputEvidence && `输出线：主攻 ${strongAttackStat} / 攻击技能 ${attackCount} / 均威 ${formatNumber(attackAveragePower)}`,
+    hasDot && '存在 DOT/层数/回合结束触发线索',
+    hasPercentOrTrueDamage && '存在百分比或真伤线索',
+    hasLoop && '存在能量/能耗循环线索',
+    hasTeamUtility && '存在队伍增益或传递线索',
+    hasSustain && '存在续航/减伤/站场线索',
+    hasControl && '存在控制/异常线索',
+  ].filter(Boolean)
+
+  if (fastCarryEvidence || (highOutputEvidence && hasRecommendedCore && mechanismScore < 2.5)) {
+    return {
+      tier: 'priority',
+      mechanism: 'carry',
+      label: hasFastRole ? '高速主 C / 清场输出' : '主 C 输出',
+      preferredStats: pvePreferredStats(skillProfile, stats, 'carry'),
+      score: 8 + mechanismScore,
+      basis,
+    }
+  }
+
+  if (hasPercentOrTrueDamage || hasTeamUtility || (hasDot && mechanismScore >= 3.5) || (hasLoop && hasControl)) {
+    return {
+      tier: 'suitable',
+      mechanism: hasDot || hasPercentOrTrueDamage ? 'dot' : 'utility',
+      label: hasDot || hasPercentOrTrueDamage ? 'DOT / 机制消耗位' : '功能循环 / 队伍插件',
+      preferredStats: pvePreferredStats(skillProfile, stats, hasDot || hasPercentOrTrueDamage ? 'dot' : 'utility'),
+      score: 6 + mechanismScore,
+      basis,
+    }
+  }
+
+  if (hasBulkRole && (hasSustain || mechanismScore >= 1.5)) {
+    return {
+      tier: 'situational',
+      mechanism: 'tank',
+      label: '站场功能 / 按需承伤位',
+      preferredStats: pvePreferredStats(skillProfile, stats, 'tank'),
+      score: 4 + mechanismScore,
+      basis,
+    }
+  }
+
+  if (highOutputEvidence || hasLoop || hasControl || hasSustain) {
+    return {
+      tier: 'watch',
+      mechanism: highOutputEvidence ? 'carry' : 'utility',
+      label: highOutputEvidence ? '输出补位' : '功能补位',
+      preferredStats: pvePreferredStats(skillProfile, stats, highOutputEvidence ? 'carry' : 'utility'),
+      score: 3 + mechanismScore,
+      basis,
+    }
+  }
+
+  return {
+    tier: 'skip',
+    mechanism: 'unknown',
+    label: 'PVE 机制不明确',
+    preferredStats: [],
+    score: mechanismScore,
+    basis,
+  }
+}
+
+function baseStatsFromCandidate(candidate = {}) {
+  return Object.fromEntries(STATS_DIMENSIONS.map((dimension) => {
+    const adjusted = Number(candidate.adjustedStats?.[dimension.key]) || 0
+    const delta = Number(candidate.deltas?.[dimension.key]) || 0
+    return [dimension.key, adjusted - delta]
+  }))
+}
+
+function pvePreferredStats(skillProfile = {}, stats = {}, mechanism = 'utility') {
+  const mode = skillProfile.attackMode
+  const attackStat = mode === 'physical' ? 'patk' : mode === 'magical' ? 'matk' : null
+  const speedFirst = (stats.spd || 0) >= 100 || skillProfile.speedRequired || skillProfile.control
+  if (mechanism === 'carry') {
+    return [
+      speedFirst && 'spd',
+      attackStat,
+      'hp',
+      'pdef',
+      'mdef',
+    ].filter(Boolean)
+  }
+  if (mechanism === 'dot') {
+    return [
+      speedFirst && 'spd',
+      'hp',
+      (stats.mdef || 0) >= (stats.pdef || 0) ? 'mdef' : 'pdef',
+      attackStat,
+    ].filter(Boolean)
+  }
+  if (mechanism === 'tank') {
+    return [
+      'hp',
+      (stats.pdef || 0) <= (stats.mdef || 0) ? 'pdef' : 'mdef',
+      (stats.pdef || 0) > (stats.mdef || 0) ? 'pdef' : 'mdef',
+    ]
+  }
+  return [
+    speedFirst && 'spd',
+    'hp',
+    attackStat,
+    'pdef',
+    'mdef',
+  ].filter(Boolean)
 }
 
 function natureHighlights(nature) {
