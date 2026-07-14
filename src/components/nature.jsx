@@ -21,7 +21,6 @@ import {
   natureName,
   NATURE_DECISION_LABELS,
   STAT_LABELS,
-  groupRejectedNatures,
 } from '../domain/nature.js'
 import { TRAIT_TAG_OPTIONS } from '../presets/rockKingdom.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
@@ -135,19 +134,22 @@ export function NatureTool({ scene }) {
       </div>
 
       {hasAnyStat ? (
-        <div className="nature-workbench">
-          <NatureCandidateList
-            candidates={candidates}
-            activeIndex={activeIndex}
-            onSelect={setSelectedIndex}
-          />
-          <NatureResult
-            nature={nature}
-            baseStats={numericStats}
-            adjustedStats={adjustedStats}
-            reasoning={reasoning}
-          />
-        </div>
+        <>
+          <NaturePveOverview candidates={candidates} />
+          <div className="nature-workbench">
+            <NatureCandidateList
+              candidates={candidates}
+              activeIndex={activeIndex}
+              onSelect={setSelectedIndex}
+            />
+            <NatureResult
+              nature={nature}
+              baseStats={numericStats}
+              adjustedStats={adjustedStats}
+              reasoning={reasoning}
+            />
+          </div>
+        </>
       ) : (
         <EmptyState
           title="填写六维后查看推荐"
@@ -239,76 +241,56 @@ function RowImportPanel({ scene, onImport }) {
   )
 }
 
-// 候选清单：展示全部 30 个合法性格，并按「推荐 / 可保留 / 不推荐」分组。
+// 候选清单：展示全部 30 个合法性格，先按「强化维度」分组，组内再展示推荐分档。
 function NatureCandidateList({ candidates, activeIndex, onSelect }) {
   if (!candidates || candidates.length === 0) return null
   const activeCandidate = candidates[activeIndex]
-  const groups = [
-    ['recommended', '推荐'],
-    ['keepable', '可保留'],
-    ['notRecommended', '不推荐'],
-  ]
+  const groups = groupByRaise(candidates)
   return (
     <div className="nature-candidates">
-      <div className="nature-candidates-title">全部性格候选</div>
-      <div className="nature-candidates-groups">
-        {groups.map(([decision, label]) => {
-          const items = candidates.filter((c) => c.decision === decision)
-          if (items.length === 0) return null
-          return (
-            <section key={decision} className="nature-candidate-group">
-              <div className="nature-candidate-group-title">
-                <span className={`nature-candidate-tag ${decision}`}>{label}</span>
-                <span>{items.length} 个</span>
-              </div>
-              {decision === 'notRecommended' ? (
-                <RejectedCandidateGroups
-                  candidates={candidates}
-                  activeCandidate={activeCandidate}
-                  onSelect={onSelect}
-                />
-              ) : (
-                <CandidateRaiseGroups
-                  candidates={candidates}
-                  items={items}
-                  activeCandidate={activeCandidate}
-                  onSelect={onSelect}
-                />
-              )}
-            </section>
-          )
-        })}
+      <div className="nature-candidates-title">全部性格候选（按强化维度）</div>
+      <div className="nature-raise-groups">
+        {groups.map((group) => (
+          <section key={group.raise} className="nature-raise-group">
+            <div className="nature-raise-group-title">
+              <span>强化{STAT_LABELS[group.raise]}</span>
+              <span>{group.items.length} 个</span>
+            </div>
+            <div className="nature-decision-groups">
+              {NATURE_DECISION_ORDER.map((decision) => {
+                const items = group.items.filter((item) => item.decision === decision)
+                if (items.length === 0) return null
+                return (
+                  <div key={decision} className="nature-decision-group">
+                    <div className="nature-decision-group-title">
+                      <span className={`nature-candidate-tag ${decision}`}>
+                        {NATURE_DECISION_LABELS[decision]}
+                      </span>
+                      <span>{items.length} 个</span>
+                    </div>
+                    <ul className="nature-candidates-list">
+                      {items.map((c) => (
+                        <NatureCandidateListItem
+                          key={c.id || `${c.raise}-${c.lower}`}
+                          candidate={c}
+                          candidates={candidates}
+                          activeCandidate={activeCandidate}
+                          onSelect={onSelect}
+                        />
+                      ))}
+                    </ul>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+        ))}
       </div>
     </div>
   )
 }
 
-function CandidateRaiseGroups({ candidates, items, activeCandidate, onSelect }) {
-  const groups = groupByRaise(items)
-  return (
-    <div className="nature-raise-groups">
-      {groups.map((group) => (
-        <section key={group.raise} className="nature-raise-group">
-          <div className="nature-raise-group-title">
-            <span>强化{STAT_LABELS[group.raise]}</span>
-            <span>{group.items.length} 个</span>
-          </div>
-          <ul className="nature-candidates-list">
-            {group.items.map((c) => (
-              <NatureCandidateListItem
-                key={c.id || `${c.raise}-${c.lower}`}
-                candidate={c}
-                candidates={candidates}
-                activeCandidate={activeCandidate}
-                onSelect={onSelect}
-              />
-            ))}
-          </ul>
-        </section>
-      ))}
-    </div>
-  )
-}
+const NATURE_DECISION_ORDER = ['recommended', 'keepable', 'notRecommended']
 
 function groupByRaise(items = []) {
   const order = ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
@@ -319,7 +301,6 @@ function groupByRaise(items = []) {
     }))
     .filter((group) => group.items.length > 0)
 }
-
 
 function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSelect }) {
   const candidateIndex = candidates.indexOf(candidate)
@@ -339,35 +320,6 @@ function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSel
         <span className="nature-candidate-score">{candidate.score.toFixed(1)}</span>
       </button>
     </li>
-  )
-}
-
-function RejectedCandidateGroups({ candidates, activeCandidate, onSelect }) {
-  const groups = groupRejectedNatures(candidates)
-  if (groups.length === 0) return null
-  return (
-    <div className="nature-rejection-groups">
-      {groups.map((group) => (
-        <section key={group.key} className="nature-rejection-group">
-          <div className="nature-rejection-group-title">
-            <span>{group.title}</span>
-            <span>{group.items.length} 个</span>
-          </div>
-          <p className="nature-rejection-group-desc">{group.description}</p>
-          <ul className="nature-candidates-list nature-candidates-list-compact">
-            {group.items.map((c) => (
-              <NatureCandidateListItem
-                key={c.id || `${c.raise}-${c.lower}`}
-                candidate={c}
-                candidates={candidates}
-                activeCandidate={activeCandidate}
-                onSelect={onSelect}
-              />
-            ))}
-          </ul>
-        </section>
-      ))}
-    </div>
   )
 }
 
@@ -421,52 +373,609 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
       <NatureStatDistribution stats={baseStats} />
 
       {nature.skillProfile && (
-        <div className="nature-skill-note">
-          <strong>技能线索</strong>
-          <span>{nature.skillProfile.summary}</span>
-          <span className="nature-skill-breakdown">
-            物攻 {nature.skillProfile.breakdown.physicalCount} 个 / 魔攻 {nature.skillProfile.breakdown.magicalCount} 个 / 状态 {nature.skillProfile.breakdown.statusCount} 个；
-            攻击技能平均威力 {nature.skillProfile.breakdown.attackAveragePower.toFixed(0)}
-          </span>
-        </div>
+        <NatureSkillInsight skillProfile={nature.skillProfile} formulaAssist={nature.formulaAssist} />
       )}
 
       {speedProfile && (
         <div className={`nature-speed-note ${speedProfile.concern.level}`}>
           <strong>速度线：{speedProfile.concern.label}</strong>
-          <span>
-            基础速度 {speedProfile.base}（{speedProfile.baseTier}，最近锚点 {speedProfile.nearestAnchor}）。
-            {speedProfile.concern.reason}；{speedProfile.note}
-          </span>
+          <span>基础速度 {speedProfile.base}（{speedProfile.baseTier}）。</span>
+          <details className="nature-inline-disclosure">
+            <summary>查看速度线解释</summary>
+            <span>
+              最近锚点 {speedProfile.nearestAnchor}。{speedProfile.concern.reason}；{speedProfile.note}
+            </span>
+          </details>
         </div>
       )}
 
-      <div className="nature-explain-grid">
-        <div>
-          <div className="nature-explain-title">推荐理由</div>
-          <ul className="nature-explain-list">
-            {nature.reasons.map((reason) => (
-              <li key={reason}>{reason}</li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <div className="nature-explain-title">风险提示</div>
-          {nature.warnings.length > 0 ? (
-            <ul className="nature-explain-list warning">
-              {nature.warnings.map((warning) => (
-                <li key={warning}>{warning}</li>
+      <details className="nature-detail-disclosure">
+        <summary>查看完整推荐理由 / 风险</summary>
+        <div className="nature-explain-grid">
+          <div>
+            <div className="nature-explain-title">推荐理由</div>
+            <ul className="nature-explain-list">
+              {nature.reasons.map((reason) => (
+                <li key={reason}>{reason}</li>
               ))}
             </ul>
-          ) : (
-            <p className="nature-explain-empty">暂无明显硬性风险。</p>
-          )}
+          </div>
+          <div>
+            <div className="nature-explain-title">风险提示</div>
+            {nature.warnings.length > 0 ? (
+              <ul className="nature-explain-list warning">
+                {nature.warnings.map((warning) => (
+                  <li key={warning}>{warning}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="nature-explain-empty">暂无明显硬性风险。</p>
+            )}
+          </div>
         </div>
-      </div>
+      </details>
 
       <NatureStatsBars nature={nature} baseStats={baseStats} adjustedStats={adjustedStats} />
     </div>
   )
+}
+
+
+function NatureSkillInsight({ skillProfile, formulaAssist }) {
+  const breakdown = skillProfile.breakdown || {}
+  const routeLabel = {
+    physical: '物理路线',
+    magical: '魔法路线',
+    mixed: '双攻接近',
+    unknown: '未知',
+  }[skillProfile.attackMode] || '未知'
+  const formulaRouteLabel = {
+    physical: '物理更高',
+    magical: '魔法更高',
+    mixed: '物理/魔法接近',
+    unknown: '未知',
+  }[formulaAssist?.routeHint] || '未知'
+
+  return (
+    <div className="nature-skill-note">
+      <strong>技能线索</strong>
+      <span>{skillProfile.summary}</span>
+      <details className="nature-inline-disclosure nature-skill-breakdown">
+        <summary>技能数值 / 公式辅助</summary>
+        <div className="nature-skill-metrics">
+          <div>
+            <span>技能路线</span>
+            <strong>{routeLabel}</strong>
+            <small>路线差 {formatSignedNumber(skillProfile.routeGap)}</small>
+          </div>
+          <div>
+            <span>技能数量</span>
+            <strong>物理 {breakdown.physicalCount || 0} / 魔法 {breakdown.magicalCount || 0}</strong>
+            <small>状态 {breakdown.statusCount || 0}；攻击占比 {formatPercent(breakdown.attackShare)}</small>
+          </div>
+          <div>
+            <span>攻击占比</span>
+            <strong>物理 {formatPercent(breakdown.physicalShare)} / 魔法 {formatPercent(breakdown.magicalShare)}</strong>
+            <small>路线分 {formatNumber(breakdown.physicalRouteScore)} : {formatNumber(breakdown.magicalRouteScore)}</small>
+          </div>
+          <div>
+            <span>平均威力</span>
+            <strong>物理 {formatNumber(breakdown.physicalAveragePower)} / 魔法 {formatNumber(breakdown.magicalAveragePower)}</strong>
+            <small>攻击均值 {formatNumber(breakdown.attackAveragePower)}</small>
+          </div>
+          {formulaAssist && (
+            <div>
+              <span>公式辅助</span>
+              <strong>{formulaRouteLabel}</strong>
+              <small>
+                物理线 {formatNumber(formulaAssist.physicalOutput)} / 魔法线 {formatNumber(formulaAssist.magicalOutput)}
+                {formulaAssist.outputRatio != null ? `；比值 ${formatNumber(formulaAssist.outputRatio)}` : ''}
+              </small>
+            </div>
+          )}
+          {formulaAssist && (
+            <div>
+              <span>耐久辅助</span>
+              <strong>物耐 {formatNumber(formulaAssist.physicalBulk)} / 魔耐 {formatNumber(formulaAssist.magicalBulk)}</strong>
+              <small>短板耐久 {formatNumber(formulaAssist.balancedBulk)}</small>
+            </div>
+          )}
+        </div>
+      </details>
+    </div>
+  )
+}
+
+function formatNumber(value) {
+  const number = Number(value)
+  if (!Number.isFinite(number)) return '0'
+  if (Math.abs(number) >= 1000) return Math.round(number).toLocaleString('zh-CN')
+  return Number.isInteger(number) ? String(number) : number.toFixed(1)
+}
+
+function formatSignedNumber(value) {
+  const number = Number(value)
+  if (!Number.isFinite(number)) return '0'
+  const text = formatNumber(Math.abs(number))
+  if (number > 0) return `+${text}`
+  if (number < 0) return `-${text}`
+  return text
+}
+
+function formatPercent(value) {
+  const number = Number(value)
+  if (!Number.isFinite(number)) return '0%'
+  return `${Math.round(number * 100)}%`
+}
+
+function NaturePveOverview({ candidates }) {
+  const summary = pveOverviewSummary(candidates)
+
+  if (!summary) return null
+
+  return (
+    <section className={`nature-pve-note ${summary.level}`} aria-label="PVE 培养投入提示">
+      <div className="nature-pve-note-header">
+        <strong>PVE 培养投入</strong>
+        <span className="nature-pve-rating">
+          {summary.badge}
+          <span className="nature-pve-stars" aria-label={`PVE 星级：${summary.stars} / 5`}>
+            {pveStarText(summary.stars)}
+          </span>
+        </span>
+      </div>
+      <div className="nature-pve-verdict">{summary.verdict}</div>
+      {summary.tags.length > 0 && (
+        <div className="nature-pve-tags">
+          {summary.tags.map((tag) => <span key={tag}>{tag}</span>)}
+        </div>
+      )}
+      <div className="nature-pve-meta">
+        {summary.role && <span>定位：{summary.role}</span>}
+        <span>主属性：{summary.primaryStat}</span>
+        <span>主性格：{summary.capture}</span>
+        {summary.alternatives && <span>备选：{summary.alternatives}</span>}
+      </div>
+      <details className="nature-inline-disclosure nature-pve-note-footnote">
+        <summary>详细依据 / 口径</summary>
+        <span>{summary.detail || '暂无额外机制依据。'} PVP 不计培养投入；异色/炫彩是否培养，看 PVE 强度、机制和队伍需求。</span>
+      </details>
+    </section>
+  )
+}
+
+const PVE_TIER_SCALE = [
+  { key: 'priority', label: '优先培养', level: 'priority' },
+  { key: 'suitable', label: '适合培养', level: 'good' },
+  { key: 'situational', label: '按需培养', level: 'situational' },
+  { key: 'watch', label: '可留观望', level: 'watch' },
+  { key: 'skip', label: '不建议投入', level: 'risk' },
+]
+
+function pveStarText(stars = 0) {
+  const filled = Math.max(0, Math.min(5, Number(stars) || 0))
+  return `${'★'.repeat(filled)}${'☆'.repeat(5 - filled)}`
+}
+
+function pveOverviewSummary(candidates = []) {
+  if (candidates.length === 0) return null
+  const recommended = candidates.filter((item) => item.decision === 'recommended')
+  const keepable = candidates.filter((item) => item.decision === 'keepable')
+  const pvePool = [...recommended, ...keepable]
+  const profile = pveSpeciesProfile(candidates)
+  const best = bestPveCandidate(pvePool, profile) || recommended[0] || keepable[0] || candidates[0]
+  const pairCandidates = pvePairedCandidates(pvePool, profile, best)
+  const primaryName = pveNatureSummary(best, pairCandidates) || '暂无推荐性格'
+  const primaryStat = pvePrimaryStatSummary(best, pairCandidates)
+  const alternatives = pveAlternativeSummary(best, pairCandidates)
+  const hasViableNature = pvePool.some((item) => item && !item.hardRisk)
+  const detail = profile.basis.length ? `依据：${profile.basis.join('；')}。` : ''
+  const tier = PVE_TIER_SCALE.find((item) => item.key === profile.tier) || PVE_TIER_SCALE.at(-1)
+  const tierIndex = PVE_TIER_SCALE.findIndex((item) => item.key === tier.key) + 1
+  const stars = Math.max(1, PVE_TIER_SCALE.length - tierIndex + 1)
+
+  if (!hasViableNature) {
+    return {
+      level: 'risk',
+      badge: profile.score >= 5 ? '需换性格' : '不建议投入',
+      verdict: profile.score >= 5
+        ? '精灵机制有 PVE 价值，但当前候选性格风险过高，建议另抓。'
+        : '当前未发现足够 PVE 机制或可用性格，先收藏不投入。',
+      capture: '无',
+      primaryStat: '无',
+      role: profile.label,
+      alternatives: '',
+      tags: profile.tags,
+      detail,
+      tierKey: profile.score >= 5 ? 'skip' : tier.key,
+      stars: 1,
+    }
+  }
+
+  if (profile.tier === 'priority') {
+    return {
+      level: 'priority',
+      badge: '优先培养',
+      verdict: `${profile.label}，资源投入优先级高；优先看${primaryName}。`,
+      capture: primaryName,
+      primaryStat,
+      role: profile.label,
+      alternatives,
+      tags: profile.tags,
+      detail,
+      tierKey: tier.key,
+      stars,
+    }
+  }
+
+  if (profile.tier === 'suitable') {
+    return {
+      level: 'good',
+      badge: '适合培养',
+      verdict: `${profile.label}，适合 PVE 投入；性格看${primaryName}。`,
+      capture: primaryName,
+      primaryStat,
+      role: profile.label,
+      alternatives,
+      tags: profile.tags,
+      detail,
+      tierKey: tier.key,
+      stars,
+    }
+  }
+
+  if (profile.tier === 'situational') {
+    return {
+      level: 'situational',
+      badge: '按需培养',
+      verdict: `${profile.label}，有对应副本/队伍需求再投入；当前可看${primaryName}。`,
+      capture: primaryName,
+      primaryStat,
+      role: profile.label,
+      alternatives,
+      tags: profile.tags,
+      detail,
+      tierKey: tier.key,
+      stars,
+    }
+  }
+
+  if (profile.tier === 'skip') {
+    return {
+      level: 'risk',
+      badge: '不建议投入',
+      verdict: '当前没有识别到足够 PVE 投入价值；捕捉可留不等于值得培养。',
+      capture: primaryName,
+      primaryStat,
+      role: profile.label,
+      alternatives,
+      tags: profile.tags,
+      detail,
+      tierKey: tier.key,
+      stars,
+    }
+  }
+
+  return {
+    level: 'watch',
+    badge: '可留观望',
+    verdict: `${profile.label}，捕捉可留不等于 PVE 优先；先收藏观望。`,
+    capture: primaryName,
+    primaryStat,
+    role: profile.label,
+    alternatives,
+    tags: profile.tags,
+    detail,
+    tierKey: tier.key,
+    stars,
+  }
+}
+
+function pvePairedCandidates(candidates = [], profile = null, best = null) {
+  const stats = profile?.pairedStats || []
+  if (stats.length === 0) return []
+  return stats
+    .map((stat) => bestPveCandidate(candidates.filter((candidate) => candidate.raise === stat), profile))
+    .filter((candidate) => candidate && candidate !== best)
+    .filter((candidate, index, list) => list.findIndex((item) => natureName(item) === natureName(candidate)) === index)
+}
+
+function pveNatureSummary(best, alternatives = []) {
+  const names = [best, ...alternatives].filter(Boolean).map(natureName)
+  return [...new Set(names)].join(' / ')
+}
+
+function pvePrimaryStatSummary(best, alternatives = []) {
+  const stats = [best, ...alternatives]
+    .filter(Boolean)
+    .map((candidate) => STAT_LABELS[candidate.raise])
+    .filter(Boolean)
+  return [...new Set(stats)].join(' / ') || '无'
+}
+
+function pveAlternativeSummary(best, alternatives = []) {
+  const bestName = best ? natureName(best) : ''
+  const names = alternatives
+    .map(natureName)
+    .filter((name) => name && name !== bestName)
+  return [...new Set(names)].join(' / ')
+}
+
+function bestPveCandidate(candidates = [], profile = null) {
+  const preferredStats = profile?.preferredStats || []
+  return [...candidates]
+    .filter((candidate) => candidate && !candidate.hardRisk)
+    .sort((a, b) => {
+      const preferredDiff = preferredStatRank(b, preferredStats) - preferredStatRank(a, preferredStats)
+      if (preferredDiff !== 0) return preferredDiff
+      return pveCandidateRank(b, profile) - pveCandidateRank(a, profile) || b.score - a.score
+    })[0] || null
+}
+
+function preferredStatRank(candidate, preferredStats = []) {
+  const index = preferredStats.indexOf(candidate?.raise)
+  return index < 0 ? 0 : preferredStats.length - index
+}
+
+function pveCandidateRank(candidate, profile = null) {
+  const breakdown = candidate.skillProfile?.breakdown || {}
+  const raisesAttack = ['patk', 'matk'].includes(candidate.raise)
+  const raisesSpeed = candidate.raise === 'spd'
+  const raisesBulk = ['hp', 'pdef', 'mdef'].includes(candidate.raise)
+  const hasOutputRole = candidate.roleTags?.some((role) =>
+    ['mixedAttacker', 'physicalAttacker', 'magicalAttacker'].includes(role),
+  )
+  const hasBulkRole = candidate.roleTags?.some((role) =>
+    ['bulky', 'support', 'physicalWall', 'magicalWall'].includes(role),
+  )
+  const hasSpeedRole = candidate.roleTags?.some((role) => role === 'fastAttacker')
+  const strongOutput =
+    Number(breakdown.attackAveragePower) >= 80 &&
+    Number(breakdown.attackCount) >= 8 &&
+    hasOutputRole
+  const riskySpeedBranch =
+    raisesSpeed &&
+    candidate.warnings.some((warning) => /双攻|弱化另一攻|削弱.*攻击|冲突/.test(warning))
+
+  let rank = candidate.score
+  if (raisesAttack && strongOutput && profile?.tier === 'priority') rank += 36
+  if (raisesAttack && strongOutput && profile?.tier !== 'priority') rank += 16
+  if (raisesBulk && hasBulkRole) rank += profile?.mechanism === 'tank' ? 36 : 24
+  if (raisesSpeed && hasSpeedRole) rank += profile?.mechanism === 'carry' ? 18 : 10
+  if (raisesSpeed && !hasSpeedRole) rank -= 28
+  if (riskySpeedBranch) rank -= 26
+  if (candidate.warnings.length > 0) rank -= Math.min(candidate.warnings.length * 4, 24)
+  return rank
+}
+
+function pveSpeciesProfile(candidates = []) {
+  const sample = candidates.find(Boolean) || {}
+  const skillProfile = sample.skillProfile || {}
+  const breakdown = skillProfile.breakdown || {}
+  const roleTags = sample.roleTags || []
+  const stats = baseStatsFromCandidate(sample)
+  const texts = skillProfile.texts || []
+  const joined = texts.join('；')
+  const hasRecommendedCore = candidates.some((item) =>
+    item.decision === 'recommended' &&
+    !item.hardRisk &&
+    ['patk', 'matk', 'spd'].includes(item.raise) &&
+    item.warnings.length === 0
+  )
+  const attackCount = Number(breakdown.attackCount) || 0
+  const attackAveragePower = Number(breakdown.attackAveragePower) || 0
+  const physicalCount = Number(breakdown.physicalCount) || 0
+  const magicalCount = Number(breakdown.magicalCount) || 0
+  const physicalShare = Number(breakdown.physicalShare) || 0
+  const magicalShare = Number(breakdown.magicalShare) || 0
+  const physicalRouteScore = Number(breakdown.physicalRouteScore) || 0
+  const magicalRouteScore = Number(breakdown.magicalRouteScore) || 0
+  const strongAttackStat = Math.max(stats.patk || 0, stats.matk || 0)
+  const hasSingleOutputRole = roleTags.some((role) => ['physicalAttacker', 'magicalAttacker'].includes(role))
+  const hasFastRole = roleTags.includes('fastAttacker')
+  const hasBulkRole = roleTags.some((role) =>
+    ['bulky', 'support', 'physicalWall', 'magicalWall', 'energyCycle'].includes(role),
+  )
+  const dotPattern = /中毒|剧毒|灼烧|烧伤|寄生|星陨|持续伤害|灼烧.*层|中毒.*层|回合结束.*(?:中毒|灼烧|寄生|星陨|持续伤害|伤害)/
+  const dotCount = texts.filter((text) => dotPattern.test(text)).length
+  const dotShare = texts.length ? dotCount / texts.length : 0
+  const hasDot = dotCount >= 4 && (dotShare >= 0.18 || dotCount >= 8)
+  const hasPercentOrTrueDamage = /百分比|最大生命|生命值上限|真实伤害|真伤|固定伤害/.test(joined)
+  const hasLoop = Boolean(skillProfile.energy || /能耗-|能耗降低|回复\d*能量|获得\d*能量|自动回能|技能循环|连续释放/.test(joined))
+  const hasTeamUtility = Boolean(skillProfile.boostTransfer)
+  const hasSustain = Boolean(skillProfile.sustain || skillProfile.defense)
+  const hasControl = Boolean(skillProfile.control)
+  const hasAdvancedMechanism = hasDot || hasPercentOrTrueDamage || hasTeamUtility
+  const hasFocusedOutputRoute =
+    (
+      (stats.patk || 0) >= 120 &&
+      physicalCount >= 8 &&
+      physicalShare >= 0.65 &&
+      physicalRouteScore >= 12
+    ) ||
+    (
+      (stats.matk || 0) >= 120 &&
+      magicalCount >= 8 &&
+      magicalShare >= 0.65 &&
+      magicalRouteScore >= 12
+    )
+  const highOutputEvidence =
+    hasSingleOutputRole &&
+    strongAttackStat >= 115 &&
+    attackCount >= 4 &&
+    (attackAveragePower >= 75 || hasFocusedOutputRoute)
+  const fastCarryEvidence =
+    highOutputEvidence &&
+    hasFastRole &&
+    (stats.spd || 0) >= 110 &&
+    hasRecommendedCore
+  const carrySuitableEvidence =
+    highOutputEvidence &&
+    (hasFastRole || strongAttackStat >= 130 || attackAveragePower >= 90)
+  const mechanismScore =
+    (hasDot ? 2 : 0) +
+    (hasPercentOrTrueDamage ? 2 : 0) +
+    (hasLoop ? 1.5 : 0) +
+    (hasTeamUtility ? 2 : 0) +
+    (hasSustain ? 1 : 0) +
+    (hasControl ? 0.8 : 0)
+  const basis = [
+    highOutputEvidence && `输出线：主攻 ${strongAttackStat} / 攻击技能 ${attackCount} / 均威 ${formatNumber(attackAveragePower)}`,
+    hasDot && '存在 DOT/层数/回合结束触发线索',
+    hasPercentOrTrueDamage && '存在百分比或真伤线索',
+    hasLoop && '存在能量/能耗循环线索',
+    hasTeamUtility && '存在队伍增益或传递线索',
+    hasSustain && '存在续航/减伤/站场线索',
+    hasControl && '存在控制/异常线索',
+  ].filter(Boolean)
+  const tags = [
+    hasDot && 'DOT/层数',
+    hasPercentOrTrueDamage && '百分比/真伤',
+    hasTeamUtility && '队伍插件',
+    hasLoop && '能量循环',
+    hasSustain && '续航站场',
+    hasControl && !hasDot && '控制异常',
+  ].filter(Boolean).slice(0, 4)
+
+  if (fastCarryEvidence || (highOutputEvidence && hasRecommendedCore && mechanismScore < 2.5)) {
+    return {
+      tier: 'priority',
+      mechanism: 'carry',
+      label: hasFastRole ? '高速主 C / 清场输出' : '主 C 输出',
+      preferredStats: pvePreferredStats(skillProfile, stats, 'carry'),
+      pairedStats: pveCarryPairedStats(skillProfile, stats),
+      score: 8 + mechanismScore,
+      basis,
+      tags,
+    }
+  }
+
+  if (carrySuitableEvidence) {
+    return {
+      tier: 'suitable',
+      mechanism: 'carry',
+      label: hasFastRole ? '高速输出 / PVE 打手' : '输出打手 / PVE 补强',
+      preferredStats: pvePreferredStats(skillProfile, stats, 'carry'),
+      pairedStats: pveCarryPairedStats(skillProfile, stats),
+      score: 6 + mechanismScore,
+      basis,
+      tags: tags.filter((tag) => tag !== '续航站场' && tag !== '控制异常'),
+    }
+  }
+
+  if (hasPercentOrTrueDamage || hasTeamUtility || (hasDot && mechanismScore >= 3.5)) {
+    const label = hasDot
+      ? 'DOT 消耗位'
+      : hasPercentOrTrueDamage
+        ? '机制消耗位'
+        : '功能循环 / 队伍插件'
+    return {
+      tier: 'suitable',
+      mechanism: hasDot || hasPercentOrTrueDamage ? 'dot' : 'utility',
+      label,
+      preferredStats: pvePreferredStats(skillProfile, stats, hasDot || hasPercentOrTrueDamage ? 'dot' : 'utility'),
+      pairedStats: highOutputEvidence ? pveCarryPairedStats(skillProfile, stats) : [],
+      score: 6 + mechanismScore,
+      basis,
+      tags,
+    }
+  }
+
+  if (
+    (hasBulkRole && (hasSustain || mechanismScore >= 1.5)) ||
+    (hasLoop && hasControl) ||
+    (hasLoop && hasSustain)
+  ) {
+    const utilityLabel = hasAdvancedMechanism ? '功能循环 / 机制位' : '功能循环 / 对策位'
+    return {
+      tier: 'situational',
+      mechanism: hasLoop && (hasControl || hasSustain) ? 'utility' : 'tank',
+      label: hasLoop && (hasControl || hasSustain) ? utilityLabel : '站场功能 / 按需承伤位',
+      preferredStats: pvePreferredStats(skillProfile, stats, hasLoop && (hasControl || hasSustain) ? 'utility' : 'tank'),
+      pairedStats: highOutputEvidence ? pveCarryPairedStats(skillProfile, stats) : [],
+      score: 4 + mechanismScore,
+      basis,
+      tags,
+    }
+  }
+
+  if (highOutputEvidence || hasLoop || hasControl || hasSustain) {
+    return {
+      tier: 'watch',
+      mechanism: highOutputEvidence ? 'carry' : 'utility',
+      label: highOutputEvidence ? '输出补位' : '功能补位',
+      preferredStats: pvePreferredStats(skillProfile, stats, highOutputEvidence ? 'carry' : 'utility'),
+      pairedStats: highOutputEvidence ? pveCarryPairedStats(skillProfile, stats) : [],
+      score: 3 + mechanismScore,
+      basis,
+      tags,
+    }
+  }
+
+  return {
+    tier: 'skip',
+    mechanism: 'unknown',
+    label: 'PVE 机制不明确',
+    preferredStats: [],
+    score: mechanismScore,
+    basis,
+    tags,
+  }
+}
+
+function baseStatsFromCandidate(candidate = {}) {
+  return Object.fromEntries(STATS_DIMENSIONS.map((dimension) => {
+    const adjusted = Number(candidate.adjustedStats?.[dimension.key]) || 0
+    const delta = Number(candidate.deltas?.[dimension.key]) || 0
+    return [dimension.key, adjusted - delta]
+  }))
+}
+
+function pvePreferredStats(skillProfile = {}, stats = {}, mechanism = 'utility') {
+  const mode = skillProfile.attackMode
+  const attackStat = mode === 'physical' ? 'patk' : mode === 'magical' ? 'matk' : null
+  const speedFirst = (stats.spd || 0) >= 100 || skillProfile.speedRequired || skillProfile.control
+  if (mechanism === 'carry') {
+    return [
+      speedFirst && 'spd',
+      attackStat,
+      'hp',
+      'pdef',
+      'mdef',
+    ].filter(Boolean)
+  }
+  if (mechanism === 'dot') {
+    return [
+      speedFirst && 'spd',
+      'hp',
+      (stats.mdef || 0) >= (stats.pdef || 0) ? 'mdef' : 'pdef',
+      attackStat,
+    ].filter(Boolean)
+  }
+  if (mechanism === 'tank') {
+    return [
+      'hp',
+      (stats.pdef || 0) <= (stats.mdef || 0) ? 'pdef' : 'mdef',
+      (stats.pdef || 0) > (stats.mdef || 0) ? 'pdef' : 'mdef',
+    ]
+  }
+  return [
+    speedFirst && 'spd',
+    'hp',
+    attackStat,
+    'pdef',
+    'mdef',
+  ].filter(Boolean)
+}
+
+function pveCarryPairedStats(skillProfile = {}, stats = {}) {
+  const mode = skillProfile.attackMode
+  const attackStat = mode === 'physical' ? 'patk' : mode === 'magical' ? 'matk' : null
+  const speedUseful = (stats.spd || 0) >= 95 || skillProfile.speedRequired || skillProfile.control
+  return [
+    speedUseful && 'spd',
+    attackStat,
+  ].filter(Boolean)
 }
 
 function natureHighlights(nature) {
