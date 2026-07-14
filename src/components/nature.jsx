@@ -517,18 +517,14 @@ function NaturePveOverview({ candidates }) {
     <section className={`nature-pve-note ${summary.level}`} aria-label="PVE 培养投入提示">
       <div className="nature-pve-note-header">
         <strong>PVE 培养投入</strong>
-        <span className="nature-pve-rating">{summary.badge} · {summary.tierIndex}/{summary.tierTotal}</span>
+        <span className="nature-pve-rating">
+          {summary.badge}
+          <span className="nature-pve-stars" aria-label={`PVE 星级：${summary.stars} / 5`}>
+            {pveStarText(summary.stars)}
+          </span>
+        </span>
       </div>
       <div className="nature-pve-verdict">{summary.verdict}</div>
-      <div className="nature-pve-tier-track" aria-label={`PVE 档位：${summary.tierIndex}/${summary.tierTotal}`}>
-        {PVE_TIER_SCALE.map((tier) => (
-          <span
-            key={tier.key}
-            className={`nature-pve-tier-dot ${tier.key === summary.tierKey ? 'active' : ''}`}
-            title={tier.label}
-          />
-        ))}
-      </div>
       {summary.tags.length > 0 && (
         <div className="nature-pve-tags">
           {summary.tags.map((tag) => <span key={tag}>{tag}</span>)}
@@ -556,6 +552,11 @@ const PVE_TIER_SCALE = [
   { key: 'skip', label: '不建议投入', level: 'risk' },
 ]
 
+function pveStarText(stars = 0) {
+  const filled = Math.max(0, Math.min(5, Number(stars) || 0))
+  return `${'★'.repeat(filled)}${'☆'.repeat(5 - filled)}`
+}
+
 function pveOverviewSummary(candidates = []) {
   if (candidates.length === 0) return null
   const recommended = candidates.filter((item) => item.decision === 'recommended')
@@ -571,7 +572,7 @@ function pveOverviewSummary(candidates = []) {
   const detail = profile.basis.length ? `依据：${profile.basis.join('；')}。` : ''
   const tier = PVE_TIER_SCALE.find((item) => item.key === profile.tier) || PVE_TIER_SCALE.at(-1)
   const tierIndex = PVE_TIER_SCALE.findIndex((item) => item.key === tier.key) + 1
-  const tierTotal = PVE_TIER_SCALE.length
+  const stars = Math.max(1, PVE_TIER_SCALE.length - tierIndex + 1)
 
   if (!hasViableNature) {
     return {
@@ -587,8 +588,7 @@ function pveOverviewSummary(candidates = []) {
       tags: profile.tags,
       detail,
       tierKey: profile.score >= 5 ? 'skip' : tier.key,
-      tierIndex: PVE_TIER_SCALE.length,
-      tierTotal,
+      stars: 1,
     }
   }
 
@@ -604,8 +604,7 @@ function pveOverviewSummary(candidates = []) {
       tags: profile.tags,
       detail,
       tierKey: tier.key,
-      tierIndex,
-      tierTotal,
+      stars,
     }
   }
 
@@ -621,8 +620,7 @@ function pveOverviewSummary(candidates = []) {
       tags: profile.tags,
       detail,
       tierKey: tier.key,
-      tierIndex,
-      tierTotal,
+      stars,
     }
   }
 
@@ -638,8 +636,7 @@ function pveOverviewSummary(candidates = []) {
       tags: profile.tags,
       detail,
       tierKey: tier.key,
-      tierIndex,
-      tierTotal,
+      stars,
     }
   }
 
@@ -654,8 +651,7 @@ function pveOverviewSummary(candidates = []) {
     tags: profile.tags,
     detail,
     tierKey: tier.key,
-    tierIndex,
-    tierTotal,
+    stars,
   }
 }
 
@@ -758,7 +754,7 @@ function pveSpeciesProfile(candidates = []) {
   const hasBulkRole = roleTags.some((role) =>
     ['bulky', 'support', 'physicalWall', 'magicalWall', 'energyCycle'].includes(role),
   )
-  const hasDot = /中毒|剧毒|灼烧|烧伤|寄生|星陨|持续伤害|回合结束.*触发|触发次数|每回合.*伤害|每有.*层/.test(joined)
+  const hasDot = /中毒|剧毒|灼烧|烧伤|寄生|星陨|持续伤害|灼烧.*层|中毒.*层|回合结束.*(?:中毒|灼烧|寄生|星陨|持续伤害|伤害)/.test(joined)
   const hasPercentOrTrueDamage = /百分比|最大生命|生命值上限|真实伤害|真伤|固定伤害/.test(joined)
   const hasLoop = Boolean(skillProfile.energy || /能耗-|能耗降低|回复\d*能量|获得\d*能量|自动回能|技能循环|连续释放/.test(joined))
   const hasTeamUtility = Boolean(skillProfile.boostTransfer || /继承|传递|给予队友|下个入场|队友|全队|换入/.test(joined))
@@ -793,12 +789,11 @@ function pveSpeciesProfile(candidates = []) {
   const tags = [
     hasDot && 'DOT/层数',
     hasPercentOrTrueDamage && '百分比/真伤',
-    hasLoop && '能量循环',
     hasTeamUtility && '队伍插件',
+    hasLoop && '能量循环',
     hasSustain && '续航站场',
-    hasControl && '控制异常',
-    highOutputEvidence && '输出补位',
-  ].filter(Boolean)
+    hasControl && !hasDot && '控制异常',
+  ].filter(Boolean).slice(0, 4)
 
   if (fastCarryEvidence || (highOutputEvidence && hasRecommendedCore && mechanismScore < 2.5)) {
     return {

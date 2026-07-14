@@ -1871,6 +1871,9 @@ img {
 
 .nature-pve-rating {
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   border-radius: 999px;
   padding: 4px 12px;
   background: #d97706;
@@ -1880,6 +1883,11 @@ img {
   font-weight: 800;
 }
 
+.nature-pve-stars {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
 .nature-pve-note p {
   margin: 0;
 }
@@ -1887,24 +1895,6 @@ img {
 .nature-pve-verdict {
   font-size: 14px;
   font-weight: 800;
-}
-
-.nature-pve-tier-track {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 4px;
-}
-
-.nature-pve-tier-dot {
-  height: 5px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.7);
-  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
-}
-
-.nature-pve-tier-dot.active {
-  background: currentColor;
-  box-shadow: none;
 }
 
 .nature-pve-tags {
