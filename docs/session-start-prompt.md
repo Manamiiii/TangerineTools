@@ -4,12 +4,13 @@
 
 ## 项目现状
 
-TangerineTools 是本地优先的个人资料管理 Web App（Vite + React 19 + Dexie.js），纯静态、无后端。当前默认演示场景为「洛克王国世界」，工作台包含四个工具：
+TangerineTools 是本地优先的个人资料管理 Web App（Vite + React 19 + Dexie.js），纯静态、无后端。当前默认演示场景为「洛克王国世界」，工作台包含五个工具：
 
 - 资料库 `catalog`
 - 收集记录 `owned`
 - 统计视图 `stock`
 - 性格推荐 `nature`
+- 孵蛋推荐 `breeding`
 
 洛克王国预置资料已接入可信 `d.json`，并由 `scripts/sync-rock-kingdom-preset.mjs` 生成：
 

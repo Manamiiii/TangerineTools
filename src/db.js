@@ -48,13 +48,15 @@ export async function ensureSeeded() {
 // 洛克王国场景经历了几轮默认工具变更：
 // - 第一轮：只启用资料库 -> ['catalog']
 // - 第二轮：加入统计视图与性格推荐 -> ['catalog', 'stock', 'nature']
-// - 当前：再加入收集记录 -> ['catalog', 'owned', 'stock', 'nature']
+// - 第三轮：再加入收集记录 -> ['catalog', 'owned', 'stock', 'nature']
+// - 当前：加入孵蛋推荐 -> ['catalog', 'owned', 'stock', 'nature', 'breeding']
 // 迁移策略：只在场景 tools 恰好等于某一版旧默认值时，自动补齐到当前默认值。
 // 只要用户手动改过 tools（哪怕只是关掉了资料库或加入了不同工具的组合），
 // 一律不覆盖，尊重用户的选择。场景已被用户删除时跳过。
 const LEGACY_DEFAULT_SCENE_TOOLS_LIST = [
   ['catalog'],
   ['catalog', 'stock', 'nature'],
+  ['catalog', 'owned', 'stock', 'nature'],
 ]
 
 function arraysEqual(a, b) {

@@ -11,6 +11,7 @@ import { CatalogTool } from './components/dataTables.jsx'
 import { NatureTool } from './components/nature.jsx'
 import { StockTool } from './components/stock.jsx'
 import { OwnedTool } from './components/owned.jsx'
+import { BreedingTool } from './components/breeding.jsx'
 import { ConfirmDialog, IconButton } from './components/common.jsx'
 
 // 工具 value -> 对应的工具组件。只有 constants.js 中标记 ready:true 的工具
@@ -20,6 +21,7 @@ const TOOL_COMPONENTS = {
   owned: OwnedTool,
   nature: NatureTool,
   stock: StockTool,
+  breeding: BreedingTool,
 }
 
 function useHashRoute() {

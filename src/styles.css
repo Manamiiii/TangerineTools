@@ -3211,3 +3211,20 @@ img {
   font-size: 11px;
   line-height: 1.4;
 }
+
+/* 孵蛋推荐工具 */
+.breeding-tool { display: flex; flex-direction: column; gap: 16px; }
+.breeding-hero, .breeding-notes, .breeding-batch-title, .breeding-pair-head, .breeding-parent { display: flex; align-items: center; gap: 10px; }
+.breeding-hero { justify-content: space-between; padding: 18px; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); }
+.breeding-hero h2 { margin: 0 0 6px; }
+.breeding-hero p, .breeding-pair p { margin: 0; color: var(--muted); }
+.breeding-notes { flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+.breeding-notes span { padding: 8px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); }
+.breeding-batch { padding: 16px; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); }
+.breeding-batch-title { justify-content: space-between; margin-bottom: 12px; }
+.breeding-batch-title span { color: var(--muted); font-size: 13px; }
+.breeding-pairs { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.breeding-pair { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface-subtle); }
+.breeding-pair-head { justify-content: space-between; font-size: 13px; color: var(--muted); }
+.breeding-parent { flex-wrap: wrap; font-size: 13px; }
+.breeding-parent span { padding: 3px 7px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); }
