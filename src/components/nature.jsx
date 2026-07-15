@@ -763,6 +763,7 @@ function pveSpeciesProfile(candidates = []) {
     item.warnings.length === 0
   )
   const attackCount = Number(breakdown.attackCount) || 0
+  const attackShare = Number(breakdown.attackShare) || 0
   const attackAveragePower = Number(breakdown.attackAveragePower) || 0
   const physicalCount = Number(breakdown.physicalCount) || 0
   const magicalCount = Number(breakdown.magicalCount) || 0
@@ -808,7 +809,8 @@ function pveSpeciesProfile(candidates = []) {
     highOutputEvidence &&
     hasFastRole &&
     (stats.spd || 0) >= 110 &&
-    hasRecommendedCore
+    hasRecommendedCore &&
+    (attackShare >= 0.45 || attackAveragePower >= 90)
   const carrySuitableEvidence =
     highOutputEvidence &&
     (hasFastRole || strongAttackStat >= 130 || attackAveragePower >= 90)
