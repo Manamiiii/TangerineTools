@@ -3,8 +3,9 @@
 // 未填写时按连续编号/基础名做保守推断，避免改 Dexie schema 或写死个体数据。
 
 import { evaluateAllNatures, extractSkillInfoFromReferenceRows, extractSkillRefsFromRow, extractStatsFromRow, extractTraitTagsFromRow } from './nature.js'
+import { BILI_EGG_GROUP_SOURCE_URL } from './breedingData.js'
 
-export const EGG_GROUP_SOURCE_URL = 'https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8'
+export const EGG_GROUP_SOURCE_URL = BILI_EGG_GROUP_SOURCE_URL
 
 const FEMALE = 'female'
 const MALE = 'male'
@@ -64,7 +65,7 @@ export function buildOwnedCreatures({ ownedRows = [], catalogRows = [], catalogF
       owned,
       gender: owned.values?.gender,
       nature: owned.values?.nature,
-      shiny: yes(owned.values?.shiny ?? catalog.values?.shiny),
+      shiny: yes(owned.values?.shiny),
       colorful: yes(owned.values?.colorful),
       catalog: {
         row: catalog,

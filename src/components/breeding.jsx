@@ -1,11 +1,15 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { db } from '../db.js'
+import { db, ensureOwnedTable } from '../db.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
 import { buildOwnedCreatures, EGG_GROUP_SOURCE_URL, recommendBreedingBatches } from '../domain/breeding.js'
 import { EmptyState } from './common.jsx'
 
 export function BreedingTool({ scene }) {
+  useEffect(() => {
+    ensureOwnedTable(scene.id)
+  }, [scene.id])
+
   const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
   const skillTableId = ROCK_KINGDOM_PRESET.tables[1].id
   const ownedTable = useLiveQuery(() => db.catalogTables.where('sceneId').equals(scene.id).filter((t) => t.kind === 'owned').first(), [scene.id])

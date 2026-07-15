@@ -3,6 +3,7 @@
 // 避免把官方图鉴静态资源 URL 清单打进主 bundle。
 
 import { normalizeField } from '../utils.js'
+import { BILI_EGG_GROUP_NAMES } from '../domain/breedingData.js'
 
 const SEED_TIME = '2026-01-01T00:00:00.000Z'
 
@@ -204,22 +205,11 @@ const fields = [
   makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 17),
   makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 18),
   makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 19),
-  makeField({ key: 'eggGroups', name: '蛋组', type: 'multiselect', options: [
-    { value: '动物组', label: '动物组', color: '#f97316' },
-    { value: '拟人组', label: '拟人组', color: '#8b5cf6' },
-    { value: '巨灵组', label: '巨灵组', color: '#64748b' },
-    { value: '魔力组', label: '魔力组', color: '#d946ef' },
-    { value: '天空组', label: '天空组', color: '#38bdf8' },
-    { value: '两栖组', label: '两栖组', color: '#14b8a6' },
-    { value: '植物组', label: '植物组', color: '#22c55e' },
-    { value: '大地组', label: '大地组', color: '#a16207' },
-    { value: '妖精组', label: '妖精组', color: '#f472b6' },
-    { value: '昆虫组', label: '昆虫组', color: '#84cc16' },
-    { value: '软体组', label: '软体组', color: '#06b6d4' },
-    { value: '机械组', label: '机械组', color: '#475569' },
-    { value: '海洋组', label: '海洋组', color: '#0ea5e9' },
-    { value: '龙组', label: '龙组', color: '#ef4444' },
-  ] }, 20),
+  makeField({ key: 'eggGroups', name: '蛋组', type: 'multiselect', options: BILI_EGG_GROUP_NAMES.map((name, index) => ({
+    value: name,
+    label: name,
+    color: ['#64748b', '#f97316', '#8b5cf6', '#64748b', '#d946ef', '#38bdf8', '#14b8a6', '#22c55e', '#a16207', '#f472b6', '#84cc16', '#06b6d4', '#475569', '#0ea5e9', '#ef4444'][index] || '#64748b',
+  })) }, 20),
   makeField({ key: 'speciesGroup', name: '同种精灵', type: 'text' }, 21),
 ]
 
