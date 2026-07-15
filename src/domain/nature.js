@@ -1180,7 +1180,10 @@ function lowersOffRouteAttack(item) {
 
 function shouldHardDominateWithOffRouteAttack(item, best) {
   if (!lowersOffRouteAttack(best) || lowersOffRouteAttack(item)) return false
-  if (best.hardRisk || best.warnings.length > 0) return false
+  const bestBlockingWarnings = best.warnings.filter((warning) =>
+    !/单防强化需要生命\/双防综合基础/.test(warning),
+  )
+  if (best.hardRisk || bestBlockingWarnings.length > 0) return false
   if (item.lower === best.raise) return false
   return ['hp', 'pdef', 'mdef', 'spd', 'patk', 'matk'].includes(item.lower)
 }
