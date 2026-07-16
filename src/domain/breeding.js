@@ -9,6 +9,7 @@ export const EGG_GROUP_SOURCE_URL = BILI_EGG_GROUP_SOURCE_URL
 
 const FEMALE = 'female'
 const MALE = 'male'
+const UNBREEDABLE_GROUP = '无法孵蛋'
 
 function normText(value) {
   return String(value || '').trim()
@@ -37,7 +38,7 @@ function displayName(row) {
 }
 
 function getEggGroups(row) {
-  return splitGroups(row.values?.eggGroups || row.values?.eggGroup || row.values?.蛋组)
+  return splitGroups(row.values?.eggGroups || row.values?.eggGroup || row.values?.蛋组).filter((group) => group !== UNBREEDABLE_GROUP)
 }
 
 function commonGroup(a, b) {
@@ -95,10 +96,11 @@ function pairScore(pair, allBySpecies) {
 }
 
 export function recommendBreedingBatches(creatures, { batchCount = 5, pairsPerBatch = 5 } = {}) {
-  const males = creatures.filter((item) => item.gender === MALE && item.catalog.eggGroups.length)
-  const females = creatures.filter((item) => item.gender === FEMALE && item.catalog.eggGroups.length)
+  const shinyCreatures = creatures.filter((item) => item.shiny)
+  const males = shinyCreatures.filter((item) => item.gender === MALE && item.catalog.eggGroups.length)
+  const females = shinyCreatures.filter((item) => item.gender === FEMALE && item.catalog.eggGroups.length)
   const allBySpecies = new Map()
-  for (const item of creatures) {
+  for (const item of shinyCreatures) {
     const key = item.catalog.speciesKey
     allBySpecies.set(key, [...(allBySpecies.get(key) || []), item])
   }
