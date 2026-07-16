@@ -25,7 +25,7 @@ const EGG_GROUP_NAMES = [
   '软体组',
   '机械组',
   '海洋组',
-  '龙组',
+  '飞龙组',
 ]
 
 function decodeHtml(text) {

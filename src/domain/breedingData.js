@@ -1,8 +1,8 @@
 // 孵蛋推荐预置辅助数据。
-// 来源：B 站洛克王国手游 WIKI「蛋组计算器」页面（2026-06-16 更新）可见的蛋组清单与精灵条目。
+// 来源：B 站洛克王国手游 WIKI「孵蛋组别查询」页面（2026-07-16 更新）可见的蛋组清单与精灵条目。
 // 这里只收录本仓库用于首屏验证和示例数据的安全子集；用户自定义非空字段不会被覆盖。
 
-export const BILI_EGG_GROUP_SOURCE_URL = 'https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8'
+export const BILI_EGG_GROUP_SOURCE_URL = 'https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2'
 
 export const BILI_EGG_GROUP_NAMES = [
   '无法孵蛋',
@@ -19,7 +19,7 @@ export const BILI_EGG_GROUP_NAMES = [
   '软体组',
   '机械组',
   '海洋组',
-  '龙组',
+  '飞龙组',
 ]
 
 export const BREEDING_PRESET_BY_NAME = {
