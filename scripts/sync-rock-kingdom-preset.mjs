@@ -24,6 +24,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '..')
 const outputPath = path.join(repoRoot, 'public/presets/rockKingdomRows.json')
 const skillOutputPath = path.join(repoRoot, 'public/presets/rockKingdomSkillRows.json')
+const breedingRowsPath = path.join(repoRoot, 'public/presets/rockKingdomBreedingRows.json')
 
 function fullUrl(assetPath) {
   if (!assetPath) return ''
@@ -358,6 +359,34 @@ function buildRows(data) {
   return { rows, baseCount, formCount }
 }
 
+async function applyBreedingSnapshot(rows) {
+  let payload
+  try {
+    payload = JSON.parse(await readFile(breedingRowsPath, 'utf8'))
+  } catch {
+    return { matched: 0, total: 0 }
+  }
+  const breedingRows = Array.isArray(payload?.rows) ? payload.rows : []
+  const byId = new Map(breedingRows.map((row) => [row.id, row]))
+  const byName = new Map(breedingRows.map((row) => [row.name, row]))
+  const byLine = new Map()
+  for (const row of breedingRows) {
+    if (row.speciesGroup && Array.isArray(row.eggGroups) && row.eggGroups.length > 0 && !byLine.has(row.speciesGroup)) {
+      byLine.set(row.speciesGroup, row)
+    }
+  }
+  let matched = 0
+  for (const row of rows) {
+    const line = row.values.breedingLine || row.values.evolutionLine?.[0]
+    const hit = byId.get(row.id) || byName.get(row.values.name) || byLine.get(line)
+    if (!hit?.eggGroups?.length) continue
+    row.values.eggGroups = [...hit.eggGroups]
+    row.values.speciesGroup = line || hit.speciesGroup || row.values.name
+    matched += 1
+  }
+  return { matched, total: breedingRows.length }
+}
+
 function printStats(rows, baseCount, formCount) {
   const imageUrlCount = rows.filter((row) => /^https?:\/\//.test(row.values.image)).length
   const traitIconUrlCount = rows.filter((row) => /^https?:\/\//.test(row.values.traitIcon)).length
@@ -376,8 +405,10 @@ function printStats(rows, baseCount, formCount) {
 const data = await loadSource()
 assertSourceShape(data)
 const { rows, baseCount, formCount } = buildRows(data)
+const breedingSnapshotStats = await applyBreedingSnapshot(rows)
 const skillRows = buildSkillRows(data)
 printStats(rows, baseCount, formCount)
+if (breedingSnapshotStats.total > 0) console.log(`breeding snapshot matched rows: ${breedingSnapshotStats.matched}/${rows.length} from ${breedingSnapshotStats.total} supplemental rows`)
 await writeFile(outputPath, `${JSON.stringify(rows, null, 2)}\n`, 'utf8')
 await writeFile(skillOutputPath, `${JSON.stringify(skillRows, null, 2)}\n`, 'utf8')
 console.log(`wrote ${path.relative(repoRoot, outputPath)}`)

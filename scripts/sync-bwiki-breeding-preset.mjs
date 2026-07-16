@@ -1,13 +1,12 @@
 #!/usr/bin/env node
-// 从 B 站洛克王国手游 WIKI 同步孵蛋推荐所需的蛋组/同种精灵补充数据。
-// 说明：BWiki 精灵图鉴是按 WIKI 页面生成的静态 HTML/页面数据快照，不是应用运行时实时 API。
-// 本脚本在维护者本地联网运行，产物写入 public/presets/rockKingdomBreedingRows.json；
+// 从 B 站洛克王国手游 WIKI 同步孵蛋推荐所需的蛋组/繁育谱系补充数据。
+// 说明：BWiki 页面数据是维护者手动同步的快照，不是应用运行时实时 API。
+// 本脚本联网运行，产物写入 public/presets/rockKingdomBreedingRows.json；
 // App 启动迁移时只用它补齐官方资料缺失的空字段，不覆盖官方/用户已有非空值。
 
 import { readFile, writeFile } from 'node:fs/promises'
-import { setTimeout as delay } from 'node:timers/promises'
 
-const INDEX_URL = 'https://wiki.biligame.com/rocom/%E7%B2%BE%E7%81%B5%E5%9B%BE%E9%89%B4'
+const EGG_GROUP_LIST_URL = 'https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2'
 const OUTPUT_FILE = new URL('../public/presets/rockKingdomBreedingRows.json', import.meta.url)
 const LOCAL_ROWS_FILE = new URL('../public/presets/rockKingdomRows.json', import.meta.url)
 const USER_AGENT = 'TangerineTools breeding preset sync (+local-first personal data tool)'
@@ -40,34 +39,17 @@ function decodeHtml(text) {
 }
 
 function stripTags(html) {
-  return decodeHtml(String(html || '').replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, '\n'))
+  return decodeHtml(String(html || '')
+    .replace(/<script[\s\S]*?<\/script>/g, '')
+    .replace(/<style[\s\S]*?<\/style>/g, '')
+    .replace(/<br\s*\/?>/g, '\n')
+    .replace(/<[^>]+>/g, '\n'))
 }
 
 async function fetchText(url) {
   const res = await fetch(url, { headers: { 'user-agent': USER_AGENT } })
   if (!res.ok) throw new Error(`HTTP ${res.status} ${url}`)
   return res.text()
-}
-
-function parseIndexLinks(html) {
-  const links = []
-  const seen = new Set()
-  const regex = /href="\/rocom\/([^"#?]+)"[^>]*>([^<]+)<\/a>/g
-  let match
-  while ((match = regex.exec(html))) {
-    const slug = decodeURIComponent(match[1])
-    const name = decodeHtml(match[2]).trim()
-    if (!name) continue
-    if (seen.has(name)) continue
-    seen.add(name)
-    links.push({ name, url: `https://wiki.biligame.com/rocom/${encodeURIComponent(slug)}` })
-  }
-  return links
-}
-
-function parseEggGroupsFromText(text) {
-  const groups = EGG_GROUP_NAMES.filter((group) => new RegExp(`(^|[^一-龥])${group}([^一-龥]|$)`).test(text))
-  return [...new Set(groups)]
 }
 
 function parseNoAndName(row) {
@@ -78,14 +60,70 @@ function parseNoAndName(row) {
   }
 }
 
-function speciesGroupForRow(row, rowsByNoName) {
+function speciesGroupForRow(row, rowsByNo) {
   const { no, name } = parseNoAndName(row)
   const evolutionLine = row.values?.evolutionLine
   if (Array.isArray(evolutionLine) && evolutionLine[0]) return evolutionLine[0]
   if (row.values?.breedingLine) return row.values.breedingLine
-  const sameNo = rowsByNoName.get(no) || []
-  if (sameNo.length > 1) return sameNo[0].name
+  const sameNo = rowsByNo.get(no) || []
+  if (sameNo.length > 1) return sameNo[0].values?.name || name
   return name
+}
+
+function normalizeNo(text) {
+  const match = String(text || '').match(/NO\.?(\d+)/i)
+  return match ? match[1].padStart(3, '0') : ''
+}
+
+function parseEggGroups(line) {
+  if (/未发现|无法孵蛋/.test(line)) return ['无法孵蛋']
+  return EGG_GROUP_NAMES.filter((group) => group !== '无法孵蛋' && line.includes(group))
+}
+
+function isNoiseLine(line) {
+  return !line || /^Image[:：]/i.test(line) || /^文件[:：]/.test(line) || /^\d+$/.test(line) || /^蛋组列表$/.test(line)
+}
+
+function parseBwikiEggGroupRows(html) {
+  const text = stripTags(html)
+  const lines = text.split('\n').map((line) => line.trim()).filter(Boolean)
+  const start = Math.max(lines.findIndex((line) => line === '蛋组列表'), 0)
+  const entries = []
+  let current = null
+
+  function flushIfComplete(groups) {
+    if (!current?.no || !current?.name || groups.length === 0) return
+    entries.push({ ...current, eggGroups: groups })
+    current = null
+  }
+
+  for (const line of lines.slice(start)) {
+    const no = normalizeNo(line)
+    if (no) {
+      current = { no, name: '', form: '' }
+      continue
+    }
+    if (!current || isNoiseLine(line)) continue
+    const groups = parseEggGroups(line)
+    if (groups.length > 0) {
+      flushIfComplete(groups)
+      continue
+    }
+    if (!current.name) current.name = line
+    else if (!current.form) current.form = line
+  }
+  return entries
+}
+
+function buildEntryIndexes(entries) {
+  const byNoName = new Map()
+  const byName = new Map()
+  for (const entry of entries) {
+    const noNameKey = `${entry.no}:${entry.name}`
+    if (!byNoName.has(noNameKey)) byNoName.set(noNameKey, entry)
+    if (!byName.has(entry.name)) byName.set(entry.name, entry)
+  }
+  return { byNoName, byName }
 }
 
 async function main() {
@@ -94,39 +132,40 @@ async function main() {
   for (const row of localRows) {
     const parsed = parseNoAndName(row)
     if (!parsed.no || !parsed.name) continue
-    rowsByNo.set(parsed.no, [...(rowsByNo.get(parsed.no) || []), parsed])
+    rowsByNo.set(parsed.no, [...(rowsByNo.get(parsed.no) || []), row])
   }
 
-  const indexHtml = await fetchText(INDEX_URL)
-  const links = parseIndexLinks(indexHtml)
-  if (links.length === 0) throw new Error('未能从 BWiki 精灵图鉴解析到精灵链接')
-
-  const byName = new Map()
-  for (const [index, link] of links.entries()) {
-    if (index > 0 && index % 20 === 0) await delay(500)
-    const html = await fetchText(link.url)
-    const text = stripTags(html)
-    const eggGroups = parseEggGroupsFromText(text)
-    if (eggGroups.length === 0) continue
-    byName.set(link.name, { eggGroups, sourceUrl: link.url })
-  }
+  const html = await fetchText(EGG_GROUP_LIST_URL)
+  const entries = parseBwikiEggGroupRows(html)
+  const { byNoName, byName } = buildEntryIndexes(entries)
+  if (entries.length === 0) throw new Error('未能从 BWiki 孵蛋组别查询解析到蛋组数据')
 
   const output = []
+  const missing = []
   for (const row of localRows) {
-    const { name } = parseNoAndName(row)
-    const hit = byName.get(name)
-    if (!hit) continue
+    const { no, name } = parseNoAndName(row)
+    const hit = byNoName.get(`${no}:${name}`) || byName.get(name)
+    if (!hit) {
+      missing.push(`${row.values?.no || no} ${name}`)
+      continue
+    }
     output.push({
       id: row.id,
       name,
+      no: row.values?.no || `NO.${no}`,
       eggGroups: hit.eggGroups,
       speciesGroup: speciesGroupForRow(row, rowsByNo),
-      sourceUrl: hit.sourceUrl,
+      sourceUrl: EGG_GROUP_LIST_URL,
     })
   }
 
-  await writeFile(OUTPUT_FILE, `${JSON.stringify({ source: INDEX_URL, syncedAt: new Date().toISOString(), rows: output }, null, 2)}\n`)
-  console.log(`写入 ${output.length} 条 BWiki 孵蛋资料到 ${OUTPUT_FILE.pathname}`)
+  if (output.length < Math.floor(localRows.length * 0.9)) {
+    throw new Error(`BWiki 蛋组匹配覆盖过低：${output.length}/${localRows.length}，示例缺失：${missing.slice(0, 12).join('、')}`)
+  }
+
+  await writeFile(OUTPUT_FILE, `${JSON.stringify({ source: EGG_GROUP_LIST_URL, syncedAt: new Date().toISOString(), rows: output }, null, 2)}\n`)
+  console.log(`写入 ${output.length}/${localRows.length} 条 BWiki 孵蛋资料到 ${OUTPUT_FILE.pathname}`)
+  if (missing.length > 0) console.warn(`仍有 ${missing.length} 条本地精灵未匹配：${missing.slice(0, 20).join('、')}`)
 }
 
 main().catch((err) => {
