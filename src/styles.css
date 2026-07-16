@@ -3237,3 +3237,21 @@ img {
 .breeding-inheritance div { display: flex; flex-direction: column; gap: 4px; padding: 10px; border: 1px dashed var(--border); border-radius: 12px; }
 .breeding-inheritance span, .breeding-inheritance small { color: var(--muted); font-size: 12px; }
 @media (max-width: 720px) { .breeding-family-top, .breeding-inheritance { grid-template-columns: 1fr; } }
+.breeding-lineup { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 10px; }
+.breeding-arrow { width: 36px; height: 36px; border-radius: 999px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, #f97316, #f59e0b); font-weight: 900; box-shadow: 0 8px 18px rgba(249, 115, 22, 0.22); }
+.breeding-creature-row { min-width: 0; display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 16px; background: linear-gradient(180deg, #fff, #fff7ed); white-space: nowrap; overflow: hidden; }
+.breeding-creature-row.compact { background: #fff; }
+.breeding-creature-row img { width: 48px; height: 48px; object-fit: contain; flex: 0 0 auto; }
+.breeding-sex-symbol { font-size: 18px; font-weight: 900; color: #ea580c; flex: 0 0 auto; }
+.breeding-creature-text { min-width: 0; display: inline-flex; align-items: baseline; gap: 8px; overflow: hidden; }
+.breeding-creature-text strong, .breeding-creature-text em, .breeding-creature-text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.breeding-creature-text strong { font-size: 14px; }
+.breeding-creature-text em { color: #7c3aed; font-style: normal; font-size: 12px; }
+.breeding-creature-text small { color: var(--muted); font-size: 12px; }
+.breeding-mark { flex: 0 0 auto; padding: 2px 6px; border-radius: 999px; font-size: 11px; font-weight: 800; }
+.shiny-mark { color: #be185d; background: #fce7f3; }
+.colorful-mark { color: #7c2d12; background: linear-gradient(90deg, #fde68a, #fbcfe8, #bfdbfe); }
+.breeding-offspring-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 1fr); gap: 10px; }
+.breeding-prob-row { display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 10px; border: 1px dashed #fed7aa; border-radius: 16px; background: #fffbeb; color: #7c2d12; font-size: 12px; white-space: nowrap; overflow: hidden; }
+.breeding-prob-row span { overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 760px) { .breeding-lineup, .breeding-offspring-row { grid-template-columns: 1fr; } .breeding-arrow { transform: rotate(90deg); justify-self: center; } }

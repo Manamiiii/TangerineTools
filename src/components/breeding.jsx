@@ -4,6 +4,7 @@ import { db, ensureOwnedTable } from '../db.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
 import { buildOwnedCreatures, EGG_GROUP_SOURCE_URL, recommendBreedingBatches } from '../domain/breeding.js'
 import { EmptyState } from './common.jsx'
+import { OWNED_NATURE_OPTIONS } from '../domain/owned.js'
 
 export function BreedingTool({ scene }) {
   useEffect(() => {
@@ -28,49 +29,65 @@ export function BreedingTool({ scene }) {
     <div className="breeding-hero">
       <div>
         <h2>孵蛋推荐</h2>
-        <p>从当前收集记录中筛选异色个体，一公一母、同蛋组优先；每组最多 5 对，共 10 只精灵。</p>
+        <p>异色优先、同蛋组配对；概率规则统一在顶部展示。</p>
       </div>
       <a className="btn" href={EGG_GROUP_SOURCE_URL} target="_blank" rel="noreferrer">B站蛋组计算器</a>
     </div>
     <div className="breeding-notes">
-      <span>规则：后代种类跟随母亲；性格、异色、炫彩继承概率暂无官方精确数值，未确认前只显示来源类别，不写死概率。</span>
+      <span>规则：后代种类跟随母亲；性格：父 30% / 母 30% / 随机 40%；异色/炫彩：单亲 0.36%，双亲 0.72%。</span>
       {missingEggGroups > 0 && <span>有 {missingEggGroups} 条拥有记录对应精灵缺少 eggGroups/蛋组 字段，暂不参与配对。</span>}
     </div>
     {batches.length === 0 ? <EmptyState title="暂无可推荐组合" description="请确认收集记录已填写性别、是否异色/炫彩，且资料库精灵行已填写蛋组。" /> : batches.map((batch, index) => <section className="breeding-batch" key={batch.id}>
       <div className="breeding-batch-title"><strong>第 {index + 1} 组</strong><span>{batch.pairs.length * 2} / 10 只</span></div>
       <div className="breeding-pairs">{batch.pairs.map((pair) => <article className="breeding-pair breeding-pair-card" key={`${pair.father.id}-${pair.mother.id}`}>
         <div className="breeding-pair-head"><span>{pair.eggGroup}</span><span>{pair.canRecommendedNature ? '可孵推荐性格' : '异色优先配对'}</span></div>
-        <div className="breeding-family-top">
-          <BreedingParent label="父" item={pair.father} />
-          <BreedingParent label="母" item={pair.mother} />
+        <div className="breeding-lineup">
+          <BreedingCreature symbol="♂" item={pair.father} />
+          <div className="breeding-arrow">➜</div>
+          <BreedingCreature symbol="♀" item={pair.mother} />
         </div>
-        <div className="breeding-child">
-          <img src={pair.mother.catalog.row.values?.image || ''} alt="" />
-          <div>
-            <strong>孩子：{pair.mother.name}</strong>
-            <span>种类跟随母亲；繁育谱系：{pair.targetSpecies}</span>
-          </div>
+        <div className="breeding-offspring-row">
+          <BreedingCreature symbol="↻" item={pair.mother} compact />
+          <BreedingProbability pair={pair} />
         </div>
-        <BreedingInheritance pair={pair} />
       </article>)}</div>
     </section>)}
   </div>
 }
 
-function BreedingParent({ label, item }) {
-  return <div className="breeding-parent-card">
+const NATURE_LABELS = Object.fromEntries(OWNED_NATURE_OPTIONS.map((item) => [item.value, item.label.replace(/（.+$/, '')]))
+
+function natureLabel(value) {
+  return NATURE_LABELS[value] || value || '未知性格'
+}
+
+function BreedingCreature({ symbol, item, compact = false }) {
+  const trait = item.catalog.row.values?.traitName || '无特性'
+  return <div className={`breeding-creature-row ${compact ? 'compact' : ''}`}>
     <img src={item.catalog.row.values?.image || ''} alt="" />
-    <div>
-      <strong>{label} · {item.name}</strong>
-      <span>{item.gender === 'male' ? '公' : '母'} · {item.nature || '未知性格'}</span>
-      <span>{item.shiny ? '异色个体' : '非异色'} · {item.colorful ? '炫彩' : '非炫彩'}</span>
-    </div>
+    <span className="breeding-sex-symbol">{symbol}</span>
+    <span className="breeding-creature-text" title={`${item.name} · ${natureLabel(item.nature)} · ${trait}`}>
+      <strong>{item.name}</strong><em>{natureLabel(item.nature)}</em><small>{trait}</small>
+    </span>
+    {item.shiny && <span className="breeding-mark shiny-mark">✦异</span>}
+    {item.colorful && <span className="breeding-mark colorful-mark">🌈炫</span>}
   </div>
 }
 
-function BreedingInheritance({ pair }) {
-  return <div className="breeding-inheritance">
-    <div><strong>性格来源</strong><span>父：{pair.father.nature || '未知'} · 母：{pair.mother.nature || '未知'} · 其他：随机候选</span><small>官方精确概率未确认，暂不显示数值。</small></div>
-    <div><strong>异色/炫彩</strong><span>父母均为异色；{pair.father.colorful || pair.mother.colorful ? '存在炫彩亲代' : '暂无炫彩亲代'}</span><small>亲代状态只用于排序，精确概率未确认。</small></div>
+function probabilityText(bothParentsHave, oneParentHas) {
+  if (bothParentsHave) return '0.72%'
+  if (oneParentHas) return '0.36%'
+  return '—'
+}
+
+function BreedingProbability({ pair }) {
+  const shinyBoth = pair.father.shiny && pair.mother.shiny
+  const shinyAny = pair.father.shiny || pair.mother.shiny
+  const colorfulBoth = pair.father.colorful && pair.mother.colorful
+  const colorfulAny = pair.father.colorful || pair.mother.colorful
+  return <div className="breeding-prob-row">
+    <span>性格：{natureLabel(pair.father.nature)} 30% / {natureLabel(pair.mother.nature)} 30% / 随机 40%</span>
+    <span>异色：{probabilityText(shinyBoth, shinyAny)}</span>
+    <span>炫彩：{probabilityText(colorfulBoth, colorfulAny)}</span>
   </div>
 }
