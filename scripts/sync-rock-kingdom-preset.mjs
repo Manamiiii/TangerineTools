@@ -247,12 +247,13 @@ function makeRow(data, source, base, evolutionLookup = new Map()) {
   const traitName = detail.tn || ''
   const skills = normalizeSkillList(detail)
   const skillTexts = skills.map(skillText)
-  const evolutionLine = evolutionLookup.get(String(sourceId)) || []
+  const name = source.fn || source.nm || pickEvoValue(detail, sourceId, 'fn') || pickEvoValue(detail, sourceId, 'nm') || ''
+  const evolutionLine = evolutionLookup.get(String(sourceId)) || (name ? [name] : [])
   return {
     id: `rock-creature-src-${String(sourceId).padStart(3, '0')}`,
     values: {
       image: fullUrl(source.img || base.img),
-      name: source.fn || source.nm || pickEvoValue(detail, sourceId, 'fn') || pickEvoValue(detail, sourceId, 'nm') || '',
+      name,
       no,
       element,
       form: source.f || source.s || pickEvoValue(detail, sourceId, 's') || base.s || '',
@@ -273,6 +274,8 @@ function makeRow(data, source, base, evolutionLookup = new Map()) {
       skillRefs: [...new Set(skills.map((skill) => skillId(skill.nm)))],
       evolutionLine,
       breedingLine: evolutionLine[0] || '',
+      speciesGroup: evolutionLine[0] || '',
+      eggGroups: [],
       hp: detail.hp ?? 0,
       patk: detail.atk ?? 0,
       matk: detail.matk ?? 0,

@@ -320,25 +320,30 @@ async function migrateRockKingdomBreedingFields() {
   const now = nowIso()
   const rows = await db.catalogRows.where('tableId').equals(tableId).toArray()
   const breedingRows = await loadRockKingdomBreedingRows()
-  const presetByName = new Map([
-    ...Object.entries(BREEDING_PRESET_BY_NAME),
-    ...breedingRows.map((row) => [row.name, row]),
-  ])
+  const presetRows = [
+    ...Object.entries(BREEDING_PRESET_BY_NAME).map(([name, row]) => ({ name, ...row })),
+    ...breedingRows,
+  ]
+  const presetByName = new Map(presetRows.map((row) => [row.name, row]))
+  const presetByLine = new Map()
+  for (const row of presetRows) {
+    if (row.speciesGroup && Array.isArray(row.eggGroups) && row.eggGroups.length > 0 && !presetByLine.has(row.speciesGroup)) {
+      presetByLine.set(row.speciesGroup, row)
+    }
+  }
   const rowsToPut = []
   for (const row of rows) {
-    const name = row.values?.name
-    const preset = presetByName.get(name)
-    if (!preset) continue
     const nextValues = { ...row.values }
     let changed = false
-    if (isEmptyPresetValue(nextValues.eggGroups) && Array.isArray(preset.eggGroups) && preset.eggGroups.length > 0) {
-      nextValues.eggGroups = [...preset.eggGroups]
-      changed = true
-    }
     const officialBreedingLine = Array.isArray(nextValues.evolutionLine)
       ? nextValues.evolutionLine[0]
       : nextValues.breedingLine
-    const supplementBreedingLine = officialBreedingLine || preset.speciesGroup
+    const preset = presetByName.get(nextValues.name) || presetByLine.get(officialBreedingLine)
+    if (isEmptyPresetValue(nextValues.eggGroups) && Array.isArray(preset?.eggGroups) && preset.eggGroups.length > 0) {
+      nextValues.eggGroups = [...preset.eggGroups]
+      changed = true
+    }
+    const supplementBreedingLine = officialBreedingLine || preset?.speciesGroup
     if (isEmptyPresetValue(nextValues.speciesGroup) && supplementBreedingLine) {
       nextValues.speciesGroup = supplementBreedingLine
       changed = true
