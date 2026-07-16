@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "sync:rock": "node scripts/sync-rock-kingdom-preset.mjs",
     "check:nature": "node scripts/check-nature-recommendations.mjs",
-    "audit:rocom": "node scripts/generate-rocom-position-audit-plan.mjs"
+    "audit:rocom": "node scripts/generate-rocom-position-audit-plan.mjs",
+    "sync:breeding": "node scripts/sync-bwiki-breeding-preset.mjs"
   },
   "dependencies": {
     "dexie": "^4.4.4",

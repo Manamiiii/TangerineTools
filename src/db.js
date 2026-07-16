@@ -293,24 +293,41 @@ async function migrateRockKingdomBreedingFields() {
   if (!table) return
   const now = nowIso()
   const rows = await db.catalogRows.where('tableId').equals(tableId).toArray()
+  const breedingRows = await loadRockKingdomBreedingRows()
+  const presetByName = new Map([
+    ...Object.entries(BREEDING_PRESET_BY_NAME),
+    ...breedingRows.map((row) => [row.name, row]),
+  ])
   const rowsToPut = []
   for (const row of rows) {
     const name = row.values?.name
-    const preset = BREEDING_PRESET_BY_NAME[name]
+    const preset = presetByName.get(name)
     if (!preset) continue
     const nextValues = { ...row.values }
     let changed = false
-    if (isEmptyPresetValue(nextValues.eggGroups)) {
+    if (isEmptyPresetValue(nextValues.eggGroups) && Array.isArray(preset.eggGroups) && preset.eggGroups.length > 0) {
       nextValues.eggGroups = [...preset.eggGroups]
       changed = true
     }
-    if (isEmptyPresetValue(nextValues.speciesGroup)) {
+    if (isEmptyPresetValue(nextValues.speciesGroup) && preset.speciesGroup) {
       nextValues.speciesGroup = preset.speciesGroup
       changed = true
     }
     if (changed) rowsToPut.push({ ...row, values: nextValues, updatedAt: now })
   }
   if (rowsToPut.length > 0) await db.catalogRows.bulkPut(rowsToPut)
+}
+
+async function loadRockKingdomBreedingRows() {
+  try {
+    const res = await fetch(`${import.meta.env.BASE_URL}presets/rockKingdomBreedingRows.json`)
+    if (!res.ok) return []
+    const payload = await res.json()
+    return Array.isArray(payload?.rows) ? payload.rows : []
+  } catch (err) {
+    console.warn('加载洛克王国 BWiki 孵蛋资料失败：', err)
+    return []
+  }
 }
 
 async function seedRockKingdomBreedingDemoOwnedRows() {
