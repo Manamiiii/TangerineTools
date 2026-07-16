@@ -362,16 +362,50 @@ function buildRows(data) {
   return { rows, baseCount, formCount }
 }
 
+
+function normalizeBreedingName(name) {
+  return String(name || '').replace(/（.*?）/g, '').trim()
+}
+
+function mergeEggGroups(...groupLists) {
+  return [...new Set(groupLists.flatMap((groups) => Array.isArray(groups) ? groups : []))]
+}
+
+function propagateEggGroupsToSameNumber(rows) {
+  const byNo = new Map()
+  for (const row of rows) {
+    const no = row.values.no
+    if (!no || !Array.isArray(row.values.eggGroups) || row.values.eggGroups.length === 0) continue
+    byNo.set(no, mergeEggGroups(byNo.get(no), row.values.eggGroups))
+  }
+  let propagated = 0
+  for (const row of rows) {
+    const noGroups = byNo.get(row.values.no)
+    if (!noGroups?.length) continue
+    const mergedGroups = mergeEggGroups(row.values.eggGroups, noGroups)
+    if (mergedGroups.length === (row.values.eggGroups || []).length) continue
+    row.values.eggGroups = mergedGroups
+    if (!row.values.speciesGroup) row.values.speciesGroup = row.values.breedingLine || row.values.evolutionLine?.[0] || row.values.name
+    propagated += 1
+  }
+  return propagated
+}
+
 async function applyBreedingSnapshot(rows) {
   let payload
   try {
     payload = JSON.parse(await readFile(breedingRowsPath, 'utf8'))
   } catch {
-    return { matched: 0, total: 0 }
+    return { matched: 0, propagated: 0, total: 0 }
   }
   const breedingRows = Array.isArray(payload?.rows) ? payload.rows : []
   const byId = new Map(breedingRows.map((row) => [row.id, row]))
   const byName = new Map(breedingRows.map((row) => [row.name, row]))
+  const byBaseName = new Map()
+  for (const row of breedingRows) {
+    const baseName = normalizeBreedingName(row.name)
+    if (baseName && !byBaseName.has(baseName)) byBaseName.set(baseName, row)
+  }
   const byLine = new Map()
   for (const row of breedingRows) {
     if (row.speciesGroup && Array.isArray(row.eggGroups) && row.eggGroups.length > 0 && !byLine.has(row.speciesGroup)) {
@@ -381,13 +415,17 @@ async function applyBreedingSnapshot(rows) {
   let matched = 0
   for (const row of rows) {
     const line = row.values.breedingLine || row.values.evolutionLine?.[0]
-    const hit = byId.get(row.id) || byName.get(row.values.name) || byLine.get(line)
+    const hit = byId.get(row.id) || byName.get(row.values.name) || byBaseName.get(normalizeBreedingName(row.values.name)) || byLine.get(line)
     if (!hit?.eggGroups?.length) continue
-    row.values.eggGroups = [...hit.eggGroups]
+    const mergedGroups = mergeEggGroups(row.values.eggGroups, hit.eggGroups)
+    if (mergedGroups.length !== (row.values.eggGroups || []).length) {
+      row.values.eggGroups = mergedGroups
+      matched += 1
+    }
     row.values.speciesGroup = line || hit.speciesGroup || row.values.name
-    matched += 1
   }
-  return { matched, total: breedingRows.length }
+  const propagated = propagateEggGroupsToSameNumber(rows)
+  return { matched, propagated, total: breedingRows.length }
 }
 
 function printStats(rows, baseCount, formCount) {
@@ -411,7 +449,7 @@ const { rows, baseCount, formCount } = buildRows(data)
 const breedingSnapshotStats = await applyBreedingSnapshot(rows)
 const skillRows = buildSkillRows(data)
 printStats(rows, baseCount, formCount)
-if (breedingSnapshotStats.total > 0) console.log(`breeding snapshot matched rows: ${breedingSnapshotStats.matched}/${rows.length} from ${breedingSnapshotStats.total} supplemental rows`)
+if (breedingSnapshotStats.total > 0) console.log(`breeding snapshot matched rows: ${breedingSnapshotStats.matched}/${rows.length}; propagated same-number rows: ${breedingSnapshotStats.propagated}; supplemental rows: ${breedingSnapshotStats.total}`)
 await writeFile(outputPath, `${JSON.stringify(rows, null, 2)}\n`, 'utf8')
 await writeFile(skillOutputPath, `${JSON.stringify(skillRows, null, 2)}\n`, 'utf8')
 console.log(`wrote ${path.relative(repoRoot, outputPath)}`)
