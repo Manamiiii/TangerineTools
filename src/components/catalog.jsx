@@ -392,7 +392,7 @@ function ReferenceListCellView({ field, value, onOpenReference }) {
   const { fields, rows } = useReferenceContext(field.referenceTableId)
   const ids = Array.isArray(value) ? value : value ? [value] : []
   if (ids.length === 0) return <span className="cell-empty">—</span>
-  const visibleIds = ids.slice(0, 6)
+  const visibleIds = field.__detailMode ? ids : ids.slice(0, 6)
   return (
     <span className="reference-list">
       {visibleIds.map((id) => {
@@ -482,7 +482,44 @@ function ReferenceListFieldInput({ field, value, onChange }) {
 // 单元格展示
 // ---------------------------------------------------------------------------
 
+
+function EvolutionChainView({ value }) {
+  const items = Array.isArray(value)
+    ? value.filter(Boolean)
+    : String(value || '').split(/[>→,，、\n]+/).map((item) => item.trim()).filter(Boolean)
+  if (items.length === 0) return <span className="cell-empty">—</span>
+  return (
+    <span className="evolution-chain-view">
+      {items.map((item, index) => (
+        <span className="evolution-chain-step" key={`${item}-${index}`}>
+          <span className="evolution-chain-node">{item}</span>
+          {index < items.length - 1 && <span className="evolution-chain-arrow">→</span>}
+        </span>
+      ))}
+    </span>
+  )
+}
+
+function TraitCellView({ row, mode }) {
+  const name = row.values?.traitName
+  const icon = row.values?.traitIcon
+  const desc = row.values?.traitDesc
+  if (!name && !icon) return <span className="cell-empty">—</span>
+  return (
+    <span className={`trait-cell ${mode === 'detail' ? 'trait-cell-detail' : ''}`} title={desc || name || ''}>
+      {icon && <img src={icon} alt="" className="trait-cell-icon" />}
+      <span className="trait-cell-text">
+        <strong>{name || '未命名特性'}</strong>
+        {mode === 'detail' && desc && <small>{desc}</small>}
+      </span>
+    </span>
+  )
+}
+
 export function CellView({ field, row, allFields, mode = 'table', onOpenReference }) {
+  if (field.key === 'traitName') return <TraitCellView row={row} mode={mode} />
+  if (field.key === 'evolutionLine') return <EvolutionChainView value={row.values?.[field.key]} />
+
   if (field.type === 'stats') {
     const stats = getStatsValues(allFields, field.statsMap, row.values, field.statsDimensions)
     return <StatsChart stats={stats} variant={field.statsStyle || 'bars'} size={mode === 'detail' ? 'lg' : 'sm'} />
@@ -555,7 +592,7 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
     case 'reference':
       return <ReferenceCellView field={field} value={value} onOpenReference={onOpenReference} />
     case 'references':
-      return <ReferenceListCellView field={field} value={value} onOpenReference={onOpenReference} />
+      return <ReferenceListCellView field={mode === 'detail' ? { ...field, __detailMode: true } : field} value={value} onOpenReference={onOpenReference} />
     default:
       return <span>{value == null ? '' : String(value)}</span>
   }

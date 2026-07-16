@@ -7423,7 +7423,9 @@
       ],
       "breedingLine": "奇丽草",
       "speciesGroup": "奇丽草",
-      "eggGroups": [],
+      "eggGroups": [
+        "植物组"
+      ],
       "hp": 67,
       "patk": 69,
       "matk": 69,
@@ -7523,7 +7525,9 @@
       ],
       "breedingLine": "奇丽草",
       "speciesGroup": "奇丽草",
-      "eggGroups": [],
+      "eggGroups": [
+        "植物组"
+      ],
       "hp": 90,
       "patk": 92,
       "matk": 92,
@@ -7624,7 +7628,9 @@
       ],
       "breedingLine": "奇丽草",
       "speciesGroup": "奇丽草",
-      "eggGroups": [],
+      "eggGroups": [
+        "植物组"
+      ],
       "hp": 112,
       "patk": 115,
       "matk": 115,
@@ -7725,7 +7731,9 @@
       ],
       "breedingLine": "奇丽草",
       "speciesGroup": "奇丽果",
-      "eggGroups": [],
+      "eggGroups": [
+        "植物组"
+      ],
       "hp": 112,
       "patk": 128,
       "matk": 128,

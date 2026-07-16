@@ -3255,3 +3255,145 @@ img {
 .breeding-prob-row { display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 10px; border: 1px dashed #fed7aa; border-radius: 16px; background: #fffbeb; color: #7c2d12; font-size: 12px; white-space: nowrap; overflow: hidden; }
 .breeding-prob-row span { overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 760px) { .breeding-lineup, .breeding-offspring-row { grid-template-columns: 1fr; } .breeding-arrow { transform: rotate(90deg); justify-self: center; } }
+
+/* ---------------------------------------------------------------------------
+   洛克王国统一卡片风格补充
+--------------------------------------------------------------------------- */
+:root {
+  --accent: #f97316;
+  --muted: var(--text-muted);
+  --surface-subtle: #fff7ed;
+}
+
+.trait-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.trait-cell-icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+}
+
+.trait-cell-text {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.trait-cell-text strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trait-cell-text small {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: normal;
+}
+
+.trait-cell-detail {
+  align-items: flex-start;
+}
+
+.trait-cell-detail .trait-cell-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.evolution-chain-view {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.evolution-chain-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.evolution-chain-node {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 3px 9px;
+  border: 1px solid #fed7aa;
+  border-radius: 999px;
+  background: #fff7ed;
+  color: #7c2d12;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.evolution-chain-arrow {
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.nature-priority-rules {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid #fed7aa;
+  border-radius: 18px;
+  background: #fff7ed;
+  color: #7c2d12;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.nature-priority-rules strong {
+  font-size: 13px;
+  color: #9a3412;
+}
+
+.nature-priority-rules ol {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.nature-priority-rules li + li {
+  margin-top: 3px;
+}
+
+.nature-candidate {
+  width: 100%;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.nature-candidate-role {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.45;
+}
+
+.nature-result-reason,
+.nature-inline-disclosure span,
+.nature-skill-note span,
+.nature-skill-metrics small {
+  overflow-wrap: anywhere;
+}
+
+.breeding-prob-row {
+  white-space: normal;
+  overflow: visible;
+}
+
+.breeding-prob-row span {
+  overflow: visible;
+  text-overflow: clip;
+}

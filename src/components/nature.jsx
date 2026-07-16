@@ -136,6 +136,7 @@ export function NatureTool({ scene }) {
       {hasAnyStat ? (
         <>
           <NaturePveOverview candidates={candidates} />
+          <NaturePriorityRules />
           <div className="nature-workbench">
             <NatureCandidateList
               candidates={candidates}
@@ -320,6 +321,20 @@ function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSel
         <span className="nature-candidate-score">{candidate.score.toFixed(1)}</span>
       </button>
     </li>
+  )
+}
+
+
+function NaturePriorityRules() {
+  return (
+    <section className="nature-priority-rules" aria-label="推荐优先级规则">
+      <strong>推荐优先级</strong>
+      <ol>
+        <li>先按精灵定位与技能路线判断主攻 / 耐久 / 速度 / 辅助方向。</li>
+        <li>推荐优先强化主路线关键属性，避免弱化主输出、关键速度线或核心耐久。</li>
+        <li>可保留表示捕捉时可先留档；不推荐通常存在硬风险或被同强化方向更优性格支配。</li>
+      </ol>
+    </section>
   )
 }
 

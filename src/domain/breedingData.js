@@ -55,6 +55,10 @@ export const BREEDING_PRESET_BY_NAME = {
   水蓝蓝: { eggGroups: ['魔力组'], speciesGroup: '水蓝蓝' },
   波波拉: { eggGroups: ['魔力组'], speciesGroup: '水蓝蓝' },
   水灵: { eggGroups: ['魔力组'], speciesGroup: '水蓝蓝' },
+  奇丽草: { eggGroups: ['植物组'], speciesGroup: '奇丽草' },
+  奇丽叶: { eggGroups: ['植物组'], speciesGroup: '奇丽草' },
+  奇丽花: { eggGroups: ['植物组'], speciesGroup: '奇丽草' },
+  奇丽果: { eggGroups: ['植物组'], speciesGroup: '奇丽草' },
 
   喵喵: { eggGroups: ['动物组', '拟人组'], speciesGroup: '喵喵' },
   喵呜: { eggGroups: ['动物组', '拟人组'], speciesGroup: '喵喵' },

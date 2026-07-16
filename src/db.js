@@ -297,6 +297,7 @@ async function migrateRockKingdomBreedingFieldLabels() {
   const now = nowIso()
   const labelUpdates = [
     { tableId, key: 'shiny', name: '异色形态' },
+    { tableId, key: 'traitName', name: '特性' },
     { tableId, key: 'speciesGroup', name: '繁育谱系' },
     { tableId, key: 'evolutionLine', name: '进化链' },
     { tableId: ownedTableId, key: 'shiny', name: '个体异色' },
@@ -310,6 +311,14 @@ async function migrateRockKingdomBreedingFieldLabels() {
     if (field && field.name !== update.name) {
       await db.catalogFields.update(field.id, { name: update.name, updatedAt: now })
     }
+  }
+  const traitIconField = await db.catalogFields
+    .where('tableId')
+    .equals(tableId)
+    .filter((item) => item.key === 'traitIcon')
+    .first()
+  if (traitIconField && !traitIconField.hidden) {
+    await db.catalogFields.update(traitIconField.id, { hidden: true, updatedAt: now })
   }
 }
 
