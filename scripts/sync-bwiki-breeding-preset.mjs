@@ -80,9 +80,12 @@ function parseNoAndName(row) {
 
 function speciesGroupForRow(row, rowsByNoName) {
   const { no, name } = parseNoAndName(row)
+  const evolutionLine = row.values?.evolutionLine
+  if (Array.isArray(evolutionLine) && evolutionLine[0]) return evolutionLine[0]
+  if (row.values?.breedingLine) return row.values.breedingLine
   const sameNo = rowsByNoName.get(no) || []
-  if (sameNo.length > 1) return `${sameNo[0].name}系`
-  return `${name}系`
+  if (sameNo.length > 1) return sameNo[0].name
+  return name
 }
 
 async function main() {

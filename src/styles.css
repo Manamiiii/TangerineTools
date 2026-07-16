@@ -3228,3 +3228,12 @@ img {
 .breeding-pair-head { justify-content: space-between; font-size: 13px; color: var(--muted); }
 .breeding-parent { flex-wrap: wrap; font-size: 13px; }
 .breeding-parent span { padding: 3px 7px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); }
+.breeding-family-top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.breeding-parent-card, .breeding-child { display: flex; gap: 10px; align-items: center; padding: 10px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.breeding-parent-card img, .breeding-child img { width: 56px; height: 56px; object-fit: contain; flex: 0 0 auto; }
+.breeding-parent-card div, .breeding-child div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.breeding-parent-card span, .breeding-child span { color: var(--muted); font-size: 12px; }
+.breeding-inheritance { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.breeding-inheritance div { display: flex; flex-direction: column; gap: 4px; padding: 10px; border: 1px dashed var(--border); border-radius: 12px; }
+.breeding-inheritance span, .breeding-inheritance small { color: var(--muted); font-size: 12px; }
+@media (max-width: 720px) { .breeding-family-top, .breeding-inheritance { grid-template-columns: 1fr; } }

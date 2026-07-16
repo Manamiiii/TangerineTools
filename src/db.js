@@ -42,6 +42,7 @@ export async function ensureSeeded() {
   await migrateRockKingdomSkillTableFields()
   await migrateRockKingdomFieldOptions()
   await migrateRockKingdomRows()
+  await migrateRockKingdomBreedingFieldLabels()
   await migrateRockKingdomBreedingFields()
   await migrateRockKingdomSkillRows()
   await migrateRockKingdomSceneTools()
@@ -289,6 +290,29 @@ async function migrateRockKingdomRows() {
 
 // 孵蛋字段迁移：官方 d.json / 本地 rockKingdomRows.json 是精灵主资料来源；
 // BWiki 快照只用于补齐官方资料缺失的蛋组/同种精灵空值，不覆盖已有非空字段。
+
+async function migrateRockKingdomBreedingFieldLabels() {
+  const tableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const ownedTableId = `table-owned-${ROCK_KINGDOM_PRESET.scene.id}`
+  const now = nowIso()
+  const labelUpdates = [
+    { tableId, key: 'shiny', name: '异色形态' },
+    { tableId, key: 'speciesGroup', name: '繁育谱系' },
+    { tableId, key: 'evolutionLine', name: '进化链' },
+    { tableId: ownedTableId, key: 'shiny', name: '个体异色' },
+  ]
+  for (const update of labelUpdates) {
+    const field = await db.catalogFields
+      .where('tableId')
+      .equals(update.tableId)
+      .filter((item) => item.key === update.key)
+      .first()
+    if (field && field.name !== update.name) {
+      await db.catalogFields.update(field.id, { name: update.name, updatedAt: now })
+    }
+  }
+}
+
 async function migrateRockKingdomBreedingFields() {
   const tableId = ROCK_KINGDOM_PRESET.tables[0].id
   const table = await db.catalogTables.get(tableId)
@@ -311,8 +335,12 @@ async function migrateRockKingdomBreedingFields() {
       nextValues.eggGroups = [...preset.eggGroups]
       changed = true
     }
-    if (isEmptyPresetValue(nextValues.speciesGroup) && preset.speciesGroup) {
-      nextValues.speciesGroup = preset.speciesGroup
+    const officialBreedingLine = Array.isArray(nextValues.evolutionLine)
+      ? nextValues.evolutionLine[0]
+      : nextValues.breedingLine
+    const supplementBreedingLine = officialBreedingLine || preset.speciesGroup
+    if (isEmptyPresetValue(nextValues.speciesGroup) && supplementBreedingLine) {
+      nextValues.speciesGroup = supplementBreedingLine
       changed = true
     }
     if (changed) rowsToPut.push({ ...row, values: nextValues, updatedAt: now })

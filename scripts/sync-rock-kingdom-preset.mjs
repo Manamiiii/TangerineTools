@@ -222,7 +222,19 @@ function assertSourceShape(data) {
   if (!data?._skm || typeof data._skm !== 'object') throw new Error('数据源结构异常：缺少技能图标映射 _skm')
 }
 
-function makeRow(data, source, base) {
+function buildEvolutionLookup(data) {
+  const lookup = new Map()
+  for (const detail of Object.values(data.d || {})) {
+    const evo = Array.isArray(detail?.evo) ? detail.evo : []
+    if (evo.length === 0) continue
+    const names = evo.map((item) => item.fn || item.nm).filter(Boolean)
+    const ids = evo.map((item) => String(item.i))
+    for (const id of ids) lookup.set(id, names)
+  }
+  return lookup
+}
+
+function makeRow(data, source, base, evolutionLookup = new Map()) {
   const sourceId = source.i
   const detail = data.d[String(sourceId)] || source || {}
   const no = source.n || base.n || parseNoFromImage(source.img) || parseNoFromImage(base.img)
@@ -234,6 +246,7 @@ function makeRow(data, source, base) {
   const traitName = detail.tn || ''
   const skills = normalizeSkillList(detail)
   const skillTexts = skills.map(skillText)
+  const evolutionLine = evolutionLookup.get(String(sourceId)) || []
   return {
     id: `rock-creature-src-${String(sourceId).padStart(3, '0')}`,
     values: {
@@ -257,6 +270,8 @@ function makeRow(data, source, base) {
       traitDesc: detail.te || '',
       skillTags: deriveSkillTags(skillTexts),
       skillRefs: [...new Set(skills.map((skill) => skillId(skill.nm)))],
+      evolutionLine,
+      breedingLine: evolutionLine[0] || '',
       hp: detail.hp ?? 0,
       patk: detail.atk ?? 0,
       matk: detail.matk ?? 0,
@@ -307,6 +322,23 @@ function buildSkillRows(data) {
   return [...byId.values()].sort((a, b) => String(a.values.name).localeCompare(String(b.values.name), 'zh-Hans-CN'))
 }
 
+function hydrateBreedingLineFromOfficialRows(rows) {
+  const byNo = new Map()
+  for (const row of rows) byNo.set(row.values.no, [...(byNo.get(row.values.no) || []), row])
+  for (const sameNoRows of byNo.values()) {
+    const canonical = sameNoRows
+      .filter((row) => Array.isArray(row.values.evolutionLine) && row.values.evolutionLine.length > 1)
+      .sort((a, b) => String(a.values.name).localeCompare(String(b.values.name), 'zh-Hans-CN'))[0] || sameNoRows[0]
+    if (!canonical) continue
+    for (const row of sameNoRows) {
+      if (!Array.isArray(row.values.evolutionLine) || row.values.evolutionLine.length <= 1) {
+        row.values.evolutionLine = canonical.values.evolutionLine || [canonical.values.name]
+      }
+      row.values.breedingLine = row.values.evolutionLine?.[0] || canonical.values.breedingLine || canonical.values.name
+    }
+  }
+}
+
 function buildRows(data) {
   const baseCount = data.l.length
   const formCount = data.l.reduce((sum, base) => sum + (data.d[String(base.i)]?.forms?.length || 0), 0)
@@ -315,10 +347,12 @@ function buildRows(data) {
     throw new Error(`公开图鉴条目数量变化：baseCount=${baseCount}, formCount=${formCount}, total=${total}, expected=${EXPECTED_TOTAL}`)
   }
   const rows = []
+  const evolutionLookup = buildEvolutionLookup(data)
   for (const base of data.l) {
-    rows.push(makeRow(data, base, base))
-    for (const form of data.d[String(base.i)]?.forms || []) rows.push(makeRow(data, form, base))
+    rows.push(makeRow(data, base, base, evolutionLookup))
+    for (const form of data.d[String(base.i)]?.forms || []) rows.push(makeRow(data, form, base, evolutionLookup))
   }
+  hydrateBreedingLineFromOfficialRows(rows)
   const ids = rows.map((row) => row.id)
   if (new Set(ids).size !== ids.length) throw new Error('生成结果包含重复 id')
   return { rows, baseCount, formCount }

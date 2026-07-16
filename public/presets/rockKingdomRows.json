@@ -84,6 +84,10 @@
         "rock-skill-a79d9417d412",
         "rock-skill-cbc1b4aa8c72"
       ],
+      "evolutionLine": [
+        "迪莫"
+      ],
+      "breedingLine": "迪莫",
       "hp": 120,
       "patk": 80,
       "matk": 80,
@@ -173,6 +177,12 @@
         "rock-skill-836d73f74124",
         "rock-skill-23d356e2dc15"
       ],
+      "evolutionLine": [
+        "喵喵",
+        "喵呜",
+        "魔力猫"
+      ],
+      "breedingLine": "喵喵",
       "hp": 65,
       "patk": 66,
       "matk": 66,
@@ -263,6 +273,12 @@
         "rock-skill-836d73f74124",
         "rock-skill-23d356e2dc15"
       ],
+      "evolutionLine": [
+        "喵喵",
+        "喵呜",
+        "魔力猫"
+      ],
+      "breedingLine": "喵喵",
       "hp": 86,
       "patk": 87,
       "matk": 87,
@@ -354,6 +370,12 @@
         "rock-skill-836d73f74124",
         "rock-skill-23d356e2dc15"
       ],
+      "evolutionLine": [
+        "喵喵",
+        "喵呜",
+        "魔力猫"
+      ],
+      "breedingLine": "喵喵",
       "hp": 108,
       "patk": 109,
       "matk": 109,
@@ -445,6 +467,12 @@
         "rock-skill-836d73f74124",
         "rock-skill-23d356e2dc15"
       ],
+      "evolutionLine": [
+        "喵喵",
+        "喵呜",
+        "魔力猫"
+      ],
+      "breedingLine": "喵喵",
       "hp": 108,
       "patk": 127,
       "matk": 127,
@@ -528,6 +556,12 @@
         "rock-skill-d410829b0ec5",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "火花",
+        "焰火",
+        "火神"
+      ],
+      "breedingLine": "火花",
       "hp": 70,
       "patk": 84,
       "matk": 37,
@@ -613,6 +647,12 @@
         "rock-skill-d410829b0ec5",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "火花",
+        "焰火",
+        "火神"
+      ],
+      "breedingLine": "火花",
       "hp": 93,
       "patk": 111,
       "matk": 49,
@@ -699,6 +739,12 @@
         "rock-skill-d410829b0ec5",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "火花",
+        "焰火",
+        "火神"
+      ],
+      "breedingLine": "火花",
       "hp": 117,
       "patk": 139,
       "matk": 61,
@@ -784,6 +830,12 @@
         "rock-skill-d410829b0ec5",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "火花",
+        "焰火",
+        "火神"
+      ],
+      "breedingLine": "火花",
       "hp": 117,
       "patk": 175,
       "matk": 84,
@@ -867,6 +919,12 @@
         "rock-skill-3b4252d78dcf",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "水蓝蓝",
+        "波波拉",
+        "水灵"
+      ],
+      "breedingLine": "水蓝蓝",
       "hp": 75,
       "patk": 35,
       "matk": 76,
@@ -951,6 +1009,12 @@
         "rock-skill-3b4252d78dcf",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "水蓝蓝",
+        "波波拉",
+        "水灵"
+      ],
+      "breedingLine": "水蓝蓝",
       "hp": 100,
       "patk": 46,
       "matk": 102,
@@ -1036,6 +1100,12 @@
         "rock-skill-3b4252d78dcf",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "水蓝蓝",
+        "波波拉",
+        "水灵"
+      ],
+      "breedingLine": "水蓝蓝",
       "hp": 125,
       "patk": 58,
       "matk": 127,
@@ -1121,6 +1191,12 @@
         "rock-skill-3b4252d78dcf",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "水蓝蓝",
+        "波波拉",
+        "水灵"
+      ],
+      "breedingLine": "水蓝蓝",
       "hp": 125,
       "patk": 67,
       "matk": 141,
@@ -1208,6 +1284,10 @@
         "rock-skill-5652797a19fd",
         "rock-skill-b311cd163176"
       ],
+      "evolutionLine": [
+        "鸭吉吉（蓬松的样子）"
+      ],
+      "breedingLine": "鸭吉吉（蓬松的样子）",
       "hp": 136,
       "patk": 95,
       "matk": 35,
@@ -1296,6 +1376,10 @@
         "rock-skill-2ae21df72888",
         "rock-skill-b311cd163176"
       ],
+      "evolutionLine": [
+        "鸭吉吉（蓬松的样子）"
+      ],
+      "breedingLine": "鸭吉吉（蓬松的样子）",
       "hp": 136,
       "patk": 35,
       "matk": 95,
@@ -1383,6 +1467,10 @@
         "rock-skill-5652797a19fd",
         "rock-skill-b311cd163176"
       ],
+      "evolutionLine": [
+        "鸭吉吉（蓬松的样子）"
+      ],
+      "breedingLine": "鸭吉吉（蓬松的样子）",
       "hp": 130,
       "patk": 95,
       "matk": 35,
@@ -1471,6 +1559,10 @@
         "rock-skill-2ae21df72888",
         "rock-skill-b311cd163176"
       ],
+      "evolutionLine": [
+        "鸭吉吉（蓬松的样子）"
+      ],
+      "breedingLine": "鸭吉吉（蓬松的样子）",
       "hp": 137,
       "patk": 35,
       "matk": 94,
@@ -1523,6 +1615,10 @@
         "rock-skill-377fbddc9e2c",
         "rock-skill-7d018a5a1384"
       ],
+      "evolutionLine": [
+        "鸭吉吉（蓬松的样子）"
+      ],
+      "breedingLine": "鸭吉吉（蓬松的样子）",
       "hp": 107,
       "patk": 53,
       "matk": 125,
@@ -1609,6 +1705,10 @@
         "rock-skill-5652797a19fd",
         "rock-skill-b311cd163176"
       ],
+      "evolutionLine": [
+        "鸭吉吉（蓬松的样子）"
+      ],
+      "breedingLine": "鸭吉吉（蓬松的样子）",
       "hp": 108,
       "patk": 89,
       "matk": 41,
@@ -1696,6 +1796,10 @@
         "rock-skill-5652797a19fd",
         "rock-skill-b311cd163176"
       ],
+      "evolutionLine": [
+        "鸭吉吉（蓬松的样子）"
+      ],
+      "breedingLine": "鸭吉吉（蓬松的样子）",
       "hp": 136,
       "patk": 135,
       "matk": 50,
@@ -1781,6 +1885,12 @@
         "rock-skill-1feddb0540cb",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "板板壳（本来的样子）",
+        "咔咔壳（本来的样子）",
+        "水泡壳（本来的样子）"
+      ],
+      "breedingLine": "板板壳（本来的样子）",
       "hp": 67,
       "patk": 28,
       "matk": 72,
@@ -1866,6 +1976,12 @@
         "rock-skill-1feddb0540cb",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "板板壳（本来的样子）",
+        "咔咔壳（本来的样子）",
+        "水泡壳（本来的样子）"
+      ],
+      "breedingLine": "板板壳（本来的样子）",
       "hp": 88,
       "patk": 24,
       "matk": 72,
@@ -1952,6 +2068,12 @@
         "rock-skill-1feddb0540cb",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "板板壳（本来的样子）",
+        "咔咔壳（本来的样子）",
+        "水泡壳（本来的样子）"
+      ],
+      "breedingLine": "板板壳（本来的样子）",
       "hp": 90,
       "patk": 37,
       "matk": 96,
@@ -2038,6 +2160,12 @@
         "rock-skill-1feddb0540cb",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "板板壳（本来的样子）",
+        "咔咔壳（本来的样子）",
+        "水泡壳（本来的样子）"
+      ],
+      "breedingLine": "板板壳（本来的样子）",
       "hp": 117,
       "patk": 31,
       "matk": 96,
@@ -2125,6 +2253,12 @@
         "rock-skill-1feddb0540cb",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "板板壳（本来的样子）",
+        "咔咔壳（本来的样子）",
+        "水泡壳（本来的样子）"
+      ],
+      "breedingLine": "板板壳（本来的样子）",
       "hp": 112,
       "patk": 46,
       "matk": 120,
@@ -2212,6 +2346,12 @@
         "rock-skill-1feddb0540cb",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "板板壳（本来的样子）",
+        "咔咔壳（本来的样子）",
+        "水泡壳（本来的样子）"
+      ],
+      "breedingLine": "板板壳（本来的样子）",
       "hp": 146,
       "patk": 39,
       "matk": 121,
@@ -2294,6 +2434,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-7b7428d6ebe8"
       ],
+      "evolutionLine": [
+        "锥尾羊",
+        "铃兰羊",
+        "花影羚羊"
+      ],
+      "breedingLine": "锥尾羊",
       "hp": 67,
       "patk": 66,
       "matk": 29,
@@ -2378,6 +2524,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-7b7428d6ebe8"
       ],
+      "evolutionLine": [
+        "锥尾羊",
+        "铃兰羊",
+        "花影羚羊"
+      ],
+      "breedingLine": "锥尾羊",
       "hp": 89,
       "patk": 89,
       "matk": 39,
@@ -2464,6 +2616,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-7b7428d6ebe8"
       ],
+      "evolutionLine": [
+        "锥尾羊",
+        "铃兰羊",
+        "花影羚羊"
+      ],
+      "breedingLine": "锥尾羊",
       "hp": 112,
       "patk": 111,
       "matk": 48,
@@ -2548,6 +2706,12 @@
         "rock-skill-df50ec35d639",
         "rock-skill-3b4252d78dcf"
       ],
+      "evolutionLine": [
+        "雪绒鸟（本来的样子）",
+        "冬羽雀（本来的样子）",
+        "岚鸟（本来的样子）"
+      ],
+      "breedingLine": "雪绒鸟（本来的样子）",
       "hp": 54,
       "patk": 77,
       "matk": 33,
@@ -2631,6 +2795,12 @@
         "rock-skill-9b132d403a92",
         "rock-skill-df50ec35d639"
       ],
+      "evolutionLine": [
+        "雪绒鸟（本来的样子）",
+        "冬羽雀（本来的样子）",
+        "岚鸟（本来的样子）"
+      ],
+      "breedingLine": "雪绒鸟（本来的样子）",
       "hp": 56,
       "patk": 77,
       "matk": 26,
@@ -2715,6 +2885,12 @@
         "rock-skill-cbc1b4aa8c72",
         "rock-skill-b6d7d15e59c9"
       ],
+      "evolutionLine": [
+        "雪绒鸟（本来的样子）",
+        "冬羽雀（本来的样子）",
+        "岚鸟（本来的样子）"
+      ],
+      "breedingLine": "雪绒鸟（本来的样子）",
       "hp": 59,
       "patk": 80,
       "matk": 32,
@@ -2799,6 +2975,12 @@
         "rock-skill-df50ec35d639",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "雪绒鸟（本来的样子）",
+        "冬羽雀（本来的样子）",
+        "岚鸟（本来的样子）"
+      ],
+      "breedingLine": "雪绒鸟（本来的样子）",
       "hp": 54,
       "patk": 76,
       "matk": 25,
@@ -2883,6 +3065,12 @@
         "rock-skill-df50ec35d639",
         "rock-skill-3b4252d78dcf"
       ],
+      "evolutionLine": [
+        "雪绒鸟（本来的样子）",
+        "冬羽雀（本来的样子）",
+        "岚鸟（本来的样子）"
+      ],
+      "breedingLine": "雪绒鸟（本来的样子）",
       "hp": 72,
       "patk": 103,
       "matk": 44,
@@ -2966,6 +3154,12 @@
         "rock-skill-9b132d403a92",
         "rock-skill-df50ec35d639"
       ],
+      "evolutionLine": [
+        "雪绒鸟（本来的样子）",
+        "冬羽雀（本来的样子）",
+        "岚鸟（本来的样子）"
+      ],
+      "breedingLine": "雪绒鸟（本来的样子）",
       "hp": 75,
       "patk": 103,
       "matk": 35,
@@ -3050,6 +3244,12 @@
         "rock-skill-cbc1b4aa8c72",
         "rock-skill-b6d7d15e59c9"
       ],
+      "evolutionLine": [
+        "雪绒鸟（本来的样子）",
+        "冬羽雀（本来的样子）",
+        "岚鸟（本来的样子）"
+      ],
+      "breedingLine": "雪绒鸟（本来的样子）",
       "hp": 79,
       "patk": 107,
       "matk": 43,
@@ -3134,6 +3334,12 @@
         "rock-skill-df50ec35d639",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "雪绒鸟（本来的样子）",
+        "冬羽雀（本来的样子）",
+        "岚鸟（本来的样子）"
+      ],
+      "breedingLine": "雪绒鸟（本来的样子）",
       "hp": 72,
       "patk": 102,
       "matk": 34,
@@ -3219,6 +3425,12 @@
         "rock-skill-df50ec35d639",
         "rock-skill-3b4252d78dcf"
       ],
+      "evolutionLine": [
+        "雪绒鸟（本来的样子）",
+        "冬羽雀（本来的样子）",
+        "岚鸟（本来的样子）"
+      ],
+      "breedingLine": "雪绒鸟（本来的样子）",
       "hp": 90,
       "patk": 128,
       "matk": 55,
@@ -3303,6 +3515,12 @@
         "rock-skill-9b132d403a92",
         "rock-skill-df50ec35d639"
       ],
+      "evolutionLine": [
+        "雪绒鸟（本来的样子）",
+        "冬羽雀（本来的样子）",
+        "岚鸟（本来的样子）"
+      ],
+      "breedingLine": "雪绒鸟（本来的样子）",
       "hp": 93,
       "patk": 128,
       "matk": 44,
@@ -3388,6 +3606,12 @@
         "rock-skill-cbc1b4aa8c72",
         "rock-skill-b6d7d15e59c9"
       ],
+      "evolutionLine": [
+        "雪绒鸟（本来的样子）",
+        "冬羽雀（本来的样子）",
+        "岚鸟（本来的样子）"
+      ],
+      "breedingLine": "雪绒鸟（本来的样子）",
       "hp": 99,
       "patk": 133,
       "matk": 54,
@@ -3473,6 +3697,12 @@
         "rock-skill-df50ec35d639",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "雪绒鸟（本来的样子）",
+        "冬羽雀（本来的样子）",
+        "岚鸟（本来的样子）"
+      ],
+      "breedingLine": "雪绒鸟（本来的样子）",
       "hp": 90,
       "patk": 127,
       "matk": 42,
@@ -3558,6 +3788,12 @@
         "rock-skill-df50ec35d639",
         "rock-skill-3b4252d78dcf"
       ],
+      "evolutionLine": [
+        "雪绒鸟（本来的样子）",
+        "冬羽雀（本来的样子）",
+        "岚鸟（本来的样子）"
+      ],
+      "breedingLine": "雪绒鸟（本来的样子）",
       "hp": 90,
       "patk": 142,
       "matk": 63,
@@ -3647,6 +3883,12 @@
         "rock-skill-7758d694bf2d",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "小灵菇",
+        "幻灵菇",
+        "幻影灵菇"
+      ],
+      "breedingLine": "小灵菇",
       "hp": 67,
       "patk": 59,
       "matk": 59,
@@ -3737,6 +3979,12 @@
         "rock-skill-7758d694bf2d",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "小灵菇",
+        "幻灵菇",
+        "幻影灵菇"
+      ],
+      "breedingLine": "小灵菇",
       "hp": 89,
       "patk": 79,
       "matk": 79,
@@ -3829,6 +4077,12 @@
         "rock-skill-7758d694bf2d",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "小灵菇",
+        "幻灵菇",
+        "幻影灵菇"
+      ],
+      "breedingLine": "小灵菇",
       "hp": 111,
       "patk": 98,
       "matk": 98,
@@ -3917,6 +4171,12 @@
         "rock-skill-4bba99bf8926",
         "rock-skill-927c29f37379"
       ],
+      "evolutionLine": [
+        "石肤蜥（本来的样子）",
+        "石刺蜥（本来的样子）",
+        "石冠王蜥（本来的样子）"
+      ],
+      "breedingLine": "石肤蜥（本来的样子）",
       "hp": 69,
       "patk": 54,
       "matk": 53,
@@ -4005,6 +4265,12 @@
         "rock-skill-4bba99bf8926",
         "rock-skill-927c29f37379"
       ],
+      "evolutionLine": [
+        "石肤蜥（本来的样子）",
+        "石刺蜥（本来的样子）",
+        "石冠王蜥（本来的样子）"
+      ],
+      "breedingLine": "石肤蜥（本来的样子）",
       "hp": 68,
       "patk": 54,
       "matk": 53,
@@ -4093,6 +4359,12 @@
         "rock-skill-4bba99bf8926",
         "rock-skill-927c29f37379"
       ],
+      "evolutionLine": [
+        "石肤蜥（本来的样子）",
+        "石刺蜥（本来的样子）",
+        "石冠王蜥（本来的样子）"
+      ],
+      "breedingLine": "石肤蜥（本来的样子）",
       "hp": 92,
       "patk": 72,
       "matk": 71,
@@ -4181,6 +4453,12 @@
         "rock-skill-4bba99bf8926",
         "rock-skill-927c29f37379"
       ],
+      "evolutionLine": [
+        "石肤蜥（本来的样子）",
+        "石刺蜥（本来的样子）",
+        "石冠王蜥（本来的样子）"
+      ],
+      "breedingLine": "石肤蜥（本来的样子）",
       "hp": 91,
       "patk": 72,
       "matk": 71,
@@ -4271,6 +4549,12 @@
         "rock-skill-4bba99bf8926",
         "rock-skill-927c29f37379"
       ],
+      "evolutionLine": [
+        "石肤蜥（本来的样子）",
+        "石刺蜥（本来的样子）",
+        "石冠王蜥（本来的样子）"
+      ],
+      "breedingLine": "石肤蜥（本来的样子）",
       "hp": 115,
       "patk": 89,
       "matk": 89,
@@ -4361,6 +4645,12 @@
         "rock-skill-4bba99bf8926",
         "rock-skill-927c29f37379"
       ],
+      "evolutionLine": [
+        "石肤蜥（本来的样子）",
+        "石刺蜥（本来的样子）",
+        "石冠王蜥（本来的样子）"
+      ],
+      "breedingLine": "石肤蜥（本来的样子）",
       "hp": 113,
       "patk": 90,
       "matk": 89,
@@ -4447,6 +4737,12 @@
         "rock-skill-8c41eeb18e86",
         "rock-skill-d851e3d8552d"
       ],
+      "evolutionLine": [
+        "布是石",
+        "布是岩",
+        "布克棱岩"
+      ],
+      "breedingLine": "布是石",
       "hp": 72,
       "patk": 81,
       "matk": 29,
@@ -4535,6 +4831,12 @@
         "rock-skill-8c41eeb18e86",
         "rock-skill-d851e3d8552d"
       ],
+      "evolutionLine": [
+        "布是石",
+        "布是岩",
+        "布克棱岩"
+      ],
+      "breedingLine": "布是石",
       "hp": 96,
       "patk": 108,
       "matk": 39,
@@ -4623,6 +4925,12 @@
         "rock-skill-8c41eeb18e86",
         "rock-skill-d851e3d8552d"
       ],
+      "evolutionLine": [
+        "布是石",
+        "布是岩",
+        "布克棱岩"
+      ],
+      "breedingLine": "布是石",
       "hp": 120,
       "patk": 135,
       "matk": 49,
@@ -4711,6 +5019,12 @@
         "rock-skill-8c41eeb18e86",
         "rock-skill-d851e3d8552d"
       ],
+      "evolutionLine": [
+        "布是石",
+        "布是岩",
+        "布克棱岩"
+      ],
+      "breedingLine": "布是石",
       "hp": 125,
       "patk": 139,
       "matk": 52,
@@ -4795,6 +5109,11 @@
         "rock-skill-7758d694bf2d",
         "rock-skill-d851e3d8552d"
       ],
+      "evolutionLine": [
+        "恶魔叮",
+        "叮叮恶魔"
+      ],
+      "breedingLine": "恶魔叮",
       "hp": 86,
       "patk": 112,
       "matk": 44,
@@ -4880,6 +5199,11 @@
         "rock-skill-7758d694bf2d",
         "rock-skill-d851e3d8552d"
       ],
+      "evolutionLine": [
+        "恶魔叮",
+        "叮叮恶魔"
+      ],
+      "breedingLine": "恶魔叮",
       "hp": 108,
       "patk": 140,
       "matk": 55,
@@ -4968,6 +5292,12 @@
         "rock-skill-3488bbe17aa7",
         "rock-skill-bc0c16f90df5"
       ],
+      "evolutionLine": [
+        "毛毛",
+        "爬爬",
+        "化蝶（平常的样子）"
+      ],
+      "breedingLine": "毛毛",
       "hp": 32,
       "patk": 28,
       "matk": 28,
@@ -5056,6 +5386,12 @@
         "rock-skill-3488bbe17aa7",
         "rock-skill-bc0c16f90df5"
       ],
+      "evolutionLine": [
+        "毛毛",
+        "爬爬",
+        "化蝶（平常的样子）"
+      ],
+      "breedingLine": "毛毛",
       "hp": 42,
       "patk": 37,
       "matk": 37,
@@ -5145,6 +5481,12 @@
         "rock-skill-3488bbe17aa7",
         "rock-skill-bc0c16f90df5"
       ],
+      "evolutionLine": [
+        "毛毛",
+        "爬爬",
+        "化蝶（平常的样子）"
+      ],
+      "breedingLine": "毛毛",
       "hp": 53,
       "patk": 46,
       "matk": 46,
@@ -5234,6 +5576,12 @@
         "rock-skill-3488bbe17aa7",
         "rock-skill-bc0c16f90df5"
       ],
+      "evolutionLine": [
+        "毛毛",
+        "爬爬",
+        "化蝶（平常的样子）"
+      ],
+      "breedingLine": "毛毛",
       "hp": 43,
       "patk": 42,
       "matk": 42,
@@ -5323,6 +5671,12 @@
         "rock-skill-3488bbe17aa7",
         "rock-skill-bc0c16f90df5"
       ],
+      "evolutionLine": [
+        "毛毛",
+        "爬爬",
+        "化蝶（平常的样子）"
+      ],
+      "breedingLine": "毛毛",
       "hp": 49,
       "patk": 47,
       "matk": 41,
@@ -5412,6 +5766,12 @@
         "rock-skill-3488bbe17aa7",
         "rock-skill-bc0c16f90df5"
       ],
+      "evolutionLine": [
+        "毛毛",
+        "爬爬",
+        "化蝶（平常的样子）"
+      ],
+      "breedingLine": "毛毛",
       "hp": 55,
       "patk": 46,
       "matk": 44,
@@ -5503,6 +5863,10 @@
         "rock-skill-e0a2cec7cb62",
         "rock-skill-adda7da9158b"
       ],
+      "evolutionLine": [
+        "幽影树"
+      ],
+      "breedingLine": "幽影树",
       "hp": 111,
       "patk": 96,
       "matk": 96,
@@ -5594,6 +5958,10 @@
         "rock-skill-e0a2cec7cb62",
         "rock-skill-adda7da9158b"
       ],
+      "evolutionLine": [
+        "幽影树"
+      ],
+      "breedingLine": "幽影树",
       "hp": 125,
       "patk": 96,
       "matk": 96,
@@ -5684,6 +6052,12 @@
         "rock-skill-049bf03459e9",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "小鼠獭",
+        "燕尾獭",
+        "卷胡巨獭"
+      ],
+      "breedingLine": "小鼠獭",
       "hp": 73,
       "patk": 57,
       "matk": 57,
@@ -5774,6 +6148,12 @@
         "rock-skill-049bf03459e9",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "小鼠獭",
+        "燕尾獭",
+        "卷胡巨獭"
+      ],
+      "breedingLine": "小鼠獭",
       "hp": 97,
       "patk": 77,
       "matk": 77,
@@ -5866,6 +6246,12 @@
         "rock-skill-049bf03459e9",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "小鼠獭",
+        "燕尾獭",
+        "卷胡巨獭"
+      ],
+      "breedingLine": "小鼠獭",
       "hp": 121,
       "patk": 96,
       "matk": 96,
@@ -5951,6 +6337,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "矿晶虫",
+        "晶石蜗（西瓜碧玺的样子）"
+      ],
+      "breedingLine": "矿晶虫",
       "hp": 79,
       "patk": 77,
       "matk": 81,
@@ -6043,6 +6434,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "矿晶虫",
+        "晶石蜗（西瓜碧玺的样子）"
+      ],
+      "breedingLine": "矿晶虫",
       "hp": 99,
       "patk": 96,
       "matk": 101,
@@ -6135,6 +6531,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "矿晶虫",
+        "晶石蜗（西瓜碧玺的样子）"
+      ],
+      "breedingLine": "矿晶虫",
       "hp": 94,
       "patk": 97,
       "matk": 101,
@@ -6227,6 +6628,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "矿晶虫",
+        "晶石蜗（西瓜碧玺的样子）"
+      ],
+      "breedingLine": "矿晶虫",
       "hp": 97,
       "patk": 101,
       "matk": 101,
@@ -6318,6 +6724,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "矿晶虫",
+        "晶石蜗（西瓜碧玺的样子）"
+      ],
+      "breedingLine": "矿晶虫",
       "hp": 97,
       "patk": 97,
       "matk": 101,
@@ -6410,6 +6821,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "矿晶虫",
+        "晶石蜗（西瓜碧玺的样子）"
+      ],
+      "breedingLine": "矿晶虫",
       "hp": 99,
       "patk": 97,
       "matk": 107,
@@ -6502,6 +6918,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "矿晶虫",
+        "晶石蜗（西瓜碧玺的样子）"
+      ],
+      "breedingLine": "矿晶虫",
       "hp": 95,
       "patk": 97,
       "matk": 102,
@@ -6594,6 +7015,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "矿晶虫",
+        "晶石蜗（西瓜碧玺的样子）"
+      ],
+      "breedingLine": "矿晶虫",
       "hp": 93,
       "patk": 96,
       "matk": 101,
@@ -6685,6 +7111,12 @@
         "rock-skill-696737c077d7",
         "rock-skill-927c29f37379"
       ],
+      "evolutionLine": [
+        "奇丽草",
+        "奇丽叶",
+        "奇丽花"
+      ],
+      "breedingLine": "奇丽草",
       "hp": 67,
       "patk": 69,
       "matk": 69,
@@ -6777,6 +7209,12 @@
         "rock-skill-696737c077d7",
         "rock-skill-927c29f37379"
       ],
+      "evolutionLine": [
+        "奇丽草",
+        "奇丽叶",
+        "奇丽花"
+      ],
+      "breedingLine": "奇丽草",
       "hp": 90,
       "patk": 92,
       "matk": 92,
@@ -6870,6 +7308,12 @@
         "rock-skill-696737c077d7",
         "rock-skill-927c29f37379"
       ],
+      "evolutionLine": [
+        "奇丽草",
+        "奇丽叶",
+        "奇丽花"
+      ],
+      "breedingLine": "奇丽草",
       "hp": 112,
       "patk": 115,
       "matk": 115,
@@ -6963,6 +7407,12 @@
         "rock-skill-696737c077d7",
         "rock-skill-927c29f37379"
       ],
+      "evolutionLine": [
+        "奇丽草",
+        "奇丽叶",
+        "奇丽花"
+      ],
+      "breedingLine": "奇丽草",
       "hp": 112,
       "patk": 128,
       "matk": 128,
@@ -7046,6 +7496,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-618204099d2e"
       ],
+      "evolutionLine": [
+        "丢丢（草地附近的样子）",
+        "卡卡虫（草地附近的样子）",
+        "卡瓦重（草地附近的样子）"
+      ],
+      "breedingLine": "丢丢（草地附近的样子）",
       "hp": 44,
       "patk": 45,
       "matk": 12,
@@ -7129,6 +7585,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-618204099d2e"
       ],
+      "evolutionLine": [
+        "丢丢（草地附近的样子）",
+        "卡卡虫（草地附近的样子）",
+        "卡瓦重（草地附近的样子）"
+      ],
+      "breedingLine": "丢丢（草地附近的样子）",
       "hp": 44,
       "patk": 42,
       "matk": 12,
@@ -7213,6 +7675,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-618204099d2e"
       ],
+      "evolutionLine": [
+        "丢丢（草地附近的样子）",
+        "卡卡虫（草地附近的样子）",
+        "卡瓦重（草地附近的样子）"
+      ],
+      "breedingLine": "丢丢（草地附近的样子）",
       "hp": 46,
       "patk": 41,
       "matk": 8,
@@ -7241,6 +7709,12 @@
       "traitDesc": "自己力竭时，少损失1点魔力。",
       "skillTags": [],
       "skillRefs": [],
+      "evolutionLine": [
+        "丢丢（草地附近的样子）",
+        "卡卡虫（草地附近的样子）",
+        "卡瓦重（草地附近的样子）"
+      ],
+      "breedingLine": "丢丢（草地附近的样子）",
       "hp": 0,
       "patk": 0,
       "matk": 0,
@@ -7324,6 +7798,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-618204099d2e"
       ],
+      "evolutionLine": [
+        "丢丢（草地附近的样子）",
+        "卡卡虫（草地附近的样子）",
+        "卡瓦重（草地附近的样子）"
+      ],
+      "breedingLine": "丢丢（草地附近的样子）",
       "hp": 59,
       "patk": 60,
       "matk": 16,
@@ -7407,6 +7887,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-618204099d2e"
       ],
+      "evolutionLine": [
+        "丢丢（草地附近的样子）",
+        "卡卡虫（草地附近的样子）",
+        "卡瓦重（草地附近的样子）"
+      ],
+      "breedingLine": "丢丢（草地附近的样子）",
       "hp": 58,
       "patk": 56,
       "matk": 16,
@@ -7491,6 +7977,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-618204099d2e"
       ],
+      "evolutionLine": [
+        "丢丢（草地附近的样子）",
+        "卡卡虫（草地附近的样子）",
+        "卡瓦重（草地附近的样子）"
+      ],
+      "breedingLine": "丢丢（草地附近的样子）",
       "hp": 62,
       "patk": 54,
       "matk": 11,
@@ -7519,6 +8011,12 @@
       "traitDesc": "自己力竭时，少损失1点魔力。",
       "skillTags": [],
       "skillRefs": [],
+      "evolutionLine": [
+        "丢丢（草地附近的样子）",
+        "卡卡虫（草地附近的样子）",
+        "卡瓦重（草地附近的样子）"
+      ],
+      "breedingLine": "丢丢（草地附近的样子）",
       "hp": 0,
       "patk": 0,
       "matk": 0,
@@ -7602,6 +8100,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-618204099d2e"
       ],
+      "evolutionLine": [
+        "丢丢（草地附近的样子）",
+        "卡卡虫（草地附近的样子）",
+        "卡瓦重（草地附近的样子）"
+      ],
+      "breedingLine": "丢丢（草地附近的样子）",
       "hp": 74,
       "patk": 75,
       "matk": 20,
@@ -7685,6 +8189,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-618204099d2e"
       ],
+      "evolutionLine": [
+        "丢丢（草地附近的样子）",
+        "卡卡虫（草地附近的样子）",
+        "卡瓦重（草地附近的样子）"
+      ],
+      "breedingLine": "丢丢（草地附近的样子）",
       "hp": 73,
       "patk": 70,
       "matk": 20,
@@ -7769,6 +8279,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-618204099d2e"
       ],
+      "evolutionLine": [
+        "丢丢（草地附近的样子）",
+        "卡卡虫（草地附近的样子）",
+        "卡瓦重（草地附近的样子）"
+      ],
+      "breedingLine": "丢丢（草地附近的样子）",
       "hp": 77,
       "patk": 68,
       "matk": 14,
@@ -7797,6 +8313,12 @@
       "traitDesc": "自己力竭时，少损失1点魔力。",
       "skillTags": [],
       "skillRefs": [],
+      "evolutionLine": [
+        "丢丢（草地附近的样子）",
+        "卡卡虫（草地附近的样子）",
+        "卡瓦重（草地附近的样子）"
+      ],
+      "breedingLine": "丢丢（草地附近的样子）",
       "hp": 0,
       "patk": 0,
       "matk": 0,
@@ -7881,6 +8403,11 @@
         "rock-skill-7460e5cd79c7",
         "rock-skill-9c8d0165ca7e"
       ],
+      "evolutionLine": [
+        "护主犬",
+        "音速犬"
+      ],
+      "breedingLine": "护主犬",
       "hp": 68,
       "patk": 103,
       "matk": 37,
@@ -7965,6 +8492,11 @@
         "rock-skill-7460e5cd79c7",
         "rock-skill-9c8d0165ca7e"
       ],
+      "evolutionLine": [
+        "护主犬",
+        "音速犬"
+      ],
+      "breedingLine": "护主犬",
       "hp": 85,
       "patk": 128,
       "matk": 46,
@@ -8049,6 +8581,11 @@
         "rock-skill-7460e5cd79c7",
         "rock-skill-9c8d0165ca7e"
       ],
+      "evolutionLine": [
+        "护主犬",
+        "音速犬"
+      ],
+      "breedingLine": "护主犬",
       "hp": 85,
       "patk": 128,
       "matk": 46,
@@ -8136,6 +8673,12 @@
         "rock-skill-e75702387eb0",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "绿耳松鼠",
+        "抱枕松鼠",
+        "蹦床松鼠"
+      ],
+      "breedingLine": "绿耳松鼠",
       "hp": 69,
       "patk": 50,
       "matk": 47,
@@ -8223,6 +8766,12 @@
         "rock-skill-e75702387eb0",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "绿耳松鼠",
+        "抱枕松鼠",
+        "蹦床松鼠"
+      ],
+      "breedingLine": "绿耳松鼠",
       "hp": 92,
       "patk": 67,
       "matk": 63,
@@ -8311,6 +8860,12 @@
         "rock-skill-e75702387eb0",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "绿耳松鼠",
+        "抱枕松鼠",
+        "蹦床松鼠"
+      ],
+      "breedingLine": "绿耳松鼠",
       "hp": 114,
       "patk": 84,
       "matk": 79,
@@ -8396,6 +8951,11 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-3a52a09192cf"
       ],
+      "evolutionLine": [
+        "嘟嘟煲",
+        "嘟嘟锅"
+      ],
+      "breedingLine": "嘟嘟煲",
       "hp": 110,
       "patk": 29,
       "matk": 82,
@@ -8483,6 +9043,11 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-3a52a09192cf"
       ],
+      "evolutionLine": [
+        "嘟嘟煲",
+        "嘟嘟锅"
+      ],
+      "breedingLine": "嘟嘟煲",
       "hp": 137,
       "patk": 36,
       "matk": 102,
@@ -8567,6 +9132,12 @@
         "rock-skill-b6bd984a1f11",
         "rock-skill-be0cef8cbc2a"
       ],
+      "evolutionLine": [
+        "小灵面",
+        "暗影灵面（睁眼的样子）",
+        "幽冥眼（睁眼的样子）"
+      ],
+      "breedingLine": "小灵面",
       "hp": 55,
       "patk": 30,
       "matk": 72,
@@ -8653,6 +9224,12 @@
         "rock-skill-b6bd984a1f11",
         "rock-skill-be0cef8cbc2a"
       ],
+      "evolutionLine": [
+        "小灵面",
+        "暗影灵面（睁眼的样子）",
+        "幽冥眼（睁眼的样子）"
+      ],
+      "breedingLine": "小灵面",
       "hp": 74,
       "patk": 40,
       "matk": 96,
@@ -8739,6 +9316,12 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-b6bd984a1f11"
       ],
+      "evolutionLine": [
+        "小灵面",
+        "暗影灵面（睁眼的样子）",
+        "幽冥眼（睁眼的样子）"
+      ],
+      "breedingLine": "小灵面",
       "hp": 84,
       "patk": 30,
       "matk": 96,
@@ -8826,6 +9409,12 @@
         "rock-skill-b6bd984a1f11",
         "rock-skill-be0cef8cbc2a"
       ],
+      "evolutionLine": [
+        "小灵面",
+        "暗影灵面（睁眼的样子）",
+        "幽冥眼（睁眼的样子）"
+      ],
+      "breedingLine": "小灵面",
       "hp": 92,
       "patk": 50,
       "matk": 120,
@@ -8913,6 +9502,12 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-b6bd984a1f11"
       ],
+      "evolutionLine": [
+        "小灵面",
+        "暗影灵面（睁眼的样子）",
+        "幽冥眼（睁眼的样子）"
+      ],
+      "breedingLine": "小灵面",
       "hp": 105,
       "patk": 38,
       "matk": 120,
@@ -8997,6 +9592,11 @@
         "rock-skill-8b86214ed111",
         "rock-skill-be0cef8cbc2a"
       ],
+      "evolutionLine": [
+        "梦游（穿旧睡衣的样子）",
+        "梦悠悠（穿旧睡衣的样子）"
+      ],
+      "breedingLine": "梦游（穿旧睡衣的样子）",
       "hp": 90,
       "patk": 40,
       "matk": 106,
@@ -9026,6 +9626,11 @@
       "traitDesc": "敌方精灵离场后，更换入场的精灵失去3能量。",
       "skillTags": [],
       "skillRefs": [],
+      "evolutionLine": [
+        "梦游（穿旧睡衣的样子）",
+        "梦悠悠（穿旧睡衣的样子）"
+      ],
+      "breedingLine": "梦游（穿旧睡衣的样子）",
       "hp": 0,
       "patk": 0,
       "matk": 0,
@@ -9111,6 +9716,11 @@
         "rock-skill-8b86214ed111",
         "rock-skill-be0cef8cbc2a"
       ],
+      "evolutionLine": [
+        "梦游（穿旧睡衣的样子）",
+        "梦悠悠（穿旧睡衣的样子）"
+      ],
+      "breedingLine": "梦游（穿旧睡衣的样子）",
       "hp": 113,
       "patk": 50,
       "matk": 133,
@@ -9140,6 +9750,11 @@
       "traitDesc": "敌方精灵离场后，更换入场的精灵失去3能量。",
       "skillTags": [],
       "skillRefs": [],
+      "evolutionLine": [
+        "梦游（穿旧睡衣的样子）",
+        "梦悠悠（穿旧睡衣的样子）"
+      ],
+      "breedingLine": "梦游（穿旧睡衣的样子）",
       "hp": 0,
       "patk": 0,
       "matk": 0,
@@ -9230,6 +9845,10 @@
         "rock-skill-2029e612c90d",
         "rock-skill-b311cd163176"
       ],
+      "evolutionLine": [
+        "兽花蕾"
+      ],
+      "breedingLine": "兽花蕾",
       "hp": 70,
       "patk": 79,
       "matk": 82,
@@ -9315,6 +9934,12 @@
         "rock-skill-e8bed5324686",
         "rock-skill-c7b623aed7e8"
       ],
+      "evolutionLine": [
+        "伏地兽",
+        "贪食鼹",
+        "巨噬针鼹"
+      ],
+      "breedingLine": "伏地兽",
       "hp": 95,
       "patk": 56,
       "matk": 25,
@@ -9400,6 +10025,12 @@
         "rock-skill-e8bed5324686",
         "rock-skill-c7b623aed7e8"
       ],
+      "evolutionLine": [
+        "伏地兽",
+        "贪食鼹",
+        "巨噬针鼹"
+      ],
+      "breedingLine": "伏地兽",
       "hp": 126,
       "patk": 74,
       "matk": 33,
@@ -9486,6 +10117,12 @@
         "rock-skill-e8bed5324686",
         "rock-skill-c7b623aed7e8"
       ],
+      "evolutionLine": [
+        "伏地兽",
+        "贪食鼹",
+        "巨噬针鼹"
+      ],
+      "breedingLine": "伏地兽",
       "hp": 158,
       "patk": 93,
       "matk": 41,
@@ -9578,6 +10215,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "蹦蹦种子（海神球形态）",
+        "蹦蹦草（海神球形态）",
+        "蹦蹦花（海神球形态）"
+      ],
+      "breedingLine": "蹦蹦种子（海神球形态）",
       "hp": 60,
       "patk": 64,
       "matk": 66,
@@ -9670,6 +10313,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "蹦蹦种子（海神球形态）",
+        "蹦蹦草（海神球形态）",
+        "蹦蹦花（海神球形态）"
+      ],
+      "breedingLine": "蹦蹦种子（海神球形态）",
       "hp": 62,
       "patk": 61,
       "matk": 66,
@@ -9762,6 +10411,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "蹦蹦种子（海神球形态）",
+        "蹦蹦草（海神球形态）",
+        "蹦蹦花（海神球形态）"
+      ],
+      "breedingLine": "蹦蹦种子（海神球形态）",
       "hp": 57,
       "patk": 62,
       "matk": 66,
@@ -9854,6 +10509,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "蹦蹦种子（海神球形态）",
+        "蹦蹦草（海神球形态）",
+        "蹦蹦花（海神球形态）"
+      ],
+      "breedingLine": "蹦蹦种子（海神球形态）",
       "hp": 59,
       "patk": 60,
       "matk": 66,
@@ -9947,6 +10608,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "蹦蹦种子（海神球形态）",
+        "蹦蹦草（海神球形态）",
+        "蹦蹦花（海神球形态）"
+      ],
+      "breedingLine": "蹦蹦种子（海神球形态）",
       "hp": 80,
       "patk": 85,
       "matk": 88,
@@ -10039,6 +10706,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "蹦蹦种子（海神球形态）",
+        "蹦蹦草（海神球形态）",
+        "蹦蹦花（海神球形态）"
+      ],
+      "breedingLine": "蹦蹦种子（海神球形态）",
       "hp": 83,
       "patk": 81,
       "matk": 87,
@@ -10131,6 +10804,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "蹦蹦种子（海神球形态）",
+        "蹦蹦草（海神球形态）",
+        "蹦蹦花（海神球形态）"
+      ],
+      "breedingLine": "蹦蹦种子（海神球形态）",
       "hp": 76,
       "patk": 82,
       "matk": 87,
@@ -10223,6 +10902,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "蹦蹦种子（海神球形态）",
+        "蹦蹦草（海神球形态）",
+        "蹦蹦花（海神球形态）"
+      ],
+      "breedingLine": "蹦蹦种子（海神球形态）",
       "hp": 79,
       "patk": 80,
       "matk": 88,
@@ -10316,6 +11001,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "蹦蹦种子（海神球形态）",
+        "蹦蹦草（海神球形态）",
+        "蹦蹦花（海神球形态）"
+      ],
+      "breedingLine": "蹦蹦种子（海神球形态）",
       "hp": 100,
       "patk": 107,
       "matk": 110,
@@ -10409,6 +11100,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "蹦蹦种子（海神球形态）",
+        "蹦蹦草（海神球形态）",
+        "蹦蹦花（海神球形态）"
+      ],
+      "breedingLine": "蹦蹦种子（海神球形态）",
       "hp": 103,
       "patk": 101,
       "matk": 109,
@@ -10502,6 +11199,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "蹦蹦种子（海神球形态）",
+        "蹦蹦草（海神球形态）",
+        "蹦蹦花（海神球形态）"
+      ],
+      "breedingLine": "蹦蹦种子（海神球形态）",
       "hp": 95,
       "patk": 103,
       "matk": 109,
@@ -10595,6 +11298,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "蹦蹦种子（海神球形态）",
+        "蹦蹦草（海神球形态）",
+        "蹦蹦花（海神球形态）"
+      ],
+      "breedingLine": "蹦蹦种子（海神球形态）",
       "hp": 99,
       "patk": 100,
       "matk": 110,
@@ -10689,6 +11398,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "蹦蹦种子（海神球形态）",
+        "蹦蹦草（海神球形态）",
+        "蹦蹦花（海神球形态）"
+      ],
+      "breedingLine": "蹦蹦种子（海神球形态）",
       "hp": 100,
       "patk": 87,
       "matk": 90,
@@ -10777,6 +11492,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "电咩咩",
+        "粉咩咩",
+        "电球咩咩"
+      ],
+      "breedingLine": "电咩咩",
       "hp": 47,
       "patk": 49,
       "matk": 49,
@@ -10866,6 +11587,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "电咩咩",
+        "粉咩咩",
+        "电球咩咩"
+      ],
+      "breedingLine": "电咩咩",
       "hp": 62,
       "patk": 66,
       "matk": 66,
@@ -10955,6 +11682,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "电咩咩",
+        "粉咩咩",
+        "电球咩咩"
+      ],
+      "breedingLine": "电咩咩",
       "hp": 78,
       "patk": 82,
       "matk": 82,
@@ -11045,6 +11778,11 @@
         "rock-skill-adda7da9158b",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "蒲公英",
+        "蒲公英娃娃"
+      ],
+      "breedingLine": "蒲公英",
       "hp": 89,
       "patk": 99,
       "matk": 94,
@@ -11136,6 +11874,11 @@
         "rock-skill-adda7da9158b",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "蒲公英",
+        "蒲公英娃娃"
+      ],
+      "breedingLine": "蒲公英",
       "hp": 111,
       "patk": 123,
       "matk": 117,
@@ -11226,6 +11969,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "伊贝儿",
+        "伊贝粉粉"
+      ],
+      "breedingLine": "伊贝儿",
       "hp": 85,
       "patk": 73,
       "matk": 71,
@@ -11318,6 +12066,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "伊贝儿",
+        "伊贝粉粉"
+      ],
+      "breedingLine": "伊贝儿",
       "hp": 106,
       "patk": 91,
       "matk": 89,
@@ -11407,6 +12160,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-a21ea213004f"
       ],
+      "evolutionLine": [
+        "白发懒人",
+        "动力猿",
+        "瞌睡王"
+      ],
+      "breedingLine": "白发懒人",
       "hp": 86,
       "patk": 94,
       "matk": 38,
@@ -11498,6 +12257,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-a21ea213004f"
       ],
+      "evolutionLine": [
+        "白发懒人",
+        "动力猿",
+        "瞌睡王"
+      ],
+      "breedingLine": "白发懒人",
       "hp": 115,
       "patk": 125,
       "matk": 51,
@@ -11589,6 +12354,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-a21ea213004f"
       ],
+      "evolutionLine": [
+        "白发懒人",
+        "动力猿",
+        "瞌睡王"
+      ],
+      "breedingLine": "白发懒人",
       "hp": 144,
       "patk": 157,
       "matk": 64,
@@ -11672,6 +12443,12 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "海盔虫（本来的样子）",
+        "刺盔虫（本来的样子）",
+        "千棘盔（本来的样子）"
+      ],
+      "breedingLine": "海盔虫（本来的样子）",
       "hp": 71,
       "patk": 25,
       "matk": 59,
@@ -11755,6 +12532,12 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "海盔虫（本来的样子）",
+        "刺盔虫（本来的样子）",
+        "千棘盔（本来的样子）"
+      ],
+      "breedingLine": "海盔虫（本来的样子）",
       "hp": 70,
       "patk": 25,
       "matk": 60,
@@ -11838,6 +12621,12 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "海盔虫（本来的样子）",
+        "刺盔虫（本来的样子）",
+        "千棘盔（本来的样子）"
+      ],
+      "breedingLine": "海盔虫（本来的样子）",
       "hp": 94,
       "patk": 33,
       "matk": 79,
@@ -11921,6 +12710,12 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "海盔虫（本来的样子）",
+        "刺盔虫（本来的样子）",
+        "千棘盔（本来的样子）"
+      ],
+      "breedingLine": "海盔虫（本来的样子）",
       "hp": 94,
       "patk": 33,
       "matk": 80,
@@ -12007,6 +12802,12 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "海盔虫（本来的样子）",
+        "刺盔虫（本来的样子）",
+        "千棘盔（本来的样子）"
+      ],
+      "breedingLine": "海盔虫（本来的样子）",
       "hp": 118,
       "patk": 41,
       "matk": 99,
@@ -12093,6 +12894,12 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "海盔虫（本来的样子）",
+        "刺盔虫（本来的样子）",
+        "千棘盔（本来的样子）"
+      ],
+      "breedingLine": "海盔虫（本来的样子）",
       "hp": 117,
       "patk": 41,
       "matk": 100,
@@ -12179,6 +12986,12 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "海盔虫（本来的样子）",
+        "刺盔虫（本来的样子）",
+        "千棘盔（本来的样子）"
+      ],
+      "breedingLine": "海盔虫（本来的样子）",
       "hp": 118,
       "patk": 32,
       "matk": 85,
@@ -12262,6 +13075,10 @@
         "rock-skill-62ad1bd8dff2",
         "rock-skill-2cc36609a5a6"
       ],
+      "evolutionLine": [
+        "菊花梨"
+      ],
+      "breedingLine": "菊花梨",
       "hp": 106,
       "patk": 49,
       "matk": 116,
@@ -12350,6 +13167,11 @@
         "rock-skill-9c8d0165ca7e",
         "rock-skill-be0cef8cbc2a"
       ],
+      "evolutionLine": [
+        "小星光（星光能量的样子）",
+        "星光狮（星光能量的样子）"
+      ],
+      "breedingLine": "小星光（星光能量的样子）",
       "hp": 60,
       "patk": 81,
       "matk": 85,
@@ -12437,6 +13259,11 @@
         "rock-skill-8b86214ed111",
         "rock-skill-9c8d0165ca7e"
       ],
+      "evolutionLine": [
+        "小星光（星光能量的样子）",
+        "星光狮（星光能量的样子）"
+      ],
+      "breedingLine": "小星光（星光能量的样子）",
       "hp": 64,
       "patk": 76,
       "matk": 85,
@@ -12526,6 +13353,11 @@
         "rock-skill-9c8d0165ca7e",
         "rock-skill-be0cef8cbc2a"
       ],
+      "evolutionLine": [
+        "小星光（星光能量的样子）",
+        "星光狮（星光能量的样子）"
+      ],
+      "breedingLine": "小星光（星光能量的样子）",
       "hp": 75,
       "patk": 101,
       "matk": 106,
@@ -12614,6 +13446,11 @@
         "rock-skill-8b86214ed111",
         "rock-skill-9c8d0165ca7e"
       ],
+      "evolutionLine": [
+        "小星光（星光能量的样子）",
+        "星光狮（星光能量的样子）"
+      ],
+      "breedingLine": "小星光（星光能量的样子）",
       "hp": 80,
       "patk": 95,
       "matk": 107,
@@ -12705,6 +13542,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-8c05340fdee4"
       ],
+      "evolutionLine": [
+        "一窝蜂",
+        "黄蜂后",
+        "花魁蜂后"
+      ],
+      "breedingLine": "一窝蜂",
       "hp": 87,
       "patk": 32,
       "matk": 29,
@@ -12796,6 +13639,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-8c05340fdee4"
       ],
+      "evolutionLine": [
+        "一窝蜂",
+        "黄蜂后",
+        "花魁蜂后"
+      ],
+      "breedingLine": "一窝蜂",
       "hp": 116,
       "patk": 43,
       "matk": 39,
@@ -12887,6 +13736,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-8c05340fdee4"
       ],
+      "evolutionLine": [
+        "一窝蜂",
+        "黄蜂后",
+        "花魁蜂后"
+      ],
+      "breedingLine": "一窝蜂",
       "hp": 145,
       "patk": 54,
       "matk": 49,
@@ -12978,6 +13833,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-8c05340fdee4"
       ],
+      "evolutionLine": [
+        "一窝蜂",
+        "黄蜂后",
+        "花魁蜂后"
+      ],
+      "breedingLine": "一窝蜂",
       "hp": 145,
       "patk": 50,
       "matk": 45,
@@ -13065,6 +13926,12 @@
         "rock-skill-e5cf51e24d7f",
         "rock-skill-ac7e15c61e59"
       ],
+      "evolutionLine": [
+        "小夜",
+        "紫夜",
+        "朔夜伊芙"
+      ],
+      "breedingLine": "小夜",
       "hp": 60,
       "patk": 69,
       "matk": 63,
@@ -13153,6 +14020,12 @@
         "rock-skill-e5cf51e24d7f",
         "rock-skill-ac7e15c61e59"
       ],
+      "evolutionLine": [
+        "小夜",
+        "紫夜",
+        "朔夜伊芙"
+      ],
+      "breedingLine": "小夜",
       "hp": 80,
       "patk": 92,
       "matk": 84,
@@ -13242,6 +14115,12 @@
         "rock-skill-e5cf51e24d7f",
         "rock-skill-ac7e15c61e59"
       ],
+      "evolutionLine": [
+        "小夜",
+        "紫夜",
+        "朔夜伊芙"
+      ],
+      "breedingLine": "小夜",
       "hp": 100,
       "patk": 115,
       "matk": 105,
@@ -13320,6 +14199,12 @@
         "rock-skill-fa3a85e55d0c",
         "rock-skill-927c29f37379"
       ],
+      "evolutionLine": [
+        "乖乖鹄",
+        "蓝珠天鹅",
+        "黑羽夫人"
+      ],
+      "breedingLine": "乖乖鹄",
       "hp": 75,
       "patk": 57,
       "matk": 52,
@@ -13399,6 +14284,12 @@
         "rock-skill-fa3a85e55d0c",
         "rock-skill-927c29f37379"
       ],
+      "evolutionLine": [
+        "乖乖鹄",
+        "蓝珠天鹅",
+        "黑羽夫人"
+      ],
+      "breedingLine": "乖乖鹄",
       "hp": 100,
       "patk": 76,
       "matk": 69,
@@ -13490,6 +14381,12 @@
         "rock-skill-e75702387eb0",
         "rock-skill-bc92597f97d7"
       ],
+      "evolutionLine": [
+        "乖乖鹄",
+        "蓝珠天鹅",
+        "翠顶夫人"
+      ],
+      "breedingLine": "乖乖鹄",
       "hp": 125,
       "patk": 95,
       "matk": 86,
@@ -13582,6 +14479,12 @@
         "rock-skill-e75702387eb0",
         "rock-skill-be0cef8cbc2a"
       ],
+      "evolutionLine": [
+        "乖乖鹄",
+        "蓝珠天鹅",
+        "黑羽夫人"
+      ],
+      "breedingLine": "乖乖鹄",
       "hp": 132,
       "patk": 93,
       "matk": 87,
@@ -13673,6 +14576,10 @@
         "rock-skill-957ef6cddbb3",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "锤头鹳"
+      ],
+      "breedingLine": "锤头鹳",
       "hp": 111,
       "patk": 67,
       "matk": 65,
@@ -13759,6 +14666,11 @@
         "rock-skill-ec330cbc115a",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "绿草精灵",
+        "魔草巫灵"
+      ],
+      "breedingLine": "绿草精灵",
       "hp": 79,
       "patk": 35,
       "matk": 89,
@@ -13846,6 +14758,11 @@
         "rock-skill-ec330cbc115a",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "绿草精灵",
+        "魔草巫灵"
+      ],
+      "breedingLine": "绿草精灵",
       "hp": 99,
       "patk": 43,
       "matk": 112,
@@ -13934,6 +14851,10 @@
         "rock-skill-d4580bd8b15d",
         "rock-skill-a40d844670c0"
       ],
+      "evolutionLine": [
+        "记忆石"
+      ],
+      "breedingLine": "记忆石",
       "hp": 112,
       "patk": 108,
       "matk": 97,
@@ -14022,6 +14943,12 @@
         "rock-skill-ac7e15c61e59",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "咔咔羽毛",
+        "咔咔雀",
+        "咔咔鸟"
+      ],
+      "breedingLine": "咔咔羽毛",
       "hp": 58,
       "patk": 68,
       "matk": 66,
@@ -14111,6 +15038,12 @@
         "rock-skill-ac7e15c61e59",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "咔咔羽毛",
+        "咔咔雀",
+        "咔咔鸟"
+      ],
+      "breedingLine": "咔咔羽毛",
       "hp": 78,
       "patk": 91,
       "matk": 88,
@@ -14200,6 +15133,12 @@
         "rock-skill-ac7e15c61e59",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "咔咔羽毛",
+        "咔咔雀",
+        "咔咔鸟"
+      ],
+      "breedingLine": "咔咔羽毛",
       "hp": 97,
       "patk": 114,
       "matk": 110,
@@ -14289,6 +15228,12 @@
         "rock-skill-137759861963",
         "rock-skill-c7b623aed7e8"
       ],
+      "evolutionLine": [
+        "小草虫",
+        "草衣虫",
+        "花衣蝶"
+      ],
+      "breedingLine": "小草虫",
       "hp": 73,
       "patk": 40,
       "matk": 43,
@@ -14378,6 +15323,12 @@
         "rock-skill-137759861963",
         "rock-skill-c7b623aed7e8"
       ],
+      "evolutionLine": [
+        "小草虫",
+        "草衣虫",
+        "花衣蝶"
+      ],
+      "breedingLine": "小草虫",
       "hp": 97,
       "patk": 53,
       "matk": 57,
@@ -14468,6 +15419,12 @@
         "rock-skill-137759861963",
         "rock-skill-c7b623aed7e8"
       ],
+      "evolutionLine": [
+        "小草虫",
+        "草衣虫",
+        "花衣蝶"
+      ],
+      "breedingLine": "小草虫",
       "hp": 122,
       "patk": 67,
       "matk": 72,
@@ -14553,6 +15510,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "绿翼鸟",
+        "魔翼鸟",
+        "魔眷鸟"
+      ],
+      "breedingLine": "绿翼鸟",
       "hp": 52,
       "patk": 68,
       "matk": 20,
@@ -14639,6 +15602,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "绿翼鸟",
+        "魔翼鸟",
+        "魔眷鸟"
+      ],
+      "breedingLine": "绿翼鸟",
       "hp": 70,
       "patk": 91,
       "matk": 27,
@@ -14725,6 +15694,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "绿翼鸟",
+        "魔翼鸟",
+        "魔眷鸟"
+      ],
+      "breedingLine": "绿翼鸟",
       "hp": 87,
       "patk": 113,
       "matk": 34,
@@ -14813,6 +15788,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "阿米亚特",
+        "阿米樱",
+        "罗隐"
+      ],
+      "breedingLine": "阿米亚特",
       "hp": 64,
       "patk": 95,
       "matk": 47,
@@ -14901,6 +15882,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "阿米亚特",
+        "阿米樱",
+        "罗隐"
+      ],
+      "breedingLine": "阿米亚特",
       "hp": 86,
       "patk": 127,
       "matk": 62,
@@ -14990,6 +15977,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "阿米亚特",
+        "阿米樱",
+        "罗隐"
+      ],
+      "breedingLine": "阿米亚特",
       "hp": 107,
       "patk": 159,
       "matk": 78,
@@ -15074,6 +16067,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-c88f13df58c9"
       ],
+      "evolutionLine": [
+        "风铃鲨",
+        "蓝蝶鲨",
+        "彩蝶鲨"
+      ],
+      "breedingLine": "风铃鲨",
       "hp": 54,
       "patk": 46,
       "matk": 46,
@@ -15159,6 +16158,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-c88f13df58c9"
       ],
+      "evolutionLine": [
+        "风铃鲨",
+        "蓝蝶鲨",
+        "彩蝶鲨"
+      ],
+      "breedingLine": "风铃鲨",
       "hp": 72,
       "patk": 61,
       "matk": 61,
@@ -15244,6 +16249,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-c88f13df58c9"
       ],
+      "evolutionLine": [
+        "风铃鲨",
+        "蓝蝶鲨",
+        "彩蝶鲨"
+      ],
+      "breedingLine": "风铃鲨",
       "hp": 90,
       "patk": 77,
       "matk": 77,
@@ -15329,6 +16340,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-c88f13df58c9"
       ],
+      "evolutionLine": [
+        "风铃鲨",
+        "蓝蝶鲨",
+        "彩蝶鲨"
+      ],
+      "breedingLine": "风铃鲨",
       "hp": 90,
       "patk": 77,
       "matk": 77,
@@ -15416,6 +16433,11 @@
         "rock-skill-d851e3d8552d",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "石石",
+        "巨灵石"
+      ],
+      "breedingLine": "石石",
       "hp": 76,
       "patk": 79,
       "matk": 79,
@@ -15506,6 +16528,11 @@
         "rock-skill-d851e3d8552d",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "石石",
+        "巨灵石"
+      ],
+      "breedingLine": "石石",
       "hp": 95,
       "patk": 99,
       "matk": 99,
@@ -15596,6 +16623,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "仪使者",
+        "仪式之星",
+        "仪式巨像"
+      ],
+      "breedingLine": "仪使者",
       "hp": 64,
       "patk": 54,
       "matk": 57,
@@ -15686,6 +16719,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "仪使者",
+        "仪式之星",
+        "仪式巨像"
+      ],
+      "breedingLine": "仪使者",
       "hp": 85,
       "patk": 72,
       "matk": 76,
@@ -15777,6 +16816,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "仪使者",
+        "仪式之星",
+        "仪式巨像"
+      ],
+      "breedingLine": "仪使者",
       "hp": 106,
       "patk": 90,
       "matk": 95,
@@ -15868,6 +16913,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "仪使者",
+        "仪式之星",
+        "仪式巨像"
+      ],
+      "breedingLine": "仪使者",
       "hp": 106,
       "patk": 105,
       "matk": 111,
@@ -15956,6 +17007,11 @@
         "rock-skill-9c8d0165ca7e",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "小独角兽",
+        "白金独角兽"
+      ],
+      "breedingLine": "小独角兽",
       "hp": 79,
       "patk": 48,
       "matk": 129,
@@ -16045,6 +17101,11 @@
         "rock-skill-9c8d0165ca7e",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "小独角兽",
+        "白金独角兽"
+      ],
+      "breedingLine": "小独角兽",
       "hp": 99,
       "patk": 61,
       "matk": 161,
@@ -16134,6 +17195,11 @@
         "rock-skill-9c8d0165ca7e",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "小独角兽",
+        "白金独角兽"
+      ],
+      "breedingLine": "小独角兽",
       "hp": 99,
       "patk": 78,
       "matk": 192,
@@ -16217,6 +17283,12 @@
         "rock-skill-8b86214ed111",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "旋叶虫（金黄的样子）",
+        "蓬叶虫（金黄的样子）",
+        "风滚暮虫（金黄的样子）"
+      ],
+      "breedingLine": "旋叶虫（金黄的样子）",
       "hp": 56,
       "patk": 15,
       "matk": 65,
@@ -16300,6 +17372,12 @@
         "rock-skill-8b86214ed111",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "旋叶虫（金黄的样子）",
+        "蓬叶虫（金黄的样子）",
+        "风滚暮虫（金黄的样子）"
+      ],
+      "breedingLine": "旋叶虫（金黄的样子）",
       "hp": 57,
       "patk": 15,
       "matk": 67,
@@ -16384,6 +17462,12 @@
         "rock-skill-8b86214ed111",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "旋叶虫（金黄的样子）",
+        "蓬叶虫（金黄的样子）",
+        "风滚暮虫（金黄的样子）"
+      ],
+      "breedingLine": "旋叶虫（金黄的样子）",
       "hp": 74,
       "patk": 19,
       "matk": 87,
@@ -16468,6 +17552,12 @@
         "rock-skill-8b86214ed111",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "旋叶虫（金黄的样子）",
+        "蓬叶虫（金黄的样子）",
+        "风滚暮虫（金黄的样子）"
+      ],
+      "breedingLine": "旋叶虫（金黄的样子）",
       "hp": 76,
       "patk": 20,
       "matk": 89,
@@ -16552,6 +17642,12 @@
         "rock-skill-8b86214ed111",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "旋叶虫（金黄的样子）",
+        "蓬叶虫（金黄的样子）",
+        "风滚暮虫（金黄的样子）"
+      ],
+      "breedingLine": "旋叶虫（金黄的样子）",
       "hp": 93,
       "patk": 24,
       "matk": 109,
@@ -16636,6 +17732,12 @@
         "rock-skill-8b86214ed111",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "旋叶虫（金黄的样子）",
+        "蓬叶虫（金黄的样子）",
+        "风滚暮虫（金黄的样子）"
+      ],
+      "breedingLine": "旋叶虫（金黄的样子）",
       "hp": 95,
       "patk": 25,
       "matk": 111,
@@ -16720,6 +17822,11 @@
         "rock-skill-c88f13df58c9",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "小黑猫",
+        "黑猫巫师"
+      ],
+      "breedingLine": "小黑猫",
       "hp": 121,
       "patk": 72,
       "matk": 130,
@@ -16804,6 +17911,11 @@
         "rock-skill-c88f13df58c9",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "小黑猫",
+        "黑猫巫师"
+      ],
+      "breedingLine": "小黑猫",
       "hp": 152,
       "patk": 91,
       "matk": 163,
@@ -16888,6 +18000,11 @@
         "rock-skill-c88f13df58c9",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "小黑猫",
+        "黑猫巫师"
+      ],
+      "breedingLine": "小黑猫",
       "hp": 152,
       "patk": 107,
       "matk": 186,
@@ -16981,6 +18098,11 @@
         "rock-skill-8c05340fdee4",
         "rock-skill-be0cef8cbc2a"
       ],
+      "evolutionLine": [
+        "忽幽狸",
+        "影狸"
+      ],
+      "breedingLine": "忽幽狸",
       "hp": 78,
       "patk": 87,
       "matk": 84,
@@ -17075,6 +18197,11 @@
         "rock-skill-8c05340fdee4",
         "rock-skill-be0cef8cbc2a"
       ],
+      "evolutionLine": [
+        "忽幽狸",
+        "影狸"
+      ],
+      "breedingLine": "忽幽狸",
       "hp": 97,
       "patk": 109,
       "matk": 105,
@@ -17165,6 +18292,12 @@
         "rock-skill-d92f039a4b54",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "多多",
+        "多啦多",
+        "古啦多"
+      ],
+      "breedingLine": "多多",
       "hp": 47,
       "patk": 53,
       "matk": 53,
@@ -17255,6 +18388,12 @@
         "rock-skill-d92f039a4b54",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "多多",
+        "多啦多",
+        "古啦多"
+      ],
+      "breedingLine": "多多",
       "hp": 63,
       "patk": 70,
       "matk": 70,
@@ -17347,6 +18486,12 @@
         "rock-skill-d92f039a4b54",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "多多",
+        "多啦多",
+        "古啦多"
+      ],
+      "breedingLine": "多多",
       "hp": 79,
       "patk": 88,
       "matk": 88,
@@ -17435,6 +18580,12 @@
         "rock-skill-e0a2cec7cb62",
         "rock-skill-a40d844670c0"
       ],
+      "evolutionLine": [
+        "哭哭菇",
+        "怖须菇",
+        "怖哭菇"
+      ],
+      "breedingLine": "哭哭菇",
       "hp": 74,
       "patk": 38,
       "matk": 41,
@@ -17523,6 +18674,12 @@
         "rock-skill-e0a2cec7cb62",
         "rock-skill-a40d844670c0"
       ],
+      "evolutionLine": [
+        "哭哭菇",
+        "怖须菇",
+        "怖哭菇"
+      ],
+      "breedingLine": "哭哭菇",
       "hp": 99,
       "patk": 50,
       "matk": 55,
@@ -17611,6 +18768,12 @@
         "rock-skill-e0a2cec7cb62",
         "rock-skill-a40d844670c0"
       ],
+      "evolutionLine": [
+        "哭哭菇",
+        "怖须菇",
+        "怖哭菇"
+      ],
+      "breedingLine": "哭哭菇",
       "hp": 124,
       "patk": 63,
       "matk": 69,
@@ -17698,6 +18861,10 @@
         "rock-skill-cbc1b4aa8c72",
         "rock-skill-d410829b0ec5"
       ],
+      "evolutionLine": [
+        "恶魔狼"
+      ],
+      "breedingLine": "恶魔狼",
       "hp": 115,
       "patk": 114,
       "matk": 45,
@@ -17785,6 +18952,10 @@
         "rock-skill-cbc1b4aa8c72",
         "rock-skill-d410829b0ec5"
       ],
+      "evolutionLine": [
+        "恶魔狼"
+      ],
+      "breedingLine": "恶魔狼",
       "hp": 115,
       "patk": 121,
       "matk": 50,
@@ -17872,6 +19043,11 @@
         "rock-skill-d4580bd8b15d",
         "rock-skill-adda7da9158b"
       ],
+      "evolutionLine": [
+        "小电企鹅",
+        "电企鹅"
+      ],
+      "breedingLine": "小电企鹅",
       "hp": 75,
       "patk": 45,
       "matk": 101,
@@ -17959,6 +19135,11 @@
         "rock-skill-d4580bd8b15d",
         "rock-skill-adda7da9158b"
       ],
+      "evolutionLine": [
+        "小电企鹅",
+        "电企鹅"
+      ],
+      "breedingLine": "小电企鹅",
       "hp": 94,
       "patk": 56,
       "matk": 126,
@@ -18045,6 +19226,12 @@
         "rock-skill-1feddb0540cb",
         "rock-skill-d851e3d8552d"
       ],
+      "evolutionLine": [
+        "雪豆丁",
+        "雪蛮人",
+        "雪巨人"
+      ],
+      "breedingLine": "雪豆丁",
       "hp": 97,
       "patk": 104,
       "matk": 47,
@@ -18132,6 +19319,12 @@
         "rock-skill-1feddb0540cb",
         "rock-skill-d851e3d8552d"
       ],
+      "evolutionLine": [
+        "雪豆丁",
+        "雪蛮人",
+        "雪巨人"
+      ],
+      "breedingLine": "雪豆丁",
       "hp": 130,
       "patk": 139,
       "matk": 63,
@@ -18219,6 +19412,12 @@
         "rock-skill-1feddb0540cb",
         "rock-skill-d851e3d8552d"
       ],
+      "evolutionLine": [
+        "雪豆丁",
+        "雪蛮人",
+        "雪巨人"
+      ],
+      "breedingLine": "雪豆丁",
       "hp": 162,
       "patk": 174,
       "matk": 79,
@@ -18304,6 +19503,11 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-5654322ebb3c"
       ],
+      "evolutionLine": [
+        "呼呼猪",
+        "獠牙猪"
+      ],
+      "breedingLine": "呼呼猪",
       "hp": 98,
       "patk": 95,
       "matk": 33,
@@ -18390,6 +19594,11 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-5654322ebb3c"
       ],
+      "evolutionLine": [
+        "呼呼猪",
+        "獠牙猪"
+      ],
+      "breedingLine": "呼呼猪",
       "hp": 123,
       "patk": 119,
       "matk": 41,
@@ -18478,6 +19687,12 @@
         "rock-skill-9577b541d2a6",
         "rock-skill-a47c4ce64b4c"
       ],
+      "evolutionLine": [
+        "雪娃娃",
+        "冰封怨灵",
+        "雪灵"
+      ],
+      "breedingLine": "雪娃娃",
       "hp": 56,
       "patk": 67,
       "matk": 67,
@@ -18568,6 +19783,12 @@
         "rock-skill-9577b541d2a6",
         "rock-skill-a47c4ce64b4c"
       ],
+      "evolutionLine": [
+        "雪娃娃",
+        "冰封怨灵",
+        "雪灵"
+      ],
+      "breedingLine": "雪娃娃",
       "hp": 75,
       "patk": 90,
       "matk": 90,
@@ -18659,6 +19880,12 @@
         "rock-skill-9577b541d2a6",
         "rock-skill-a47c4ce64b4c"
       ],
+      "evolutionLine": [
+        "雪娃娃",
+        "冰封怨灵",
+        "雪灵"
+      ],
+      "breedingLine": "雪娃娃",
       "hp": 94,
       "patk": 112,
       "matk": 112,
@@ -18749,6 +19976,12 @@
         "rock-skill-0c6fdde30e79",
         "rock-skill-26ba76270576"
       ],
+      "evolutionLine": [
+        "大耳帽兜",
+        "帽兜娃娃",
+        "雪影娃娃"
+      ],
+      "breedingLine": "大耳帽兜",
       "hp": 78,
       "patk": 62,
       "matk": 59,
@@ -18839,6 +20072,12 @@
         "rock-skill-0c6fdde30e79",
         "rock-skill-26ba76270576"
       ],
+      "evolutionLine": [
+        "大耳帽兜",
+        "帽兜娃娃",
+        "雪影娃娃"
+      ],
+      "breedingLine": "大耳帽兜",
       "hp": 104,
       "patk": 83,
       "matk": 78,
@@ -18931,6 +20170,12 @@
         "rock-skill-0c6fdde30e79",
         "rock-skill-26ba76270576"
       ],
+      "evolutionLine": [
+        "大耳帽兜",
+        "帽兜娃娃",
+        "雪影娃娃"
+      ],
+      "breedingLine": "大耳帽兜",
       "hp": 130,
       "patk": 103,
       "matk": 98,
@@ -19023,6 +20268,12 @@
         "rock-skill-0c6fdde30e79",
         "rock-skill-26ba76270576"
       ],
+      "evolutionLine": [
+        "大耳帽兜",
+        "帽兜娃娃",
+        "雪影娃娃"
+      ],
+      "breedingLine": "大耳帽兜",
       "hp": 130,
       "patk": 120,
       "matk": 114,
@@ -19111,6 +20362,11 @@
         "rock-skill-080d3384fd81",
         "rock-skill-a21ea213004f"
       ],
+      "evolutionLine": [
+        "权杖-Ⅱ",
+        "权杖-Ⅴ"
+      ],
+      "breedingLine": "权杖-Ⅱ",
       "hp": 82,
       "patk": 84,
       "matk": 78,
@@ -19201,6 +20457,11 @@
         "rock-skill-080d3384fd81",
         "rock-skill-a21ea213004f"
       ],
+      "evolutionLine": [
+        "权杖-Ⅱ",
+        "权杖-Ⅴ"
+      ],
+      "breedingLine": "权杖-Ⅱ",
       "hp": 103,
       "patk": 105,
       "matk": 97,
@@ -19291,6 +20552,12 @@
         "rock-skill-b6d7d15e59c9",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "灵狐",
+        "九尾狐",
+        "尖嘴狐仙"
+      ],
+      "breedingLine": "灵狐",
       "hp": 69,
       "patk": 52,
       "matk": 52,
@@ -19381,6 +20648,12 @@
         "rock-skill-b6d7d15e59c9",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "灵狐",
+        "九尾狐",
+        "尖嘴狐仙"
+      ],
+      "breedingLine": "灵狐",
       "hp": 92,
       "patk": 70,
       "matk": 70,
@@ -19474,6 +20747,12 @@
         "rock-skill-b6d7d15e59c9",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "灵狐",
+        "九尾狐",
+        "尖嘴狐仙"
+      ],
+      "breedingLine": "灵狐",
       "hp": 115,
       "patk": 87,
       "matk": 87,
@@ -19564,6 +20843,12 @@
         "rock-skill-713feb9cf074",
         "rock-skill-3eb35813deb9"
       ],
+      "evolutionLine": [
+        "里奥",
+        "灵羽勇士",
+        "圣羽翼王"
+      ],
+      "breedingLine": "里奥",
       "hp": 79,
       "patk": 65,
       "matk": 65,
@@ -19656,6 +20941,12 @@
         "rock-skill-713feb9cf074",
         "rock-skill-3eb35813deb9"
       ],
+      "evolutionLine": [
+        "里奥",
+        "灵羽勇士",
+        "圣羽翼王"
+      ],
+      "breedingLine": "里奥",
       "hp": 105,
       "patk": 87,
       "matk": 87,
@@ -19749,6 +21040,12 @@
         "rock-skill-713feb9cf074",
         "rock-skill-3eb35813deb9"
       ],
+      "evolutionLine": [
+        "里奥",
+        "灵羽勇士",
+        "圣羽翼王"
+      ],
+      "breedingLine": "里奥",
       "hp": 132,
       "patk": 109,
       "matk": 109,
@@ -19835,6 +21132,12 @@
         "rock-skill-8f01ef7e7180",
         "rock-skill-5654322ebb3c"
       ],
+      "evolutionLine": [
+        "松仔",
+        "松叶羊",
+        "针叶巡林"
+      ],
+      "breedingLine": "松仔",
       "hp": 63,
       "patk": 83,
       "matk": 34,
@@ -19921,6 +21224,12 @@
         "rock-skill-8f01ef7e7180",
         "rock-skill-5654322ebb3c"
       ],
+      "evolutionLine": [
+        "松仔",
+        "松叶羊",
+        "针叶巡林"
+      ],
+      "breedingLine": "松仔",
       "hp": 84,
       "patk": 111,
       "matk": 46,
@@ -20009,6 +21318,12 @@
         "rock-skill-8f01ef7e7180",
         "rock-skill-5654322ebb3c"
       ],
+      "evolutionLine": [
+        "松仔",
+        "松叶羊",
+        "针叶巡林"
+      ],
+      "breedingLine": "松仔",
       "hp": 105,
       "patk": 139,
       "matk": 57,
@@ -20097,6 +21412,12 @@
         "rock-skill-8b86214ed111",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "小勇狮",
+        "炽焰狮",
+        "炽心勇狮"
+      ],
+      "breedingLine": "小勇狮",
       "hp": 82,
       "patk": 31,
       "matk": 66,
@@ -20186,6 +21507,12 @@
         "rock-skill-8b86214ed111",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "小勇狮",
+        "炽焰狮",
+        "炽心勇狮"
+      ],
+      "breedingLine": "小勇狮",
       "hp": 110,
       "patk": 41,
       "matk": 89,
@@ -20275,6 +21602,12 @@
         "rock-skill-8b86214ed111",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "小勇狮",
+        "炽焰狮",
+        "炽心勇狮"
+      ],
+      "breedingLine": "小勇狮",
       "hp": 137,
       "patk": 51,
       "matk": 111,
@@ -20363,6 +21696,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "水滴蛇",
+        "水蛇锁",
+        "游蛇魔使"
+      ],
+      "breedingLine": "水滴蛇",
       "hp": 63,
       "patk": 66,
       "matk": 62,
@@ -20451,6 +21790,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "水滴蛇",
+        "水蛇锁",
+        "游蛇魔使"
+      ],
+      "breedingLine": "水滴蛇",
       "hp": 84,
       "patk": 88,
       "matk": 83,
@@ -20542,6 +21887,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "水滴蛇",
+        "水蛇锁",
+        "游蛇魔使"
+      ],
+      "breedingLine": "水滴蛇",
       "hp": 105,
       "patk": 110,
       "matk": 104,
@@ -20632,6 +21983,10 @@
         "rock-skill-30385a23b22c",
         "rock-skill-d410829b0ec5"
       ],
+      "evolutionLine": [
+        "公平鸽"
+      ],
+      "breedingLine": "公平鸽",
       "hp": 113,
       "patk": 93,
       "matk": 93,
@@ -20721,6 +22076,11 @@
         "rock-skill-049bf03459e9",
         "rock-skill-a40d844670c0"
       ],
+      "evolutionLine": [
+        "小怂猫",
+        "怒目怂猫"
+      ],
+      "breedingLine": "小怂猫",
       "hp": 74,
       "patk": 106,
       "matk": 101,
@@ -20749,6 +22109,11 @@
       "traitDesc": "打断敌方时，被打断的技能进入2回合冷却。",
       "skillTags": [],
       "skillRefs": [],
+      "evolutionLine": [
+        "小怂猫",
+        "怒目怂猫"
+      ],
+      "breedingLine": "小怂猫",
       "hp": 0,
       "patk": 0,
       "matk": 0,
@@ -20839,6 +22204,11 @@
         "rock-skill-049bf03459e9",
         "rock-skill-a40d844670c0"
       ],
+      "evolutionLine": [
+        "小怂猫",
+        "怒目怂猫"
+      ],
+      "breedingLine": "小怂猫",
       "hp": 92,
       "patk": 132,
       "matk": 126,
@@ -20867,6 +22237,11 @@
       "traitDesc": "打断敌方时，被打断的技能进入2回合冷却。",
       "skillTags": [],
       "skillRefs": [],
+      "evolutionLine": [
+        "小怂猫",
+        "怒目怂猫"
+      ],
+      "breedingLine": "小怂猫",
       "hp": 0,
       "patk": 0,
       "matk": 0,
@@ -20951,6 +22326,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e75702387eb0"
       ],
+      "evolutionLine": [
+        "小狮鹫（崖间地的样子）",
+        "神圣狮鹫（崖间地的样子）",
+        "皇家狮鹫（崖间地的样子）"
+      ],
+      "breedingLine": "小狮鹫（崖间地的样子）",
       "hp": 61,
       "patk": 69,
       "matk": 39,
@@ -21035,6 +22416,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e75702387eb0"
       ],
+      "evolutionLine": [
+        "小狮鹫（崖间地的样子）",
+        "神圣狮鹫（崖间地的样子）",
+        "皇家狮鹫（崖间地的样子）"
+      ],
+      "breedingLine": "小狮鹫（崖间地的样子）",
       "hp": 62,
       "patk": 66,
       "matk": 32,
@@ -21120,6 +22507,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e75702387eb0"
       ],
+      "evolutionLine": [
+        "小狮鹫（崖间地的样子）",
+        "神圣狮鹫（崖间地的样子）",
+        "皇家狮鹫（崖间地的样子）"
+      ],
+      "breedingLine": "小狮鹫（崖间地的样子）",
       "hp": 82,
       "patk": 92,
       "matk": 51,
@@ -21205,6 +22598,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e75702387eb0"
       ],
+      "evolutionLine": [
+        "小狮鹫（崖间地的样子）",
+        "神圣狮鹫（崖间地的样子）",
+        "皇家狮鹫（崖间地的样子）"
+      ],
+      "breedingLine": "小狮鹫（崖间地的样子）",
       "hp": 83,
       "patk": 88,
       "matk": 42,
@@ -21290,6 +22689,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e75702387eb0"
       ],
+      "evolutionLine": [
+        "小狮鹫（崖间地的样子）",
+        "神圣狮鹫（崖间地的样子）",
+        "皇家狮鹫（崖间地的样子）"
+      ],
+      "breedingLine": "小狮鹫（崖间地的样子）",
       "hp": 102,
       "patk": 116,
       "matk": 64,
@@ -21375,6 +22780,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e75702387eb0"
       ],
+      "evolutionLine": [
+        "小狮鹫（崖间地的样子）",
+        "神圣狮鹫（崖间地的样子）",
+        "皇家狮鹫（崖间地的样子）"
+      ],
+      "breedingLine": "小狮鹫（崖间地的样子）",
       "hp": 103,
       "patk": 110,
       "matk": 53,
@@ -21464,6 +22875,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "圆眼蜘蛛",
+        "尖角蜘蛛",
+        "芋香巨角蛛"
+      ],
+      "breedingLine": "圆眼蜘蛛",
       "hp": 55,
       "patk": 37,
       "matk": 37,
@@ -21555,6 +22972,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "圆眼蜘蛛",
+        "尖角蜘蛛",
+        "芋香巨角蛛"
+      ],
+      "breedingLine": "圆眼蜘蛛",
       "hp": 74,
       "patk": 49,
       "matk": 49,
@@ -21646,6 +23069,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "圆眼蜘蛛",
+        "尖角蜘蛛",
+        "芋香巨角蛛"
+      ],
+      "breedingLine": "圆眼蜘蛛",
       "hp": 92,
       "patk": 61,
       "matk": 61,
@@ -21734,6 +23163,12 @@
         "rock-skill-8c41eeb18e86",
         "rock-skill-29d5cdc6338a"
       ],
+      "evolutionLine": [
+        "波波螺",
+        "消波螺",
+        "嗜波螺"
+      ],
+      "breedingLine": "波波螺",
       "hp": 67,
       "patk": 59,
       "matk": 59,
@@ -21822,6 +23257,12 @@
         "rock-skill-8c41eeb18e86",
         "rock-skill-29d5cdc6338a"
       ],
+      "evolutionLine": [
+        "波波螺",
+        "消波螺",
+        "嗜波螺"
+      ],
+      "breedingLine": "波波螺",
       "hp": 64,
       "patk": 57,
       "matk": 57,
@@ -21910,6 +23351,12 @@
         "rock-skill-8c41eeb18e86",
         "rock-skill-29d5cdc6338a"
       ],
+      "evolutionLine": [
+        "波波螺",
+        "消波螺",
+        "嗜波螺"
+      ],
+      "breedingLine": "波波螺",
       "hp": 89,
       "patk": 78,
       "matk": 78,
@@ -21998,6 +23445,12 @@
         "rock-skill-8c41eeb18e86",
         "rock-skill-29d5cdc6338a"
       ],
+      "evolutionLine": [
+        "波波螺",
+        "消波螺",
+        "嗜波螺"
+      ],
+      "breedingLine": "波波螺",
       "hp": 85,
       "patk": 76,
       "matk": 76,
@@ -22088,6 +23541,12 @@
         "rock-skill-8c41eeb18e86",
         "rock-skill-29d5cdc6338a"
       ],
+      "evolutionLine": [
+        "波波螺",
+        "消波螺",
+        "嗜波螺"
+      ],
+      "breedingLine": "波波螺",
       "hp": 112,
       "patk": 98,
       "matk": 98,
@@ -22178,6 +23637,12 @@
         "rock-skill-8c41eeb18e86",
         "rock-skill-29d5cdc6338a"
       ],
+      "evolutionLine": [
+        "波波螺",
+        "消波螺",
+        "嗜波螺"
+      ],
+      "breedingLine": "波波螺",
       "hp": 107,
       "patk": 95,
       "matk": 95,
@@ -22268,6 +23733,12 @@
         "rock-skill-5654322ebb3c",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "菇菇丁",
+        "多菇丁",
+        "九幽菇"
+      ],
+      "breedingLine": "菇菇丁",
       "hp": 89,
       "patk": 61,
       "matk": 57,
@@ -22359,6 +23830,12 @@
         "rock-skill-5654322ebb3c",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "菇菇丁",
+        "多菇丁",
+        "九幽菇"
+      ],
+      "breedingLine": "菇菇丁",
       "hp": 119,
       "patk": 81,
       "matk": 76,
@@ -22451,6 +23928,12 @@
         "rock-skill-5654322ebb3c",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "菇菇丁",
+        "多菇丁",
+        "九幽菇"
+      ],
+      "breedingLine": "菇菇丁",
       "hp": 149,
       "patk": 102,
       "matk": 95,
@@ -22541,6 +24024,11 @@
         "rock-skill-16056e9e4c71",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "斑斑",
+        "斑枭"
+      ],
+      "breedingLine": "斑斑",
       "hp": 71,
       "patk": 90,
       "matk": 90,
@@ -22631,6 +24119,11 @@
         "rock-skill-16056e9e4c71",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "斑斑",
+        "斑枭"
+      ],
+      "breedingLine": "斑斑",
       "hp": 89,
       "patk": 112,
       "matk": 112,
@@ -22716,6 +24209,11 @@
         "rock-skill-465b46196ab0",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "草头鸭",
+        "卷毛鸭"
+      ],
+      "breedingLine": "草头鸭",
       "hp": 92,
       "patk": 79,
       "matk": 24,
@@ -22804,6 +24302,11 @@
         "rock-skill-465b46196ab0",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "草头鸭",
+        "卷毛鸭"
+      ],
+      "breedingLine": "草头鸭",
       "hp": 116,
       "patk": 98,
       "matk": 29,
@@ -22894,6 +24397,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-340e3db2d6a1"
       ],
+      "evolutionLine": [
+        "海豹战士",
+        "海豹船长"
+      ],
+      "breedingLine": "海豹战士",
       "hp": 72,
       "patk": 91,
       "matk": 87,
@@ -22985,6 +24493,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-340e3db2d6a1"
       ],
+      "evolutionLine": [
+        "海豹战士",
+        "海豹船长"
+      ],
+      "breedingLine": "海豹战士",
       "hp": 90,
       "patk": 113,
       "matk": 109,
@@ -23067,6 +24580,11 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-adda7da9158b"
       ],
+      "evolutionLine": [
+        "号儿鱼",
+        "圆号鱼"
+      ],
+      "breedingLine": "号儿鱼",
       "hp": 109,
       "patk": 27,
       "matk": 76,
@@ -23151,6 +24669,11 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-adda7da9158b"
       ],
+      "evolutionLine": [
+        "号儿鱼",
+        "圆号鱼"
+      ],
+      "breedingLine": "号儿鱼",
       "hp": 136,
       "patk": 34,
       "matk": 95,
@@ -23242,6 +24765,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "甜田螺",
+        "壳乙螺",
+        "卡洛儿"
+      ],
+      "breedingLine": "甜田螺",
       "hp": 68,
       "patk": 61,
       "matk": 64,
@@ -23333,6 +24862,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "甜田螺",
+        "壳乙螺",
+        "卡洛儿"
+      ],
+      "breedingLine": "甜田螺",
       "hp": 91,
       "patk": 81,
       "matk": 86,
@@ -23426,6 +24961,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "甜田螺",
+        "壳乙螺",
+        "卡洛儿"
+      ],
+      "breedingLine": "甜田螺",
       "hp": 114,
       "patk": 102,
       "matk": 107,
@@ -23501,6 +25042,11 @@
         "rock-skill-1e5c27349511",
         "rock-skill-a188611aa496"
       ],
+      "evolutionLine": [
+        "棋棋（白子）",
+        "棋绮后（白子）"
+      ],
+      "breedingLine": "棋棋（白子）",
       "hp": 72,
       "patk": 100,
       "matk": 36,
@@ -23576,6 +25122,11 @@
         "rock-skill-1e5c27349511",
         "rock-skill-a188611aa496"
       ],
+      "evolutionLine": [
+        "棋棋（白子）",
+        "棋绮后（白子）"
+      ],
+      "breedingLine": "棋棋（白子）",
       "hp": 66,
       "patk": 97,
       "matk": 35,
@@ -23669,6 +25220,11 @@
         "rock-skill-a188611aa496",
         "rock-skill-836d73f74124"
       ],
+      "evolutionLine": [
+        "棋棋（白子）",
+        "棋骑士（白子）"
+      ],
+      "breedingLine": "棋棋（白子）",
       "hp": 90,
       "patk": 126,
       "matk": 45,
@@ -23762,6 +25318,11 @@
         "rock-skill-16056e9e4c71",
         "rock-skill-a188611aa496"
       ],
+      "evolutionLine": [
+        "棋棋（白子）",
+        "棋骑士（白子）"
+      ],
+      "breedingLine": "棋棋（白子）",
       "hp": 83,
       "patk": 121,
       "matk": 43,
@@ -23855,6 +25416,11 @@
         "rock-skill-bc92597f97d7",
         "rock-skill-1feddb0540cb"
       ],
+      "evolutionLine": [
+        "棋棋（白子）",
+        "棋齐垒（白子）"
+      ],
+      "breedingLine": "棋棋（白子）",
       "hp": 89,
       "patk": 94,
       "matk": 38,
@@ -23948,6 +25514,11 @@
         "rock-skill-a188611aa496",
         "rock-skill-1feddb0540cb"
       ],
+      "evolutionLine": [
+        "棋棋（白子）",
+        "棋齐垒（白子）"
+      ],
+      "breedingLine": "棋棋（白子）",
       "hp": 89,
       "patk": 94,
       "matk": 38,
@@ -24045,6 +25616,11 @@
         "rock-skill-1feddb0540cb",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "棋棋（白子）",
+        "棋祈督（白子）"
+      ],
+      "breedingLine": "棋棋（白子）",
       "hp": 126,
       "patk": 87,
       "matk": 87,
@@ -24142,6 +25718,11 @@
         "rock-skill-1feddb0540cb",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "棋棋（白子）",
+        "棋祈督（白子）"
+      ],
+      "breedingLine": "棋棋（白子）",
       "hp": 126,
       "patk": 87,
       "matk": 87,
@@ -24238,6 +25819,11 @@
         "rock-skill-11304dadfe6b",
         "rock-skill-a63288eddeb7"
       ],
+      "evolutionLine": [
+        "棋棋（白子）",
+        "棋绮后（白子）"
+      ],
+      "breedingLine": "棋棋（白子）",
       "hp": 93,
       "patk": 84,
       "matk": 84,
@@ -24334,6 +25920,11 @@
         "rock-skill-11304dadfe6b",
         "rock-skill-a63288eddeb7"
       ],
+      "evolutionLine": [
+        "棋棋（白子）",
+        "棋绮后（白子）"
+      ],
+      "breedingLine": "棋棋（白子）",
       "hp": 93,
       "patk": 84,
       "matk": 84,
@@ -24429,6 +26020,11 @@
         "rock-skill-a188611aa496",
         "rock-skill-836d73f74124"
       ],
+      "evolutionLine": [
+        "棋棋（白子）",
+        "棋绮后（白子）"
+      ],
+      "breedingLine": "棋棋（白子）",
       "hp": 90,
       "patk": 200,
       "matk": 91,
@@ -24515,6 +26111,11 @@
         "rock-skill-c7b623aed7e8",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "奔波鼠",
+        "流浪鼠"
+      ],
+      "breedingLine": "奔波鼠",
       "hp": 72,
       "patk": 37,
       "matk": 93,
@@ -24601,6 +26202,11 @@
         "rock-skill-c7b623aed7e8",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "奔波鼠",
+        "流浪鼠"
+      ],
+      "breedingLine": "奔波鼠",
       "hp": 90,
       "patk": 46,
       "matk": 116,
@@ -24689,6 +26295,12 @@
         "rock-skill-d410829b0ec5",
         "rock-skill-40d43aea49c1"
       ],
+      "evolutionLine": [
+        "呆小路",
+        "舞动路路",
+        "白发路路"
+      ],
+      "breedingLine": "呆小路",
       "hp": 52,
       "patk": 60,
       "matk": 64,
@@ -24777,6 +26389,12 @@
         "rock-skill-d410829b0ec5",
         "rock-skill-40d43aea49c1"
       ],
+      "evolutionLine": [
+        "呆小路",
+        "舞动路路",
+        "白发路路"
+      ],
+      "breedingLine": "呆小路",
       "hp": 69,
       "patk": 80,
       "matk": 86,
@@ -24866,6 +26484,12 @@
         "rock-skill-d410829b0ec5",
         "rock-skill-40d43aea49c1"
       ],
+      "evolutionLine": [
+        "呆小路",
+        "舞动路路",
+        "白发路路"
+      ],
+      "breedingLine": "呆小路",
       "hp": 86,
       "patk": 100,
       "matk": 107,
@@ -24955,6 +26579,12 @@
         "rock-skill-bd84f8e4832f",
         "rock-skill-1feddb0540cb"
       ],
+      "evolutionLine": [
+        "逗逗",
+        "气球猫",
+        "梦想三三"
+      ],
+      "breedingLine": "逗逗",
       "hp": 48,
       "patk": 70,
       "matk": 64,
@@ -25046,6 +26676,12 @@
         "rock-skill-bd84f8e4832f",
         "rock-skill-1feddb0540cb"
       ],
+      "evolutionLine": [
+        "逗逗",
+        "气球猫",
+        "梦想三三"
+      ],
+      "breedingLine": "逗逗",
       "hp": 64,
       "patk": 93,
       "matk": 86,
@@ -25137,6 +26773,12 @@
         "rock-skill-bd84f8e4832f",
         "rock-skill-1feddb0540cb"
       ],
+      "evolutionLine": [
+        "逗逗",
+        "气球猫",
+        "梦想三三"
+      ],
+      "breedingLine": "逗逗",
       "hp": 81,
       "patk": 117,
       "matk": 107,
@@ -25228,6 +26870,12 @@
         "rock-skill-bd84f8e4832f",
         "rock-skill-1feddb0540cb"
       ],
+      "evolutionLine": [
+        "逗逗",
+        "气球猫",
+        "梦想三三"
+      ],
+      "breedingLine": "逗逗",
       "hp": 81,
       "patk": 128,
       "matk": 119,
@@ -25317,6 +26965,11 @@
         "rock-skill-62ad1bd8dff2",
         "rock-skill-fa3a85e55d0c"
       ],
+      "evolutionLine": [
+        "花怨鳗",
+        "鳗尾兽"
+      ],
+      "breedingLine": "花怨鳗",
       "hp": 232,
       "patk": 73,
       "matk": 73,
@@ -25407,6 +27060,11 @@
         "rock-skill-62ad1bd8dff2",
         "rock-skill-fa3a85e55d0c"
       ],
+      "evolutionLine": [
+        "花怨鳗",
+        "鳗尾兽"
+      ],
+      "breedingLine": "花怨鳗",
       "hp": 290,
       "patk": 91,
       "matk": 91,
@@ -25490,6 +27148,11 @@
         "rock-skill-bd84f8e4832f",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "伊雷龙",
+        "伊兰亚龙"
+      ],
+      "breedingLine": "伊雷龙",
       "hp": 90,
       "patk": 73,
       "matk": 152,
@@ -25574,6 +27237,11 @@
         "rock-skill-bd84f8e4832f",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "伊雷龙",
+        "伊兰亚龙"
+      ],
+      "breedingLine": "伊雷龙",
       "hp": 112,
       "patk": 91,
       "matk": 190,
@@ -25658,6 +27326,11 @@
         "rock-skill-bd84f8e4832f",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "伊雷龙",
+        "伊兰亚龙"
+      ],
+      "breedingLine": "伊雷龙",
       "hp": 112,
       "patk": 91,
       "matk": 190,
@@ -25746,6 +27419,11 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-2cc36609a5a6"
       ],
+      "evolutionLine": [
+        "拉特",
+        "酷拉"
+      ],
+      "breedingLine": "拉特",
       "hp": 67,
       "patk": 80,
       "matk": 80,
@@ -25835,6 +27513,11 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-2cc36609a5a6"
       ],
+      "evolutionLine": [
+        "拉特",
+        "酷拉"
+      ],
+      "breedingLine": "拉特",
       "hp": 83,
       "patk": 100,
       "matk": 100,
@@ -25925,6 +27608,12 @@
         "rock-skill-3b4252d78dcf",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "闪电环",
+        "刺电环",
+        "荆棘电环"
+      ],
+      "breedingLine": "闪电环",
       "hp": 64,
       "patk": 49,
       "matk": 49,
@@ -26015,6 +27704,12 @@
         "rock-skill-3b4252d78dcf",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "闪电环",
+        "刺电环",
+        "荆棘电环"
+      ],
+      "breedingLine": "闪电环",
       "hp": 85,
       "patk": 65,
       "matk": 65,
@@ -26105,6 +27800,12 @@
         "rock-skill-3b4252d78dcf",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "闪电环",
+        "刺电环",
+        "荆棘电环"
+      ],
+      "breedingLine": "闪电环",
       "hp": 106,
       "patk": 81,
       "matk": 81,
@@ -26197,6 +27898,11 @@
         "rock-skill-049bf03459e9",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "小箱怪",
+        "迷迷箱怪"
+      ],
+      "breedingLine": "小箱怪",
       "hp": 111,
       "patk": 103,
       "matk": 103,
@@ -26289,6 +27995,11 @@
         "rock-skill-049bf03459e9",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "小箱怪",
+        "迷迷箱怪"
+      ],
+      "breedingLine": "小箱怪",
       "hp": 138,
       "patk": 129,
       "matk": 129,
@@ -26381,6 +28092,11 @@
         "rock-skill-8c05340fdee4",
         "rock-skill-be0cef8cbc2a"
       ],
+      "evolutionLine": [
+        "古钟蛇（本来的样子）",
+        "寒音蛇（本来的样子）"
+      ],
+      "breedingLine": "古钟蛇（本来的样子）",
       "hp": 85,
       "patk": 63,
       "matk": 63,
@@ -26410,6 +28126,11 @@
       "traitDesc": "己方精灵每使用1次状态技能，自己入场时毒系和萌系技能威力+10。",
       "skillTags": [],
       "skillRefs": [],
+      "evolutionLine": [
+        "古钟蛇（本来的样子）",
+        "寒音蛇（本来的样子）"
+      ],
+      "breedingLine": "古钟蛇（本来的样子）",
       "hp": 0,
       "patk": 0,
       "matk": 0,
@@ -26502,6 +28223,11 @@
         "rock-skill-8c05340fdee4",
         "rock-skill-be0cef8cbc2a"
       ],
+      "evolutionLine": [
+        "古钟蛇（本来的样子）",
+        "寒音蛇（本来的样子）"
+      ],
+      "breedingLine": "古钟蛇（本来的样子）",
       "hp": 106,
       "patk": 79,
       "matk": 79,
@@ -26531,6 +28257,11 @@
       "traitDesc": "己方精灵每使用1次状态技能，自己入场时毒系和萌系技能威力+10。",
       "skillTags": [],
       "skillRefs": [],
+      "evolutionLine": [
+        "古钟蛇（本来的样子）",
+        "寒音蛇（本来的样子）"
+      ],
+      "breedingLine": "古钟蛇（本来的样子）",
       "hp": 0,
       "patk": 0,
       "matk": 0,
@@ -26615,6 +28346,11 @@
         "rock-skill-ed3c906dadb8",
         "rock-skill-269349e953e6"
       ],
+      "evolutionLine": [
+        "矮脚爬爬",
+        "恶魔红钻"
+      ],
+      "breedingLine": "矮脚爬爬",
       "hp": 80,
       "patk": 117,
       "matk": 110,
@@ -26701,6 +28437,11 @@
         "rock-skill-ed3c906dadb8",
         "rock-skill-269349e953e6"
       ],
+      "evolutionLine": [
+        "矮脚爬爬",
+        "恶魔红钻"
+      ],
+      "breedingLine": "矮脚爬爬",
       "hp": 100,
       "patk": 147,
       "matk": 137,
@@ -26786,6 +28527,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e75702387eb0"
       ],
+      "evolutionLine": [
+        "火尾瓦特",
+        "火尾战士",
+        "烈火守护"
+      ],
+      "breedingLine": "火尾瓦特",
       "hp": 63,
       "patk": 70,
       "matk": 29,
@@ -26871,6 +28618,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e75702387eb0"
       ],
+      "evolutionLine": [
+        "火尾瓦特",
+        "火尾战士",
+        "烈火守护"
+      ],
+      "breedingLine": "火尾瓦特",
       "hp": 84,
       "patk": 94,
       "matk": 39,
@@ -26957,6 +28710,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e75702387eb0"
       ],
+      "evolutionLine": [
+        "火尾瓦特",
+        "火尾战士",
+        "烈火守护"
+      ],
+      "breedingLine": "火尾瓦特",
       "hp": 105,
       "patk": 117,
       "matk": 49,
@@ -27048,6 +28807,10 @@
         "rock-skill-d851e3d8552d",
         "rock-skill-c88f13df58c9"
       ],
+      "evolutionLine": [
+        "里拉鳐"
+      ],
+      "breedingLine": "里拉鳐",
       "hp": 118,
       "patk": 82,
       "matk": 89,
@@ -27136,6 +28899,10 @@
         "rock-skill-2cc36609a5a6",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "海枝枝（碧蓝珊瑚）"
+      ],
+      "breedingLine": "海枝枝（碧蓝珊瑚）",
       "hp": 78,
       "patk": 58,
       "matk": 148,
@@ -27225,6 +28992,10 @@
         "rock-skill-2cc36609a5a6",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "海枝枝（碧蓝珊瑚）"
+      ],
+      "breedingLine": "海枝枝（碧蓝珊瑚）",
       "hp": 91,
       "patk": 48,
       "matk": 125,
@@ -27314,6 +29085,10 @@
         "rock-skill-2cc36609a5a6",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "海枝枝（碧蓝珊瑚）"
+      ],
+      "breedingLine": "海枝枝（碧蓝珊瑚）",
       "hp": 97,
       "patk": 62,
       "matk": 136,
@@ -27402,6 +29177,10 @@
         "rock-skill-2cc36609a5a6",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "海枝枝（碧蓝珊瑚）"
+      ],
+      "breedingLine": "海枝枝（碧蓝珊瑚）",
       "hp": 90,
       "patk": 53,
       "matk": 135,
@@ -27487,6 +29266,12 @@
         "rock-skill-23d356e2dc15",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "多西",
+        "库多西",
+        "波多西"
+      ],
+      "breedingLine": "多西",
       "hp": 64,
       "patk": 73,
       "matk": 26,
@@ -27573,6 +29358,12 @@
         "rock-skill-23d356e2dc15",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "多西",
+        "库多西",
+        "波多西"
+      ],
+      "breedingLine": "多西",
       "hp": 85,
       "patk": 98,
       "matk": 34,
@@ -27660,6 +29451,12 @@
         "rock-skill-23d356e2dc15",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "多西",
+        "库多西",
+        "波多西"
+      ],
+      "breedingLine": "多西",
       "hp": 106,
       "patk": 122,
       "matk": 43,
@@ -27745,6 +29542,11 @@
         "rock-skill-ecfc3a5b28a5",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "小翼龙",
+        "翼龙"
+      ],
+      "breedingLine": "小翼龙",
       "hp": 66,
       "patk": 91,
       "matk": 24,
@@ -27830,6 +29632,11 @@
         "rock-skill-ecfc3a5b28a5",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "小翼龙",
+        "翼龙"
+      ],
+      "breedingLine": "小翼龙",
       "hp": 83,
       "patk": 114,
       "matk": 31,
@@ -27915,6 +29722,12 @@
         "rock-skill-836d73f74124",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "电动长颈鹿",
+        "奔乐鹿",
+        "爵士鹿"
+      ],
+      "breedingLine": "电动长颈鹿",
       "hp": 55,
       "patk": 59,
       "matk": 20,
@@ -28001,6 +29814,12 @@
         "rock-skill-836d73f74124",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "电动长颈鹿",
+        "奔乐鹿",
+        "爵士鹿"
+      ],
+      "breedingLine": "电动长颈鹿",
       "hp": 73,
       "patk": 79,
       "matk": 27,
@@ -28088,6 +29907,12 @@
         "rock-skill-836d73f74124",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "电动长颈鹿",
+        "奔乐鹿",
+        "爵士鹿"
+      ],
+      "breedingLine": "电动长颈鹿",
       "hp": 92,
       "patk": 99,
       "matk": 34,
@@ -28175,6 +30000,12 @@
         "rock-skill-836d73f74124",
         "rock-skill-049bf03459e9"
       ],
+      "evolutionLine": [
+        "电动长颈鹿",
+        "奔乐鹿",
+        "爵士鹿"
+      ],
+      "breedingLine": "电动长颈鹿",
       "hp": 92,
       "patk": 99,
       "matk": 34,
@@ -28260,6 +30091,11 @@
         "rock-skill-049bf03459e9",
         "rock-skill-e93aebc028bc"
       ],
+      "evolutionLine": [
+        "缇塔",
+        "声波缇塔"
+      ],
+      "breedingLine": "缇塔",
       "hp": 73,
       "patk": 99,
       "matk": 38,
@@ -28346,6 +30182,11 @@
         "rock-skill-049bf03459e9",
         "rock-skill-e93aebc028bc"
       ],
+      "evolutionLine": [
+        "缇塔",
+        "声波缇塔"
+      ],
+      "breedingLine": "缇塔",
       "hp": 92,
       "patk": 124,
       "matk": 48,
@@ -28436,6 +30277,12 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-39736afad79a"
       ],
+      "evolutionLine": [
+        "小鹬",
+        "鄙目鹬",
+        "高脚鹬"
+      ],
+      "breedingLine": "小鹬",
       "hp": 56,
       "patk": 38,
       "matk": 38,
@@ -28527,6 +30374,12 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-39736afad79a"
       ],
+      "evolutionLine": [
+        "小鹬",
+        "鄙目鹬",
+        "高脚鹬"
+      ],
+      "breedingLine": "小鹬",
       "hp": 75,
       "patk": 51,
       "matk": 51,
@@ -28618,6 +30471,12 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-39736afad79a"
       ],
+      "evolutionLine": [
+        "小鹬",
+        "鄙目鹬",
+        "高脚鹬"
+      ],
+      "breedingLine": "小鹬",
       "hp": 94,
       "patk": 63,
       "matk": 63,
@@ -28706,6 +30565,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "脆筒甜甜",
+        "香草甜甜",
+        "圣代甜甜"
+      ],
+      "breedingLine": "脆筒甜甜",
       "hp": 72,
       "patk": 67,
       "matk": 72,
@@ -28795,6 +30660,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "脆筒甜甜",
+        "香草甜甜",
+        "圣代甜甜"
+      ],
+      "breedingLine": "脆筒甜甜",
       "hp": 96,
       "patk": 90,
       "matk": 95,
@@ -28884,6 +30755,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "脆筒甜甜",
+        "香草甜甜",
+        "圣代甜甜"
+      ],
+      "breedingLine": "脆筒甜甜",
       "hp": 88,
       "patk": 92,
       "matk": 96,
@@ -28973,6 +30850,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "脆筒甜甜",
+        "香草甜甜",
+        "圣代甜甜"
+      ],
+      "breedingLine": "脆筒甜甜",
       "hp": 91,
       "patk": 94,
       "matk": 88,
@@ -29064,6 +30947,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "脆筒甜甜",
+        "香草甜甜",
+        "圣代甜甜"
+      ],
+      "breedingLine": "脆筒甜甜",
       "hp": 119,
       "patk": 112,
       "matk": 119,
@@ -29154,6 +31043,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "脆筒甜甜",
+        "香草甜甜",
+        "圣代甜甜"
+      ],
+      "breedingLine": "脆筒甜甜",
       "hp": 107,
       "patk": 120,
       "matk": 110,
@@ -29245,6 +31140,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "脆筒甜甜",
+        "香草甜甜",
+        "圣代甜甜"
+      ],
+      "breedingLine": "脆筒甜甜",
       "hp": 113,
       "patk": 112,
       "matk": 110,
@@ -29336,6 +31237,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "脆筒甜甜",
+        "香草甜甜",
+        "圣代甜甜"
+      ],
+      "breedingLine": "脆筒甜甜",
       "hp": 114,
       "patk": 117,
       "matk": 110,
@@ -29427,6 +31334,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "脆筒甜甜",
+        "香草甜甜",
+        "圣代甜甜"
+      ],
+      "breedingLine": "脆筒甜甜",
       "hp": 113,
       "patk": 109,
       "matk": 100,
@@ -29518,6 +31431,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "脆筒甜甜",
+        "香草甜甜",
+        "圣代甜甜"
+      ],
+      "breedingLine": "脆筒甜甜",
       "hp": 121,
       "patk": 100,
       "matk": 101,
@@ -29609,6 +31528,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "脆筒甜甜",
+        "香草甜甜",
+        "圣代甜甜"
+      ],
+      "breedingLine": "脆筒甜甜",
       "hp": 110,
       "patk": 116,
       "matk": 120,
@@ -29699,6 +31624,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "脆筒甜甜",
+        "香草甜甜",
+        "圣代甜甜"
+      ],
+      "breedingLine": "脆筒甜甜",
       "hp": 108,
       "patk": 110,
       "matk": 110,
@@ -29790,6 +31721,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "脆筒甜甜",
+        "香草甜甜",
+        "圣代甜甜"
+      ],
+      "breedingLine": "脆筒甜甜",
       "hp": 110,
       "patk": 107,
       "matk": 110,
@@ -29881,6 +31818,11 @@
         "rock-skill-0c6fdde30e79",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "刺轮砣（上弦的样子）",
+        "月亮砣（上弦的样子）"
+      ],
+      "breedingLine": "刺轮砣（上弦的样子）",
       "hp": 100,
       "patk": 80,
       "matk": 78,
@@ -29972,6 +31914,11 @@
         "rock-skill-0c6fdde30e79",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "刺轮砣（上弦的样子）",
+        "月亮砣（上弦的样子）"
+      ],
+      "breedingLine": "刺轮砣（上弦的样子）",
       "hp": 100,
       "patk": 78,
       "matk": 80,
@@ -30065,6 +32012,11 @@
         "rock-skill-0c6fdde30e79",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "刺轮砣（上弦的样子）",
+        "月亮砣（上弦的样子）"
+      ],
+      "breedingLine": "刺轮砣（上弦的样子）",
       "hp": 125,
       "patk": 100,
       "matk": 98,
@@ -30158,6 +32110,11 @@
         "rock-skill-0c6fdde30e79",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "刺轮砣（上弦的样子）",
+        "月亮砣（上弦的样子）"
+      ],
+      "breedingLine": "刺轮砣（上弦的样子）",
       "hp": 125,
       "patk": 98,
       "matk": 100,
@@ -30246,6 +32203,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "豆丁鱼",
+        "快鳍鱼",
+        "龙鱼"
+      ],
+      "breedingLine": "豆丁鱼",
       "hp": 45,
       "patk": 70,
       "matk": 74,
@@ -30336,6 +32299,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "豆丁鱼",
+        "快鳍鱼",
+        "龙鱼"
+      ],
+      "breedingLine": "豆丁鱼",
       "hp": 60,
       "patk": 93,
       "matk": 99,
@@ -30426,6 +32395,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "豆丁鱼",
+        "快鳍鱼",
+        "龙鱼"
+      ],
+      "breedingLine": "豆丁鱼",
       "hp": 75,
       "patk": 116,
       "matk": 123,
@@ -30518,6 +32493,11 @@
         "rock-skill-2cc36609a5a6",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "胆小鳗鱼",
+        "闪电鳗鱼"
+      ],
+      "breedingLine": "胆小鳗鱼",
       "hp": 68,
       "patk": 92,
       "matk": 92,
@@ -30610,6 +32590,11 @@
         "rock-skill-2cc36609a5a6",
         "rock-skill-d4580bd8b15d"
       ],
+      "evolutionLine": [
+        "胆小鳗鱼",
+        "闪电鳗鱼"
+      ],
+      "breedingLine": "胆小鳗鱼",
       "hp": 85,
       "patk": 115,
       "matk": 115,
@@ -30694,6 +32679,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-ac7e15c61e59"
       ],
+      "evolutionLine": [
+        "翡翠水母",
+        "琉璃水母"
+      ],
+      "breedingLine": "翡翠水母",
       "hp": 108,
       "patk": 30,
       "matk": 68,
@@ -30781,6 +32771,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-ac7e15c61e59"
       ],
+      "evolutionLine": [
+        "翡翠水母",
+        "琉璃水母"
+      ],
+      "breedingLine": "翡翠水母",
       "hp": 134,
       "patk": 37,
       "matk": 85,
@@ -30868,6 +32863,12 @@
         "rock-skill-8b86214ed111",
         "rock-skill-618204099d2e"
       ],
+      "evolutionLine": [
+        "裘洛",
+        "裘力",
+        "裘卡"
+      ],
+      "breedingLine": "裘洛",
       "hp": 44,
       "patk": 56,
       "matk": 50,
@@ -30956,6 +32957,12 @@
         "rock-skill-8b86214ed111",
         "rock-skill-618204099d2e"
       ],
+      "evolutionLine": [
+        "裘洛",
+        "裘力",
+        "裘卡"
+      ],
+      "breedingLine": "裘洛",
       "hp": 59,
       "patk": 74,
       "matk": 67,
@@ -31044,6 +33051,12 @@
         "rock-skill-8b86214ed111",
         "rock-skill-618204099d2e"
       ],
+      "evolutionLine": [
+        "裘洛",
+        "裘力",
+        "裘卡"
+      ],
+      "breedingLine": "裘洛",
       "hp": 73,
       "patk": 93,
       "matk": 83,
@@ -31132,6 +33145,12 @@
         "rock-skill-5654322ebb3c",
         "rock-skill-a63288eddeb7"
       ],
+      "evolutionLine": [
+        "可爱猿",
+        "炽热猿",
+        "火焰猿"
+      ],
+      "breedingLine": "可爱猿",
       "hp": 100,
       "patk": 97,
       "matk": 43,
@@ -31221,6 +33240,12 @@
         "rock-skill-5654322ebb3c",
         "rock-skill-a63288eddeb7"
       ],
+      "evolutionLine": [
+        "可爱猿",
+        "炽热猿",
+        "火焰猿"
+      ],
+      "breedingLine": "可爱猿",
       "hp": 133,
       "patk": 130,
       "matk": 57,
@@ -31310,6 +33335,12 @@
         "rock-skill-5654322ebb3c",
         "rock-skill-a63288eddeb7"
       ],
+      "evolutionLine": [
+        "可爱猿",
+        "炽热猿",
+        "火焰猿"
+      ],
+      "breedingLine": "可爱猿",
       "hp": 167,
       "patk": 162,
       "matk": 72,
@@ -31394,6 +33425,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-16056e9e4c71"
       ],
+      "evolutionLine": [
+        "布鲁斯",
+        "雪顶布鲁斯",
+        "冰钻布鲁斯"
+      ],
+      "breedingLine": "布鲁斯",
       "hp": 44,
       "patk": 60,
       "matk": 16,
@@ -31478,6 +33515,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-16056e9e4c71"
       ],
+      "evolutionLine": [
+        "布鲁斯",
+        "雪顶布鲁斯",
+        "冰钻布鲁斯"
+      ],
+      "breedingLine": "布鲁斯",
       "hp": 58,
       "patk": 81,
       "matk": 22,
@@ -31563,6 +33606,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-16056e9e4c71"
       ],
+      "evolutionLine": [
+        "布鲁斯",
+        "雪顶布鲁斯",
+        "冰钻布鲁斯"
+      ],
+      "breedingLine": "布鲁斯",
       "hp": 73,
       "patk": 101,
       "matk": 27,
@@ -31648,6 +33697,12 @@
         "rock-skill-3baacb080c25",
         "rock-skill-adda7da9158b"
       ],
+      "evolutionLine": [
+        "治愈兔",
+        "红丝绒",
+        "红绒十字"
+      ],
+      "breedingLine": "治愈兔",
       "hp": 67,
       "patk": 28,
       "matk": 73,
@@ -31734,6 +33789,12 @@
         "rock-skill-3baacb080c25",
         "rock-skill-adda7da9158b"
       ],
+      "evolutionLine": [
+        "治愈兔",
+        "红丝绒",
+        "红绒十字"
+      ],
+      "breedingLine": "治愈兔",
       "hp": 90,
       "patk": 38,
       "matk": 98,
@@ -31821,6 +33882,12 @@
         "rock-skill-3baacb080c25",
         "rock-skill-adda7da9158b"
       ],
+      "evolutionLine": [
+        "治愈兔",
+        "红丝绒",
+        "红绒十字"
+      ],
+      "breedingLine": "治愈兔",
       "hp": 112,
       "patk": 47,
       "matk": 122,
@@ -31905,6 +33972,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-5652797a19fd"
       ],
+      "evolutionLine": [
+        "乌达（极昼的样子）",
+        "迷你乌（极昼的样子）",
+        "乌拉塔（极昼的样子）"
+      ],
+      "breedingLine": "乌达（极昼的样子）",
       "hp": 80,
       "patk": 95,
       "matk": 49,
@@ -31990,6 +34063,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-5652797a19fd"
       ],
+      "evolutionLine": [
+        "乌达（极昼的样子）",
+        "迷你乌（极昼的样子）",
+        "乌拉塔（极昼的样子）"
+      ],
+      "breedingLine": "乌达（极昼的样子）",
       "hp": 96,
       "patk": 95,
       "matk": 55,
@@ -32074,6 +34153,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-5652797a19fd"
       ],
+      "evolutionLine": [
+        "乌达（极昼的样子）",
+        "迷你乌（极昼的样子）",
+        "乌拉塔（极昼的样子）"
+      ],
+      "breedingLine": "乌达（极昼的样子）",
       "hp": 107,
       "patk": 126,
       "matk": 66,
@@ -32160,6 +34245,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-5652797a19fd"
       ],
+      "evolutionLine": [
+        "乌达（极昼的样子）",
+        "迷你乌（极昼的样子）",
+        "乌拉塔（极昼的样子）"
+      ],
+      "breedingLine": "乌达（极昼的样子）",
       "hp": 128,
       "patk": 126,
       "matk": 73,
@@ -32245,6 +34336,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-5652797a19fd"
       ],
+      "evolutionLine": [
+        "乌达（极昼的样子）",
+        "迷你乌（极昼的样子）",
+        "乌拉塔（极昼的样子）"
+      ],
+      "breedingLine": "乌达（极昼的样子）",
       "hp": 134,
       "patk": 158,
       "matk": 82,
@@ -32331,6 +34428,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-5652797a19fd"
       ],
+      "evolutionLine": [
+        "乌达（极昼的样子）",
+        "迷你乌（极昼的样子）",
+        "乌拉塔（极昼的样子）"
+      ],
+      "breedingLine": "乌达（极昼的样子）",
       "hp": 160,
       "patk": 158,
       "matk": 91,
@@ -32415,6 +34518,11 @@
         "rock-skill-f331c7f42572",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "螺旋帕帕",
+        "帕帕斯卡"
+      ],
+      "breedingLine": "螺旋帕帕",
       "hp": 88,
       "patk": 55,
       "matk": 8,
@@ -32501,6 +34609,11 @@
         "rock-skill-f331c7f42572",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "螺旋帕帕",
+        "帕帕斯卡"
+      ],
+      "breedingLine": "螺旋帕帕",
       "hp": 110,
       "patk": 68,
       "matk": 10,
@@ -32584,6 +34697,12 @@
         "rock-skill-d92f039a4b54",
         "rock-skill-9c8d0165ca7e"
       ],
+      "evolutionLine": [
+        "机械方方",
+        "多彩方方",
+        "立方人"
+      ],
+      "breedingLine": "机械方方",
       "hp": 62,
       "patk": 81,
       "matk": 32,
@@ -32668,6 +34787,12 @@
         "rock-skill-d92f039a4b54",
         "rock-skill-9c8d0165ca7e"
       ],
+      "evolutionLine": [
+        "机械方方",
+        "多彩方方",
+        "立方人"
+      ],
+      "breedingLine": "机械方方",
       "hp": 82,
       "patk": 108,
       "matk": 43,
@@ -32753,6 +34878,12 @@
         "rock-skill-d92f039a4b54",
         "rock-skill-9c8d0165ca7e"
       ],
+      "evolutionLine": [
+        "机械方方",
+        "多彩方方",
+        "立方人"
+      ],
+      "breedingLine": "机械方方",
       "hp": 103,
       "patk": 135,
       "matk": 54,
@@ -32830,6 +34961,12 @@
         "rock-skill-8f01ef7e7180",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "可立鸡",
+        "晕晕鸡",
+        "武者鸡"
+      ],
+      "breedingLine": "可立鸡",
       "hp": 65,
       "patk": 79,
       "matk": 79,
@@ -32908,6 +35045,12 @@
         "rock-skill-8f01ef7e7180",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "可立鸡",
+        "晕晕鸡",
+        "武者鸡"
+      ],
+      "breedingLine": "可立鸡",
       "hp": 86,
       "patk": 106,
       "matk": 106,
@@ -33001,6 +35144,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-5652797a19fd"
       ],
+      "evolutionLine": [
+        "可立鸡",
+        "晕晕鸡",
+        "绅士鸡"
+      ],
+      "breedingLine": "可立鸡",
       "hp": 108,
       "patk": 132,
       "matk": 132,
@@ -33090,6 +35239,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-b6d7d15e59c9"
       ],
+      "evolutionLine": [
+        "可立鸡",
+        "晕晕鸡",
+        "武者鸡"
+      ],
+      "breedingLine": "可立鸡",
       "hp": 121,
       "patk": 144,
       "matk": 58,
@@ -33175,6 +35330,11 @@
         "rock-skill-ac7e15c61e59",
         "rock-skill-adda7da9158b"
       ],
+      "evolutionLine": [
+        "优优",
+        "绒光优优"
+      ],
+      "breedingLine": "优优",
       "hp": 81,
       "patk": 35,
       "matk": 89,
@@ -33261,6 +35421,11 @@
         "rock-skill-ac7e15c61e59",
         "rock-skill-adda7da9158b"
       ],
+      "evolutionLine": [
+        "优优",
+        "绒光优优"
+      ],
+      "breedingLine": "优优",
       "hp": 101,
       "patk": 43,
       "matk": 111,
@@ -33351,6 +35516,10 @@
         "rock-skill-9c8d0165ca7e",
         "rock-skill-d410829b0ec5"
       ],
+      "evolutionLine": [
+        "噼啪鸟"
+      ],
+      "breedingLine": "噼啪鸟",
       "hp": 78,
       "patk": 116,
       "matk": 109,
@@ -33438,6 +35607,10 @@
         "rock-skill-340e3db2d6a1",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "深蓝鲸"
+      ],
+      "breedingLine": "深蓝鲸",
       "hp": 129,
       "patk": 40,
       "matk": 115,
@@ -33520,6 +35693,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-8c05340fdee4"
       ],
+      "evolutionLine": [
+        "格兰种子",
+        "格兰花",
+        "格兰球"
+      ],
+      "breedingLine": "格兰种子",
       "hp": 65,
       "patk": 31,
       "matk": 74,
@@ -33603,6 +35782,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-8c05340fdee4"
       ],
+      "evolutionLine": [
+        "格兰种子",
+        "格兰花",
+        "格兰球"
+      ],
+      "breedingLine": "格兰种子",
       "hp": 86,
       "patk": 42,
       "matk": 99,
@@ -33686,6 +35871,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-8c05340fdee4"
       ],
+      "evolutionLine": [
+        "格兰种子",
+        "格兰花",
+        "格兰球"
+      ],
+      "breedingLine": "格兰种子",
       "hp": 108,
       "patk": 52,
       "matk": 124,
@@ -33771,6 +35962,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "地鼠（枯水期的样子）",
+        "遁鼠（枯水期的样子）",
+        "遁地鼠（枯水期的样子）"
+      ],
+      "breedingLine": "地鼠（枯水期的样子）",
       "hp": 66,
       "patk": 71,
       "matk": 31,
@@ -33856,6 +36053,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "地鼠（枯水期的样子）",
+        "遁鼠（枯水期的样子）",
+        "遁地鼠（枯水期的样子）"
+      ],
+      "breedingLine": "地鼠（枯水期的样子）",
       "hp": 59,
       "patk": 71,
       "matk": 23,
@@ -33941,6 +36144,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "地鼠（枯水期的样子）",
+        "遁鼠（枯水期的样子）",
+        "遁地鼠（枯水期的样子）"
+      ],
+      "breedingLine": "地鼠（枯水期的样子）",
       "hp": 59,
       "patk": 71,
       "matk": 23,
@@ -34027,6 +36236,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "地鼠（枯水期的样子）",
+        "遁鼠（枯水期的样子）",
+        "遁地鼠（枯水期的样子）"
+      ],
+      "breedingLine": "地鼠（枯水期的样子）",
       "hp": 88,
       "patk": 95,
       "matk": 41,
@@ -34113,6 +36328,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "地鼠（枯水期的样子）",
+        "遁鼠（枯水期的样子）",
+        "遁地鼠（枯水期的样子）"
+      ],
+      "breedingLine": "地鼠（枯水期的样子）",
       "hp": 79,
       "patk": 94,
       "matk": 30,
@@ -34199,6 +36420,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "地鼠（枯水期的样子）",
+        "遁鼠（枯水期的样子）",
+        "遁地鼠（枯水期的样子）"
+      ],
+      "breedingLine": "地鼠（枯水期的样子）",
       "hp": 79,
       "patk": 94,
       "matk": 30,
@@ -34287,6 +36514,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "地鼠（枯水期的样子）",
+        "遁鼠（枯水期的样子）",
+        "遁地鼠（枯水期的样子）"
+      ],
+      "breedingLine": "地鼠（枯水期的样子）",
       "hp": 110,
       "patk": 119,
       "matk": 51,
@@ -34374,6 +36607,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "地鼠（枯水期的样子）",
+        "遁鼠（枯水期的样子）",
+        "遁地鼠（枯水期的样子）"
+      ],
+      "breedingLine": "地鼠（枯水期的样子）",
       "hp": 99,
       "patk": 118,
       "matk": 38,
@@ -34461,6 +36700,12 @@
         "rock-skill-465b46196ab0",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "地鼠（枯水期的样子）",
+        "遁鼠（枯水期的样子）",
+        "遁地鼠（枯水期的样子）"
+      ],
+      "breedingLine": "地鼠（枯水期的样子）",
       "hp": 99,
       "patk": 118,
       "matk": 38,
@@ -34540,6 +36785,11 @@
         "rock-skill-e80d5278ccde",
         "rock-skill-9577b541d2a6"
       ],
+      "evolutionLine": [
+        "墨鱿士",
+        "秩序鱿墨"
+      ],
+      "breedingLine": "墨鱿士",
       "hp": 103,
       "patk": 84,
       "matk": 34,
@@ -34630,6 +36880,11 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-4935446a5722"
       ],
+      "evolutionLine": [
+        "墨鱿士",
+        "混乱鱿彩"
+      ],
+      "breedingLine": "墨鱿士",
       "hp": 129,
       "patk": 105,
       "matk": 42,
@@ -34721,6 +36976,11 @@
         "rock-skill-9577b541d2a6",
         "rock-skill-fa3a85e55d0c"
       ],
+      "evolutionLine": [
+        "墨鱿士",
+        "秩序鱿墨"
+      ],
+      "breedingLine": "墨鱿士",
       "hp": 78,
       "patk": 120,
       "matk": 39,
@@ -34805,6 +37065,11 @@
         "rock-skill-fa3a85e55d0c",
         "rock-skill-a56e08df6b63"
       ],
+      "evolutionLine": [
+        "小甲虫",
+        "铠甲虫"
+      ],
+      "breedingLine": "小甲虫",
       "hp": 98,
       "patk": 71,
       "matk": 31,
@@ -34890,6 +37155,11 @@
         "rock-skill-fa3a85e55d0c",
         "rock-skill-a56e08df6b63"
       ],
+      "evolutionLine": [
+        "小甲虫",
+        "铠甲虫"
+      ],
+      "breedingLine": "小甲虫",
       "hp": 122,
       "patk": 88,
       "matk": 39,
@@ -34979,6 +37249,11 @@
         "rock-skill-cfdb3755b37a",
         "rock-skill-a63288eddeb7"
       ],
+      "evolutionLine": [
+        "圣剑侍从",
+        "圣剑-X"
+      ],
+      "breedingLine": "圣剑侍从",
       "hp": 139,
       "patk": 116,
       "matk": 111,
@@ -35068,6 +37343,11 @@
         "rock-skill-cfdb3755b37a",
         "rock-skill-a63288eddeb7"
       ],
+      "evolutionLine": [
+        "圣剑侍从",
+        "圣剑-X"
+      ],
+      "breedingLine": "圣剑侍从",
       "hp": 174,
       "patk": 144,
       "matk": 139,
@@ -35157,6 +37437,11 @@
         "rock-skill-cfdb3755b37a",
         "rock-skill-a63288eddeb7"
       ],
+      "evolutionLine": [
+        "圣剑侍从",
+        "圣剑-X"
+      ],
+      "breedingLine": "圣剑侍从",
       "hp": 187,
       "patk": 154,
       "matk": 148,
@@ -35242,6 +37527,11 @@
         "rock-skill-5654322ebb3c",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "吸泥鸥",
+        "泥吼牙"
+      ],
+      "breedingLine": "吸泥鸥",
       "hp": 99,
       "patk": 89,
       "matk": 33,
@@ -35329,6 +37619,11 @@
         "rock-skill-5654322ebb3c",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "吸泥鸥",
+        "泥吼牙"
+      ],
+      "breedingLine": "吸泥鸥",
       "hp": 124,
       "patk": 112,
       "matk": 41,
@@ -35413,6 +37708,11 @@
         "rock-skill-e75702387eb0",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "大头骨龙",
+        "寂灭骨龙"
+      ],
+      "breedingLine": "大头骨龙",
       "hp": 96,
       "patk": 109,
       "matk": 40,
@@ -35498,6 +37798,11 @@
         "rock-skill-e75702387eb0",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "大头骨龙",
+        "寂灭骨龙"
+      ],
+      "breedingLine": "大头骨龙",
       "hp": 120,
       "patk": 137,
       "matk": 50,
@@ -35583,6 +37888,11 @@
         "rock-skill-465b46196ab0",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "厉毒小萝",
+        "厉毒修萝"
+      ],
+      "breedingLine": "厉毒小萝",
       "hp": 67,
       "patk": 64,
       "matk": 17,
@@ -35668,6 +37978,11 @@
         "rock-skill-465b46196ab0",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "厉毒小萝",
+        "厉毒修萝"
+      ],
+      "breedingLine": "厉毒小萝",
       "hp": 84,
       "patk": 80,
       "matk": 21,
@@ -35753,6 +38068,12 @@
         "rock-skill-40d43aea49c1",
         "rock-skill-713feb9cf074"
       ],
+      "evolutionLine": [
+        "小帕尔",
+        "帕尔萨斯",
+        "龙息帕尔"
+      ],
+      "breedingLine": "小帕尔",
       "hp": 78,
       "patk": 76,
       "matk": 34,
@@ -35838,6 +38159,12 @@
         "rock-skill-40d43aea49c1",
         "rock-skill-713feb9cf074"
       ],
+      "evolutionLine": [
+        "小帕尔",
+        "帕尔萨斯",
+        "龙息帕尔"
+      ],
+      "breedingLine": "小帕尔",
       "hp": 104,
       "patk": 102,
       "matk": 46,
@@ -35925,6 +38252,12 @@
         "rock-skill-40d43aea49c1",
         "rock-skill-713feb9cf074"
       ],
+      "evolutionLine": [
+        "小帕尔",
+        "帕尔萨斯",
+        "龙息帕尔"
+      ],
+      "breedingLine": "小帕尔",
       "hp": 130,
       "patk": 127,
       "matk": 57,
@@ -36011,6 +38344,11 @@
         "rock-skill-8c41eeb18e86",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "毛头小蛛",
+        "食尘短绒"
+      ],
+      "breedingLine": "毛头小蛛",
       "hp": 85,
       "patk": 80,
       "matk": 27,
@@ -36099,6 +38437,11 @@
         "rock-skill-8c41eeb18e86",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "毛头小蛛",
+        "捕尘长绒"
+      ],
+      "breedingLine": "毛头小蛛",
       "hp": 106,
       "patk": 100,
       "matk": 34,
@@ -36187,6 +38530,11 @@
         "rock-skill-8c41eeb18e86",
         "rock-skill-e8bed5324686"
       ],
+      "evolutionLine": [
+        "毛头小蛛",
+        "食尘短绒"
+      ],
+      "breedingLine": "毛头小蛛",
       "hp": 109,
       "patk": 105,
       "matk": 37,
@@ -36269,6 +38617,12 @@
         "rock-skill-377fbddc9e2c",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "画精灵",
+        "画像守护",
+        "画间沉铁兽"
+      ],
+      "breedingLine": "画精灵",
       "hp": 61,
       "patk": 32,
       "matk": 78,
@@ -36352,6 +38706,12 @@
         "rock-skill-377fbddc9e2c",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "画精灵",
+        "画像守护",
+        "画间沉铁兽"
+      ],
+      "breedingLine": "画精灵",
       "hp": 81,
       "patk": 42,
       "matk": 104,
@@ -36448,6 +38808,12 @@
         "rock-skill-377fbddc9e2c",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "画精灵",
+        "画像守护",
+        "画间法师手"
+      ],
+      "breedingLine": "画精灵",
       "hp": 101,
       "patk": 53,
       "matk": 131,
@@ -36544,6 +38910,12 @@
         "rock-skill-377fbddc9e2c",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "画精灵",
+        "画像守护",
+        "画间沉铁兽"
+      ],
+      "breedingLine": "画精灵",
       "hp": 100,
       "patk": 160,
       "matk": 67,
@@ -36627,6 +38999,12 @@
         "rock-skill-fa3a85e55d0c",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "书魔虫",
+        "书卷守护",
+        "古卷匣魔像"
+      ],
+      "breedingLine": "书魔虫",
       "hp": 67,
       "patk": 75,
       "matk": 75,
@@ -36710,6 +39088,12 @@
         "rock-skill-fa3a85e55d0c",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "书魔虫",
+        "书卷守护",
+        "古卷匣魔像"
+      ],
+      "breedingLine": "书魔虫",
       "hp": 89,
       "patk": 100,
       "matk": 100,
@@ -36803,6 +39187,12 @@
         "rock-skill-1feddb0540cb",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "书魔虫",
+        "书卷守护",
+        "古卷执政官"
+      ],
+      "breedingLine": "书魔虫",
       "hp": 111,
       "patk": 125,
       "matk": 125,
@@ -36896,6 +39286,12 @@
         "rock-skill-927c29f37379",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "书魔虫",
+        "书卷守护",
+        "古卷匣魔像"
+      ],
+      "breedingLine": "书魔虫",
       "hp": 114,
       "patk": 109,
       "matk": 109,
@@ -36985,6 +39381,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-bc0c16f90df5"
       ],
+      "evolutionLine": [
+        "绒绒",
+        "小绒茧",
+        "绒仙子"
+      ],
+      "breedingLine": "绒绒",
       "hp": 58,
       "patk": 42,
       "matk": 44,
@@ -37074,6 +39476,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-bc0c16f90df5"
       ],
+      "evolutionLine": [
+        "绒绒",
+        "小绒茧",
+        "绒仙子"
+      ],
+      "breedingLine": "绒绒",
       "hp": 77,
       "patk": 56,
       "matk": 58,
@@ -37164,6 +39572,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-bc0c16f90df5"
       ],
+      "evolutionLine": [
+        "绒绒",
+        "小绒茧",
+        "绒仙子"
+      ],
+      "breedingLine": "绒绒",
       "hp": 96,
       "patk": 71,
       "matk": 73,
@@ -37246,6 +39660,12 @@
         "rock-skill-c88f13df58c9",
         "rock-skill-a56e08df6b63"
       ],
+      "evolutionLine": [
+        "犀角鸟",
+        "光纤兽",
+        "疾光千兽"
+      ],
+      "breedingLine": "犀角鸟",
       "hp": 63,
       "patk": 88,
       "matk": 40,
@@ -37328,6 +39748,12 @@
         "rock-skill-c88f13df58c9",
         "rock-skill-a56e08df6b63"
       ],
+      "evolutionLine": [
+        "犀角鸟",
+        "光纤兽",
+        "疾光千兽"
+      ],
+      "breedingLine": "犀角鸟",
       "hp": 83,
       "patk": 117,
       "matk": 54,
@@ -37411,6 +39837,12 @@
         "rock-skill-c88f13df58c9",
         "rock-skill-a56e08df6b63"
       ],
+      "evolutionLine": [
+        "犀角鸟",
+        "光纤兽",
+        "疾光千兽"
+      ],
+      "breedingLine": "犀角鸟",
       "hp": 104,
       "patk": 146,
       "matk": 67,
@@ -37492,6 +39924,11 @@
         "rock-skill-8b86214ed111",
         "rock-skill-adda7da9158b"
       ],
+      "evolutionLine": [
+        "果冻",
+        "熔岩布丁"
+      ],
+      "breedingLine": "果冻",
       "hp": 81,
       "patk": 26,
       "matk": 81,
@@ -37583,6 +40020,11 @@
         "rock-skill-adda7da9158b",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "果冻",
+        "抹茶布丁"
+      ],
+      "breedingLine": "果冻",
       "hp": 101,
       "patk": 32,
       "matk": 101,
@@ -37674,6 +40116,11 @@
         "rock-skill-adda7da9158b",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "果冻",
+        "椰浆布丁"
+      ],
+      "breedingLine": "果冻",
       "hp": 133,
       "patk": 34,
       "matk": 89,
@@ -37765,6 +40212,11 @@
         "rock-skill-adda7da9158b",
         "rock-skill-377fbddc9e2c"
       ],
+      "evolutionLine": [
+        "果冻",
+        "熔岩布丁"
+      ],
+      "breedingLine": "果冻",
       "hp": 128,
       "patk": 87,
       "matk": 33,
@@ -37855,6 +40307,12 @@
         "rock-skill-2cc36609a5a6",
         "rock-skill-cfdb3755b37a"
       ],
+      "evolutionLine": [
+        "星尘虫",
+        "落星虫",
+        "陨星虫"
+      ],
+      "breedingLine": "星尘虫",
       "hp": 49,
       "patk": 47,
       "matk": 47,
@@ -37945,6 +40403,12 @@
         "rock-skill-2cc36609a5a6",
         "rock-skill-cfdb3755b37a"
       ],
+      "evolutionLine": [
+        "星尘虫",
+        "落星虫",
+        "陨星虫"
+      ],
+      "breedingLine": "星尘虫",
       "hp": 65,
       "patk": 62,
       "matk": 62,
@@ -38036,6 +40500,12 @@
         "rock-skill-2cc36609a5a6",
         "rock-skill-cfdb3755b37a"
       ],
+      "evolutionLine": [
+        "星尘虫",
+        "落星虫",
+        "陨星虫"
+      ],
+      "breedingLine": "星尘虫",
       "hp": 81,
       "patk": 78,
       "matk": 78,
@@ -38123,6 +40593,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "双灯鱼",
+        "利灯鱼"
+      ],
+      "breedingLine": "双灯鱼",
       "hp": 102,
       "patk": 55,
       "matk": 111,
@@ -38211,6 +40686,11 @@
         "rock-skill-2029e612c90d",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "双灯鱼",
+        "利灯鱼"
+      ],
+      "breedingLine": "双灯鱼",
       "hp": 128,
       "patk": 68,
       "matk": 138,
@@ -38297,6 +40777,10 @@
         "rock-skill-26ba76270576",
         "rock-skill-a63288eddeb7"
       ],
+      "evolutionLine": [
+        "月牙雪熊"
+      ],
+      "breedingLine": "月牙雪熊",
       "hp": 126,
       "patk": 97,
       "matk": 39,
@@ -38388,6 +40872,11 @@
         "rock-skill-8b86214ed111",
         "rock-skill-7b7428d6ebe8"
       ],
+      "evolutionLine": [
+        "嗜光嗡嗡",
+        "窃光蚊"
+      ],
+      "breedingLine": "嗜光嗡嗡",
       "hp": 75,
       "patk": 83,
       "matk": 83,
@@ -38480,6 +40969,11 @@
         "rock-skill-8b86214ed111",
         "rock-skill-7b7428d6ebe8"
       ],
+      "evolutionLine": [
+        "嗜光嗡嗡",
+        "窃光蚊"
+      ],
+      "breedingLine": "嗜光嗡嗡",
       "hp": 93,
       "patk": 104,
       "matk": 104,
@@ -38566,6 +41060,11 @@
         "rock-skill-a47c4ce64b4c",
         "rock-skill-a40d844670c0"
       ],
+      "evolutionLine": [
+        "柴渣虫",
+        "燃薪虫"
+      ],
+      "breedingLine": "柴渣虫",
       "hp": 108,
       "patk": 96,
       "matk": 38,
@@ -38654,6 +41153,11 @@
         "rock-skill-a47c4ce64b4c",
         "rock-skill-a40d844670c0"
       ],
+      "evolutionLine": [
+        "柴渣虫",
+        "燃薪虫"
+      ],
+      "breedingLine": "柴渣虫",
       "hp": 135,
       "patk": 120,
       "matk": 48,
@@ -38738,6 +41242,12 @@
         "rock-skill-c29a931b19fe",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "空空颅",
+        "夜宿颅",
+        "夜枭"
+      ],
+      "breedingLine": "空空颅",
       "hp": 70,
       "patk": 7,
       "matk": 37,
@@ -38822,6 +41332,12 @@
         "rock-skill-c29a931b19fe",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "空空颅",
+        "夜宿颅",
+        "夜枭"
+      ],
+      "breedingLine": "空空颅",
       "hp": 94,
       "patk": 9,
       "matk": 49,
@@ -38907,6 +41423,12 @@
         "rock-skill-c29a931b19fe",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "空空颅",
+        "夜宿颅",
+        "夜枭"
+      ],
+      "breedingLine": "空空颅",
       "hp": 117,
       "patk": 10,
       "matk": 61,
@@ -38992,6 +41514,11 @@
         "rock-skill-180eb99ab591",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "粉粉星",
+        "小皮球"
+      ],
+      "breedingLine": "粉粉星",
       "hp": 93,
       "patk": 54,
       "matk": 102,
@@ -39078,6 +41605,11 @@
         "rock-skill-180eb99ab591",
         "rock-skill-2029e612c90d"
       ],
+      "evolutionLine": [
+        "粉粉星",
+        "小皮球"
+      ],
+      "breedingLine": "粉粉星",
       "hp": 116,
       "patk": 68,
       "matk": 127,
@@ -39163,6 +41695,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "贝瑟",
+        "贝加尔",
+        "贝古斯"
+      ],
+      "breedingLine": "贝瑟",
       "hp": 79,
       "patk": 46,
       "matk": 78,
@@ -39250,6 +41788,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "贝瑟",
+        "贝加尔",
+        "贝古斯"
+      ],
+      "breedingLine": "贝瑟",
       "hp": 105,
       "patk": 61,
       "matk": 104,
@@ -39337,6 +41881,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-f331c7f42572"
       ],
+      "evolutionLine": [
+        "贝瑟",
+        "贝加尔",
+        "贝古斯"
+      ],
+      "breedingLine": "贝瑟",
       "hp": 132,
       "patk": 76,
       "matk": 130,
@@ -39411,6 +41961,11 @@
         "rock-skill-82588c51b7f1",
         "rock-skill-4acc1727ed46"
       ],
+      "evolutionLine": [
+        "粉星仔",
+        "落陨星兔"
+      ],
+      "breedingLine": "粉星仔",
       "hp": 80,
       "patk": 63,
       "matk": 119,
@@ -39494,6 +42049,11 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-4bba99bf8926"
       ],
+      "evolutionLine": [
+        "粉星仔",
+        "粉耳星兔"
+      ],
+      "breedingLine": "粉星仔",
       "hp": 100,
       "patk": 79,
       "matk": 148,
@@ -39581,6 +42141,11 @@
         "rock-skill-4acc1727ed46",
         "rock-skill-74f8226d414a"
       ],
+      "evolutionLine": [
+        "粉星仔",
+        "落陨星兔"
+      ],
+      "breedingLine": "粉星仔",
       "hp": 93,
       "patk": 61,
       "matk": 125,
@@ -39664,6 +42229,11 @@
         "rock-skill-a63288eddeb7",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "布瓜蝌",
+        "上岸蛙"
+      ],
+      "breedingLine": "布瓜蝌",
       "hp": 91,
       "patk": 84,
       "matk": 35,
@@ -39749,6 +42319,11 @@
         "rock-skill-a63288eddeb7",
         "rock-skill-8ac869f066f0"
       ],
+      "evolutionLine": [
+        "布瓜蝌",
+        "上岸蛙"
+      ],
+      "breedingLine": "布瓜蝌",
       "hp": 114,
       "patk": 106,
       "matk": 44,
@@ -39834,6 +42409,11 @@
         "rock-skill-2cc36609a5a6",
         "rock-skill-696737c077d7"
       ],
+      "evolutionLine": [
+        "火红尾",
+        "雅丹鬃"
+      ],
+      "breedingLine": "火红尾",
       "hp": 67,
       "patk": 56,
       "matk": 129,
@@ -39919,6 +42499,11 @@
         "rock-skill-2cc36609a5a6",
         "rock-skill-696737c077d7"
       ],
+      "evolutionLine": [
+        "火红尾",
+        "雅丹鬃"
+      ],
+      "breedingLine": "火红尾",
       "hp": 83,
       "patk": 70,
       "matk": 162,
@@ -40009,6 +42594,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "春团",
+        "春兔",
+        "春花兔"
+      ],
+      "breedingLine": "春团",
       "hp": 48,
       "patk": 51,
       "matk": 57,
@@ -40099,6 +42690,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "春团",
+        "春兔",
+        "春花兔"
+      ],
+      "breedingLine": "春团",
       "hp": 63,
       "patk": 68,
       "matk": 76,
@@ -40191,6 +42788,12 @@
         "rock-skill-7c254ac9906e",
         "rock-skill-11304dadfe6b"
       ],
+      "evolutionLine": [
+        "春团",
+        "春兔",
+        "春花兔"
+      ],
+      "breedingLine": "春团",
       "hp": 79,
       "patk": 85,
       "matk": 95,
@@ -40273,6 +42876,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "幽星光",
+        "曜星光",
+        "暮星辰"
+      ],
+      "breedingLine": "幽星光",
       "hp": 49,
       "patk": 21,
       "matk": 63,
@@ -40356,6 +42965,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "幽星光",
+        "曜星光",
+        "暮星辰"
+      ],
+      "breedingLine": "幽星光",
       "hp": 65,
       "patk": 28,
       "matk": 84,
@@ -40440,6 +43055,12 @@
         "rock-skill-2029e612c90d",
         "rock-skill-8b86214ed111"
       ],
+      "evolutionLine": [
+        "幽星光",
+        "曜星光",
+        "暮星辰"
+      ],
+      "breedingLine": "幽星光",
       "hp": 81,
       "patk": 35,
       "matk": 106,
@@ -40529,6 +43150,12 @@
         "rock-skill-a74fd51c36c6",
         "rock-skill-a0cbb3d12ba9"
       ],
+      "evolutionLine": [
+        "钨丝贝贝",
+        "辉光幕机",
+        "机幕方舟"
+      ],
+      "breedingLine": "钨丝贝贝",
       "hp": 62,
       "patk": 68,
       "matk": 63,
@@ -40618,6 +43245,12 @@
         "rock-skill-a74fd51c36c6",
         "rock-skill-a0cbb3d12ba9"
       ],
+      "evolutionLine": [
+        "钨丝贝贝",
+        "辉光幕机",
+        "机幕方舟"
+      ],
+      "breedingLine": "钨丝贝贝",
       "hp": 83,
       "patk": 91,
       "matk": 84,
@@ -40709,6 +43342,12 @@
         "rock-skill-a74fd51c36c6",
         "rock-skill-a0cbb3d12ba9"
       ],
+      "evolutionLine": [
+        "钨丝贝贝",
+        "辉光幕机",
+        "机幕方舟"
+      ],
+      "breedingLine": "钨丝贝贝",
       "hp": 104,
       "patk": 113,
       "matk": 105,
@@ -40797,6 +43436,12 @@
         "rock-skill-76479a6e990f",
         "rock-skill-465b46196ab0"
       ],
+      "evolutionLine": [
+        "凡雀",
+        "紫翎鹰",
+        "凡鹰"
+      ],
+      "breedingLine": "凡雀",
       "hp": 71,
       "patk": 55,
       "matk": 53,
@@ -40885,6 +43530,12 @@
         "rock-skill-76479a6e990f",
         "rock-skill-465b46196ab0"
       ],
+      "evolutionLine": [
+        "凡雀",
+        "紫翎鹰",
+        "凡鹰"
+      ],
+      "breedingLine": "凡雀",
       "hp": 94,
       "patk": 74,
       "matk": 71,
@@ -40975,6 +43626,12 @@
         "rock-skill-76479a6e990f",
         "rock-skill-465b46196ab0"
       ],
+      "evolutionLine": [
+        "凡雀",
+        "紫翎鹰",
+        "凡鹰"
+      ],
+      "breedingLine": "凡雀",
       "hp": 118,
       "patk": 92,
       "matk": 89,
@@ -41062,6 +43719,11 @@
         "rock-skill-f1217099a99c",
         "rock-skill-2b7125c86392"
       ],
+      "evolutionLine": [
+        "小雪人",
+        "雪怪"
+      ],
+      "breedingLine": "小雪人",
       "hp": 101,
       "patk": 85,
       "matk": 80,
@@ -41151,6 +43813,11 @@
         "rock-skill-f1217099a99c",
         "rock-skill-2b7125c86392"
       ],
+      "evolutionLine": [
+        "小雪人",
+        "雪怪"
+      ],
+      "breedingLine": "小雪人",
       "hp": 126,
       "patk": 107,
       "matk": 99,
@@ -41236,6 +43903,11 @@
         "rock-skill-fa3a85e55d0c",
         "rock-skill-bb09e925b92b"
       ],
+      "evolutionLine": [
+        "爆焰仔",
+        "爆焰喷喷"
+      ],
+      "breedingLine": "爆焰仔",
       "hp": 89,
       "patk": 101,
       "matk": 50,
@@ -41323,6 +43995,11 @@
         "rock-skill-fa3a85e55d0c",
         "rock-skill-bb09e925b92b"
       ],
+      "evolutionLine": [
+        "爆焰仔",
+        "爆焰喷喷"
+      ],
+      "breedingLine": "爆焰仔",
       "hp": 112,
       "patk": 127,
       "matk": 63,
@@ -41410,6 +44087,11 @@
         "rock-skill-b057391a90fe",
         "rock-skill-d7d729612964"
       ],
+      "evolutionLine": [
+        "猴麦仔",
+        "音碟吼"
+      ],
+      "breedingLine": "猴麦仔",
       "hp": 93,
       "patk": 75,
       "matk": 121,
@@ -41499,6 +44181,11 @@
         "rock-skill-b057391a90fe",
         "rock-skill-d7d729612964"
       ],
+      "evolutionLine": [
+        "猴麦仔",
+        "音碟吼"
+      ],
+      "breedingLine": "猴麦仔",
       "hp": 116,
       "patk": 94,
       "matk": 151,
@@ -41587,6 +44274,11 @@
         "rock-skill-016b0e4564ce",
         "rock-skill-c24a9955142a"
       ],
+      "evolutionLine": [
+        "加油海葵",
+        "加油蟹"
+      ],
+      "breedingLine": "加油海葵",
       "hp": 93,
       "patk": 87,
       "matk": 87,
@@ -41677,6 +44369,11 @@
         "rock-skill-016b0e4564ce",
         "rock-skill-c24a9955142a"
       ],
+      "evolutionLine": [
+        "加油海葵",
+        "加油蟹"
+      ],
+      "breedingLine": "加油海葵",
       "hp": 116,
       "patk": 108,
       "matk": 108,
@@ -41765,6 +44462,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-12289c27b51f"
       ],
+      "evolutionLine": [
+        "小丑豆豆",
+        "小丑兔",
+        "小丑公爵"
+      ],
+      "breedingLine": "小丑豆豆",
       "hp": 66,
       "patk": 87,
       "matk": 88,
@@ -41854,6 +44557,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-12289c27b51f"
       ],
+      "evolutionLine": [
+        "小丑豆豆",
+        "小丑兔",
+        "小丑公爵"
+      ],
+      "breedingLine": "小丑豆豆",
       "hp": 88,
       "patk": 116,
       "matk": 118,
@@ -41944,6 +44653,12 @@
         "rock-skill-adda7da9158b",
         "rock-skill-12289c27b51f"
       ],
+      "evolutionLine": [
+        "小丑豆豆",
+        "小丑兔",
+        "小丑公爵"
+      ],
+      "breedingLine": "小丑豆豆",
       "hp": 111,
       "patk": 145,
       "matk": 147,
@@ -42027,6 +44742,11 @@
         "rock-skill-e21625c3c1c6",
         "rock-skill-014f82cd2511"
       ],
+      "evolutionLine": [
+        "烟花团",
+        "烟花伯爵"
+      ],
+      "breedingLine": "烟花团",
       "hp": 61,
       "patk": 35,
       "matk": 89,
@@ -42111,6 +44831,11 @@
         "rock-skill-e21625c3c1c6",
         "rock-skill-014f82cd2511"
       ],
+      "evolutionLine": [
+        "烟花团",
+        "烟花伯爵"
+      ],
+      "breedingLine": "烟花团",
       "hp": 76,
       "patk": 44,
       "matk": 111,
@@ -42197,6 +44922,11 @@
         "rock-skill-bc933b4582a9",
         "rock-skill-be0cef8cbc2a"
       ],
+      "evolutionLine": [
+        "咕咕帽",
+        "咕德帽帽"
+      ],
+      "breedingLine": "咕咕帽",
       "hp": 103,
       "patk": 74,
       "matk": 72,
@@ -42285,6 +45015,11 @@
         "rock-skill-bc933b4582a9",
         "rock-skill-be0cef8cbc2a"
       ],
+      "evolutionLine": [
+        "咕咕帽",
+        "咕德帽帽"
+      ],
+      "breedingLine": "咕咕帽",
       "hp": 128,
       "patk": 92,
       "matk": 90,
@@ -42370,6 +45105,11 @@
         "rock-skill-17461ca06551",
         "rock-skill-a0cbb3d12ba9"
       ],
+      "evolutionLine": [
+        "炫光迪迪",
+        "霹雳迪迪"
+      ],
+      "breedingLine": "炫光迪迪",
       "hp": 83,
       "patk": 95,
       "matk": 111,
@@ -42456,6 +45196,11 @@
         "rock-skill-17461ca06551",
         "rock-skill-a0cbb3d12ba9"
       ],
+      "evolutionLine": [
+        "炫光迪迪",
+        "霹雳迪迪"
+      ],
+      "breedingLine": "炫光迪迪",
       "hp": 104,
       "patk": 119,
       "matk": 139,
@@ -42543,6 +45288,11 @@
         "rock-skill-7e7266d7e5be",
         "rock-skill-927c29f37379"
       ],
+      "evolutionLine": [
+        "小鼓象",
+        "巨鼓象"
+      ],
+      "breedingLine": "小鼓象",
       "hp": 106,
       "patk": 100,
       "matk": 63,
@@ -42630,6 +45380,11 @@
         "rock-skill-7e7266d7e5be",
         "rock-skill-927c29f37379"
       ],
+      "evolutionLine": [
+        "小鼓象",
+        "巨鼓象"
+      ],
+      "breedingLine": "小鼓象",
       "hp": 133,
       "patk": 125,
       "matk": 79,
@@ -42715,6 +45470,11 @@
         "rock-skill-0b5524a6dc6f",
         "rock-skill-adda7da9158b"
       ],
+      "evolutionLine": [
+        "牵线木偶",
+        "帅帅魔偶"
+      ],
+      "breedingLine": "牵线木偶",
       "hp": 77,
       "patk": 83,
       "matk": 89,
@@ -42803,6 +45563,11 @@
         "rock-skill-0b5524a6dc6f",
         "rock-skill-adda7da9158b"
       ],
+      "evolutionLine": [
+        "牵线木偶",
+        "帅帅魔偶"
+      ],
+      "breedingLine": "牵线木偶",
       "hp": 97,
       "patk": 104,
       "matk": 111,
@@ -43097,6 +45862,10 @@
         "rock-skill-56967522c208",
         "rock-skill-5ffa8d366e5c"
       ],
+      "evolutionLine": [
+        "学院呱呱"
+      ],
+      "breedingLine": "学院呱呱",
       "hp": 132,
       "patk": 99,
       "matk": 99,

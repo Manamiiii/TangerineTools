@@ -1,5 +1,5 @@
 // 洛克王国孵蛋推荐纯函数。
-// 数据来源口径：蛋组优先读取资料库 eggGroups 字段；同种精灵优先读取 speciesGroup 字段，
+// 数据来源口径：蛋组优先读取资料库 eggGroups 字段；繁育谱系优先读取 speciesGroup 字段，
 // 未填写时按连续编号/基础名做保守推断，避免改 Dexie schema 或写死个体数据。
 
 import { evaluateAllNatures, extractSkillInfoFromReferenceRows, extractSkillRefsFromRow, extractStatsFromRow, extractTraitTagsFromRow } from './nature.js'
@@ -25,7 +25,7 @@ export function splitGroups(value) {
 }
 
 export function speciesKey(row) {
-  const explicit = normText(row.values?.speciesGroup || row.values?.sameSpecies || row.values?.进化链)
+  const explicit = normText(row.values?.speciesGroup || row.values?.breedingLine || row.values?.sameSpecies)
   if (explicit) return explicit
   const no = normText(row.values?.no).replace(/^NO\.?/i, '')
   const n = Number(no)
