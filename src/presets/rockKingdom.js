@@ -3,6 +3,7 @@
 // 避免把官方图鉴静态资源 URL 清单打进主 bundle。
 
 import { normalizeField } from '../utils.js'
+import { BILI_EGG_GROUP_NAMES } from '../domain/breedingData.js'
 
 const SEED_TIME = '2026-01-01T00:00:00.000Z'
 
@@ -51,8 +52,8 @@ export const ELEMENT_LEGACY_DEFAULTS = Object.fromEntries(
 // 展示；yes/no 的字面值也能兼容 boolean 的历史数据（true 会被渲染为空单元格，
 // 迁移函数会在必要时补齐——见 db.js/rockKingdom 迁移路径）。
 const SHINY_OPTIONS = [
-  { value: 'no', label: '非异色', color: '#94a3b8', image: '' },
-  { value: 'yes', label: '异色', color: '#db2777', image: '' },
+  { value: 'no', label: '无异色形态', color: '#94a3b8', image: '' },
+  { value: 'yes', label: '存在异色形态', color: '#db2777', image: '' },
 ]
 
 // 特性标签：14 类倾向标签，用于多选描述精灵在队伍里的定位/资源循环特点。
@@ -188,13 +189,13 @@ const fields = [
     },
     6,
   ),
-  makeField({ key: 'shiny', name: '是否异色', type: 'select', options: SHINY_OPTIONS }, 7),
-  makeField({ key: 'traitName', name: '特性名称', type: 'text' }, 8),
+  makeField({ key: 'shiny', name: '异色形态', type: 'select', options: SHINY_OPTIONS }, 7),
+  makeField({ key: 'traitName', name: '特性', type: 'text' }, 8),
   makeField(
     { key: 'traitTags', name: '特性标签', type: 'multiselect', options: TRAIT_TAG_OPTIONS },
     9,
   ),
-  makeField({ key: 'traitIcon', name: '特性图标', type: 'image' }, 10),
+  makeField({ key: 'traitIcon', name: '特性图标', type: 'image', hidden: true }, 10),
   makeField({ key: 'traitDesc', name: '特性描述', type: 'longtext' }, 11),
   makeField({ key: 'skillTags', name: '技能标签', type: 'multiselect', options: SKILL_TAG_OPTIONS }, 12),
   makeField({ key: 'skillRefs', name: '可用技能', type: 'references', referenceTableId: SKILL_TABLE_ID }, 13),
@@ -204,6 +205,13 @@ const fields = [
   makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 17),
   makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 18),
   makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 19),
+  makeField({ key: 'eggGroups', name: '蛋组', type: 'multiselect', options: BILI_EGG_GROUP_NAMES.map((name, index) => ({
+    value: name,
+    label: name,
+    color: ['#64748b', '#f97316', '#8b5cf6', '#64748b', '#d946ef', '#38bdf8', '#14b8a6', '#22c55e', '#a16207', '#f472b6', '#84cc16', '#06b6d4', '#475569', '#0ea5e9', '#ef4444'][index] || '#64748b',
+  })) }, 20),
+  makeField({ key: 'speciesGroup', name: '繁育谱系', type: 'text' }, 21),
+  makeField({ key: 'evolutionLine', name: '进化链', type: 'longtext', hidden: true }, 22),
 ]
 
 const skillFields = [
@@ -229,7 +237,7 @@ export const ROCK_KINGDOM_PRESET = {
     id: SCENE_ID,
     name: '洛克王国',
     type: 'game',
-    tools: ['catalog', 'owned', 'stock', 'nature'],
+    tools: ['catalog', 'owned', 'stock', 'nature', 'breeding'],
     order: 0,
     createdAt: SEED_TIME,
     updatedAt: SEED_TIME,

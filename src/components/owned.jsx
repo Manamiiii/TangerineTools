@@ -260,6 +260,17 @@ function OwnedFormModal({ table, fields, row, rows, collectionMode, onClose }) {
     return init
   })
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const refField = fields.find((field) => field.type === 'reference')
+  const referencedRows = useLiveQuery(
+    () => refField?.referenceTableId
+      ? db.catalogRows.where('tableId').equals(refField.referenceTableId).toArray()
+      : [],
+    [refField?.referenceTableId || ''],
+  )
+  const selectedRefRow = referencedRows?.find((item) => item.id === values[refField?.key])
+  const selectedHasShinyForm = selectedRefRow?.values?.shiny === 'yes' || selectedRefRow?.values?.shiny === true
+  const shinyBlocked = values.shiny === 'yes' && selectedRefRow && !selectedHasShinyForm
 
   function setFieldValue(key, value) {
     setValues((prev) => ({ ...prev, [key]: value }))
@@ -267,6 +278,11 @@ function OwnedFormModal({ table, fields, row, rows, collectionMode, onClose }) {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    setError('')
+    if (shinyBlocked) {
+      setError('资料库标记该精灵无异色形态，不能把这只拥有记录标为异色个体。')
+      return
+    }
     setSaving(true)
     if (row) {
       await updateRow(row.id, { ...row.values, ...values })
@@ -301,6 +317,7 @@ function OwnedFormModal({ table, fields, row, rows, collectionMode, onClose }) {
       }
     >
       <form id="owned-form" onSubmit={handleSubmit} className="stack-form">
+        {error && <div className="form-error">{error}</div>}
         {fields.map((field) => (
           <FormRow key={field.id} label={field.name}>
             <FieldInput
@@ -308,6 +325,9 @@ function OwnedFormModal({ table, fields, row, rows, collectionMode, onClose }) {
               value={values[field.key]}
               onChange={(v) => setFieldValue(field.key, v)}
             />
+            {field.key === 'shiny' && shinyBlocked && (
+              <div className="form-error">资料库「异色形态」为无，不能选择异色个体。</div>
+            )}
           </FormRow>
         ))}
       </form>

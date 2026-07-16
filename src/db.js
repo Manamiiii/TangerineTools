@@ -11,6 +11,7 @@ import {
 } from './presets/rockKingdom.js'
 import { STOCK_FIXED_FIELDS, STOCK_TABLE_NAME } from './domain/stock.js'
 import { OWNED_TABLE_NAME, ROCK_KINGDOM_COLLECTION_FIELDS } from './domain/owned.js'
+import { BREEDING_DEMO_OWNED, BREEDING_PRESET_BY_NAME } from './domain/breedingData.js'
 import { deriveFieldKey, generateId, mergeFieldOptions, normalizeField, nowIso } from './utils.js'
 
 export const db = new Dexie('tangerine-tools')
@@ -41,20 +42,25 @@ export async function ensureSeeded() {
   await migrateRockKingdomSkillTableFields()
   await migrateRockKingdomFieldOptions()
   await migrateRockKingdomRows()
+  await migrateRockKingdomBreedingFieldLabels()
+  await migrateRockKingdomBreedingFields()
   await migrateRockKingdomSkillRows()
   await migrateRockKingdomSceneTools()
+  await seedRockKingdomBreedingDemoOwnedRows()
 }
 
 // 洛克王国场景经历了几轮默认工具变更：
 // - 第一轮：只启用资料库 -> ['catalog']
 // - 第二轮：加入统计视图与性格推荐 -> ['catalog', 'stock', 'nature']
-// - 当前：再加入收集记录 -> ['catalog', 'owned', 'stock', 'nature']
+// - 第三轮：再加入收集记录 -> ['catalog', 'owned', 'stock', 'nature']
+// - 当前：加入孵蛋推荐 -> ['catalog', 'owned', 'stock', 'nature', 'breeding']
 // 迁移策略：只在场景 tools 恰好等于某一版旧默认值时，自动补齐到当前默认值。
 // 只要用户手动改过 tools（哪怕只是关掉了资料库或加入了不同工具的组合），
 // 一律不覆盖，尊重用户的选择。场景已被用户删除时跳过。
 const LEGACY_DEFAULT_SCENE_TOOLS_LIST = [
   ['catalog'],
   ['catalog', 'stock', 'nature'],
+  ['catalog', 'owned', 'stock', 'nature'],
 ]
 
 function arraysEqual(a, b) {
@@ -279,6 +285,142 @@ async function migrateRockKingdomRows() {
     // 预置资料离线或抓取失败时，骨架仍应可用。不能用 mock 数据兜底。
     console.warn('加载洛克王国预置资料行失败：', err)
   }
+}
+
+
+// 孵蛋字段迁移：官方 d.json / 本地 rockKingdomRows.json 是精灵主资料来源；
+// BWiki 快照只用于补齐官方资料缺失的蛋组/同种精灵空值，不覆盖已有非空字段。
+
+async function migrateRockKingdomBreedingFieldLabels() {
+  const tableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const ownedTableId = `table-owned-${ROCK_KINGDOM_PRESET.scene.id}`
+  const now = nowIso()
+  const labelUpdates = [
+    { tableId, key: 'shiny', name: '异色形态' },
+    { tableId, key: 'traitName', name: '特性' },
+    { tableId, key: 'speciesGroup', name: '繁育谱系' },
+    { tableId, key: 'evolutionLine', name: '进化链' },
+    { tableId: ownedTableId, key: 'shiny', name: '个体异色' },
+  ]
+  for (const update of labelUpdates) {
+    const field = await db.catalogFields
+      .where('tableId')
+      .equals(update.tableId)
+      .filter((item) => item.key === update.key)
+      .first()
+    if (field && field.name !== update.name) {
+      await db.catalogFields.update(field.id, { name: update.name, updatedAt: now })
+    }
+  }
+  const traitIconField = await db.catalogFields
+    .where('tableId')
+    .equals(tableId)
+    .filter((item) => item.key === 'traitIcon')
+    .first()
+  if (traitIconField && !traitIconField.hidden) {
+    await db.catalogFields.update(traitIconField.id, { hidden: true, updatedAt: now })
+  }
+}
+
+async function migrateRockKingdomBreedingFields() {
+  const tableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const table = await db.catalogTables.get(tableId)
+  if (!table) return
+  const now = nowIso()
+  const rows = await db.catalogRows.where('tableId').equals(tableId).toArray()
+  const breedingRows = await loadRockKingdomBreedingRows()
+  const presetRows = [
+    ...Object.entries(BREEDING_PRESET_BY_NAME).map(([name, row]) => ({ name, ...row })),
+    ...breedingRows,
+  ]
+  const presetByName = new Map(presetRows.map((row) => [row.name, row]))
+  const presetByLine = new Map()
+  for (const row of presetRows) {
+    if (row.speciesGroup && Array.isArray(row.eggGroups) && row.eggGroups.length > 0 && !presetByLine.has(row.speciesGroup)) {
+      presetByLine.set(row.speciesGroup, row)
+    }
+  }
+  const rowsToPut = []
+  for (const row of rows) {
+    const nextValues = { ...row.values }
+    let changed = false
+    const officialBreedingLine = Array.isArray(nextValues.evolutionLine)
+      ? nextValues.evolutionLine[0]
+      : nextValues.breedingLine
+    const preset = presetByName.get(nextValues.name) || presetByLine.get(officialBreedingLine)
+    if (Array.isArray(preset?.eggGroups) && preset.eggGroups.length > 0) {
+      if (isEmptyPresetValue(nextValues.eggGroups)) {
+        nextValues.eggGroups = [...preset.eggGroups]
+        changed = true
+      } else if (String(row.id || '').startsWith('rock-creature-src-')) {
+        const mergedEggGroups = [...new Set([...nextValues.eggGroups, ...preset.eggGroups])]
+        if (mergedEggGroups.length !== nextValues.eggGroups.length) {
+          nextValues.eggGroups = mergedEggGroups
+          changed = true
+        }
+      }
+    }
+    const supplementBreedingLine = officialBreedingLine || preset?.speciesGroup
+    if (isEmptyPresetValue(nextValues.speciesGroup) && supplementBreedingLine) {
+      nextValues.speciesGroup = supplementBreedingLine
+      changed = true
+    }
+    if (changed) rowsToPut.push({ ...row, values: nextValues, updatedAt: now })
+  }
+  if (rowsToPut.length > 0) await db.catalogRows.bulkPut(rowsToPut)
+}
+
+async function loadRockKingdomBreedingRows() {
+  try {
+    const res = await fetch(`${import.meta.env.BASE_URL}presets/rockKingdomBreedingRows.json`)
+    if (!res.ok) return []
+    const payload = await res.json()
+    return Array.isArray(payload?.rows) ? payload.rows : []
+  } catch (err) {
+    console.warn('加载洛克王国 BWiki 孵蛋资料失败：', err)
+    return []
+  }
+}
+
+async function seedRockKingdomBreedingDemoOwnedRows() {
+  const scene = await db.scenes.get(ROCK_KINGDOM_PRESET.scene.id)
+  if (!scene) return
+  const demoMeta = await db.meta.get('seededRockKingdomBreedingDemoOwnedRows')
+  if (demoMeta?.value) return
+  const ownedTable = await ensureOwnedTable(ROCK_KINGDOM_PRESET.scene.id)
+  const existingOwnedRows = await db.catalogRows.where('tableId').equals(ownedTable.id).count()
+  if (existingOwnedRows > 0) {
+    await db.meta.put({ key: 'seededRockKingdomBreedingDemoOwnedRows', value: 'skipped-existing-owned' })
+    return
+  }
+  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const creatureRows = await db.catalogRows.where('tableId').equals(creatureTableId).toArray()
+  const creatureByName = new Map(creatureRows.map((row) => [row.values?.name, row]))
+  const now = nowIso()
+  const rowsToPut = BREEDING_DEMO_OWNED.flatMap((demo, index) => {
+    const creature = creatureByName.get(demo.name)
+    if (!creature) return []
+    return [{
+      id: `owned-rock-breeding-demo-${index + 1}`,
+      tableId: ownedTable.id,
+      values: {
+        ref: creature.id,
+        nature: demo.nature,
+        bloodline: '',
+        shiny: demo.shiny,
+        colorful: demo.colorful,
+        specialty: '',
+        gender: demo.gender,
+        note: demo.note,
+      },
+      createdAt: now,
+      updatedAt: now,
+    }]
+  })
+  await db.transaction('rw', db.catalogRows, db.meta, async () => {
+    if (rowsToPut.length > 0) await db.catalogRows.bulkPut(rowsToPut)
+    await db.meta.put({ key: 'seededRockKingdomBreedingDemoOwnedRows', value: true })
+  })
 }
 
 async function migrateRockKingdomSkillRows() {

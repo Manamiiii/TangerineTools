@@ -41,6 +41,11 @@ export const OWNED_BLOODLINE_OPTIONS = [
   })),
 ]
 
+export const OWNED_SHINY_OPTIONS = [
+  { value: 'no', label: '非异色个体', color: '#64748b' },
+  { value: 'yes', label: '异色个体', color: '#db2777' },
+]
+
 export const OWNED_COLORFUL_OPTIONS = [
   { value: 'no', label: '非炫彩', color: '#64748b' },
   { value: 'yes', label: '炫彩', color: '#db2777' },
@@ -118,6 +123,7 @@ export const ROCK_KINGDOM_COLLECTION_FIELDS = [
   { key: 'ref', name: '精灵', type: 'reference' },
   { key: 'nature', name: '性格', type: 'select', options: OWNED_NATURE_OPTIONS },
   { key: 'bloodline', name: '血脉', type: 'select', options: OWNED_BLOODLINE_OPTIONS },
+  { key: 'shiny', name: '个体异色', type: 'select', options: OWNED_SHINY_OPTIONS },
   { key: 'colorful', name: '是否炫彩', type: 'select', options: OWNED_COLORFUL_OPTIONS },
   { key: 'specialty', name: '特长', type: 'select', options: OWNED_SPECIALTY_OPTIONS },
   { key: 'gender', name: '性别', type: 'select', options: OWNED_GENDER_OPTIONS },

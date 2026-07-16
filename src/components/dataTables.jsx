@@ -501,6 +501,7 @@ function RowFormModal({ table, fields, row, onClose }) {
 
 function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete, onOpenReference, title = '详情' }) {
   const sorted = [...fields].sort((a, b) => a.order - b.order)
+  const detailFields = sorted.filter((field) => field.key !== 'traitIcon')
   const numberField = findNumberField(fields)
   const sameNumberRows = numberField ? getSameNumberRows(row, rows, fields) : []
   const comparisonRows = buildFormComparisonRows(sameNumberRows, fields)
@@ -530,7 +531,7 @@ function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete, onOpenRe
       }
     >
       <div className="row-detail">
-        {sorted.map((field) => (
+        {detailFields.map((field) => (
           <div key={field.id} className="row-detail-item">
             <div className="row-detail-label">
               {field.name}
