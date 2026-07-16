@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// 从 B 站洛克王国手游 WIKI 同步孵蛋推荐所需的蛋组/同种精灵辅助数据。
+// 从 B 站洛克王国手游 WIKI 同步孵蛋推荐所需的蛋组/同种精灵补充数据。
 // 说明：BWiki 精灵图鉴是按 WIKI 页面生成的静态 HTML/页面数据快照，不是应用运行时实时 API。
 // 本脚本在维护者本地联网运行，产物写入 public/presets/rockKingdomBreedingRows.json；
-// App 启动迁移时只用它补齐空字段，不覆盖用户自定义非空值。
+// App 启动迁移时只用它补齐官方资料缺失的空字段，不覆盖官方/用户已有非空值。
 
 import { readFile, writeFile } from 'node:fs/promises'
 import { setTimeout as delay } from 'node:timers/promises'

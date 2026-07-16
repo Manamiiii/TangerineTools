@@ -287,6 +287,8 @@ async function migrateRockKingdomRows() {
 }
 
 
+// 孵蛋字段迁移：官方 d.json / 本地 rockKingdomRows.json 是精灵主资料来源；
+// BWiki 快照只用于补齐官方资料缺失的蛋组/同种精灵空值，不覆盖已有非空字段。
 async function migrateRockKingdomBreedingFields() {
   const tableId = ROCK_KINGDOM_PRESET.tables[0].id
   const table = await db.catalogTables.get(tableId)
