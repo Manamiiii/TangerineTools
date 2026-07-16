@@ -339,9 +339,17 @@ async function migrateRockKingdomBreedingFields() {
       ? nextValues.evolutionLine[0]
       : nextValues.breedingLine
     const preset = presetByName.get(nextValues.name) || presetByLine.get(officialBreedingLine)
-    if (isEmptyPresetValue(nextValues.eggGroups) && Array.isArray(preset?.eggGroups) && preset.eggGroups.length > 0) {
-      nextValues.eggGroups = [...preset.eggGroups]
-      changed = true
+    if (Array.isArray(preset?.eggGroups) && preset.eggGroups.length > 0) {
+      if (isEmptyPresetValue(nextValues.eggGroups)) {
+        nextValues.eggGroups = [...preset.eggGroups]
+        changed = true
+      } else if (String(row.id || '').startsWith('rock-creature-src-')) {
+        const mergedEggGroups = [...new Set([...nextValues.eggGroups, ...preset.eggGroups])]
+        if (mergedEggGroups.length !== nextValues.eggGroups.length) {
+          nextValues.eggGroups = mergedEggGroups
+          changed = true
+        }
+      }
     }
     const supplementBreedingLine = officialBreedingLine || preset?.speciesGroup
     if (isEmptyPresetValue(nextValues.speciesGroup) && supplementBreedingLine) {

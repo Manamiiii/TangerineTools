@@ -1,5 +1,5 @@
 {
-  "source": "https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8",
+  "source": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2",
   "syncedAt": "2026-07-16T00:00:00.000Z",
   "rows": [
     {
@@ -205,34 +205,38 @@
     {
       "name": "喵喵",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "speciesGroup": "喵喵",
-      "sourceUrl": "https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8"
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
     },
     {
       "name": "喵呜",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "speciesGroup": "喵喵",
-      "sourceUrl": "https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8"
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
     },
     {
       "name": "魔力猫",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "speciesGroup": "喵喵",
-      "sourceUrl": "https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8"
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
     },
     {
       "name": "叶冕魔力猫",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "speciesGroup": "喵喵",
-      "sourceUrl": "https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8"
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
     },
     {
       "name": "锥尾羊",
@@ -261,10 +265,11 @@
     {
       "name": "小鼠獭",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "两栖组"
       ],
       "speciesGroup": "小鼠獭",
-      "sourceUrl": "https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8"
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
     },
     {
       "name": "燕尾獭",
@@ -397,50 +402,56 @@
     {
       "name": "小独角兽",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "巨灵组"
       ],
       "speciesGroup": "小独角兽",
-      "sourceUrl": "https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8"
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
     },
     {
       "name": "白金独角兽",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "巨灵组"
       ],
       "speciesGroup": "小独角兽",
-      "sourceUrl": "https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8"
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
     },
     {
       "name": "小黑猫",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "妖精组"
       ],
       "speciesGroup": "小黑猫",
-      "sourceUrl": "https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8"
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
     },
     {
       "name": "黑猫巫师",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "妖精组"
       ],
       "speciesGroup": "小黑猫",
-      "sourceUrl": "https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8"
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
     },
     {
       "name": "忽幽狸",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "speciesGroup": "忽幽狸",
-      "sourceUrl": "https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8"
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
     },
     {
       "name": "影狸",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "speciesGroup": "忽幽狸",
-      "sourceUrl": "https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8"
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
     },
     {
       "name": "恶魔狼",
@@ -809,6 +820,113 @@
       ],
       "speciesGroup": "小鼓象",
       "sourceUrl": "https://wiki.biligame.com/rocom/%E8%9B%8B%E7%BB%84%E8%AE%A1%E7%AE%97%E5%99%A8"
+    },
+    {
+      "name": "火花",
+      "speciesGroup": "火花",
+      "eggGroups": [
+        "魔力组",
+        "巨灵组"
+      ],
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
+    },
+    {
+      "name": "焰火",
+      "speciesGroup": "焰火",
+      "eggGroups": [
+        "魔力组",
+        "巨灵组"
+      ],
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
+    },
+    {
+      "name": "火神",
+      "speciesGroup": "火神",
+      "eggGroups": [
+        "魔力组",
+        "巨灵组"
+      ],
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
+    },
+    {
+      "name": "水蓝蓝",
+      "speciesGroup": "水蓝蓝",
+      "eggGroups": [
+        "魔力组"
+      ],
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
+    },
+    {
+      "name": "波波拉",
+      "speciesGroup": "波波拉",
+      "eggGroups": [
+        "魔力组"
+      ],
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
+    },
+    {
+      "name": "水灵",
+      "speciesGroup": "水灵",
+      "eggGroups": [
+        "魔力组"
+      ],
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
+    },
+    {
+      "name": "鸭吉吉",
+      "speciesGroup": "鸭吉吉",
+      "eggGroups": [
+        "天空组"
+      ],
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
+    },
+    {
+      "name": "肥鸭吉吉",
+      "speciesGroup": "肥鸭吉吉",
+      "eggGroups": [
+        "天空组"
+      ],
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
+    },
+    {
+      "name": "动感鸭吉吉",
+      "speciesGroup": "动感鸭吉吉",
+      "eggGroups": [
+        "天空组"
+      ],
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
+    },
+    {
+      "name": "鸭吉吉国王",
+      "speciesGroup": "鸭吉吉国王",
+      "eggGroups": [
+        "天空组"
+      ],
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
+    },
+    {
+      "name": "板板壳",
+      "speciesGroup": "板板壳",
+      "eggGroups": [
+        "两栖组"
+      ],
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
+    },
+    {
+      "name": "咔咔壳",
+      "speciesGroup": "咔咔壳",
+      "eggGroups": [
+        "两栖组"
+      ],
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
+    },
+    {
+      "name": "水泡壳",
+      "speciesGroup": "水泡壳",
+      "eggGroups": [
+        "两栖组"
+      ],
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2"
     }
   ]
 }
