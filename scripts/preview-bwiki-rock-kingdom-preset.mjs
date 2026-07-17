@@ -109,10 +109,17 @@ function normalizeNumber(value) {
 }
 
 function formatEvolutionLine(evolution = []) {
-  return evolution
-    .map((step) => [step.name || step.linkName, step.condition].filter(Boolean).join('：'))
-    .filter(Boolean)
-    .join(' → ')
+  const names = evolution.map((step) => step.name || step.linkName).filter(Boolean)
+  if (names.length === 0) return ''
+  const first = names[0]
+  const canPair = names.length % 2 === 0 && names.every((name, index) => index % 2 === 1 || name === first)
+  if (canPair) {
+    return names.reduce((pairs, name, index) => {
+      if (index % 2 === 0) pairs.push(`${name} → ${names[index + 1]}`)
+      return pairs
+    }, []).join('；')
+  }
+  return names.join(' → ')
 }
 
 function countBy(rows, getter) {

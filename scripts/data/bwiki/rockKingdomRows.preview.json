@@ -1,6 +1,6 @@
 {
   "source": "bwiki-preview",
-  "generatedAt": "2026-07-17T08:00:28.224Z",
+  "generatedAt": "2026-07-17T08:06:16.958Z",
   "inputs": {
     "creatures": "scripts/data/bwiki/creatures.staging.json",
     "skills": "scripts/data/bwiki/skills.staging.json",
@@ -96,7 +96,7 @@
           "rock-skill-23210d701e34",
           "rock-skill-fb6f1daf27da"
         ],
-        "evolutionLine": "迪莫 → 圣光迪莫 → 迪莫 → 圣草迪莫 → 迪莫 → 圣火迪莫 → 迪莫 → 圣水迪莫",
+        "evolutionLine": "迪莫 → 圣光迪莫；迪莫 → 圣草迪莫；迪莫 → 圣火迪莫；迪莫 → 圣水迪莫",
         "breedingLine": "迪莫",
         "speciesGroup": "迪莫",
         "eggGroups": [
@@ -203,7 +203,7 @@
           "无"
         ],
         "speciesGroup": "",
-        "evolutionLine": "迪莫 → 圣光迪莫 → 迪莫 → 圣草迪莫 → 迪莫 → 圣火迪莫 → 迪莫 → 圣水迪莫",
+        "evolutionLine": "迪莫 → 圣光迪莫；迪莫 → 圣草迪莫；迪莫 → 圣火迪莫；迪莫 → 圣水迪莫",
         "eggImage": "",
         "fruitImage": ""
       },
@@ -300,7 +300,7 @@
           "无"
         ],
         "speciesGroup": "",
-        "evolutionLine": "迪莫 → 圣光迪莫 → 迪莫 → 圣草迪莫 → 迪莫 → 圣火迪莫 → 迪莫 → 圣水迪莫",
+        "evolutionLine": "迪莫 → 圣光迪莫；迪莫 → 圣草迪莫；迪莫 → 圣火迪莫；迪莫 → 圣水迪莫",
         "eggImage": "",
         "fruitImage": ""
       },
@@ -397,7 +397,7 @@
           "无"
         ],
         "speciesGroup": "",
-        "evolutionLine": "迪莫 → 圣光迪莫 → 迪莫 → 圣草迪莫 → 迪莫 → 圣火迪莫 → 迪莫 → 圣水迪莫",
+        "evolutionLine": "迪莫 → 圣光迪莫；迪莫 → 圣草迪莫；迪莫 → 圣火迪莫；迪莫 → 圣水迪莫",
         "eggImage": "",
         "fruitImage": ""
       },
@@ -494,7 +494,7 @@
           "无"
         ],
         "speciesGroup": "",
-        "evolutionLine": "迪莫 → 圣光迪莫 → 迪莫 → 圣草迪莫 → 迪莫 → 圣火迪莫 → 迪莫 → 圣水迪莫",
+        "evolutionLine": "迪莫 → 圣光迪莫；迪莫 → 圣草迪莫；迪莫 → 圣火迪莫；迪莫 → 圣水迪莫",
         "eggImage": "",
         "fruitImage": ""
       },

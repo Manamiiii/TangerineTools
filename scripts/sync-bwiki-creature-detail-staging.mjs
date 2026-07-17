@@ -139,6 +139,20 @@ function parseDetail(row, html) {
   }
 }
 
+function formatEvolutionSummary(evolution = []) {
+  const names = evolution.map((step) => step.name || step.linkName).filter(Boolean)
+  if (names.length === 0) return '（无）'
+  const first = names[0]
+  const canPair = names.length % 2 === 0 && names.every((name, index) => index % 2 === 1 || name === first)
+  if (canPair) {
+    return names.reduce((pairs, name, index) => {
+      if (index % 2 === 0) pairs.push(`${name} → ${names[index + 1]}`)
+      return pairs
+    }, []).join('；')
+  }
+  return names.join(' → ')
+}
+
 function countBy(rows, getter) {
   const result = {}
   for (const row of rows) {
@@ -158,7 +172,7 @@ function renderReport({ syncedAt, sourceCount, limit, rows, errors }) {
   const traitRows = rows.filter((row) => row.counts.hasTraitDescription).length
   const bloodlineRows = rows.filter((row) => row.counts.bloodlineSkills > 0).length
   const evolutionRows = rows.filter((row) => row.counts.evolutionSteps > 0).length
-  const examples = rows.slice(0, 12).map((row) => `| ${row.no} | ${row.name} | ${row.trait.name || '（空）'} | ${row.counts.skills} | ${row.counts.bloodlineSkills} | ${row.counts.evolutionSteps} |`).join('\n')
+  const examples = rows.slice(0, 12).map((row) => `| ${row.no} | ${row.name} | ${row.trait.name || '（空）'} | ${row.counts.skills} | ${row.counts.bloodlineSkills} | ${row.counts.evolutionSteps} | ${formatEvolutionSummary(row.evolution)} |`).join('\n')
 
   return `# BWiki 精灵详情 staging 报告
 
@@ -178,7 +192,7 @@ function renderReport({ syncedAt, sourceCount, limit, rows, errors }) {
 |---|---:|
 | 特性描述 | ${traitRows} |
 | 血脉技能 | ${bloodlineRows} |
-| 进化链步骤 | ${evolutionRows} |
+| 有进化链节点 | ${evolutionRows} |
 
 ## 技能来源标签
 
@@ -194,9 +208,9 @@ ${renderCountTable(skillCategoryCounts)}
 
 ## 样本行
 
-| 编号 | 名称 | 特性 | 技能数 | 血脉技能数 | 进化链步骤数 |
-|---|---|---|---:|---:|---:|
-${examples || '| （无） | （无） | （无） | 0 | 0 | 0 |'}
+| 编号 | 名称 | 特性 | 技能数 | 血脉技能数 | 进化链节点数 | 进化链摘要 |
+|---|---|---|---:|---:|---:|---|
+${examples || '| （无） | （无） | （无） | 0 | 0 | 0 | （无） |'}
 
 ## 本次抓取失败
 
@@ -205,7 +219,7 @@ ${errors.length ? errors.map((error) => `- ${error.no} ${error.name}: ${error.er
 ## 建议下一步
 
 1. 对照少量手动打开的 BWiki 页面复核详情解析器，尤其是多形态精灵和进化数据缺失页面。
-2. 确认特性描述、技能来源标签、血脉技能、进化链、蛋组和图片优先级的映射口径后，再继续扩大详情解析批次。
+2. 确认特性描述、技能来源标签、血脉技能、进化链节点 / 摘要、蛋组和图片优先级的映射口径后，再继续扩大详情解析批次。
 3. 在 preview 转换口径完成审阅前，只继续生成 staging / 报告；本阶段不要覆盖 \`public/presets/*\`。
 `
 }
@@ -218,6 +232,19 @@ async function writeJson(path, data) {
 async function main() {
   const limit = Number.parseInt(process.env.BWIKI_DETAIL_LIMIT || `${DEFAULT_LIMIT}`, 10)
   const source = JSON.parse(await readFile(CREATURE_STAGING, 'utf8'))
+  if (process.env.BWIKI_DETAIL_OFFLINE === '1') {
+    const existing = JSON.parse(await readFile(OUTPUT_JSON, 'utf8'))
+    await writeFile(resolve(OUTPUT_MD), renderReport({
+      syncedAt: existing.syncedAt,
+      sourceCount: source.rowCount,
+      limit: existing.limit ?? limit,
+      rows: existing.rows ?? [],
+      errors: existing.errors ?? [],
+    }))
+    console.log(`Rendered BWiki creature detail report from existing staging rows: ${existing.rowCount ?? existing.rows?.length ?? 0}`)
+    console.log(`Report: ${OUTPUT_MD}`)
+    return
+  }
   const candidates = source.rows.filter((row) => row.detailUrl).slice(0, limit)
   const syncedAt = new Date().toISOString()
   const rows = []
