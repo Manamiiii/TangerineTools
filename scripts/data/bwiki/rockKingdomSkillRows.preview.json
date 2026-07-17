@@ -1,6 +1,6 @@
 {
   "source": "bwiki-preview",
-  "generatedAt": "2026-07-17T07:47:46.608Z",
+  "generatedAt": "2026-07-17T07:52:17.320Z",
   "inputs": {
     "creatures": "scripts/data/bwiki/creatures.staging.json",
     "skills": "scripts/data/bwiki/skills.staging.json",
@@ -25,7 +25,13 @@
           "energyGain"
         ],
         "effect": "造成物伤，自己回复1能量。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -51,7 +57,15 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446",
+          "rock-creature-src-011",
+          "rock-creature-src-013",
+          "rock-creature-src-016"
         ]
       },
       "previewMeta": {
@@ -96,7 +110,16 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-013",
+          "rock-creature-src-016"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -162,7 +185,11 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成物伤，回合结束时，本技能能耗永久-1。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-011",
+          "rock-creature-src-013",
+          "rock-creature-src-016"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -186,7 +213,11 @@
           "statBoost"
         ],
         "effect": "造成物伤，若上回合使用状态技能，本次技能威力+55。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-011",
+          "rock-creature-src-013",
+          "rock-creature-src-016"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -234,7 +265,12 @@
           "counterStatus"
         ],
         "effect": "造成魔伤，应对状态：本次技能威力变为3倍。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -308,7 +344,11 @@
           "multiHit"
         ],
         "effect": "造成物伤，3连击。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-011",
+          "rock-creature-src-013",
+          "rock-creature-src-016"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -404,7 +444,12 @@
           "counterStatus"
         ],
         "effect": "造成魔伤，应对状态：额外打断被应对技能。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -448,7 +493,13 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成物伤，每次使用后，本技能能耗永久+1。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -470,7 +521,15 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成魔伤，使用时消耗所有能量，消耗越高，伤害越高。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447",
+          "rock-creature-src-012",
+          "rock-creature-src-014",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -589,7 +648,11 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成魔伤，每使用1次普通系技能，本技能能耗永久-2。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-012",
+          "rock-creature-src-014",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -617,7 +680,15 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446",
+          "rock-creature-src-011",
+          "rock-creature-src-013",
+          "rock-creature-src-016"
         ]
       },
       "previewMeta": {
@@ -646,7 +717,15 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447",
+          "rock-creature-src-012",
+          "rock-creature-src-014",
+          "rock-creature-src-015"
         ]
       },
       "previewMeta": {
@@ -671,7 +750,19 @@
           "healing"
         ],
         "effect": "自己回复30%生命。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -743,7 +834,14 @@
           "statDebuff"
         ],
         "effect": "敌方获得物攻-60%和速度-60。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -767,7 +865,12 @@
           "statDebuff"
         ],
         "effect": "敌方获得物防和魔防-120%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -793,7 +896,14 @@
           "counterDefense"
         ],
         "effect": "自己获得速度+80，应对防御：改为速度+160。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -817,7 +927,14 @@
           "statBoost"
         ],
         "effect": "下一次攻击时，技能威力+70。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -839,7 +956,14 @@
         "priority": "",
         "effectTags": [],
         "effect": "自己获得1层攻击印记。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -889,7 +1013,13 @@
           "counterDefense"
         ],
         "effect": "自己回复25%生命，应对防御：改为回复50%生命。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -937,7 +1067,23 @@
           "counterDefense"
         ],
         "effect": "敌方获得全技能能耗+1，应对防御：改为能耗+3。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -988,7 +1134,27 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446",
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
         ]
       },
       "previewMeta": {
@@ -1015,7 +1181,15 @@
           "counterAttack"
         ],
         "effect": "减伤70%，应对攻击：自己获得物攻和魔攻+70%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447",
+          "rock-creature-src-011",
+          "rock-creature-src-013",
+          "rock-creature-src-016"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1093,7 +1267,20 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447",
+          "rock-creature-src-012",
+          "rock-creature-src-014",
+          "rock-creature-src-015"
         ]
       },
       "previewMeta": {
@@ -1142,7 +1329,15 @@
           "costChange"
         ],
         "effect": "每回合随机变成自己未携带的技能，且该技能能耗-2。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446",
+          "rock-creature-src-011",
+          "rock-creature-src-013",
+          "rock-creature-src-016"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1186,7 +1381,15 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447",
+          "rock-creature-src-012",
+          "rock-creature-src-014",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1210,7 +1413,11 @@
           "multiHit"
         ],
         "effect": "造成魔伤，1连击。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-012",
+          "rock-creature-src-014",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1232,7 +1439,11 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-012",
+          "rock-creature-src-014",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1258,7 +1469,23 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
         ]
       },
       "previewMeta": {
@@ -1305,7 +1532,12 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1445,7 +1677,11 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成物伤，敌方体重越低，威力越高。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-011",
+          "rock-creature-src-013",
+          "rock-creature-src-016"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1540,7 +1776,11 @@
           "statBoost"
         ],
         "effect": "自己获得物防+140%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-012",
+          "rock-creature-src-014",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1564,7 +1804,11 @@
           "statBoost"
         ],
         "effect": "自己获得魔防+170%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-012",
+          "rock-creature-src-014",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1659,7 +1903,11 @@
           "multiHit"
         ],
         "effect": "自己获得物攻+30%，3连击。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-011",
+          "rock-creature-src-013",
+          "rock-creature-src-016"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1683,7 +1931,11 @@
           "multiHit"
         ],
         "effect": "自己获得连击数+3。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-011",
+          "rock-creature-src-013",
+          "rock-creature-src-016"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1705,7 +1957,17 @@
         "priority": "",
         "effectTags": [],
         "effect": "驱散敌方所有增益。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1736,7 +1998,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
         ]
       },
       "previewMeta": {
@@ -1763,7 +2030,15 @@
           "counterAttack"
         ],
         "effect": "减伤80%，应对攻击：期间自己每受到1次攻击伤害，获得双攻+40%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447",
+          "rock-creature-src-012",
+          "rock-creature-src-014",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1789,7 +2064,18 @@
           "pivot"
         ],
         "effect": "减伤60%，应对攻击：敌方脱离。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1863,7 +2149,19 @@
           "counterDefense"
         ],
         "effect": "敌方获得全技能能耗+3，应对防御：额外造成打断，且敌方下回合获得眩晕。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2044,7 +2342,13 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2066,7 +2370,13 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2119,7 +2429,13 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
         ]
       },
       "previewMeta": {
@@ -2142,7 +2458,13 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成魔伤，每次使用其他草系技能后，本技能威力永久+60。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2167,7 +2489,19 @@
           "energyGain"
         ],
         "effect": "自己回复10能量。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2193,7 +2527,13 @@
           "counterDefense"
         ],
         "effect": "自己获得全技能威力+30，应对防御：改为威力+60。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2247,7 +2587,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -2270,7 +2611,13 @@
         "priority": "",
         "effectTags": [],
         "effect": "敌方获得1层寄生。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2320,7 +2667,13 @@
           "statBoost"
         ],
         "effect": "自己获得物攻和魔攻+140%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2345,7 +2698,13 @@
           "pivot"
         ],
         "effect": "自己回复15%生命，随后脱离。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2367,7 +2726,13 @@
         "priority": "",
         "effectTags": [],
         "effect": "自己获得1层光合印记。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2393,7 +2758,13 @@
           "counterAttack"
         ],
         "effect": "减伤80%，应对攻击：自己回复20%生命。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2420,7 +2791,12 @@
           "counterAttack"
         ],
         "effect": "减伤80%，应对攻击：回复3能量。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2516,7 +2892,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
         ]
       },
       "previewMeta": {
@@ -2543,7 +2924,13 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
         ]
       },
       "previewMeta": {
@@ -2590,7 +2977,13 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2637,7 +3030,13 @@
           "statBoost"
         ],
         "effect": "造成物伤，自己生命大于80%时，本次技能威力+75。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2738,7 +3137,13 @@
           "counterAttack"
         ],
         "effect": "减伤80%，应对攻击：自己获得物防+70%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2767,7 +3172,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -2928,7 +3334,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -2976,7 +3383,12 @@
           "energyGain"
         ],
         "effect": "造成物伤，自己回复1能量。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -3004,7 +3416,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
         ]
       },
       "previewMeta": {
@@ -3051,7 +3468,12 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成物伤，每次使用后，本技能威力永久+20。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -3099,7 +3521,12 @@
           "counterStatus"
         ],
         "effect": "造成魔伤，应对状态：下次攻击技能威力翻倍。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -3170,7 +3597,12 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成物伤，每使用1次其他火系技能，本技能威力永久翻倍。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -3194,7 +3626,19 @@
           "control"
         ],
         "effect": "敌方获得10层灼烧。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -3219,7 +3663,12 @@
           "counterDefense"
         ],
         "effect": "下一次攻击时，技能威力翻倍，应对防御：改为威力变为4倍。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -3295,7 +3744,12 @@
           "counterAttack"
         ],
         "effect": "减伤70%，应对攻击：敌方获得6层灼烧。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -3317,7 +3771,12 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -3433,7 +3892,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
         ]
       },
       "previewMeta": {
@@ -3481,7 +3945,12 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -3577,7 +4046,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -3607,7 +4077,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
         ]
       },
       "previewMeta": {
@@ -3884,7 +4359,12 @@
           "energyGain"
         ],
         "effect": "造成魔伤，自己回复1能量。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -3906,7 +4386,12 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -3932,7 +4417,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
         ]
       },
       "previewMeta": {
@@ -3955,7 +4445,12 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成魔伤，每次使用后，本技能能耗永久-1。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4007,7 +4502,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
         ]
       },
       "previewMeta": {
@@ -4036,7 +4536,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
         ]
       },
       "previewMeta": {
@@ -4061,7 +4566,19 @@
           "costChange"
         ],
         "effect": "下次使用的技能能耗-6。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4107,7 +4624,12 @@
           "fieldEffect"
         ],
         "effect": "将天气改为雨天，持续8回合。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4133,7 +4655,12 @@
           "pivot"
         ],
         "effect": "减伤80%，应对攻击：自己脱离。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4159,7 +4686,12 @@
           "counterAttack"
         ],
         "effect": "减伤80%，应对攻击：自己获得魔攻+70%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4229,7 +4761,12 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成魔伤，回合结束时，本技能威力永久+20。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4277,7 +4814,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
         ]
       },
       "previewMeta": {
@@ -4350,7 +4892,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -4419,7 +4962,12 @@
           "statBoost"
         ],
         "effect": "造成魔伤，本技能能耗每-1，威力+10。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4443,7 +4991,12 @@
           "costChange"
         ],
         "effect": "驱散自己的减益，并获得全技能能耗-1。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4494,7 +5047,12 @@
           "counterAttack"
         ],
         "effect": "减伤60%，应对攻击：自己获得1层湿润印记。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4588,7 +5146,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -4615,7 +5174,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -4642,7 +5202,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -4669,7 +5230,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -4698,7 +5260,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -4750,7 +5313,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -4801,7 +5365,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -4846,7 +5411,20 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447",
+          "rock-creature-src-012",
+          "rock-creature-src-014",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4872,7 +5450,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -4897,7 +5476,13 @@
           "fieldEffect"
         ],
         "effect": "造成魔伤，本技能系别和天气系别相同。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4919,7 +5504,20 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446",
+          "rock-creature-src-011",
+          "rock-creature-src-013",
+          "rock-creature-src-016"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4949,7 +5547,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -5040,7 +5639,12 @@
           "statBoost"
         ],
         "effect": "造成物伤，本技能位于1号位时威力+60，传动1。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -5257,7 +5861,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
         ]
       },
       "previewMeta": {
@@ -5399,7 +6008,19 @@
           "statBoost"
         ],
         "effect": "自己获得速度+30，本技能位于1号或3号位时额外获得物攻+80%，传动1。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -5676,7 +6297,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -5703,7 +6325,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
         ]
       },
       "previewMeta": {
@@ -5893,7 +6520,19 @@
           "counterDefense"
         ],
         "effect": "自己获得物攻和物防+60%，应对防御：额外使自己的增益翻倍。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -6114,7 +6753,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -6329,7 +6969,12 @@
           "multiHit"
         ],
         "effect": "减伤80%，应对攻击：敌方获得连击数-3。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -6597,7 +7242,19 @@
           "control"
         ],
         "effect": "敌方获得4层冻结。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -6700,7 +7357,12 @@
           "fieldEffect"
         ],
         "effect": "减伤80%，应对攻击：被应对技能能耗+3。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -6726,7 +7388,12 @@
           "counterAttack"
         ],
         "effect": "减伤80%，应对攻击：敌方获得2层冻结。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -6774,7 +7441,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
         ]
       },
       "previewMeta": {
@@ -6801,7 +7473,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
         ]
       },
       "previewMeta": {
@@ -6906,7 +7583,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
         ]
       },
       "previewMeta": {
@@ -7005,7 +7687,12 @@
         "priority": "",
         "effectTags": [],
         "effect": "敌方获得2层减速印记。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -7058,7 +7745,12 @@
           "fieldEffect"
         ],
         "effect": "减伤70%，应对攻击：回复能量，回复值等于被应对技能能耗的2倍。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -7363,7 +8055,27 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446",
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
         ]
       },
       "previewMeta": {
@@ -7389,7 +8101,12 @@
           "charge"
         ],
         "effect": "蓄力，造成物伤并吸血50%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -7721,7 +8438,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -7773,7 +8491,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -7902,7 +8621,19 @@
           "counterDefense"
         ],
         "effect": "敌方先手-1，应对防御：额外使敌方获得双攻-70%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -7976,7 +8707,12 @@
           "pivot"
         ],
         "effect": "减伤80%，应对攻击：自己回合结束返场。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -8024,7 +8760,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
         ]
       },
       "previewMeta": {
@@ -8404,7 +9145,13 @@
           "control"
         ],
         "effect": "造成魔伤，敌方获得2层中毒。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -8527,7 +9274,19 @@
           "control"
         ],
         "effect": "敌方获得5层中毒。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -8577,7 +9336,13 @@
           "counterDefense"
         ],
         "effect": "敌方获得3层中毒，应对防御：改为获得8层。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -8672,7 +9437,13 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
         ]
       },
       "previewMeta": {
@@ -8695,7 +9466,21 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446",
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -8717,7 +9502,13 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -8768,7 +9559,13 @@
           "control"
         ],
         "effect": "敌方每有1层中毒效果，敌方获得双攻-30%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -9148,7 +9945,19 @@
           "costChange"
         ],
         "effect": "自己回复2能量，己方队伍获得1次奉献：能耗-2。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -9244,7 +10053,12 @@
           "pivot"
         ],
         "effect": "减伤70%，紧急脱离，应对攻击：下个入场精灵获得减伤。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -9316,7 +10130,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
         ]
       },
       "previewMeta": {
@@ -9650,7 +10469,13 @@
           "counterStatus"
         ],
         "effect": "造成物伤，应对状态：额外打断被应对技能。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -9675,7 +10500,18 @@
           "multiHit"
         ],
         "effect": "造成物伤，2连击，若后手攻击，改为3连击。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -9748,7 +10584,19 @@
           "statBoost"
         ],
         "effect": "自己获得全技能威力+40。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -9775,7 +10623,14 @@
           "counterDefense"
         ],
         "effect": "敌方获得双防-70%，应对防御：自己额外获得物攻+70%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -9899,7 +10754,11 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-012",
+          "rock-creature-src-014",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -9951,7 +10810,15 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446",
+          "rock-creature-src-011",
+          "rock-creature-src-013",
+          "rock-creature-src-016"
         ]
       },
       "previewMeta": {
@@ -10066,7 +10933,14 @@
           "statBoost"
         ],
         "effect": "自己获得全技能威力+40，若敌方本回合更换精灵，额外获得威力+50。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -10233,7 +11107,12 @@
           "statBoost"
         ],
         "effect": "造成物伤，若先于敌方攻击，本次技能威力+50%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -10259,7 +11138,11 @@
           "speed"
         ],
         "effect": "造成魔伤，迅捷。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-012",
+          "rock-creature-src-014",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -10310,7 +11193,12 @@
           "counterStatus"
         ],
         "effect": "造成物伤，迅捷，应对状态：本次技能威力变为1.5倍。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -10334,7 +11222,18 @@
           "speed"
         ],
         "effect": "自己获得速度+120。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -10478,7 +11377,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
         ]
       },
       "previewMeta": {
@@ -10526,7 +11430,15 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446",
+          "rock-creature-src-011",
+          "rock-creature-src-013",
+          "rock-creature-src-016"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -10548,7 +11460,11 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-012",
+          "rock-creature-src-014",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -10618,7 +11534,14 @@
           "speed"
         ],
         "effect": "迅捷，驱散敌方1种增益。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -10671,7 +11594,19 @@
           "statBoost"
         ],
         "effect": "自己获得全技能威力+20，迅捷。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -10697,7 +11632,18 @@
           "multiHit"
         ],
         "effect": "减伤70%，应对攻击：自己获得连击数+2。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -10790,7 +11736,14 @@
         "priority": "",
         "effectTags": [],
         "effect": "自己获得全技能威力+30，选择：本次能耗-1或应对防御时改为全技能威力永久+50。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11019,7 +11972,19 @@
           "healing"
         ],
         "effect": "自己和敌方获得萌化：回复40%生命。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11091,7 +12056,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
         ]
       },
       "previewMeta": {
@@ -11114,7 +12084,12 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11604,7 +12579,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -11675,7 +12651,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -11722,7 +12699,12 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11795,7 +12777,19 @@
           "energyDrain"
         ],
         "effect": "偷取敌方3能量。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11821,7 +12815,12 @@
           "counterAttack"
         ],
         "effect": "减伤80%，应对攻击：自己获得魔防+70%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11962,7 +12961,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
         ]
       },
       "previewMeta": {
@@ -12062,7 +13066,12 @@
           "counterStatus"
         ],
         "effect": "造成物伤，吸血50%，应对状态：本次技能威力翻倍。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -12160,7 +13169,19 @@
           "healing"
         ],
         "effect": "自己获得100%吸血。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -12184,7 +13205,12 @@
           "statBoost"
         ],
         "effect": "敌方获得全技能威力-20，自己获得全技能威力+20。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -12281,7 +13307,12 @@
           "counterAttack"
         ],
         "effect": "减伤90%，应对攻击：自己获得50%吸血。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -12395,7 +13426,12 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -12593,7 +13629,12 @@
           "healing"
         ],
         "effect": "若敌方本回合回复生命，改为失去2倍（含溢出的回复量）。先手+1。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -12777,7 +13818,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -12828,7 +13870,8 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33"
         ]
       },
       "previewMeta": {
@@ -12902,7 +13945,12 @@
           "multiHit"
         ],
         "effect": "造成魔伤，1连击，敌方每有1层星陨印记，本次技能连击数+1。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -12948,7 +13996,19 @@
         "priority": "",
         "effectTags": [],
         "effect": "敌方获得4层星陨印记。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-002",
+          "rock-creature-src-003",
+          "rock-creature-src-004",
+          "rock-creature-src-445",
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-011",
+          "rock-creature-src-012",
+          "rock-creature-src-013",
+          "rock-creature-src-014",
+          "rock-creature-src-016",
+          "rock-creature-src-015"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -13111,7 +14171,12 @@
           "rock-creature-src-001",
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
-          "rock-creature-bwiki-f4b757003dc1"
+          "rock-creature-bwiki-f4b757003dc1",
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-005",
+          "rock-creature-src-006",
+          "rock-creature-src-007",
+          "rock-creature-src-446"
         ]
       },
       "previewMeta": {
@@ -13205,7 +14270,12 @@
           "counterAttack"
         ],
         "effect": "减伤80%，应对攻击：敌方获得2层星陨印记。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-008",
+          "rock-creature-src-009",
+          "rock-creature-src-010",
+          "rock-creature-src-447"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
