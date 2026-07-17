@@ -11,7 +11,7 @@
 - 不改 Dexie schema，不清空用户数据，不改导入语义。
 
 ## 当前状态
-
+https://github.com/Manamiiii/TangerineTools/pull/23/conflict?name=docs%252Fdata-sources.md&base_oid=d136a1b5e94b3f9a480848d58902eb4047fb3efc&head_oid=ab6a1efd3c1518cee409a6488ef4f59c0dfc4caf
 | 阶段 | 状态 | 产物 | 是否可覆盖 public presets |
 |---|---|---|---|
 | BWiki 页面登记 | 已完成 | `docs/data-sources.md` | 否 |
