@@ -11,7 +11,7 @@
 - 不改 Dexie schema，不清空用户数据，不改导入语义。
 
 ## 当前状态
-https://github.com/Manamiiii/TangerineTools/pull/23/conflict?name=docs%252Fdata-sources.md&base_oid=d136a1b5e94b3f9a480848d58902eb4047fb3efc&head_oid=ab6a1efd3c1518cee409a6488ef4f59c0dfc4caf
+
 | 阶段 | 状态 | 产物 | 是否可覆盖 public presets |
 |---|---|---|---|
 | BWiki 页面登记 | 已完成 | `docs/data-sources.md` | 否 |
@@ -40,7 +40,13 @@ https://github.com/Manamiiii/TangerineTools/pull/23/conflict?name=docs%252Fdata-
 
 目标只包括：把 BWiki staging 转成预置 JSON 形状的 preview。
 
-验收：生成 preview 和报告；不覆盖 public presets。
+建议产物：
+
+- `scripts/data/bwiki/rockKingdomRows.preview.json`：精灵基础资料 preview，形状对齐 `public/presets/rockKingdomRows.json`。
+- `scripts/data/bwiki/rockKingdomSkillRows.preview.json`：技能资料 preview，形状对齐 `public/presets/rockKingdomSkillRows.json`。
+- `docs/bwiki-preview-report.md`：preview 审计报告，记录行数、id 复用、新增 id、字段冲突、技能关系覆盖率、图片来源和仍需人工确认的问题。
+
+验收：生成 preview 和报告；不覆盖 public presets；报告明确写出本次命令未触碰 `public/presets/*`、Dexie、用户数据和 UI。
 
 ### P4：显式覆盖命令
 
@@ -56,4 +62,4 @@ https://github.com/Manamiiii/TangerineTools/pull/23/conflict?name=docs%252Fdata-
 
 ## 下一步
 
-P3：新增预置转换 preview 命令和报告。只输出 preview / 审计产物，不覆盖 `public/presets/*`，不改 Dexie，不改 UI。
+P3：新增预置转换 preview 命令和报告。只输出 preview / 审计产物，不覆盖 `public/presets/*`，不改 Dexie，不改 UI。建议先实现只读转换脚本，再登记生成命令到 `docs/README.md`。
