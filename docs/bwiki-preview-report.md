@@ -1,6 +1,6 @@
 # BWiki 预置 preview 报告
 
-生成时间：2026-07-17T08:16:14.705Z
+生成时间：2026-07-17T09:35:11.540Z
 
 > 本报告由 `npm run preview:bwiki` 生成。脚本只读取 BWiki staging / detail staging 与当前 public preset JSON，然后只写入 preview / 审计产物。它**不会**覆盖 `public/presets/*`，**不会**触碰 Dexie / 浏览器用户数据，也**不会**修改 UI 代码。
 
@@ -10,9 +10,10 @@
 |---|---:|
 | BWiki 精灵 staging 行数 | 592 |
 | BWiki 技能 staging 行数 | 553 |
-| BWiki 详情 staging 行数 | 48 |
+| BWiki 详情 staging 行数 | 288 |
 | 已读取当前 public 精灵预置行数 | 496 |
 | 已读取当前 public 技能预置行数 | 487 |
+| 已读取孵蛋补充快照行数 | 496 |
 | 精灵 preview 输出 | `scripts/data/bwiki/rockKingdomRows.preview.json`（592 行） |
 | 技能 preview 输出 | `scripts/data/bwiki/rockKingdomSkillRows.preview.json`（553 行） |
 
@@ -132,6 +133,80 @@
 - 振翅 → rock-skill-bwiki-3aa6912bf755
 - ……另有 26 项
 
+### 当前稳定精灵 id 未进入 preview
+
+- NO.011 鸭吉吉国王 → rock-creature-src-448
+- NO.012 板板壳（本来的样子） → rock-creature-src-017
+- NO.013 咔咔壳（本来的样子） → rock-creature-src-018
+- NO.014 水泡壳（本来的样子） → rock-creature-src-019
+- NO.018 雪绒鸟（本来的样子） → rock-creature-src-023
+- NO.019 冬羽雀（本来的样子） → rock-creature-src-024
+- NO.020 岚鸟（本来的样子） → rock-creature-src-025
+- NO.024 石肤蜥（本来的样子） → rock-creature-src-029
+- NO.025 石刺蜥（本来的样子） → rock-creature-src-030
+- NO.026 石冠王蜥（本来的样子） → rock-creature-src-031
+- NO.040 钻石蜗 → rock-creature-src-452
+- NO.065 蹦蹦果 → rock-creature-src-455
+- NO.076 海盔虫（本来的样子） → rock-creature-src-081
+- NO.077 刺盔虫（本来的样子） → rock-creature-src-082
+- NO.078 千棘盔（本来的样子） → rock-creature-src-083
+- NO.146 权杖-Ⅴ → rock-creature-src-151
+- NO.163 小怂猫（山间竹林的样子） → rock-creature-src-406
+- NO.164 怒目怂猫（山间竹林的样子） → rock-creature-src-407
+- NO.192 棋契陛下 → rock-creature-src-464
+- NO.212 古钟蛇（本来的样子） → rock-creature-src-217
+- NO.212 古钟蛇（本命年的样子） → rock-creature-src-419
+- NO.213 寒音蛇（本来的样子） → rock-creature-src-218
+- NO.213 寒音蛇（本命年的样子） → rock-creature-src-420
+- NO.277 地鼠（储水期的样子） → rock-creature-src-439
+- NO.277 地鼠（储水期的样子） → rock-creature-src-440
+- NO.278 遁鼠（储水期的样子） → rock-creature-src-441
+- NO.278 遁鼠（储水期的样子） → rock-creature-src-442
+- NO.279 遁地鼠（储水期的样子） → rock-creature-src-443
+- NO.279 遁地鼠（储水期的样子） → rock-creature-src-444
+
+> 用户已确认这些旧行均能在新版数据中找到对应精灵，差异主要来自“（本来的样子）”等括号文本消失。它们不再阻塞 P4；现有浏览器仍按 merge-by-id 保留旧行和 owned 引用，覆盖命令不得主动删除或重写用户引用。
+
+## 字段变化摘要
+
+### 精灵字段
+
+| 字段 | 变化行数 |
+|---|---:|
+| image | 467 |
+| element | 98 |
+| form | 0 |
+| bst | 94 |
+| hp | 51 |
+| patk | 75 |
+| matk | 78 |
+| pdef | 59 |
+| mdef | 56 |
+| spd | 9 |
+| shiny | 29 |
+| traitName | 10 |
+| traitIcon | 246 |
+| traitDesc | 33 |
+| skillRefs | 246 |
+| eggGroups | 0 |
+| speciesGroup | 0 |
+| evolutionLine | 246 |
+| eggImage | 121 |
+| fruitImage | 118 |
+
+### 技能字段
+
+| 字段 | 变化行数 |
+|---|---:|
+| image | 487 |
+| element | 0 |
+| category | 0 |
+| power | 208 |
+| cost | 14 |
+| priority | 0 |
+| effect | 472 |
+| learnerRefs | 331 |
+
 ## 字段冲突与缺口
 
 ### 特性冲突：筛选页 vs 详情页 staging
@@ -182,7 +257,7 @@
 - NO.045 卡卡虫（火山附近的样子）：hp 0 → 62
 - ……另有 382 项
 
-### 系别冲突：当前 public 预置 vs BWiki staging
+### 系别顺序变化：当前 public 预置 vs BWiki staging
 
 - NO.022 幻灵菇：ghost、grass → grass、ghost
 - NO.023 幻影灵菇：ghost、grass → grass、ghost
@@ -190,20 +265,7 @@
 - NO.031 叮叮恶魔：dark、flying → flying、dark
 - NO.035 幽影树：ghost、grass → grass、ghost
 - NO.035 幻影荆棘：ghost、grass → grass、ghost
-- NO.044 丢丢（火山附近的样子）：grass → grass、fire
-- NO.044 丢丢（沙地附近的样子）：grass → grass、earth
-- NO.044 丢丢（雪山附近的样子）：grass → grass、ice
-- NO.045 卡卡虫（火山附近的样子）：grass → grass、fire
-- NO.045 卡卡虫（沙地附近的样子）：grass → grass、earth
-- NO.045 卡卡虫（雪山附近的样子）：grass → grass、ice
-- NO.046 卡瓦重（火山附近的样子）：grass → grass、fire
-- NO.046 卡瓦重（沙地附近的样子）：grass → grass、earth
-- NO.046 卡瓦重（雪山附近的样子）：grass → grass、ice
-- NO.057 梦游（穿星星睡衣的样子）：ghost → light、ghost
-- NO.058 梦悠悠（穿星星睡衣的样子）：ghost → light、ghost
 - NO.059 兽花蕾：light、grass → grass、light
-- NO.080 小星光（月光能量的样子）：electric → light、electric
-- NO.081 星光狮（月光能量的样子）：electric → light、electric
 - NO.088 乖乖鹄：flying、water → water、flying
 - NO.089 蓝珠天鹅：flying、water → water、flying
 - NO.090 翠顶夫人：flying、water → water、flying
@@ -224,7 +286,45 @@
 - NO.127 古啦多：poison、earth → earth、poison
 - NO.137 呼呼猪：ice、earth → earth、ice
 - NO.138 獠牙猪：ice、earth → earth、ice
-- ……另有 58 项
+- NO.169 尖角蜘蛛：bug、poison → poison、bug
+- NO.170 芋香巨角蛛：bug、poison → poison、bug
+- NO.171 波波螺：earth、water → water、earth
+- NO.171 波波螺（被污染的样子）：earth、water → water、earth
+- NO.172 消波螺：earth、water → water、earth
+- NO.172 消波螺（被污染的样子）：earth、water → water、earth
+- NO.173 嗜波螺：earth、water → water、earth
+- NO.173 嗜波螺（被污染的样子）：earth、water → water、earth
+- NO.174 菇菇丁：earth、grass → grass、earth
+- NO.175 多菇丁：earth、grass → grass、earth
+- NO.176 九幽菇：earth、grass → grass、earth
+- NO.181 海豹战士：fighting、water → water、fighting
+- NO.182 海豹船长：fighting、water → water、fighting
+- ……另有 42 项
+
+### 系别实质变化：当前 public 预置 vs BWiki staging
+
+- NO.044 丢丢（火山附近的样子）：grass → grass、fire
+- NO.044 丢丢（沙地附近的样子）：grass → grass、earth
+- NO.044 丢丢（雪山附近的样子）：grass → grass、ice
+- NO.045 卡卡虫（火山附近的样子）：grass → grass、fire
+- NO.045 卡卡虫（沙地附近的样子）：grass → grass、earth
+- NO.045 卡卡虫（雪山附近的样子）：grass → grass、ice
+- NO.046 卡瓦重（火山附近的样子）：grass → grass、fire
+- NO.046 卡瓦重（沙地附近的样子）：grass → grass、earth
+- NO.046 卡瓦重（雪山附近的样子）：grass → grass、ice
+- NO.057 梦游（穿星星睡衣的样子）：ghost → light、ghost
+- NO.058 梦悠悠（穿星星睡衣的样子）：ghost → light、ghost
+- NO.080 小星光（月光能量的样子）：electric → light、electric
+- NO.081 星光狮（月光能量的样子）：electric → light、electric
+- NO.258 乌达（极夜的样子）：dark、fire → ice、dark
+- NO.259 迷你乌（极夜的样子）：dark、fire → ice、dark
+- NO.260 乌拉塔（极夜的样子）：dark、fire → ice、dark
+
+> 用户已确认 BWiki 系别变化符合预期；技能与精灵系别继续以 BWiki staging 为新版本主来源。
+
+### 空值 / 非数字种族值
+
+- （无）
 
 ### 未识别精灵系别
 
@@ -242,22 +342,39 @@
 
 | 详情技能卡总数 | 已匹配技能卡 | 覆盖率 | 未匹配技能名数量 |
 |---:|---:|---:|---:|
-| 2272 | 2272 | 100.00% | 0 |
+| 14086 | 14086 | 100.00% | 0 |
 
 - （无）
 
+### Preview 全量双向一致性
+
+| 有技能引用的精灵 | 精灵 → 技能边数 | 技能 → 精灵边数 | 缺反向关系 | 缺正向关系 | 悬空技能引用 | 悬空精灵引用 |
+|---:|---:|---:|---:|---:|---:|---:|
+| 509 / 592 | 24631 | 24631 | 0 | 0 | 0 | 0 |
+
+> 详情技能卡覆盖率只衡量已抓取详情样本中的技能名能否匹配；全量双向一致性用于检查最终 preview 中的 `skillRefs` / `learnerRefs` 是否互相对应。
+
 ## 蛋组 / 繁育谱系
 
-- Preview 会把 BWiki 筛选页的 `eggGroupLabel` 写入现有 `eggGroups` 字段，作为候选数组。
-- 当匹配到当前 public 预置行时，preview 会保留现有 `speciesGroup`；本批不推断新的繁育谱系。
+- BWiki 精灵筛选页的 `data-param8` 是归属赛季，preview 只把它保留在 `previewMeta.seasonLabel` 供审计，不写入蛋组。
+- 已匹配精灵保留当前 public 预置中的 `eggGroups` / `speciesGroup`；空值或新增精灵只从版本化的孵蛋补充快照按“编号 + 名称”或唯一名称安全补齐。
 
 ## 图片来源摘要
 
 | 图片来源 | 数量 |
 |---|---:|
-| patchwiki | 532 |
-| empty | 40 |
-| existing-public-preset | 20 |
+| patchwiki | 592 |
+
+缺少精灵图片的行：
+
+- （无）
+
+## P4 准入判断
+
+当前 **不建议进入 P4 覆盖**：
+
+- 详情 staging 仅覆盖 288 / 592 条精灵
+- 仍有 83 条精灵没有技能引用
 
 ## 安全声明
 

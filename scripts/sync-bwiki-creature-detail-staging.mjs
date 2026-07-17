@@ -9,6 +9,7 @@ const CREATURE_STAGING = 'scripts/data/bwiki/creatures.staging.json'
 const OUTPUT_JSON = 'scripts/data/bwiki/creature-details.sample.staging.json'
 const OUTPUT_MD = 'docs/bwiki-detail-staging-report.md'
 const DEFAULT_LIMIT = 24
+const DEFAULT_DELAY_MS = 1000
 
 async function fetchText(url) {
   try {
@@ -194,7 +195,7 @@ function renderCountTable(counts) {
   return Object.entries(counts).map(([label, count]) => `| ${label} | ${count} |`).join('\n') || '| （无） | 0 |'
 }
 
-function renderReport({ syncedAt, sourceCount, limit, rows, errors }) {
+function renderReport({ syncedAt, sourceCount, limit, rows, errors, reusedCount = 0, fetchedCount = 0, delayMs = 0 }) {
   const skillSourceCounts = countBy(rows.flatMap((row) => row.skills), (skill) => skill.sourceType)
   const skillCategoryCounts = countBy(rows.flatMap((row) => row.skills), (skill) => skill.category)
   const traitRows = rows.filter((row) => row.counts.hasTraitDescription).length
@@ -210,9 +211,9 @@ function renderReport({ syncedAt, sourceCount, limit, rows, errors }) {
 
 ## 快照输出
 
-| 精灵 staging 行数 | 已解析详情行数 | 失败行数 | 本次上限 | 输出文件 |
-|---:|---:|---:|---:|---|
-| ${sourceCount} | ${rows.length} | ${errors.length} | ${limit} | \`${OUTPUT_JSON}\` |
+| 精灵 staging 行数 | 已解析详情行数 | 复用已有成功行 | 本次新抓取 | 请求间隔 | 失败行数 | 本次上限 | 输出文件 |
+|---:|---:|---:|---:|---:|---:|---:|---|
+| ${sourceCount} | ${rows.length} | ${reusedCount} | ${fetchedCount} | ${delayMs} ms | ${errors.length} | ${limit} | \`${OUTPUT_JSON}\` |
 
 ## 详情字段覆盖
 
@@ -259,6 +260,7 @@ async function writeJson(path, data) {
 
 async function main() {
   const limit = Number.parseInt(process.env.BWIKI_DETAIL_LIMIT || `${DEFAULT_LIMIT}`, 10)
+  const delayMs = Math.max(0, Number.parseInt(process.env.BWIKI_DETAIL_DELAY_MS || `${DEFAULT_DELAY_MS}`, 10) || 0)
   const source = JSON.parse(await readFile(CREATURE_STAGING, 'utf8'))
   if (process.env.BWIKI_DETAIL_OFFLINE === '1') {
     const existing = JSON.parse(await readFile(OUTPUT_JSON, 'utf8'))
@@ -268,6 +270,9 @@ async function main() {
       limit: existing.limit ?? limit,
       rows: existing.rows ?? [],
       errors: existing.errors ?? [],
+      reusedCount: existing.reusedCount ?? 0,
+      fetchedCount: existing.fetchedCount ?? existing.rowCount ?? existing.rows?.length ?? 0,
+      delayMs: existing.delayMs ?? 0,
     }))
     console.log(`Rendered BWiki creature detail report from existing staging rows: ${existing.rowCount ?? existing.rows?.length ?? 0}`)
     console.log(`Report: ${OUTPUT_MD}`)
@@ -277,14 +282,40 @@ async function main() {
   const syncedAt = new Date().toISOString()
   const rows = []
   const errors = []
+  const refreshAll = process.env.BWIKI_DETAIL_REFRESH === '1'
+  let existingRows = []
+  if (!refreshAll) {
+    try {
+      const existing = JSON.parse(await readFile(OUTPUT_JSON, 'utf8'))
+      if ((existing.errorCount ?? existing.errors?.length ?? 0) === 0) existingRows = existing.rows ?? []
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error
+    }
+  }
+  const existingBySourceUrl = new Map(existingRows.map((row) => [row.sourceUrl, row]))
+  let reusedCount = 0
+  let fetchedCount = 0
 
   for (const row of candidates) {
+    const existing = existingBySourceUrl.get(row.detailUrl)
+    if (existing?.no === row.no && existing?.name === row.name) {
+      rows.push(existing)
+      reusedCount += 1
+      continue
+    }
     try {
       const html = await fetchTextWithRetry(row.detailUrl)
       rows.push(parseDetail(row, html))
+      fetchedCount += 1
+      if (delayMs > 0) await sleep(delayMs)
     } catch (error) {
       errors.push({ no: row.no, name: row.name, sourceUrl: row.detailUrl, error: error.message })
+      break
     }
+  }
+
+  if (errors.length) {
+    throw new Error(`BWiki detail fetch failed for ${errors.length} row(s); kept the previous 0-error staging snapshot unchanged. First failure: ${errors[0].no} ${errors[0].name}: ${errors[0].error}`)
   }
 
   await writeJson(OUTPUT_JSON, {
@@ -293,12 +324,26 @@ async function main() {
     limit,
     rowCount: rows.length,
     errorCount: errors.length,
+    reusedCount,
+    fetchedCount,
+    delayMs,
     rows,
     errors,
   })
-  await writeFile(resolve(OUTPUT_MD), renderReport({ syncedAt, sourceCount: source.rowCount, limit, rows, errors }))
+  await writeFile(resolve(OUTPUT_MD), renderReport({
+    syncedAt,
+    sourceCount: source.rowCount,
+    limit,
+    rows,
+    errors,
+    reusedCount,
+    fetchedCount,
+    delayMs,
+  }))
 
   console.log(`Wrote BWiki creature detail staging rows: ${rows.length}`)
+  console.log(`Reused existing successful rows: ${reusedCount}; fetched rows: ${fetchedCount}`)
+  console.log(`Delay between new detail requests: ${delayMs} ms`)
   if (errors.length) console.warn(`Skipped BWiki detail rows after fetch errors: ${errors.length}`)
   console.log(`Report: ${OUTPUT_MD}`)
 }
