@@ -11,13 +11,14 @@
 - 不改 Dexie schema，不清空用户数据，不改导入语义。
 
 ## 当前状态
-
+https://github.com/Manamiiii/TangerineTools/pull/23/conflict?name=docs%252Fdata-sources.md&base_oid=d136a1b5e94b3f9a480848d58902eb4047fb3efc&head_oid=ab6a1efd3c1518cee409a6488ef4f59c0dfc4caf
 | 阶段 | 状态 | 产物 | 是否可覆盖 public presets |
 |---|---|---|---|
 | BWiki 页面登记 | 已完成 | `docs/data-sources.md` | 否 |
 | BWiki 页面审计 | 已完成 | `docs/bwiki-source-audit.md` | 否 |
 | 筛选页 staging | 已完成 | `scripts/data/bwiki/*.staging.json`、`docs/bwiki-staging-report.md` | 否 |
 | 详情页解析 | 已完成首批受控解析 | `scripts/data/bwiki/creature-details.sample.staging.json`、`docs/bwiki-detail-staging-report.md` | 否 |
+| 字段映射冻结 | 已完成首版 | `docs/bwiki-field-mapping.md` | 否 |
 | 预置形状 preview / 覆盖 | 未开始 | 待新增 | 否 |
 | 详情页 UI 分块 | 未开始 | 待新增 | 否 |
 
@@ -55,4 +56,4 @@
 
 ## 下一步
 
-P2：字段映射冻结。基于筛选页 staging 与首批详情页 staging，确认特性描述、技能来源标签、血脉技能、进化链、蛋组和图片优先级如何映射到现有资料库字段；不要覆盖 `public/presets/*`，不改 Dexie，不改 UI。
+P3：新增预置转换 preview 命令和报告。只输出 preview / 审计产物，不覆盖 `public/presets/*`，不改 Dexie，不改 UI。

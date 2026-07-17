@@ -54,4 +54,5 @@
 1. 运行 `npm run audit:bwiki`，确认 BWiki 页面的行数、字段、命名差异与新增内容。
 2. 运行 `npm run sync:bwiki:staging`，先保存精灵 / 技能 / 精灵蛋筛选页解析结果与来源，不直接替换现有预置。
 3. 下一阶段用 staging 里的 `detailUrl` 抓取特性详情、技能学习关系、血脉技能、进化链、蛋组和详情图片。
-4. 人工确认字段映射、名称归一化、图片来源与技能关系后，再新增显式转换命令完全覆盖 `rockKingdomRows.json` / `rockKingdomSkillRows.json`。
+4. 按 `docs/bwiki-field-mapping.md` 冻结字段映射、名称归一化、图片来源与技能关系后，先新增 preview 转换命令和报告。
+5. preview 报告确认无误后，再新增显式覆盖命令完全覆盖 `rockKingdomRows.json` / `rockKingdomSkillRows.json`。
