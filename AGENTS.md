@@ -11,6 +11,12 @@ The default built-in scenario is 洛克王国世界. The currently implemented w
 - 统计视图 `stock`
 - 性格推荐 `nature`
 
+## Development posture
+
+- This repository is for the user's personal use, not a public, multi-tenant, or enterprise product. Optimize design and implementation for the user's own workflow instead of hypothetical organizational compatibility.
+- When the requirement and data source are clear, prefer decisive experimentation and coherent refactors over excessive conservatism. It is acceptable to change developer-only workflows, scripts, generated audit artifacts, and internal implementation details when the result is simpler and verifiably better.
+- Personal-use context does not waive the hard boundaries below, credential/privacy safeguards, external-service rules, or destructive-action precautions. Continue protecting the user's IndexedDB data, stable ids, import compatibility, and versioned source integrity; obtain explicit authorization where these instructions require it.
+
 ## Required reading
 
 Before making code changes, read the docs that match the task scope:
