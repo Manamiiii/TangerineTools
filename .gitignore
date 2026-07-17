@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Codex credentials and local session state must never enter the repository.
+.codex/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
