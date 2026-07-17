@@ -52,7 +52,7 @@
 
 ## 稳定 id 与迁移边界
 
-- 精灵 preview 应优先复用现有 `rock-creature-src-*` 稳定 id；新增 BWiki 精灵再分配新稳定 id。
+- 精灵 preview 应优先复用现有 `rock-creature-src-*` 稳定 id，但只在“编号 + 名称”或唯一名称可确认匹配时复用；同编号但名称不同的 BWiki 形态 / 新增精灵必须分配新稳定 id，避免覆盖普通形态。
 - 技能 preview 应优先复用现有技能 row id；新增 BWiki 技能再分配新稳定 id。
 - 名称归一化只影响 preview 生成和迁移候选，不应在 P2 直接改 `public/presets/*`。
 - 旧用户迁移仍遵循“只补齐 / 修正预置官方字段，不覆盖用户自定义非空值”。
@@ -72,4 +72,4 @@ P3 只允许生成 preview 和报告，不覆盖正式预置。preview 报告至
 
 ## 下一步
 
-P3：新增预置转换 preview 命令和报告，只输出 `scripts/data/bwiki/*.preview.json` / `docs/*preview*.md` 之类的审计产物，不覆盖 `public/presets/*`。
+已新增 P3 preview 命令 `npm run preview:bwiki`，只输出 `scripts/data/bwiki/*.preview.json` / `docs/bwiki-preview-report.md` 审计产物，不覆盖 `public/presets/*`。下一步先审阅报告中的 id 复用、字段冲突与技能关系覆盖率；确认后再设计 P4 显式覆盖命令。

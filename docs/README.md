@@ -40,6 +40,7 @@
 | `bwiki-source-audit.md` | `npm run audit:bwiki` | BWiki 页面可解析性与本地预置覆盖差异审计；不改预置 JSON。 |
 | `bwiki-staging-report.md` | `npm run sync:bwiki:staging` | BWiki 精灵 / 技能 / 精灵蛋 staging 快照与本地预置差异摘要；不改预置 JSON。 |
 | `bwiki-detail-staging-report.md` | `npm run sync:bwiki:details` | BWiki 精灵详情页受控批次解析报告；只生成详情 staging，不改预置 JSON。 |
+| `bwiki-preview-report.md` | `npm run preview:bwiki` | BWiki staging 到预置 JSON 形状的 preview 审计报告；只生成 preview / 报告，不覆盖 `public/presets/*`。 |
 
 ## 已清理内容
 

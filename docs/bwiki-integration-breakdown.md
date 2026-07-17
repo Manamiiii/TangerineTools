@@ -11,15 +11,15 @@
 - 不改 Dexie schema，不清空用户数据，不改导入语义。
 
 ## 当前状态
-https://github.com/Manamiiii/TangerineTools/pull/23/conflict?name=docs%252Fdata-sources.md&base_oid=d136a1b5e94b3f9a480848d58902eb4047fb3efc&head_oid=ab6a1efd3c1518cee409a6488ef4f59c0dfc4caf
+
 | 阶段 | 状态 | 产物 | 是否可覆盖 public presets |
 |---|---|---|---|
 | BWiki 页面登记 | 已完成 | `docs/data-sources.md` | 否 |
 | BWiki 页面审计 | 已完成 | `docs/bwiki-source-audit.md` | 否 |
 | 筛选页 staging | 已完成 | `scripts/data/bwiki/*.staging.json`、`docs/bwiki-staging-report.md` | 否 |
-| 详情页解析 | 已完成首批受控解析 | `scripts/data/bwiki/creature-details.sample.staging.json`、`docs/bwiki-detail-staging-report.md` | 否 |
+| 详情页解析 | 已扩展至 48 条受控解析 | `scripts/data/bwiki/creature-details.sample.staging.json`、`docs/bwiki-detail-staging-report.md` | 否 |
 | 字段映射冻结 | 已完成首版 | `docs/bwiki-field-mapping.md` | 否 |
-| 预置形状 preview / 覆盖 | 未开始 | 待新增 | 否 |
+| 预置形状 preview | 已完成首版 | `scripts/data/bwiki/*preview.json`、`docs/bwiki-preview-report.md` | 否 |
 | 详情页 UI 分块 | 未开始 | 待新增 | 否 |
 
 ## 后续阶段
@@ -40,7 +40,13 @@ https://github.com/Manamiiii/TangerineTools/pull/23/conflict?name=docs%252Fdata-
 
 目标只包括：把 BWiki staging 转成预置 JSON 形状的 preview。
 
-验收：生成 preview 和报告；不覆盖 public presets。
+建议产物：
+
+- `scripts/data/bwiki/rockKingdomRows.preview.json`：精灵基础资料 preview，形状对齐 `public/presets/rockKingdomRows.json`。
+- `scripts/data/bwiki/rockKingdomSkillRows.preview.json`：技能资料 preview，形状对齐 `public/presets/rockKingdomSkillRows.json`。
+- `docs/bwiki-preview-report.md`：preview 审计报告，记录行数、id 复用、新增 id、字段冲突、技能关系覆盖率、图片来源和仍需人工确认的问题。
+
+验收：生成 preview 和报告；不覆盖 public presets；报告明确写出本次命令未触碰 `public/presets/*`、Dexie、用户数据和 UI。
 
 ### P4：显式覆盖命令
 
@@ -56,4 +62,4 @@ https://github.com/Manamiiii/TangerineTools/pull/23/conflict?name=docs%252Fdata-
 
 ## 下一步
 
-P3：新增预置转换 preview 命令和报告。只输出 preview / 审计产物，不覆盖 `public/presets/*`，不改 Dexie，不改 UI。
+先人工审阅 `docs/bwiki-detail-staging-report.md` 的 48 条详情解析样本，以及 `docs/bwiki-preview-report.md` 中的 id 复用、新增行、字段冲突和技能关系覆盖率。若详情解析和 preview 口径确认可接受，再进入 P4：新增显式覆盖命令；覆盖命令必须继续保留覆盖前后行数、id 复用、新增 id 和技能关系覆盖率报告，并且只有用户明确要求时才能替换 `public/presets/*`。
