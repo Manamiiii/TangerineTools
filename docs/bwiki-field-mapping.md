@@ -72,4 +72,4 @@ P3 只允许生成 preview 和报告，不覆盖正式预置。preview 报告至
 
 ## 下一步
 
-P3：新增预置转换 preview 命令和报告，只输出 `scripts/data/bwiki/*.preview.json` / `docs/bwiki-preview-report.md` 之类的审计产物，不覆盖 `public/presets/*`。preview 脚本应先只读加载 BWiki staging、详情 staging 和当前 public presets，用报告证明 id 复用、字段冲突与技能关系覆盖率，再进入任何显式覆盖命令设计。
+已新增 P3 preview 命令 `npm run preview:bwiki`，只输出 `scripts/data/bwiki/*.preview.json` / `docs/bwiki-preview-report.md` 审计产物，不覆盖 `public/presets/*`。下一步先审阅报告中的 id 复用、字段冲突与技能关系覆盖率；确认后再设计 P4 显式覆盖命令。
