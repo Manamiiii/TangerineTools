@@ -43,11 +43,13 @@
 | 命令 | 作用 |
 |---|---|
 | `npm run audit:bwiki` | 联网抓取已登记 BWiki 页面，生成 `docs/bwiki-source-audit.md`，只做可解析性与覆盖差异审计 |
+| `npm run sync:bwiki:staging` | 从 BWiki 精灵筛选 / 技能查询 / 精灵蛋筛选生成 `scripts/data/bwiki/*.staging.json` 与 `docs/bwiki-staging-report.md`，只落 staging，不替换预置 |
 | `npm run sync:breeding` | 从 BWiki 孵蛋组别查询生成 `public/presets/rockKingdomBreedingRows.json` |
 | `npm run sync:rock scripts/data/rockKingdom.d.json` | 从当前本地 `d.json` 生成精灵 / 技能预置，并合并孵蛋补充快照 |
 
 ## 推荐落地顺序
 
 1. 运行 `npm run audit:bwiki`，确认 BWiki 页面的行数、字段、命名差异与新增内容。
-2. 后续新增 BWiki staging JSON，先保存解析结果与来源，不直接替换现有预置。
-3. 人工确认字段映射、名称归一化、图片来源与技能关系后，再替换 `rockKingdomRows.json` / `rockKingdomSkillRows.json`。
+2. 运行 `npm run sync:bwiki:staging`，先保存精灵 / 技能 / 精灵蛋筛选页解析结果与来源，不直接替换现有预置。
+3. 人工确认字段映射、名称归一化、图片来源与技能关系后，再新增显式转换命令替换 `rockKingdomRows.json` / `rockKingdomSkillRows.json`。
+4. 详情页批量解析应作为下一阶段：用 staging 里的 `detailUrl` 抓取特性详情、技能学习关系、血脉技能、进化链、蛋组和详情图片。
