@@ -3966,7 +3966,7 @@
         "岚鸟（本来的样子）"
       ],
       "breedingLine": "雪绒鸟（本来的样子）",
-      "speciesGroup": "霜翼领主",
+      "speciesGroup": "雪绒鸟（本来的样子）",
       "eggGroups": [
         "天空组"
       ],
@@ -11950,7 +11950,7 @@
         "蹦蹦花（海神球形态）"
       ],
       "breedingLine": "蹦蹦种子（海神球形态）",
-      "speciesGroup": "蹦蹦果",
+      "speciesGroup": "蹦蹦种子（海神球形态）",
       "eggGroups": [
         "植物组"
       ],
@@ -12749,7 +12749,10 @@
       ],
       "breedingLine": "白发懒人",
       "speciesGroup": "白发懒人",
-      "eggGroups": [],
+      "eggGroups": [
+        "拟人组",
+        "巨灵组"
+      ],
       "hp": 86,
       "patk": 94,
       "matk": 38,
@@ -12848,7 +12851,10 @@
       ],
       "breedingLine": "白发懒人",
       "speciesGroup": "白发懒人",
-      "eggGroups": [],
+      "eggGroups": [
+        "拟人组",
+        "巨灵组"
+      ],
       "hp": 115,
       "patk": 125,
       "matk": 51,
@@ -12947,7 +12953,10 @@
       ],
       "breedingLine": "白发懒人",
       "speciesGroup": "白发懒人",
-      "eggGroups": [],
+      "eggGroups": [
+        "拟人组",
+        "巨灵组"
+      ],
       "hp": 144,
       "patk": 157,
       "matk": 64,
@@ -13038,7 +13047,10 @@
       ],
       "breedingLine": "海盔虫（本来的样子）",
       "speciesGroup": "海盔虫（本来的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "巨灵组"
+      ],
       "hp": 71,
       "patk": 25,
       "matk": 59,
@@ -13128,8 +13140,11 @@
         "千棘盔（本来的样子）"
       ],
       "breedingLine": "海盔虫（本来的样子）",
-      "speciesGroup": "海盔虫（磨损的样子）",
-      "eggGroups": [],
+      "speciesGroup": "海盔虫（本来的样子）",
+      "eggGroups": [
+        "海洋组",
+        "巨灵组"
+      ],
       "hp": 70,
       "patk": 25,
       "matk": 60,
@@ -13220,7 +13235,10 @@
       ],
       "breedingLine": "海盔虫（本来的样子）",
       "speciesGroup": "海盔虫（本来的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "巨灵组"
+      ],
       "hp": 94,
       "patk": 33,
       "matk": 79,
@@ -13310,8 +13328,11 @@
         "千棘盔（本来的样子）"
       ],
       "breedingLine": "海盔虫（本来的样子）",
-      "speciesGroup": "刺盔虫（磨损的样子）",
-      "eggGroups": [],
+      "speciesGroup": "海盔虫（本来的样子）",
+      "eggGroups": [
+        "海洋组",
+        "巨灵组"
+      ],
       "hp": 94,
       "patk": 33,
       "matk": 80,
@@ -13405,7 +13426,10 @@
       ],
       "breedingLine": "海盔虫（本来的样子）",
       "speciesGroup": "海盔虫（本来的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "巨灵组"
+      ],
       "hp": 118,
       "patk": 41,
       "matk": 99,
@@ -13498,8 +13522,11 @@
         "千棘盔（本来的样子）"
       ],
       "breedingLine": "海盔虫（本来的样子）",
-      "speciesGroup": "千棘盔（磨损的样子）",
-      "eggGroups": [],
+      "speciesGroup": "海盔虫（本来的样子）",
+      "eggGroups": [
+        "海洋组",
+        "巨灵组"
+      ],
       "hp": 117,
       "patk": 41,
       "matk": 100,
@@ -13592,8 +13619,11 @@
         "千棘盔（本来的样子）"
       ],
       "breedingLine": "海盔虫（本来的样子）",
-      "speciesGroup": "千棘海针",
-      "eggGroups": [],
+      "speciesGroup": "海盔虫（本来的样子）",
+      "eggGroups": [
+        "海洋组",
+        "巨灵组"
+      ],
       "hp": 118,
       "patk": 32,
       "matk": 85,
@@ -13682,7 +13712,9 @@
       ],
       "breedingLine": "菊花梨",
       "speciesGroup": "菊花梨",
-      "eggGroups": [],
+      "eggGroups": [
+        "植物组"
+      ],
       "hp": 106,
       "patk": 49,
       "matk": 116,
@@ -14169,7 +14201,10 @@
       ],
       "breedingLine": "一窝蜂",
       "speciesGroup": "一窝蜂",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "天空组"
+      ],
       "hp": 87,
       "patk": 32,
       "matk": 29,
@@ -14268,7 +14303,10 @@
       ],
       "breedingLine": "一窝蜂",
       "speciesGroup": "一窝蜂",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "天空组"
+      ],
       "hp": 116,
       "patk": 43,
       "matk": 39,
@@ -14367,7 +14405,10 @@
       ],
       "breedingLine": "一窝蜂",
       "speciesGroup": "一窝蜂",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "天空组"
+      ],
       "hp": 145,
       "patk": 54,
       "matk": 49,
@@ -14465,8 +14506,11 @@
         "花魁蜂后"
       ],
       "breedingLine": "一窝蜂",
-      "speciesGroup": "女王蜂",
-      "eggGroups": [],
+      "speciesGroup": "一窝蜂",
+      "eggGroups": [
+        "昆虫组",
+        "天空组"
+      ],
       "hp": 145,
       "patk": 50,
       "matk": 45,
@@ -14561,7 +14605,10 @@
       ],
       "breedingLine": "小夜",
       "speciesGroup": "小夜",
-      "eggGroups": [],
+      "eggGroups": [
+        "拟人组",
+        "妖精组"
+      ],
       "hp": 60,
       "patk": 69,
       "matk": 63,
@@ -14657,7 +14704,10 @@
       ],
       "breedingLine": "小夜",
       "speciesGroup": "小夜",
-      "eggGroups": [],
+      "eggGroups": [
+        "拟人组",
+        "妖精组"
+      ],
       "hp": 80,
       "patk": 92,
       "matk": 84,
@@ -14754,7 +14804,10 @@
       ],
       "breedingLine": "小夜",
       "speciesGroup": "小夜",
-      "eggGroups": [],
+      "eggGroups": [
+        "拟人组",
+        "妖精组"
+      ],
       "hp": 100,
       "patk": 115,
       "matk": 105,
@@ -14840,7 +14893,10 @@
       ],
       "breedingLine": "乖乖鹄",
       "speciesGroup": "乖乖鹄",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "两栖组"
+      ],
       "hp": 75,
       "patk": 57,
       "matk": 52,
@@ -14927,7 +14983,10 @@
       ],
       "breedingLine": "乖乖鹄",
       "speciesGroup": "乖乖鹄",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "两栖组"
+      ],
       "hp": 100,
       "patk": 76,
       "matk": 69,
@@ -15026,7 +15085,10 @@
       ],
       "breedingLine": "乖乖鹄",
       "speciesGroup": "乖乖鹄",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "两栖组"
+      ],
       "hp": 125,
       "patk": 95,
       "matk": 86,
@@ -15126,7 +15188,10 @@
       ],
       "breedingLine": "乖乖鹄",
       "speciesGroup": "乖乖鹄",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "两栖组"
+      ],
       "hp": 132,
       "patk": 93,
       "matk": 87,
@@ -15223,7 +15288,10 @@
       ],
       "breedingLine": "锤头鹳",
       "speciesGroup": "锤头鹳",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "两栖组"
+      ],
       "hp": 111,
       "patk": 67,
       "matk": 65,
@@ -15316,7 +15384,10 @@
       ],
       "breedingLine": "绿草精灵",
       "speciesGroup": "绿草精灵",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "拟人组"
+      ],
       "hp": 79,
       "patk": 35,
       "matk": 89,
@@ -15410,7 +15481,10 @@
       ],
       "breedingLine": "绿草精灵",
       "speciesGroup": "绿草精灵",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "拟人组"
+      ],
       "hp": 99,
       "patk": 43,
       "matk": 112,
@@ -15504,7 +15578,9 @@
       ],
       "breedingLine": "记忆石",
       "speciesGroup": "记忆石",
-      "eggGroups": [],
+      "eggGroups": [
+        "大地组"
+      ],
       "hp": 112,
       "patk": 108,
       "matk": 97,
@@ -15600,7 +15676,9 @@
       ],
       "breedingLine": "咔咔羽毛",
       "speciesGroup": "咔咔羽毛",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组"
+      ],
       "hp": 58,
       "patk": 68,
       "matk": 66,
@@ -15697,7 +15775,9 @@
       ],
       "breedingLine": "咔咔羽毛",
       "speciesGroup": "咔咔羽毛",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组"
+      ],
       "hp": 78,
       "patk": 91,
       "matk": 88,
@@ -15794,7 +15874,9 @@
       ],
       "breedingLine": "咔咔羽毛",
       "speciesGroup": "咔咔羽毛",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组"
+      ],
       "hp": 97,
       "patk": 114,
       "matk": 110,
@@ -15891,7 +15973,10 @@
       ],
       "breedingLine": "小草虫",
       "speciesGroup": "小草虫",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "拟人组"
+      ],
       "hp": 73,
       "patk": 40,
       "matk": 43,
@@ -15988,7 +16073,10 @@
       ],
       "breedingLine": "小草虫",
       "speciesGroup": "小草虫",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "拟人组"
+      ],
       "hp": 97,
       "patk": 53,
       "matk": 57,
@@ -16086,7 +16174,10 @@
       ],
       "breedingLine": "小草虫",
       "speciesGroup": "小草虫",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "拟人组"
+      ],
       "hp": 122,
       "patk": 67,
       "matk": 72,
@@ -16179,7 +16270,10 @@
       ],
       "breedingLine": "绿翼鸟",
       "speciesGroup": "绿翼鸟",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "妖精组"
+      ],
       "hp": 52,
       "patk": 68,
       "matk": 20,
@@ -16273,7 +16367,10 @@
       ],
       "breedingLine": "绿翼鸟",
       "speciesGroup": "绿翼鸟",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "妖精组"
+      ],
       "hp": 70,
       "patk": 91,
       "matk": 27,
@@ -16367,7 +16464,10 @@
       ],
       "breedingLine": "绿翼鸟",
       "speciesGroup": "绿翼鸟",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "妖精组"
+      ],
       "hp": 87,
       "patk": 113,
       "matk": 34,
@@ -16463,7 +16563,10 @@
       ],
       "breedingLine": "阿米亚特",
       "speciesGroup": "阿米亚特",
-      "eggGroups": [],
+      "eggGroups": [
+        "大地组",
+        "巨灵组"
+      ],
       "hp": 64,
       "patk": 95,
       "matk": 47,
@@ -16559,7 +16662,10 @@
       ],
       "breedingLine": "阿米亚特",
       "speciesGroup": "阿米亚特",
-      "eggGroups": [],
+      "eggGroups": [
+        "大地组",
+        "巨灵组"
+      ],
       "hp": 86,
       "patk": 127,
       "matk": 62,
@@ -16656,7 +16762,10 @@
       ],
       "breedingLine": "阿米亚特",
       "speciesGroup": "阿米亚特",
-      "eggGroups": [],
+      "eggGroups": [
+        "大地组",
+        "巨灵组"
+      ],
       "hp": 107,
       "patk": 159,
       "matk": 78,
@@ -16748,7 +16857,10 @@
       ],
       "breedingLine": "风铃鲨",
       "speciesGroup": "风铃鲨",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "天空组"
+      ],
       "hp": 54,
       "patk": 46,
       "matk": 46,
@@ -16841,7 +16953,10 @@
       ],
       "breedingLine": "风铃鲨",
       "speciesGroup": "风铃鲨",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "天空组"
+      ],
       "hp": 72,
       "patk": 61,
       "matk": 61,
@@ -16934,7 +17049,10 @@
       ],
       "breedingLine": "风铃鲨",
       "speciesGroup": "风铃鲨",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "天空组"
+      ],
       "hp": 90,
       "patk": 77,
       "matk": 77,
@@ -17026,8 +17144,11 @@
         "彩蝶鲨"
       ],
       "breedingLine": "风铃鲨",
-      "speciesGroup": "神谕鲨",
-      "eggGroups": [],
+      "speciesGroup": "风铃鲨",
+      "eggGroups": [
+        "海洋组",
+        "天空组"
+      ],
       "hp": 90,
       "patk": 77,
       "matk": 77,
@@ -17121,7 +17242,10 @@
       ],
       "breedingLine": "石石",
       "speciesGroup": "石石",
-      "eggGroups": [],
+      "eggGroups": [
+        "大地组",
+        "魔力组"
+      ],
       "hp": 76,
       "patk": 79,
       "matk": 79,
@@ -17218,7 +17342,10 @@
       ],
       "breedingLine": "石石",
       "speciesGroup": "石石",
-      "eggGroups": [],
+      "eggGroups": [
+        "大地组",
+        "魔力组"
+      ],
       "hp": 95,
       "patk": 99,
       "matk": 99,
@@ -17316,7 +17443,10 @@
       ],
       "breedingLine": "仪使者",
       "speciesGroup": "仪使者",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "大地组"
+      ],
       "hp": 64,
       "patk": 54,
       "matk": 57,
@@ -17414,7 +17544,10 @@
       ],
       "breedingLine": "仪使者",
       "speciesGroup": "仪使者",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "大地组"
+      ],
       "hp": 85,
       "patk": 72,
       "matk": 76,
@@ -17513,7 +17646,10 @@
       ],
       "breedingLine": "仪使者",
       "speciesGroup": "仪使者",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "大地组"
+      ],
       "hp": 106,
       "patk": 90,
       "matk": 95,
@@ -17611,8 +17747,11 @@
         "仪式巨像"
       ],
       "breedingLine": "仪使者",
-      "speciesGroup": "祭礼巨像",
-      "eggGroups": [],
+      "speciesGroup": "仪使者",
+      "eggGroups": [
+        "妖精组",
+        "大地组"
+      ],
       "hp": 106,
       "patk": 105,
       "matk": 111,
@@ -17999,7 +18138,10 @@
       ],
       "breedingLine": "旋叶虫（金黄的样子）",
       "speciesGroup": "旋叶虫（金黄的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "植物组"
+      ],
       "hp": 56,
       "patk": 15,
       "matk": 65,
@@ -18089,8 +18231,11 @@
         "风滚暮虫（金黄的样子）"
       ],
       "breedingLine": "旋叶虫（金黄的样子）",
-      "speciesGroup": "旋叶虫（枯叶的样子）",
-      "eggGroups": [],
+      "speciesGroup": "旋叶虫（金黄的样子）",
+      "eggGroups": [
+        "昆虫组",
+        "植物组"
+      ],
       "hp": 57,
       "patk": 15,
       "matk": 67,
@@ -18182,7 +18327,10 @@
       ],
       "breedingLine": "旋叶虫（金黄的样子）",
       "speciesGroup": "旋叶虫（金黄的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "植物组"
+      ],
       "hp": 74,
       "patk": 19,
       "matk": 87,
@@ -18273,8 +18421,11 @@
         "风滚暮虫（金黄的样子）"
       ],
       "breedingLine": "旋叶虫（金黄的样子）",
-      "speciesGroup": "蓬叶虫（枯叶的样子）",
-      "eggGroups": [],
+      "speciesGroup": "旋叶虫（金黄的样子）",
+      "eggGroups": [
+        "昆虫组",
+        "植物组"
+      ],
       "hp": 76,
       "patk": 20,
       "matk": 89,
@@ -18366,7 +18517,10 @@
       ],
       "breedingLine": "旋叶虫（金黄的样子）",
       "speciesGroup": "旋叶虫（金黄的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "植物组"
+      ],
       "hp": 93,
       "patk": 24,
       "matk": 109,
@@ -18457,8 +18611,11 @@
         "风滚暮虫（金黄的样子）"
       ],
       "breedingLine": "旋叶虫（金黄的样子）",
-      "speciesGroup": "风滚暮虫（枯叶的样子）",
-      "eggGroups": [],
+      "speciesGroup": "旋叶虫（金黄的样子）",
+      "eggGroups": [
+        "昆虫组",
+        "植物组"
+      ],
       "hp": 95,
       "patk": 25,
       "matk": 111,
@@ -19045,7 +19202,9 @@
       ],
       "breedingLine": "多多",
       "speciesGroup": "多多",
-      "eggGroups": [],
+      "eggGroups": [
+        "拟人组"
+      ],
       "hp": 47,
       "patk": 53,
       "matk": 53,
@@ -19143,7 +19302,9 @@
       ],
       "breedingLine": "多多",
       "speciesGroup": "多多",
-      "eggGroups": [],
+      "eggGroups": [
+        "拟人组"
+      ],
       "hp": 63,
       "patk": 70,
       "matk": 70,
@@ -19243,7 +19404,9 @@
       ],
       "breedingLine": "多多",
       "speciesGroup": "多多",
-      "eggGroups": [],
+      "eggGroups": [
+        "拟人组"
+      ],
       "hp": 79,
       "patk": 88,
       "matk": 88,
@@ -19339,7 +19502,9 @@
       ],
       "breedingLine": "哭哭菇",
       "speciesGroup": "哭哭菇",
-      "eggGroups": [],
+      "eggGroups": [
+        "植物组"
+      ],
       "hp": 74,
       "patk": 38,
       "matk": 41,
@@ -19435,7 +19600,9 @@
       ],
       "breedingLine": "哭哭菇",
       "speciesGroup": "哭哭菇",
-      "eggGroups": [],
+      "eggGroups": [
+        "植物组"
+      ],
       "hp": 99,
       "patk": 50,
       "matk": 55,
@@ -19531,7 +19698,9 @@
       ],
       "breedingLine": "哭哭菇",
       "speciesGroup": "哭哭菇",
-      "eggGroups": [],
+      "eggGroups": [
+        "植物组"
+      ],
       "hp": 124,
       "patk": 63,
       "matk": 69,
@@ -19815,7 +19984,9 @@
       ],
       "breedingLine": "小电企鹅",
       "speciesGroup": "小电企鹅",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组"
+      ],
       "hp": 75,
       "patk": 45,
       "matk": 101,
@@ -19909,7 +20080,9 @@
       ],
       "breedingLine": "小电企鹅",
       "speciesGroup": "小电企鹅",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组"
+      ],
       "hp": 94,
       "patk": 56,
       "matk": 126,
@@ -20003,7 +20176,10 @@
       ],
       "breedingLine": "雪豆丁",
       "speciesGroup": "雪豆丁",
-      "eggGroups": [],
+      "eggGroups": [
+        "拟人组",
+        "巨灵组"
+      ],
       "hp": 97,
       "patk": 104,
       "matk": 47,
@@ -20098,7 +20274,10 @@
       ],
       "breedingLine": "雪豆丁",
       "speciesGroup": "雪豆丁",
-      "eggGroups": [],
+      "eggGroups": [
+        "拟人组",
+        "巨灵组"
+      ],
       "hp": 130,
       "patk": 139,
       "matk": 63,
@@ -20193,7 +20372,10 @@
       ],
       "breedingLine": "雪豆丁",
       "speciesGroup": "雪豆丁",
-      "eggGroups": [],
+      "eggGroups": [
+        "拟人组",
+        "巨灵组"
+      ],
       "hp": 162,
       "patk": 174,
       "matk": 79,
@@ -20478,7 +20660,9 @@
       ],
       "breedingLine": "雪娃娃",
       "speciesGroup": "雪娃娃",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 56,
       "patk": 67,
       "matk": 67,
@@ -20576,7 +20760,9 @@
       ],
       "breedingLine": "雪娃娃",
       "speciesGroup": "雪娃娃",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 75,
       "patk": 90,
       "matk": 90,
@@ -20675,7 +20861,9 @@
       ],
       "breedingLine": "雪娃娃",
       "speciesGroup": "雪娃娃",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 94,
       "patk": 112,
       "matk": 112,
@@ -20773,7 +20961,10 @@
       ],
       "breedingLine": "大耳帽兜",
       "speciesGroup": "大耳帽兜",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "拟人组"
+      ],
       "hp": 78,
       "patk": 62,
       "matk": 59,
@@ -20871,7 +21062,10 @@
       ],
       "breedingLine": "大耳帽兜",
       "speciesGroup": "大耳帽兜",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "拟人组"
+      ],
       "hp": 104,
       "patk": 83,
       "matk": 78,
@@ -20971,7 +21165,10 @@
       ],
       "breedingLine": "大耳帽兜",
       "speciesGroup": "大耳帽兜",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "拟人组"
+      ],
       "hp": 130,
       "patk": 103,
       "matk": 98,
@@ -21070,8 +21267,11 @@
         "雪影娃娃"
       ],
       "breedingLine": "大耳帽兜",
-      "speciesGroup": "雪影冰灵",
-      "eggGroups": [],
+      "speciesGroup": "大耳帽兜",
+      "eggGroups": [
+        "妖精组",
+        "拟人组"
+      ],
       "hp": 130,
       "patk": 120,
       "matk": 114,
@@ -21166,7 +21366,9 @@
       ],
       "breedingLine": "权杖-Ⅱ",
       "speciesGroup": "权杖-Ⅱ",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组"
+      ],
       "hp": 82,
       "patk": 84,
       "matk": 78,
@@ -21263,7 +21465,9 @@
       ],
       "breedingLine": "权杖-Ⅱ",
       "speciesGroup": "权杖-Ⅱ",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组"
+      ],
       "hp": 103,
       "patk": 105,
       "matk": 97,
@@ -22553,7 +22757,10 @@
       ],
       "breedingLine": "水滴蛇",
       "speciesGroup": "水滴蛇",
-      "eggGroups": [],
+      "eggGroups": [
+        "两栖组",
+        "妖精组"
+      ],
       "hp": 63,
       "patk": 66,
       "matk": 62,
@@ -22649,7 +22856,10 @@
       ],
       "breedingLine": "水滴蛇",
       "speciesGroup": "水滴蛇",
-      "eggGroups": [],
+      "eggGroups": [
+        "两栖组",
+        "妖精组"
+      ],
       "hp": 84,
       "patk": 88,
       "matk": 83,
@@ -22748,7 +22958,10 @@
       ],
       "breedingLine": "水滴蛇",
       "speciesGroup": "水滴蛇",
-      "eggGroups": [],
+      "eggGroups": [
+        "两栖组",
+        "妖精组"
+      ],
       "hp": 105,
       "patk": 110,
       "matk": 104,
@@ -22844,7 +23057,9 @@
       ],
       "breedingLine": "公平鸽",
       "speciesGroup": "公平鸽",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组"
+      ],
       "hp": 113,
       "patk": 93,
       "matk": 93,
@@ -22941,7 +23156,8 @@
       "breedingLine": "小怂猫",
       "speciesGroup": "小怂猫",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "hp": 74,
       "patk": 106,
@@ -22978,7 +23194,8 @@
       "breedingLine": "小怂猫",
       "speciesGroup": "小怂猫",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "hp": 0,
       "patk": 0,
@@ -23077,7 +23294,8 @@
       "breedingLine": "小怂猫",
       "speciesGroup": "小怂猫",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "hp": 92,
       "patk": 132,
@@ -23114,7 +23332,8 @@
       "breedingLine": "小怂猫",
       "speciesGroup": "小怂猫",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "hp": 0,
       "patk": 0,
@@ -23207,7 +23426,10 @@
       ],
       "breedingLine": "小狮鹫（崖间地的样子）",
       "speciesGroup": "小狮鹫（崖间地的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "动物组",
+        "天空组"
+      ],
       "hp": 61,
       "patk": 69,
       "matk": 39,
@@ -23298,8 +23520,11 @@
         "皇家狮鹫（崖间地的样子）"
       ],
       "breedingLine": "小狮鹫（崖间地的样子）",
-      "speciesGroup": "小狮鹫（高山地的样子）",
-      "eggGroups": [],
+      "speciesGroup": "小狮鹫（崖间地的样子）",
+      "eggGroups": [
+        "动物组",
+        "天空组"
+      ],
       "hp": 62,
       "patk": 66,
       "matk": 32,
@@ -23392,7 +23617,10 @@
       ],
       "breedingLine": "小狮鹫（崖间地的样子）",
       "speciesGroup": "小狮鹫（崖间地的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "动物组",
+        "天空组"
+      ],
       "hp": 82,
       "patk": 92,
       "matk": 51,
@@ -23484,8 +23712,11 @@
         "皇家狮鹫（崖间地的样子）"
       ],
       "breedingLine": "小狮鹫（崖间地的样子）",
-      "speciesGroup": "神圣狮鹫（高山地的样子）",
-      "eggGroups": [],
+      "speciesGroup": "小狮鹫（崖间地的样子）",
+      "eggGroups": [
+        "动物组",
+        "天空组"
+      ],
       "hp": 83,
       "patk": 88,
       "matk": 42,
@@ -23578,7 +23809,10 @@
       ],
       "breedingLine": "小狮鹫（崖间地的样子）",
       "speciesGroup": "小狮鹫（崖间地的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "动物组",
+        "天空组"
+      ],
       "hp": 102,
       "patk": 116,
       "matk": 64,
@@ -23670,8 +23904,11 @@
         "皇家狮鹫（崖间地的样子）"
       ],
       "breedingLine": "小狮鹫（崖间地的样子）",
-      "speciesGroup": "皇家狮鹫（高山地的样子）",
-      "eggGroups": [],
+      "speciesGroup": "小狮鹫（崖间地的样子）",
+      "eggGroups": [
+        "动物组",
+        "天空组"
+      ],
       "hp": 103,
       "patk": 110,
       "matk": 53,
@@ -23768,7 +24005,9 @@
       ],
       "breedingLine": "圆眼蜘蛛",
       "speciesGroup": "圆眼蜘蛛",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组"
+      ],
       "hp": 55,
       "patk": 37,
       "matk": 37,
@@ -23867,7 +24106,9 @@
       ],
       "breedingLine": "圆眼蜘蛛",
       "speciesGroup": "圆眼蜘蛛",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组"
+      ],
       "hp": 74,
       "patk": 49,
       "matk": 49,
@@ -23966,7 +24207,9 @@
       ],
       "breedingLine": "圆眼蜘蛛",
       "speciesGroup": "圆眼蜘蛛",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组"
+      ],
       "hp": 92,
       "patk": 61,
       "matk": 61,
@@ -24062,7 +24305,10 @@
       ],
       "breedingLine": "波波螺",
       "speciesGroup": "波波螺",
-      "eggGroups": [],
+      "eggGroups": [
+        "两栖组",
+        "大地组"
+      ],
       "hp": 67,
       "patk": 59,
       "matk": 59,
@@ -24157,8 +24403,11 @@
         "嗜波螺"
       ],
       "breedingLine": "波波螺",
-      "speciesGroup": "波波螺（被污染的样子）",
-      "eggGroups": [],
+      "speciesGroup": "波波螺",
+      "eggGroups": [
+        "两栖组",
+        "大地组"
+      ],
       "hp": 64,
       "patk": 57,
       "matk": 57,
@@ -24254,7 +24503,10 @@
       ],
       "breedingLine": "波波螺",
       "speciesGroup": "波波螺",
-      "eggGroups": [],
+      "eggGroups": [
+        "两栖组",
+        "大地组"
+      ],
       "hp": 89,
       "patk": 78,
       "matk": 78,
@@ -24349,8 +24601,11 @@
         "嗜波螺"
       ],
       "breedingLine": "波波螺",
-      "speciesGroup": "消波螺（被污染的样子）",
-      "eggGroups": [],
+      "speciesGroup": "波波螺",
+      "eggGroups": [
+        "两栖组",
+        "大地组"
+      ],
       "hp": 85,
       "patk": 76,
       "matk": 76,
@@ -24448,7 +24703,10 @@
       ],
       "breedingLine": "波波螺",
       "speciesGroup": "波波螺",
-      "eggGroups": [],
+      "eggGroups": [
+        "两栖组",
+        "大地组"
+      ],
       "hp": 112,
       "patk": 98,
       "matk": 98,
@@ -24545,8 +24803,11 @@
         "嗜波螺"
       ],
       "breedingLine": "波波螺",
-      "speciesGroup": "嗜波螺（被污染的样子）",
-      "eggGroups": [],
+      "speciesGroup": "波波螺",
+      "eggGroups": [
+        "两栖组",
+        "大地组"
+      ],
       "hp": 107,
       "patk": 95,
       "matk": 95,
@@ -24644,7 +24905,9 @@
       ],
       "breedingLine": "菇菇丁",
       "speciesGroup": "菇菇丁",
-      "eggGroups": [],
+      "eggGroups": [
+        "植物组"
+      ],
       "hp": 89,
       "patk": 61,
       "matk": 57,
@@ -24743,7 +25006,9 @@
       ],
       "breedingLine": "菇菇丁",
       "speciesGroup": "菇菇丁",
-      "eggGroups": [],
+      "eggGroups": [
+        "植物组"
+      ],
       "hp": 119,
       "patk": 81,
       "matk": 76,
@@ -24843,7 +25108,9 @@
       ],
       "breedingLine": "菇菇丁",
       "speciesGroup": "菇菇丁",
-      "eggGroups": [],
+      "eggGroups": [
+        "植物组"
+      ],
       "hp": 149,
       "patk": 102,
       "matk": 95,
@@ -24940,7 +25207,9 @@
       ],
       "breedingLine": "斑斑",
       "speciesGroup": "斑斑",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组"
+      ],
       "hp": 71,
       "patk": 90,
       "matk": 90,
@@ -25037,7 +25306,9 @@
       ],
       "breedingLine": "斑斑",
       "speciesGroup": "斑斑",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组"
+      ],
       "hp": 89,
       "patk": 112,
       "matk": 112,
@@ -25129,7 +25400,10 @@
       ],
       "breedingLine": "草头鸭",
       "speciesGroup": "草头鸭",
-      "eggGroups": [],
+      "eggGroups": [
+        "两栖组",
+        "天空组"
+      ],
       "hp": 92,
       "patk": 79,
       "matk": 24,
@@ -25224,7 +25498,10 @@
       ],
       "breedingLine": "草头鸭",
       "speciesGroup": "草头鸭",
-      "eggGroups": [],
+      "eggGroups": [
+        "两栖组",
+        "天空组"
+      ],
       "hp": 116,
       "patk": 98,
       "matk": 29,
@@ -25322,7 +25599,8 @@
       "breedingLine": "海豹战士",
       "speciesGroup": "海豹战士",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "两栖组"
       ],
       "hp": 72,
       "patk": 91,
@@ -25422,7 +25700,8 @@
       "breedingLine": "海豹战士",
       "speciesGroup": "海豹战士",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "两栖组"
       ],
       "hp": 90,
       "patk": 113,
@@ -25512,7 +25791,10 @@
       ],
       "breedingLine": "号儿鱼",
       "speciesGroup": "号儿鱼",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "妖精组"
+      ],
       "hp": 109,
       "patk": 27,
       "matk": 76,
@@ -25603,7 +25885,10 @@
       ],
       "breedingLine": "号儿鱼",
       "speciesGroup": "号儿鱼",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "妖精组"
+      ],
       "hp": 136,
       "patk": 34,
       "matk": 95,
@@ -25702,7 +25987,10 @@
       ],
       "breedingLine": "甜田螺",
       "speciesGroup": "甜田螺",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "软体组"
+      ],
       "hp": 68,
       "patk": 61,
       "matk": 64,
@@ -25801,7 +26089,10 @@
       ],
       "breedingLine": "甜田螺",
       "speciesGroup": "甜田螺",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "软体组"
+      ],
       "hp": 91,
       "patk": 81,
       "matk": 86,
@@ -25902,7 +26193,10 @@
       ],
       "breedingLine": "甜田螺",
       "speciesGroup": "甜田螺",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "软体组"
+      ],
       "hp": 114,
       "patk": 102,
       "matk": 107,
@@ -25984,7 +26278,9 @@
       ],
       "breedingLine": "棋棋（白子）",
       "speciesGroup": "棋棋（白子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 72,
       "patk": 100,
       "matk": 36,
@@ -26065,8 +26361,10 @@
         "棋绮后（白子）"
       ],
       "breedingLine": "棋棋（白子）",
-      "speciesGroup": "棋棋（黑子）",
-      "eggGroups": [],
+      "speciesGroup": "棋棋（白子）",
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 66,
       "patk": 97,
       "matk": 35,
@@ -26166,7 +26464,9 @@
       ],
       "breedingLine": "棋棋（白子）",
       "speciesGroup": "棋棋（白子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 90,
       "patk": 126,
       "matk": 45,
@@ -26265,8 +26565,10 @@
         "棋骑士（白子）"
       ],
       "breedingLine": "棋棋（白子）",
-      "speciesGroup": "棋骑士（黑子）",
-      "eggGroups": [],
+      "speciesGroup": "棋棋（白子）",
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 83,
       "patk": 121,
       "matk": 43,
@@ -26366,7 +26668,9 @@
       ],
       "breedingLine": "棋棋（白子）",
       "speciesGroup": "棋棋（白子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 89,
       "patk": 94,
       "matk": 38,
@@ -26465,8 +26769,10 @@
         "棋齐垒（白子）"
       ],
       "breedingLine": "棋棋（白子）",
-      "speciesGroup": "棋齐垒（黑子）",
-      "eggGroups": [],
+      "speciesGroup": "棋棋（白子）",
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 89,
       "patk": 94,
       "matk": 38,
@@ -26570,7 +26876,9 @@
       ],
       "breedingLine": "棋棋（白子）",
       "speciesGroup": "棋棋（白子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 126,
       "patk": 87,
       "matk": 87,
@@ -26673,8 +26981,10 @@
         "棋祈督（白子）"
       ],
       "breedingLine": "棋棋（白子）",
-      "speciesGroup": "棋祈督（黑子）",
-      "eggGroups": [],
+      "speciesGroup": "棋棋（白子）",
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 126,
       "patk": 87,
       "matk": 87,
@@ -26777,7 +27087,9 @@
       ],
       "breedingLine": "棋棋（白子）",
       "speciesGroup": "棋棋（白子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 93,
       "patk": 84,
       "matk": 84,
@@ -26879,8 +27191,10 @@
         "棋绮后（白子）"
       ],
       "breedingLine": "棋棋（白子）",
-      "speciesGroup": "棋绮后（黑子）",
-      "eggGroups": [],
+      "speciesGroup": "棋棋（白子）",
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 93,
       "patk": 84,
       "matk": 84,
@@ -26981,8 +27295,10 @@
         "棋绮后（白子）"
       ],
       "breedingLine": "棋棋（白子）",
-      "speciesGroup": "棋契陛下",
-      "eggGroups": [],
+      "speciesGroup": "棋棋（白子）",
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 90,
       "patk": 200,
       "matk": 91,
@@ -27076,7 +27392,8 @@
       "breedingLine": "奔波鼠",
       "speciesGroup": "奔波鼠",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "hp": 72,
       "patk": 37,
@@ -27171,7 +27488,8 @@
       "breedingLine": "奔波鼠",
       "speciesGroup": "奔波鼠",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "hp": 90,
       "patk": 46,
@@ -27269,7 +27587,8 @@
       "breedingLine": "呆小路",
       "speciesGroup": "呆小路",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "hp": 52,
       "patk": 60,
@@ -27367,7 +27686,8 @@
       "breedingLine": "呆小路",
       "speciesGroup": "呆小路",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "hp": 69,
       "patk": 80,
@@ -27466,7 +27786,8 @@
       "breedingLine": "呆小路",
       "speciesGroup": "呆小路",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "拟人组"
       ],
       "hp": 86,
       "patk": 100,
@@ -27565,7 +27886,8 @@
       "breedingLine": "逗逗",
       "speciesGroup": "逗逗",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "巨灵组"
       ],
       "hp": 48,
       "patk": 70,
@@ -27666,7 +27988,8 @@
       "breedingLine": "逗逗",
       "speciesGroup": "逗逗",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "巨灵组"
       ],
       "hp": 64,
       "patk": 93,
@@ -27767,7 +28090,8 @@
       "breedingLine": "逗逗",
       "speciesGroup": "逗逗",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "巨灵组"
       ],
       "hp": 81,
       "patk": 117,
@@ -27868,7 +28192,8 @@
       "breedingLine": "逗逗",
       "speciesGroup": "逗逗",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "巨灵组"
       ],
       "hp": 81,
       "patk": 128,
@@ -27965,7 +28290,10 @@
       ],
       "breedingLine": "花怨鳗",
       "speciesGroup": "花怨鳗",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "两栖组"
+      ],
       "hp": 232,
       "patk": 73,
       "matk": 73,
@@ -28062,7 +28390,10 @@
       ],
       "breedingLine": "花怨鳗",
       "speciesGroup": "花怨鳗",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "两栖组"
+      ],
       "hp": 290,
       "patk": 91,
       "matk": 91,
@@ -28152,7 +28483,9 @@
       ],
       "breedingLine": "伊雷龙",
       "speciesGroup": "伊雷龙",
-      "eggGroups": [],
+      "eggGroups": [
+        "飞龙组"
+      ],
       "hp": 90,
       "patk": 73,
       "matk": 152,
@@ -28243,7 +28576,9 @@
       ],
       "breedingLine": "伊雷龙",
       "speciesGroup": "伊雷龙",
-      "eggGroups": [],
+      "eggGroups": [
+        "飞龙组"
+      ],
       "hp": 112,
       "patk": 91,
       "matk": 190,
@@ -28333,8 +28668,10 @@
         "伊兰亚龙"
       ],
       "breedingLine": "伊雷龙",
-      "speciesGroup": "伊兰龙",
-      "eggGroups": [],
+      "speciesGroup": "伊雷龙",
+      "eggGroups": [
+        "飞龙组"
+      ],
       "hp": 112,
       "patk": 91,
       "matk": 190,
@@ -28429,7 +28766,9 @@
       ],
       "breedingLine": "拉特",
       "speciesGroup": "拉特",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 67,
       "patk": 80,
       "matk": 80,
@@ -28525,7 +28864,9 @@
       ],
       "breedingLine": "拉特",
       "speciesGroup": "拉特",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 83,
       "patk": 100,
       "matk": 100,
@@ -28623,7 +28964,9 @@
       ],
       "breedingLine": "闪电环",
       "speciesGroup": "闪电环",
-      "eggGroups": [],
+      "eggGroups": [
+        "魔力组"
+      ],
       "hp": 64,
       "patk": 49,
       "matk": 49,
@@ -28721,7 +29064,9 @@
       ],
       "breedingLine": "闪电环",
       "speciesGroup": "闪电环",
-      "eggGroups": [],
+      "eggGroups": [
+        "魔力组"
+      ],
       "hp": 85,
       "patk": 65,
       "matk": 65,
@@ -28819,7 +29164,9 @@
       ],
       "breedingLine": "闪电环",
       "speciesGroup": "闪电环",
-      "eggGroups": [],
+      "eggGroups": [
+        "魔力组"
+      ],
       "hp": 106,
       "patk": 81,
       "matk": 81,
@@ -28918,7 +29265,10 @@
       ],
       "breedingLine": "小箱怪",
       "speciesGroup": "小箱怪",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组",
+        "妖精组"
+      ],
       "hp": 111,
       "patk": 103,
       "matk": 103,
@@ -29017,7 +29367,10 @@
       ],
       "breedingLine": "小箱怪",
       "speciesGroup": "小箱怪",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组",
+        "妖精组"
+      ],
       "hp": 138,
       "patk": 129,
       "matk": 129,
@@ -29117,7 +29470,8 @@
       "breedingLine": "古钟蛇（本来的样子）",
       "speciesGroup": "古钟蛇（本来的样子）",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "两栖组"
       ],
       "hp": 85,
       "patk": 63,
@@ -29155,7 +29509,8 @@
       "breedingLine": "古钟蛇（本来的样子）",
       "speciesGroup": "古钟蛇（本来的样子）",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "两栖组"
       ],
       "hp": 0,
       "patk": 0,
@@ -29256,7 +29611,8 @@
       "breedingLine": "古钟蛇（本来的样子）",
       "speciesGroup": "古钟蛇（本来的样子）",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "两栖组"
       ],
       "hp": 106,
       "patk": 79,
@@ -29294,7 +29650,8 @@
       "breedingLine": "古钟蛇（本来的样子）",
       "speciesGroup": "古钟蛇（本来的样子）",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "两栖组"
       ],
       "hp": 0,
       "patk": 0,
@@ -29386,7 +29743,10 @@
       ],
       "breedingLine": "矮脚爬爬",
       "speciesGroup": "矮脚爬爬",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "巨灵组"
+      ],
       "hp": 80,
       "patk": 117,
       "matk": 110,
@@ -29479,7 +29839,10 @@
       ],
       "breedingLine": "矮脚爬爬",
       "speciesGroup": "矮脚爬爬",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "巨灵组"
+      ],
       "hp": 100,
       "patk": 147,
       "matk": 137,
@@ -29572,7 +29935,9 @@
       ],
       "breedingLine": "火尾瓦特",
       "speciesGroup": "火尾瓦特",
-      "eggGroups": [],
+      "eggGroups": [
+        "巨灵组"
+      ],
       "hp": 63,
       "patk": 70,
       "matk": 29,
@@ -29665,7 +30030,9 @@
       ],
       "breedingLine": "火尾瓦特",
       "speciesGroup": "火尾瓦特",
-      "eggGroups": [],
+      "eggGroups": [
+        "巨灵组"
+      ],
       "hp": 84,
       "patk": 94,
       "matk": 39,
@@ -29759,7 +30126,9 @@
       ],
       "breedingLine": "火尾瓦特",
       "speciesGroup": "火尾瓦特",
-      "eggGroups": [],
+      "eggGroups": [
+        "巨灵组"
+      ],
       "hp": 105,
       "patk": 117,
       "matk": 49,
@@ -29856,7 +30225,10 @@
       ],
       "breedingLine": "里拉鳐",
       "speciesGroup": "里拉鳐",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "妖精组"
+      ],
       "hp": 118,
       "patk": 82,
       "matk": 89,
@@ -29950,7 +30322,10 @@
       ],
       "breedingLine": "海枝枝（碧蓝珊瑚）",
       "speciesGroup": "海枝枝（碧蓝珊瑚）",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "植物组"
+      ],
       "hp": 78,
       "patk": 58,
       "matk": 148,
@@ -30044,8 +30419,11 @@
         "海枝枝（碧蓝珊瑚）"
       ],
       "breedingLine": "海枝枝（碧蓝珊瑚）",
-      "speciesGroup": "海枝枝（杏黄百合）",
-      "eggGroups": [],
+      "speciesGroup": "海枝枝（碧蓝珊瑚）",
+      "eggGroups": [
+        "海洋组",
+        "植物组"
+      ],
       "hp": 91,
       "patk": 48,
       "matk": 125,
@@ -30139,8 +30517,11 @@
         "海枝枝（碧蓝珊瑚）"
       ],
       "breedingLine": "海枝枝（碧蓝珊瑚）",
-      "speciesGroup": "海枝枝（洋红沙丁）",
-      "eggGroups": [],
+      "speciesGroup": "海枝枝（碧蓝珊瑚）",
+      "eggGroups": [
+        "海洋组",
+        "植物组"
+      ],
       "hp": 97,
       "patk": 62,
       "matk": 136,
@@ -30233,8 +30614,11 @@
         "海枝枝（碧蓝珊瑚）"
       ],
       "breedingLine": "海枝枝（碧蓝珊瑚）",
-      "speciesGroup": "海枝枝（翠绿纶布）",
-      "eggGroups": [],
+      "speciesGroup": "海枝枝（碧蓝珊瑚）",
+      "eggGroups": [
+        "海洋组",
+        "植物组"
+      ],
       "hp": 90,
       "patk": 53,
       "matk": 135,
@@ -30327,7 +30711,10 @@
       ],
       "breedingLine": "多西",
       "speciesGroup": "多西",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组",
+        "巨灵组"
+      ],
       "hp": 64,
       "patk": 73,
       "matk": 26,
@@ -30421,7 +30808,10 @@
       ],
       "breedingLine": "多西",
       "speciesGroup": "多西",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组",
+        "巨灵组"
+      ],
       "hp": 85,
       "patk": 98,
       "matk": 34,
@@ -30516,7 +30906,10 @@
       ],
       "breedingLine": "多西",
       "speciesGroup": "多西",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组",
+        "巨灵组"
+      ],
       "hp": 106,
       "patk": 122,
       "matk": 43,
@@ -30608,7 +31001,10 @@
       ],
       "breedingLine": "小翼龙",
       "speciesGroup": "小翼龙",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "飞龙组"
+      ],
       "hp": 66,
       "patk": 91,
       "matk": 24,
@@ -30700,7 +31096,10 @@
       ],
       "breedingLine": "小翼龙",
       "speciesGroup": "小翼龙",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "飞龙组"
+      ],
       "hp": 83,
       "patk": 114,
       "matk": 31,
@@ -31177,7 +31576,9 @@
       ],
       "breedingLine": "缇塔",
       "speciesGroup": "缇塔",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组"
+      ],
       "hp": 73,
       "patk": 99,
       "matk": 38,
@@ -31270,7 +31671,9 @@
       ],
       "breedingLine": "缇塔",
       "speciesGroup": "缇塔",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组"
+      ],
       "hp": 92,
       "patk": 124,
       "matk": 48,
@@ -31368,7 +31771,9 @@
       ],
       "breedingLine": "小鹬",
       "speciesGroup": "小鹬",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组"
+      ],
       "hp": 56,
       "patk": 38,
       "matk": 38,
@@ -31467,7 +31872,9 @@
       ],
       "breedingLine": "小鹬",
       "speciesGroup": "小鹬",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组"
+      ],
       "hp": 75,
       "patk": 51,
       "matk": 51,
@@ -31566,7 +31973,9 @@
       ],
       "breedingLine": "小鹬",
       "speciesGroup": "小鹬",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组"
+      ],
       "hp": 94,
       "patk": 63,
       "matk": 63,
@@ -31662,7 +32071,10 @@
       ],
       "breedingLine": "脆筒甜甜",
       "speciesGroup": "脆筒甜甜",
-      "eggGroups": [],
+      "eggGroups": [
+        "软体组",
+        "魔力组"
+      ],
       "hp": 72,
       "patk": 67,
       "matk": 72,
@@ -31759,7 +32171,10 @@
       ],
       "breedingLine": "脆筒甜甜",
       "speciesGroup": "脆筒甜甜",
-      "eggGroups": [],
+      "eggGroups": [
+        "软体组",
+        "魔力组"
+      ],
       "hp": 96,
       "patk": 90,
       "matk": 95,
@@ -31855,8 +32270,11 @@
         "圣代甜甜"
       ],
       "breedingLine": "脆筒甜甜",
-      "speciesGroup": "香草甜甜（杨桃饰品）",
-      "eggGroups": [],
+      "speciesGroup": "脆筒甜甜",
+      "eggGroups": [
+        "软体组",
+        "魔力组"
+      ],
       "hp": 88,
       "patk": 92,
       "matk": 96,
@@ -31952,8 +32370,11 @@
         "圣代甜甜"
       ],
       "breedingLine": "脆筒甜甜",
-      "speciesGroup": "香草甜甜（蓝莓饰品）",
-      "eggGroups": [],
+      "speciesGroup": "脆筒甜甜",
+      "eggGroups": [
+        "软体组",
+        "魔力组"
+      ],
       "hp": 91,
       "patk": 94,
       "matk": 88,
@@ -32052,7 +32473,10 @@
       ],
       "breedingLine": "脆筒甜甜",
       "speciesGroup": "脆筒甜甜",
-      "eggGroups": [],
+      "eggGroups": [
+        "软体组",
+        "魔力组"
+      ],
       "hp": 119,
       "patk": 112,
       "matk": 119,
@@ -32149,8 +32573,11 @@
         "圣代甜甜"
       ],
       "breedingLine": "脆筒甜甜",
-      "speciesGroup": "圣代甜甜（樱桃草莓口味）",
-      "eggGroups": [],
+      "speciesGroup": "脆筒甜甜",
+      "eggGroups": [
+        "软体组",
+        "魔力组"
+      ],
       "hp": 107,
       "patk": 120,
       "matk": 110,
@@ -32248,8 +32675,11 @@
         "圣代甜甜"
       ],
       "breedingLine": "脆筒甜甜",
-      "speciesGroup": "圣代甜甜（樱桃抹茶口味）",
-      "eggGroups": [],
+      "speciesGroup": "脆筒甜甜",
+      "eggGroups": [
+        "软体组",
+        "魔力组"
+      ],
       "hp": 113,
       "patk": 112,
       "matk": 110,
@@ -32347,8 +32777,11 @@
         "圣代甜甜"
       ],
       "breedingLine": "脆筒甜甜",
-      "speciesGroup": "圣代甜甜（蓝莓巧克力口味）",
-      "eggGroups": [],
+      "speciesGroup": "脆筒甜甜",
+      "eggGroups": [
+        "软体组",
+        "魔力组"
+      ],
       "hp": 114,
       "patk": 117,
       "matk": 110,
@@ -32446,8 +32879,11 @@
         "圣代甜甜"
       ],
       "breedingLine": "脆筒甜甜",
-      "speciesGroup": "圣代甜甜（蓝莓草莓口味）",
-      "eggGroups": [],
+      "speciesGroup": "脆筒甜甜",
+      "eggGroups": [
+        "软体组",
+        "魔力组"
+      ],
       "hp": 113,
       "patk": 109,
       "matk": 100,
@@ -32545,8 +32981,11 @@
         "圣代甜甜"
       ],
       "breedingLine": "脆筒甜甜",
-      "speciesGroup": "圣代甜甜（蓝莓抹茶口味）",
-      "eggGroups": [],
+      "speciesGroup": "脆筒甜甜",
+      "eggGroups": [
+        "软体组",
+        "魔力组"
+      ],
       "hp": 121,
       "patk": 100,
       "matk": 101,
@@ -32644,8 +33083,11 @@
         "圣代甜甜"
       ],
       "breedingLine": "脆筒甜甜",
-      "speciesGroup": "圣代甜甜（杨桃巧克力口味）",
-      "eggGroups": [],
+      "speciesGroup": "脆筒甜甜",
+      "eggGroups": [
+        "软体组",
+        "魔力组"
+      ],
       "hp": 110,
       "patk": 116,
       "matk": 120,
@@ -32742,8 +33184,11 @@
         "圣代甜甜"
       ],
       "breedingLine": "脆筒甜甜",
-      "speciesGroup": "圣代甜甜（杨桃草莓口味）",
-      "eggGroups": [],
+      "speciesGroup": "脆筒甜甜",
+      "eggGroups": [
+        "软体组",
+        "魔力组"
+      ],
       "hp": 108,
       "patk": 110,
       "matk": 110,
@@ -32841,8 +33286,11 @@
         "圣代甜甜"
       ],
       "breedingLine": "脆筒甜甜",
-      "speciesGroup": "圣代甜甜（杨桃抹茶口味）",
-      "eggGroups": [],
+      "speciesGroup": "脆筒甜甜",
+      "eggGroups": [
+        "软体组",
+        "魔力组"
+      ],
       "hp": 110,
       "patk": 107,
       "matk": 110,
@@ -32940,7 +33388,9 @@
       ],
       "breedingLine": "刺轮砣（上弦的样子）",
       "speciesGroup": "刺轮砣（上弦的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组"
+      ],
       "hp": 100,
       "patk": 80,
       "matk": 78,
@@ -33037,8 +33487,10 @@
         "月亮砣（上弦的样子）"
       ],
       "breedingLine": "刺轮砣（上弦的样子）",
-      "speciesGroup": "刺轮砣（下弦的样子）",
-      "eggGroups": [],
+      "speciesGroup": "刺轮砣（上弦的样子）",
+      "eggGroups": [
+        "海洋组"
+      ],
       "hp": 100,
       "patk": 78,
       "matk": 80,
@@ -33138,7 +33590,9 @@
       ],
       "breedingLine": "刺轮砣（上弦的样子）",
       "speciesGroup": "刺轮砣（上弦的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组"
+      ],
       "hp": 125,
       "patk": 100,
       "matk": 98,
@@ -33237,8 +33691,10 @@
         "月亮砣（上弦的样子）"
       ],
       "breedingLine": "刺轮砣（上弦的样子）",
-      "speciesGroup": "月亮砣（下弦的样子）",
-      "eggGroups": [],
+      "speciesGroup": "刺轮砣（上弦的样子）",
+      "eggGroups": [
+        "海洋组"
+      ],
       "hp": 125,
       "patk": 98,
       "matk": 100,
@@ -33334,7 +33790,10 @@
       ],
       "breedingLine": "豆丁鱼",
       "speciesGroup": "豆丁鱼",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "飞龙组"
+      ],
       "hp": 45,
       "patk": 70,
       "matk": 74,
@@ -33432,7 +33891,10 @@
       ],
       "breedingLine": "豆丁鱼",
       "speciesGroup": "豆丁鱼",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "飞龙组"
+      ],
       "hp": 60,
       "patk": 93,
       "matk": 99,
@@ -33530,7 +33992,10 @@
       ],
       "breedingLine": "豆丁鱼",
       "speciesGroup": "豆丁鱼",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "飞龙组"
+      ],
       "hp": 75,
       "patk": 116,
       "matk": 123,
@@ -33629,7 +34094,9 @@
       ],
       "breedingLine": "胆小鳗鱼",
       "speciesGroup": "胆小鳗鱼",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组"
+      ],
       "hp": 68,
       "patk": 92,
       "matk": 92,
@@ -33728,7 +34195,9 @@
       ],
       "breedingLine": "胆小鳗鱼",
       "speciesGroup": "胆小鳗鱼",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组"
+      ],
       "hp": 85,
       "patk": 115,
       "matk": 115,
@@ -33819,7 +34288,10 @@
       ],
       "breedingLine": "翡翠水母",
       "speciesGroup": "翡翠水母",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "软体组"
+      ],
       "hp": 108,
       "patk": 30,
       "matk": 68,
@@ -33913,7 +34385,10 @@
       ],
       "breedingLine": "翡翠水母",
       "speciesGroup": "翡翠水母",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "软体组"
+      ],
       "hp": 134,
       "patk": 37,
       "matk": 85,
@@ -34008,7 +34483,10 @@
       ],
       "breedingLine": "裘洛",
       "speciesGroup": "裘洛",
-      "eggGroups": [],
+      "eggGroups": [
+        "动物组",
+        "妖精组"
+      ],
       "hp": 44,
       "patk": 56,
       "matk": 50,
@@ -34104,7 +34582,10 @@
       ],
       "breedingLine": "裘洛",
       "speciesGroup": "裘洛",
-      "eggGroups": [],
+      "eggGroups": [
+        "动物组",
+        "妖精组"
+      ],
       "hp": 59,
       "patk": 74,
       "matk": 67,
@@ -34200,7 +34681,10 @@
       ],
       "breedingLine": "裘洛",
       "speciesGroup": "裘洛",
-      "eggGroups": [],
+      "eggGroups": [
+        "动物组",
+        "妖精组"
+      ],
       "hp": 73,
       "patk": 93,
       "matk": 83,
@@ -34296,7 +34780,10 @@
       ],
       "breedingLine": "可爱猿",
       "speciesGroup": "可爱猿",
-      "eggGroups": [],
+      "eggGroups": [
+        "巨灵组",
+        "拟人组"
+      ],
       "hp": 100,
       "patk": 97,
       "matk": 43,
@@ -34393,7 +34880,10 @@
       ],
       "breedingLine": "可爱猿",
       "speciesGroup": "可爱猿",
-      "eggGroups": [],
+      "eggGroups": [
+        "巨灵组",
+        "拟人组"
+      ],
       "hp": 133,
       "patk": 130,
       "matk": 57,
@@ -34490,7 +34980,10 @@
       ],
       "breedingLine": "可爱猿",
       "speciesGroup": "可爱猿",
-      "eggGroups": [],
+      "eggGroups": [
+        "巨灵组",
+        "拟人组"
+      ],
       "hp": 167,
       "patk": 162,
       "matk": 72,
@@ -34582,7 +35075,10 @@
       ],
       "breedingLine": "布鲁斯",
       "speciesGroup": "布鲁斯",
-      "eggGroups": [],
+      "eggGroups": [
+        "软体组",
+        "海洋组"
+      ],
       "hp": 44,
       "patk": 60,
       "matk": 16,
@@ -34674,7 +35170,10 @@
       ],
       "breedingLine": "布鲁斯",
       "speciesGroup": "布鲁斯",
-      "eggGroups": [],
+      "eggGroups": [
+        "软体组",
+        "海洋组"
+      ],
       "hp": 58,
       "patk": 81,
       "matk": 22,
@@ -34767,7 +35266,10 @@
       ],
       "breedingLine": "布鲁斯",
       "speciesGroup": "布鲁斯",
-      "eggGroups": [],
+      "eggGroups": [
+        "软体组",
+        "海洋组"
+      ],
       "hp": 73,
       "patk": 101,
       "matk": 27,
@@ -34861,7 +35363,8 @@
       "breedingLine": "治愈兔",
       "speciesGroup": "治愈兔",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "妖精组"
       ],
       "hp": 67,
       "patk": 28,
@@ -34957,7 +35460,8 @@
       "breedingLine": "治愈兔",
       "speciesGroup": "治愈兔",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "妖精组"
       ],
       "hp": 90,
       "patk": 38,
@@ -35054,7 +35558,8 @@
       "breedingLine": "治愈兔",
       "speciesGroup": "治愈兔",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "妖精组"
       ],
       "hp": 112,
       "patk": 47,
@@ -35147,7 +35652,9 @@
       ],
       "breedingLine": "乌达（极昼的样子）",
       "speciesGroup": "乌达（极昼的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "巨灵组"
+      ],
       "hp": 80,
       "patk": 95,
       "matk": 49,
@@ -35239,8 +35746,10 @@
         "乌拉塔（极昼的样子）"
       ],
       "breedingLine": "乌达（极昼的样子）",
-      "speciesGroup": "乌达（极夜的样子）",
-      "eggGroups": [],
+      "speciesGroup": "乌达（极昼的样子）",
+      "eggGroups": [
+        "巨灵组"
+      ],
       "hp": 96,
       "patk": 95,
       "matk": 55,
@@ -35332,7 +35841,9 @@
       ],
       "breedingLine": "乌达（极昼的样子）",
       "speciesGroup": "乌达（极昼的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "巨灵组"
+      ],
       "hp": 107,
       "patk": 126,
       "matk": 66,
@@ -35425,8 +35936,10 @@
         "乌拉塔（极昼的样子）"
       ],
       "breedingLine": "乌达（极昼的样子）",
-      "speciesGroup": "迷你乌（极夜的样子）",
-      "eggGroups": [],
+      "speciesGroup": "乌达（极昼的样子）",
+      "eggGroups": [
+        "巨灵组"
+      ],
       "hp": 128,
       "patk": 126,
       "matk": 73,
@@ -35519,7 +36032,9 @@
       ],
       "breedingLine": "乌达（极昼的样子）",
       "speciesGroup": "乌达（极昼的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "巨灵组"
+      ],
       "hp": 134,
       "patk": 158,
       "matk": 82,
@@ -35612,8 +36127,10 @@
         "乌拉塔（极昼的样子）"
       ],
       "breedingLine": "乌达（极昼的样子）",
-      "speciesGroup": "乌拉塔（极夜的样子）",
-      "eggGroups": [],
+      "speciesGroup": "乌达（极昼的样子）",
+      "eggGroups": [
+        "巨灵组"
+      ],
       "hp": 160,
       "patk": 158,
       "matk": 91,
@@ -35704,7 +36221,10 @@
       ],
       "breedingLine": "螺旋帕帕",
       "speciesGroup": "螺旋帕帕",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组",
+        "天空组"
+      ],
       "hp": 88,
       "patk": 55,
       "matk": 8,
@@ -35797,7 +36317,10 @@
       ],
       "breedingLine": "螺旋帕帕",
       "speciesGroup": "螺旋帕帕",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组",
+        "天空组"
+      ],
       "hp": 110,
       "patk": 68,
       "matk": 10,
@@ -35888,7 +36411,10 @@
       ],
       "breedingLine": "机械方方",
       "speciesGroup": "机械方方",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组",
+        "拟人组"
+      ],
       "hp": 62,
       "patk": 81,
       "matk": 32,
@@ -35980,7 +36506,10 @@
       ],
       "breedingLine": "机械方方",
       "speciesGroup": "机械方方",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组",
+        "拟人组"
+      ],
       "hp": 82,
       "patk": 108,
       "matk": 43,
@@ -36073,7 +36602,10 @@
       ],
       "breedingLine": "机械方方",
       "speciesGroup": "机械方方",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组",
+        "拟人组"
+      ],
       "hp": 103,
       "patk": 135,
       "matk": 54,
@@ -36158,7 +36690,10 @@
       ],
       "breedingLine": "可立鸡",
       "speciesGroup": "可立鸡",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "拟人组"
+      ],
       "hp": 65,
       "patk": 79,
       "matk": 79,
@@ -36244,7 +36779,10 @@
       ],
       "breedingLine": "可立鸡",
       "speciesGroup": "可立鸡",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "拟人组"
+      ],
       "hp": 86,
       "patk": 106,
       "matk": 106,
@@ -36345,7 +36883,10 @@
       ],
       "breedingLine": "可立鸡",
       "speciesGroup": "可立鸡",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "拟人组"
+      ],
       "hp": 108,
       "patk": 132,
       "matk": 132,
@@ -36442,7 +36983,10 @@
       ],
       "breedingLine": "可立鸡",
       "speciesGroup": "可立鸡",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "拟人组"
+      ],
       "hp": 121,
       "patk": 144,
       "matk": 58,
@@ -36727,7 +37271,10 @@
       ],
       "breedingLine": "噼啪鸟",
       "speciesGroup": "噼啪鸟",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "巨灵组"
+      ],
       "hp": 78,
       "patk": 116,
       "matk": 109,
@@ -36820,7 +37367,10 @@
       ],
       "breedingLine": "深蓝鲸",
       "speciesGroup": "深蓝鲸",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "巨灵组"
+      ],
       "hp": 129,
       "patk": 40,
       "matk": 115,
@@ -36910,7 +37460,10 @@
       ],
       "breedingLine": "格兰种子",
       "speciesGroup": "格兰种子",
-      "eggGroups": [],
+      "eggGroups": [
+        "植物组",
+        "妖精组"
+      ],
       "hp": 65,
       "patk": 31,
       "matk": 74,
@@ -37001,7 +37554,10 @@
       ],
       "breedingLine": "格兰种子",
       "speciesGroup": "格兰种子",
-      "eggGroups": [],
+      "eggGroups": [
+        "植物组",
+        "妖精组"
+      ],
       "hp": 86,
       "patk": 42,
       "matk": 99,
@@ -37092,7 +37648,10 @@
       ],
       "breedingLine": "格兰种子",
       "speciesGroup": "格兰种子",
-      "eggGroups": [],
+      "eggGroups": [
+        "植物组",
+        "妖精组"
+      ],
       "hp": 108,
       "patk": 52,
       "matk": 124,
@@ -37185,7 +37744,9 @@
       ],
       "breedingLine": "地鼠（枯水期的样子）",
       "speciesGroup": "地鼠（枯水期的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "动物组"
+      ],
       "hp": 66,
       "patk": 71,
       "matk": 31,
@@ -37277,8 +37838,10 @@
         "遁地鼠（枯水期的样子）"
       ],
       "breedingLine": "地鼠（枯水期的样子）",
-      "speciesGroup": "地鼠（储水期的样子）",
-      "eggGroups": [],
+      "speciesGroup": "地鼠（枯水期的样子）",
+      "eggGroups": [
+        "动物组"
+      ],
       "hp": 59,
       "patk": 71,
       "matk": 23,
@@ -37370,8 +37933,10 @@
         "遁地鼠（枯水期的样子）"
       ],
       "breedingLine": "地鼠（枯水期的样子）",
-      "speciesGroup": "地鼠（储水期的样子）",
-      "eggGroups": [],
+      "speciesGroup": "地鼠（枯水期的样子）",
+      "eggGroups": [
+        "动物组"
+      ],
       "hp": 59,
       "patk": 71,
       "matk": 23,
@@ -37465,7 +38030,9 @@
       ],
       "breedingLine": "地鼠（枯水期的样子）",
       "speciesGroup": "地鼠（枯水期的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "动物组"
+      ],
       "hp": 88,
       "patk": 95,
       "matk": 41,
@@ -37558,8 +38125,10 @@
         "遁地鼠（枯水期的样子）"
       ],
       "breedingLine": "地鼠（枯水期的样子）",
-      "speciesGroup": "遁鼠（储水期的样子）",
-      "eggGroups": [],
+      "speciesGroup": "地鼠（枯水期的样子）",
+      "eggGroups": [
+        "动物组"
+      ],
       "hp": 79,
       "patk": 94,
       "matk": 30,
@@ -37652,8 +38221,10 @@
         "遁地鼠（枯水期的样子）"
       ],
       "breedingLine": "地鼠（枯水期的样子）",
-      "speciesGroup": "遁鼠（储水期的样子）",
-      "eggGroups": [],
+      "speciesGroup": "地鼠（枯水期的样子）",
+      "eggGroups": [
+        "动物组"
+      ],
       "hp": 79,
       "patk": 94,
       "matk": 30,
@@ -37749,7 +38320,9 @@
       ],
       "breedingLine": "地鼠（枯水期的样子）",
       "speciesGroup": "地鼠（枯水期的样子）",
-      "eggGroups": [],
+      "eggGroups": [
+        "动物组"
+      ],
       "hp": 110,
       "patk": 119,
       "matk": 51,
@@ -37843,8 +38416,10 @@
         "遁地鼠（枯水期的样子）"
       ],
       "breedingLine": "地鼠（枯水期的样子）",
-      "speciesGroup": "遁地鼠（储水期的样子）",
-      "eggGroups": [],
+      "speciesGroup": "地鼠（枯水期的样子）",
+      "eggGroups": [
+        "动物组"
+      ],
       "hp": 99,
       "patk": 118,
       "matk": 38,
@@ -37938,8 +38513,10 @@
         "遁地鼠（枯水期的样子）"
       ],
       "breedingLine": "地鼠（枯水期的样子）",
-      "speciesGroup": "遁地鼠（储水期的样子）",
-      "eggGroups": [],
+      "speciesGroup": "地鼠（枯水期的样子）",
+      "eggGroups": [
+        "动物组"
+      ],
       "hp": 99,
       "patk": 118,
       "matk": 38,
@@ -38025,7 +38602,10 @@
       ],
       "breedingLine": "墨鱿士",
       "speciesGroup": "墨鱿士",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "软体组"
+      ],
       "hp": 103,
       "patk": 84,
       "matk": 34,
@@ -38122,7 +38702,10 @@
       ],
       "breedingLine": "墨鱿士",
       "speciesGroup": "墨鱿士",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "软体组"
+      ],
       "hp": 129,
       "patk": 105,
       "matk": 42,
@@ -38220,7 +38803,10 @@
       ],
       "breedingLine": "墨鱿士",
       "speciesGroup": "墨鱿士",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "软体组"
+      ],
       "hp": 78,
       "patk": 120,
       "matk": 39,
@@ -38311,7 +38897,10 @@
       ],
       "breedingLine": "小甲虫",
       "speciesGroup": "小甲虫",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "天空组"
+      ],
       "hp": 98,
       "patk": 71,
       "matk": 31,
@@ -38403,7 +38992,10 @@
       ],
       "breedingLine": "小甲虫",
       "speciesGroup": "小甲虫",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "天空组"
+      ],
       "hp": 122,
       "patk": 88,
       "matk": 39,
@@ -38499,7 +39091,10 @@
       ],
       "breedingLine": "圣剑侍从",
       "speciesGroup": "圣剑侍从",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组",
+        "巨灵组"
+      ],
       "hp": 139,
       "patk": 116,
       "matk": 111,
@@ -38595,7 +39190,10 @@
       ],
       "breedingLine": "圣剑侍从",
       "speciesGroup": "圣剑侍从",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组",
+        "巨灵组"
+      ],
       "hp": 174,
       "patk": 144,
       "matk": 139,
@@ -38690,8 +39288,11 @@
         "圣剑-X"
       ],
       "breedingLine": "圣剑侍从",
-      "speciesGroup": "圣剑骑士",
-      "eggGroups": [],
+      "speciesGroup": "圣剑侍从",
+      "eggGroups": [
+        "机械组",
+        "巨灵组"
+      ],
       "hp": 187,
       "patk": 154,
       "matk": 148,
@@ -38783,7 +39384,10 @@
       ],
       "breedingLine": "吸泥鸥",
       "speciesGroup": "吸泥鸥",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "两栖组"
+      ],
       "hp": 99,
       "patk": 89,
       "matk": 33,
@@ -38877,7 +39481,10 @@
       ],
       "breedingLine": "吸泥鸥",
       "speciesGroup": "吸泥鸥",
-      "eggGroups": [],
+      "eggGroups": [
+        "天空组",
+        "两栖组"
+      ],
       "hp": 124,
       "patk": 112,
       "matk": 41,
@@ -38968,7 +39575,10 @@
       ],
       "breedingLine": "大头骨龙",
       "speciesGroup": "大头骨龙",
-      "eggGroups": [],
+      "eggGroups": [
+        "飞龙组",
+        "巨灵组"
+      ],
       "hp": 96,
       "patk": 109,
       "matk": 40,
@@ -39060,7 +39670,10 @@
       ],
       "breedingLine": "大头骨龙",
       "speciesGroup": "大头骨龙",
-      "eggGroups": [],
+      "eggGroups": [
+        "飞龙组",
+        "巨灵组"
+      ],
       "hp": 120,
       "patk": 137,
       "matk": 50,
@@ -39152,7 +39765,10 @@
       ],
       "breedingLine": "厉毒小萝",
       "speciesGroup": "厉毒小萝",
-      "eggGroups": [],
+      "eggGroups": [
+        "拟人组",
+        "天空组"
+      ],
       "hp": 67,
       "patk": 64,
       "matk": 17,
@@ -39244,7 +39860,10 @@
       ],
       "breedingLine": "厉毒小萝",
       "speciesGroup": "厉毒小萝",
-      "eggGroups": [],
+      "eggGroups": [
+        "拟人组",
+        "天空组"
+      ],
       "hp": 84,
       "patk": 80,
       "matk": 21,
@@ -39624,7 +40243,10 @@
       ],
       "breedingLine": "毛头小蛛",
       "speciesGroup": "毛头小蛛",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "妖精组"
+      ],
       "hp": 85,
       "patk": 80,
       "matk": 27,
@@ -39719,7 +40341,10 @@
       ],
       "breedingLine": "毛头小蛛",
       "speciesGroup": "毛头小蛛",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "妖精组"
+      ],
       "hp": 106,
       "patk": 100,
       "matk": 34,
@@ -39814,7 +40439,10 @@
       ],
       "breedingLine": "毛头小蛛",
       "speciesGroup": "毛头小蛛",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "妖精组"
+      ],
       "hp": 109,
       "patk": 105,
       "matk": 37,
@@ -39904,7 +40532,10 @@
       ],
       "breedingLine": "画精灵",
       "speciesGroup": "画精灵",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "巨灵组"
+      ],
       "hp": 61,
       "patk": 32,
       "matk": 78,
@@ -39995,7 +40626,10 @@
       ],
       "breedingLine": "画精灵",
       "speciesGroup": "画精灵",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "巨灵组"
+      ],
       "hp": 81,
       "patk": 42,
       "matk": 104,
@@ -40099,7 +40733,10 @@
       ],
       "breedingLine": "画精灵",
       "speciesGroup": "画精灵",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "巨灵组"
+      ],
       "hp": 101,
       "patk": 53,
       "matk": 131,
@@ -40203,7 +40840,10 @@
       ],
       "breedingLine": "画精灵",
       "speciesGroup": "画精灵",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "巨灵组"
+      ],
       "hp": 100,
       "patk": 160,
       "matk": 67,
@@ -40294,7 +40934,10 @@
       ],
       "breedingLine": "书魔虫",
       "speciesGroup": "书魔虫",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "巨灵组"
+      ],
       "hp": 67,
       "patk": 75,
       "matk": 75,
@@ -40385,7 +41028,10 @@
       ],
       "breedingLine": "书魔虫",
       "speciesGroup": "书魔虫",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "巨灵组"
+      ],
       "hp": 89,
       "patk": 100,
       "matk": 100,
@@ -40486,7 +41132,10 @@
       ],
       "breedingLine": "书魔虫",
       "speciesGroup": "书魔虫",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "巨灵组"
+      ],
       "hp": 111,
       "patk": 125,
       "matk": 125,
@@ -40587,7 +41236,10 @@
       ],
       "breedingLine": "书魔虫",
       "speciesGroup": "书魔虫",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "巨灵组"
+      ],
       "hp": 114,
       "patk": 109,
       "matk": 109,
@@ -41250,7 +41902,10 @@
       ],
       "breedingLine": "果冻",
       "speciesGroup": "果冻",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "魔力组"
+      ],
       "hp": 81,
       "patk": 26,
       "matk": 81,
@@ -41348,7 +42003,10 @@
       ],
       "breedingLine": "果冻",
       "speciesGroup": "果冻",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组",
+        "魔力组"
+      ],
       "hp": 101,
       "patk": 32,
       "matk": 101,
@@ -41446,7 +42104,9 @@
       ],
       "breedingLine": "果冻",
       "speciesGroup": "果冻",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组"
+      ],
       "hp": 133,
       "patk": 34,
       "matk": 89,
@@ -41544,7 +42204,9 @@
       ],
       "breedingLine": "果冻",
       "speciesGroup": "果冻",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组"
+      ],
       "hp": 128,
       "patk": 87,
       "matk": 33,
@@ -41642,7 +42304,9 @@
       ],
       "breedingLine": "星尘虫",
       "speciesGroup": "星尘虫",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组"
+      ],
       "hp": 49,
       "patk": 47,
       "matk": 47,
@@ -41740,7 +42404,9 @@
       ],
       "breedingLine": "星尘虫",
       "speciesGroup": "星尘虫",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组"
+      ],
       "hp": 65,
       "patk": 62,
       "matk": 62,
@@ -41839,7 +42505,9 @@
       ],
       "breedingLine": "星尘虫",
       "speciesGroup": "星尘虫",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组"
+      ],
       "hp": 81,
       "patk": 78,
       "matk": 78,
@@ -41933,7 +42601,9 @@
       ],
       "breedingLine": "双灯鱼",
       "speciesGroup": "双灯鱼",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组"
+      ],
       "hp": 102,
       "patk": 55,
       "matk": 111,
@@ -42028,7 +42698,9 @@
       ],
       "breedingLine": "双灯鱼",
       "speciesGroup": "双灯鱼",
-      "eggGroups": [],
+      "eggGroups": [
+        "海洋组"
+      ],
       "hp": 128,
       "patk": 68,
       "matk": 138,
@@ -42121,7 +42793,8 @@
       "breedingLine": "月牙雪熊",
       "speciesGroup": "月牙雪熊",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "巨灵组"
       ],
       "hp": 126,
       "patk": 97,
@@ -42220,7 +42893,9 @@
       ],
       "breedingLine": "嗜光嗡嗡",
       "speciesGroup": "嗜光嗡嗡",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组"
+      ],
       "hp": 75,
       "patk": 83,
       "matk": 83,
@@ -42319,7 +42994,9 @@
       ],
       "breedingLine": "嗜光嗡嗡",
       "speciesGroup": "嗜光嗡嗡",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组"
+      ],
       "hp": 93,
       "patk": 104,
       "matk": 104,
@@ -42412,7 +43089,10 @@
       ],
       "breedingLine": "柴渣虫",
       "speciesGroup": "柴渣虫",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "植物组"
+      ],
       "hp": 108,
       "patk": 96,
       "matk": 38,
@@ -42507,7 +43187,10 @@
       ],
       "breedingLine": "柴渣虫",
       "speciesGroup": "柴渣虫",
-      "eggGroups": [],
+      "eggGroups": [
+        "昆虫组",
+        "植物组"
+      ],
       "hp": 135,
       "patk": 120,
       "matk": 48,
@@ -42599,7 +43282,10 @@
       ],
       "breedingLine": "空空颅",
       "speciesGroup": "空空颅",
-      "eggGroups": [],
+      "eggGroups": [
+        "魔力组",
+        "巨灵组"
+      ],
       "hp": 70,
       "patk": 7,
       "matk": 37,
@@ -42691,7 +43377,10 @@
       ],
       "breedingLine": "空空颅",
       "speciesGroup": "空空颅",
-      "eggGroups": [],
+      "eggGroups": [
+        "魔力组",
+        "巨灵组"
+      ],
       "hp": 94,
       "patk": 9,
       "matk": 49,
@@ -42784,7 +43473,10 @@
       ],
       "breedingLine": "空空颅",
       "speciesGroup": "空空颅",
-      "eggGroups": [],
+      "eggGroups": [
+        "魔力组",
+        "巨灵组"
+      ],
       "hp": 117,
       "patk": 10,
       "matk": 61,
@@ -42876,7 +43568,10 @@
       ],
       "breedingLine": "粉粉星",
       "speciesGroup": "粉粉星",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "软体组"
+      ],
       "hp": 93,
       "patk": 54,
       "matk": 102,
@@ -42969,7 +43664,10 @@
       ],
       "breedingLine": "粉粉星",
       "speciesGroup": "粉粉星",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "软体组"
+      ],
       "hp": 116,
       "patk": 68,
       "matk": 127,
@@ -43062,7 +43760,9 @@
       ],
       "breedingLine": "贝瑟",
       "speciesGroup": "贝瑟",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组"
+      ],
       "hp": 79,
       "patk": 46,
       "matk": 78,
@@ -43157,7 +43857,9 @@
       ],
       "breedingLine": "贝瑟",
       "speciesGroup": "贝瑟",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组"
+      ],
       "hp": 105,
       "patk": 61,
       "matk": 104,
@@ -43252,7 +43954,9 @@
       ],
       "breedingLine": "贝瑟",
       "speciesGroup": "贝瑟",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组"
+      ],
       "hp": 132,
       "patk": 76,
       "matk": 130,
@@ -43333,7 +44037,10 @@
       ],
       "breedingLine": "粉星仔",
       "speciesGroup": "粉星仔",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "天空组"
+      ],
       "hp": 80,
       "patk": 63,
       "matk": 119,
@@ -43423,7 +44130,10 @@
       ],
       "breedingLine": "粉星仔",
       "speciesGroup": "粉星仔",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "天空组"
+      ],
       "hp": 100,
       "patk": 79,
       "matk": 148,
@@ -43517,7 +44227,10 @@
       ],
       "breedingLine": "粉星仔",
       "speciesGroup": "粉星仔",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "天空组"
+      ],
       "hp": 93,
       "patk": 61,
       "matk": 125,
@@ -43607,7 +44320,9 @@
       ],
       "breedingLine": "布瓜蝌",
       "speciesGroup": "布瓜蝌",
-      "eggGroups": [],
+      "eggGroups": [
+        "两栖组"
+      ],
       "hp": 91,
       "patk": 84,
       "matk": 35,
@@ -43699,7 +44414,9 @@
       ],
       "breedingLine": "布瓜蝌",
       "speciesGroup": "布瓜蝌",
-      "eggGroups": [],
+      "eggGroups": [
+        "两栖组"
+      ],
       "hp": 114,
       "patk": 106,
       "matk": 44,
@@ -43986,7 +44703,8 @@
       "breedingLine": "春团",
       "speciesGroup": "春团",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "妖精组"
       ],
       "hp": 48,
       "patk": 51,
@@ -44086,7 +44804,8 @@
       "breedingLine": "春团",
       "speciesGroup": "春团",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "妖精组"
       ],
       "hp": 63,
       "patk": 68,
@@ -44188,7 +44907,8 @@
       "breedingLine": "春团",
       "speciesGroup": "春团",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "妖精组"
       ],
       "hp": 79,
       "patk": 85,
@@ -44279,7 +44999,10 @@
       ],
       "breedingLine": "幽星光",
       "speciesGroup": "幽星光",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "巨灵组"
+      ],
       "hp": 49,
       "patk": 21,
       "matk": 63,
@@ -44370,7 +45093,10 @@
       ],
       "breedingLine": "幽星光",
       "speciesGroup": "幽星光",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "巨灵组"
+      ],
       "hp": 65,
       "patk": 28,
       "matk": 84,
@@ -44462,7 +45188,10 @@
       ],
       "breedingLine": "幽星光",
       "speciesGroup": "幽星光",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "巨灵组"
+      ],
       "hp": 81,
       "patk": 35,
       "matk": 106,
@@ -45536,7 +46265,8 @@
       "breedingLine": "猴麦仔",
       "speciesGroup": "猴麦仔",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "机械组"
       ],
       "hp": 93,
       "patk": 75,
@@ -45634,7 +46364,8 @@
       "breedingLine": "猴麦仔",
       "speciesGroup": "猴麦仔",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "机械组"
       ],
       "hp": 116,
       "patk": 94,
@@ -45730,7 +46461,10 @@
       ],
       "breedingLine": "加油海葵",
       "speciesGroup": "加油海葵",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "两栖组"
+      ],
       "hp": 93,
       "patk": 87,
       "matk": 87,
@@ -45827,7 +46561,10 @@
       ],
       "breedingLine": "加油海葵",
       "speciesGroup": "加油海葵",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "两栖组"
+      ],
       "hp": 116,
       "patk": 108,
       "matk": 108,
@@ -45923,7 +46660,10 @@
       ],
       "breedingLine": "小丑豆豆",
       "speciesGroup": "小丑豆豆",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "拟人组"
+      ],
       "hp": 66,
       "patk": 87,
       "matk": 88,
@@ -46020,7 +46760,10 @@
       ],
       "breedingLine": "小丑豆豆",
       "speciesGroup": "小丑豆豆",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "拟人组"
+      ],
       "hp": 88,
       "patk": 116,
       "matk": 118,
@@ -46118,7 +46861,10 @@
       ],
       "breedingLine": "小丑豆豆",
       "speciesGroup": "小丑豆豆",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "拟人组"
+      ],
       "hp": 111,
       "patk": 145,
       "matk": 147,
@@ -46208,7 +46954,10 @@
       ],
       "breedingLine": "烟花团",
       "speciesGroup": "烟花团",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组",
+        "魔力组"
+      ],
       "hp": 61,
       "patk": 35,
       "matk": 89,
@@ -46299,7 +47048,10 @@
       ],
       "breedingLine": "烟花团",
       "speciesGroup": "烟花团",
-      "eggGroups": [],
+      "eggGroups": [
+        "机械组",
+        "魔力组"
+      ],
       "hp": 76,
       "patk": 44,
       "matk": 111,
@@ -46392,7 +47144,9 @@
       ],
       "breedingLine": "咕咕帽",
       "speciesGroup": "咕咕帽",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 103,
       "patk": 74,
       "matk": 72,
@@ -46487,7 +47241,9 @@
       ],
       "breedingLine": "咕咕帽",
       "speciesGroup": "咕咕帽",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组"
+      ],
       "hp": 128,
       "patk": 92,
       "matk": 90,
@@ -46580,7 +47336,8 @@
       "breedingLine": "炫光迪迪",
       "speciesGroup": "炫光迪迪",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "大地组"
       ],
       "hp": 83,
       "patk": 95,
@@ -46675,7 +47432,8 @@
       "breedingLine": "炫光迪迪",
       "speciesGroup": "炫光迪迪",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "大地组"
       ],
       "hp": 104,
       "patk": 119,
@@ -46771,7 +47529,8 @@
       "breedingLine": "小鼓象",
       "speciesGroup": "小鼓象",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "机械组"
       ],
       "hp": 106,
       "patk": 100,
@@ -46867,7 +47626,8 @@
       "breedingLine": "小鼓象",
       "speciesGroup": "小鼓象",
       "eggGroups": [
-        "动物组"
+        "动物组",
+        "机械组"
       ],
       "hp": 133,
       "patk": 125,
@@ -46960,7 +47720,10 @@
       ],
       "breedingLine": "牵线木偶",
       "speciesGroup": "牵线木偶",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "拟人组"
+      ],
       "hp": 77,
       "patk": 83,
       "matk": 89,
@@ -47055,7 +47818,10 @@
       ],
       "breedingLine": "牵线木偶",
       "speciesGroup": "牵线木偶",
-      "eggGroups": [],
+      "eggGroups": [
+        "妖精组",
+        "拟人组"
+      ],
       "hp": 97,
       "patk": 104,
       "matk": 111,
