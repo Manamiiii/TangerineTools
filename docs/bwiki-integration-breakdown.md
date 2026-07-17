@@ -17,7 +17,7 @@
 | BWiki 页面登记 | 已完成 | `docs/data-sources.md` | 否 |
 | BWiki 页面审计 | 已完成 | `docs/bwiki-source-audit.md` | 否 |
 | 筛选页 staging | 已完成 | `scripts/data/bwiki/*.staging.json`、`docs/bwiki-staging-report.md` | 否 |
-| 详情页解析 | 已扩展至 24 条受控解析 | `scripts/data/bwiki/creature-details.sample.staging.json`、`docs/bwiki-detail-staging-report.md` | 否 |
+| 详情页解析 | 已扩展至 48 条受控解析 | `scripts/data/bwiki/creature-details.sample.staging.json`、`docs/bwiki-detail-staging-report.md` | 否 |
 | 字段映射冻结 | 已完成首版 | `docs/bwiki-field-mapping.md` | 否 |
 | 预置形状 preview | 已完成首版 | `scripts/data/bwiki/*preview.json`、`docs/bwiki-preview-report.md` | 否 |
 | 详情页 UI 分块 | 未开始 | 待新增 | 否 |
@@ -62,4 +62,4 @@
 
 ## 下一步
 
-先人工审阅 `docs/bwiki-detail-staging-report.md` 的 24 条详情解析样本，以及 `docs/bwiki-preview-report.md` 中的 id 复用、新增行、字段冲突和技能关系覆盖率。若详情解析和 preview 口径确认可接受，再进入 P4：新增显式覆盖命令；覆盖命令必须继续保留覆盖前后行数、id 复用、新增 id 和技能关系覆盖率报告，并且只有用户明确要求时才能替换 `public/presets/*`。
+先人工审阅 `docs/bwiki-detail-staging-report.md` 的 48 条详情解析样本，以及 `docs/bwiki-preview-report.md` 中的 id 复用、新增行、字段冲突和技能关系覆盖率。若详情解析和 preview 口径确认可接受，再进入 P4：新增显式覆盖命令；覆盖命令必须继续保留覆盖前后行数、id 复用、新增 id 和技能关系覆盖率报告，并且只有用户明确要求时才能替换 `public/presets/*`。

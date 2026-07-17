@@ -1,6 +1,6 @@
 {
   "source": "bwiki-preview",
-  "generatedAt": "2026-07-17T08:10:39.768Z",
+  "generatedAt": "2026-07-17T08:16:14.705Z",
   "inputs": {
     "creatures": "scripts/data/bwiki/creatures.staging.json",
     "skills": "scripts/data/bwiki/skills.staging.json",
@@ -65,7 +65,10 @@
           "rock-creature-src-446",
           "rock-creature-src-011",
           "rock-creature-src-013",
-          "rock-creature-src-016"
+          "rock-creature-src-016",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-e7acdd3351cd"
         ]
       },
       "previewMeta": {
@@ -118,7 +121,10 @@
           "rock-creature-bwiki-59478c4122d1",
           "rock-creature-src-011",
           "rock-creature-src-013",
-          "rock-creature-src-016"
+          "rock-creature-src-016",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-e7acdd3351cd"
         ]
       },
       "previewMeta": {
@@ -188,7 +194,10 @@
         "learnerRefs": [
           "rock-creature-src-011",
           "rock-creature-src-013",
-          "rock-creature-src-016"
+          "rock-creature-src-016",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-e7acdd3351cd"
         ]
       },
       "previewMeta": {
@@ -216,7 +225,13 @@
         "learnerRefs": [
           "rock-creature-src-011",
           "rock-creature-src-013",
-          "rock-creature-src-016"
+          "rock-creature-src-016",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -269,7 +284,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -347,7 +368,10 @@
         "learnerRefs": [
           "rock-creature-src-011",
           "rock-creature-src-013",
-          "rock-creature-src-016"
+          "rock-creature-src-016",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-e7acdd3351cd"
         ]
       },
       "previewMeta": {
@@ -372,7 +396,17 @@
           "counterStatus"
         ],
         "effect": "造成物伤，应对状态：本次技能威力变为3倍。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -528,7 +562,16 @@
           "rock-creature-src-447",
           "rock-creature-src-012",
           "rock-creature-src-014",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -651,7 +694,10 @@
         "learnerRefs": [
           "rock-creature-src-012",
           "rock-creature-src-014",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -688,7 +734,22 @@
           "rock-creature-src-446",
           "rock-creature-src-011",
           "rock-creature-src-013",
-          "rock-creature-src-016"
+          "rock-creature-src-016",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -725,7 +786,16 @@
           "rock-creature-src-447",
           "rock-creature-src-012",
           "rock-creature-src-014",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -761,7 +831,16 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -786,7 +865,11 @@
           "costChange"
         ],
         "effect": "敌方获得全攻击技能能耗+2，持续3回合。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -840,7 +923,13 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -902,7 +991,22 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -933,7 +1037,22 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -962,7 +1081,13 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -1018,7 +1143,10 @@
           "rock-creature-src-003",
           "rock-creature-src-004",
           "rock-creature-src-445",
-          "rock-creature-bwiki-59478c4122d1"
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -1082,7 +1210,13 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -1154,7 +1288,31 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -1188,7 +1346,16 @@
           "rock-creature-src-447",
           "rock-creature-src-011",
           "rock-creature-src-013",
-          "rock-creature-src-016"
+          "rock-creature-src-016",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -1241,7 +1408,14 @@
           "counterAttack"
         ],
         "effect": "减伤100%，应对攻击：减免的伤害变为回复自己生命，且本技能能耗永久+2。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1280,7 +1454,19 @@
           "rock-creature-src-447",
           "rock-creature-src-012",
           "rock-creature-src-014",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -1336,7 +1522,19 @@
           "rock-creature-src-446",
           "rock-creature-src-011",
           "rock-creature-src-013",
-          "rock-creature-src-016"
+          "rock-creature-src-016",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -1388,7 +1586,10 @@
           "rock-creature-src-447",
           "rock-creature-src-012",
           "rock-creature-src-014",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -1416,7 +1617,10 @@
         "learnerRefs": [
           "rock-creature-src-012",
           "rock-creature-src-014",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -1442,7 +1646,10 @@
         "learnerRefs": [
           "rock-creature-src-012",
           "rock-creature-src-014",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -1485,7 +1692,28 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -1628,7 +1856,17 @@
           "speed"
         ],
         "effect": "造成物理伤害，先手+1。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1680,7 +1918,10 @@
         "learnerRefs": [
           "rock-creature-src-011",
           "rock-creature-src-013",
-          "rock-creature-src-016"
+          "rock-creature-src-016",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-e7acdd3351cd"
         ]
       },
       "previewMeta": {
@@ -1703,7 +1944,17 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成物伤，敌方体重越高，本次技能威力越高。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1752,7 +2003,14 @@
           "speed"
         ],
         "effect": "造成物理伤害，先手-1。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -1779,7 +2037,10 @@
         "learnerRefs": [
           "rock-creature-src-012",
           "rock-creature-src-014",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -1807,7 +2068,10 @@
         "learnerRefs": [
           "rock-creature-src-012",
           "rock-creature-src-014",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -1906,7 +2170,10 @@
         "learnerRefs": [
           "rock-creature-src-011",
           "rock-creature-src-013",
-          "rock-creature-src-016"
+          "rock-creature-src-016",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-e7acdd3351cd"
         ]
       },
       "previewMeta": {
@@ -1934,7 +2201,19 @@
         "learnerRefs": [
           "rock-creature-src-011",
           "rock-creature-src-013",
-          "rock-creature-src-016"
+          "rock-creature-src-016",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -1966,7 +2245,10 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -2003,7 +2285,22 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -2037,7 +2334,10 @@
           "rock-creature-src-447",
           "rock-creature-src-012",
           "rock-creature-src-014",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -2074,7 +2374,13 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -2160,7 +2466,13 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -2347,7 +2659,9 @@
           "rock-creature-src-003",
           "rock-creature-src-004",
           "rock-creature-src-445",
-          "rock-creature-bwiki-59478c4122d1"
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-356",
+          "rock-creature-src-359"
         ]
       },
       "previewMeta": {
@@ -2500,7 +2814,16 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -2643,7 +2966,11 @@
           "multiHit"
         ],
         "effect": "自己获得连击数+2，应对防御：额外造成打断，且敌方下回合获得眩晕。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -2703,7 +3030,12 @@
           "rock-creature-src-003",
           "rock-creature-src-004",
           "rock-creature-src-445",
-          "rock-creature-bwiki-59478c4122d1"
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022",
+          "rock-creature-src-356",
+          "rock-creature-src-359"
         ]
       },
       "previewMeta": {
@@ -2763,7 +3095,13 @@
           "rock-creature-src-003",
           "rock-creature-src-004",
           "rock-creature-src-445",
-          "rock-creature-bwiki-59478c4122d1"
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -2795,7 +3133,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -2897,7 +3241,14 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -2930,7 +3281,13 @@
           "rock-creature-src-003",
           "rock-creature-src-004",
           "rock-creature-src-445",
-          "rock-creature-bwiki-59478c4122d1"
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -3035,7 +3392,9 @@
           "rock-creature-src-003",
           "rock-creature-src-004",
           "rock-creature-src-445",
-          "rock-creature-bwiki-59478c4122d1"
+          "rock-creature-bwiki-59478c4122d1",
+          "rock-creature-src-356",
+          "rock-creature-src-359"
         ]
       },
       "previewMeta": {
@@ -3111,7 +3470,11 @@
           "energyGain"
         ],
         "effect": "为场下每个精灵回复3能量。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -3173,7 +3536,9 @@
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
           "rock-creature-bwiki-f4b757003dc1",
-          "rock-creature-bwiki-37e9e6d81a33"
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-356",
+          "rock-creature-src-359"
         ]
       },
       "previewMeta": {
@@ -3335,7 +3700,14 @@
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
           "rock-creature-bwiki-f4b757003dc1",
-          "rock-creature-bwiki-37e9e6d81a33"
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-356",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -3421,7 +3793,9 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-357",
+          "rock-creature-src-360"
         ]
       },
       "previewMeta": {
@@ -3575,7 +3949,10 @@
           "pivot"
         ],
         "effect": "造成魔伤，自己脱离。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-357",
+          "rock-creature-src-360"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -3637,7 +4014,13 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -3748,7 +4131,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -3897,7 +4286,12 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022",
+          "rock-creature-src-357",
+          "rock-creature-src-360"
         ]
       },
       "previewMeta": {
@@ -4082,7 +4476,9 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-357",
+          "rock-creature-src-360"
         ]
       },
       "previewMeta": {
@@ -4390,7 +4786,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -4422,7 +4824,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -4449,7 +4857,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -4474,7 +4888,17 @@
           "counterStatus"
         ],
         "effect": "造成物伤，应对状态：本技能能耗永久-3。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4507,7 +4931,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -4577,7 +5007,25 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -4628,7 +5076,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -4659,7 +5113,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -4690,7 +5150,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -4717,7 +5183,14 @@
           "counterAttack"
         ],
         "effect": "减伤60%，应对攻击：自己获得全技能能耗-2。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4739,7 +5212,14 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4819,7 +5299,16 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -4842,7 +5331,14 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4893,7 +5389,16 @@
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
           "rock-creature-bwiki-f4b757003dc1",
-          "rock-creature-bwiki-37e9e6d81a33"
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -4916,7 +5421,17 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -4995,7 +5510,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -5096,7 +5617,17 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成物伤，天气为雨天时，本技能能耗-2。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -5423,7 +5954,16 @@
           "rock-creature-src-447",
           "rock-creature-src-012",
           "rock-creature-src-014",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -5516,7 +6056,22 @@
           "rock-creature-src-446",
           "rock-creature-src-011",
           "rock-creature-src-013",
-          "rock-creature-src-016"
+          "rock-creature-src-016",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -5643,7 +6198,16 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -5866,7 +6430,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -6019,7 +6589,16 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -6330,7 +6909,16 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -6531,7 +7119,18 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022",
+          "rock-creature-src-358",
+          "rock-creature-src-361"
         ]
       },
       "previewMeta": {
@@ -6870,7 +7469,10 @@
           "multiHit"
         ],
         "effect": "造成物伤，敌方获得连击数-3。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-358",
+          "rock-creature-src-361"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -6895,7 +7497,10 @@
           "statDebuff"
         ],
         "effect": "自己获得物防+160%和魔防-60%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-358",
+          "rock-creature-src-361"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -6973,7 +7578,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -7167,7 +7778,11 @@
           "counterStatus"
         ],
         "effect": "造成物伤，应对状态：额外使敌方获得全技能能耗+3。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-bwiki-879f28cfa0d4"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -7253,7 +7868,16 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -7446,7 +8070,10 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -7478,7 +8105,16 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -7691,7 +8327,10 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -7749,7 +8388,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -8075,7 +8720,31 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -8632,7 +9301,16 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -8711,7 +9389,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -8765,7 +9449,16 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -9285,7 +9978,16 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -9479,7 +10181,22 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -9956,7 +10673,16 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -10057,7 +10783,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -10135,7 +10867,16 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -10510,7 +11251,13 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -10595,7 +11342,22 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -10629,7 +11391,13 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -10707,7 +11475,14 @@
           "counterAttack"
         ],
         "effect": "应对攻击：打断被应对技能，并造成90威力物伤。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -10757,7 +11532,16 @@
         "learnerRefs": [
           "rock-creature-src-012",
           "rock-creature-src-014",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -10818,7 +11602,19 @@
           "rock-creature-src-446",
           "rock-creature-src-011",
           "rock-creature-src-013",
-          "rock-creature-src-016"
+          "rock-creature-src-016",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -10841,7 +11637,14 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -10909,7 +11712,14 @@
           "multiHit"
         ],
         "effect": "造成魔伤，2连击，每成功应对1次，本技能连击数永久+2。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -10939,7 +11749,13 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -10993,7 +11809,14 @@
           "counterAttack"
         ],
         "effect": "减伤80%，应对攻击：自己获得全技能威力+40。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11037,7 +11860,14 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成魔伤，选择：本次技能威力+20或应对状态时本次技能威力+140。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11083,7 +11913,17 @@
           "multiHit"
         ],
         "effect": "造成物伤，2连击。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11111,7 +11951,16 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -11141,7 +11990,10 @@
         "learnerRefs": [
           "rock-creature-src-012",
           "rock-creature-src-014",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -11166,7 +12018,17 @@
           "multiHit"
         ],
         "effect": "造成物伤，1连击，若先于敌方攻击，改为3连击。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11197,7 +12059,16 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -11232,7 +12103,22 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -11255,7 +12141,17 @@
         "priority": "",
         "effectTags": [],
         "effect": "自己获得1层风起印记。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11307,7 +12203,14 @@
           "counterAttack"
         ],
         "effect": "减伤50%，迅捷，应对攻击。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11408,7 +12311,17 @@
           "pivot"
         ],
         "effect": "造成物伤，应对状态：回合结束使敌方紧急脱离。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11437,7 +12350,19 @@
           "rock-creature-src-446",
           "rock-creature-src-011",
           "rock-creature-src-013",
-          "rock-creature-src-016"
+          "rock-creature-src-016",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -11463,7 +12388,10 @@
         "learnerRefs": [
           "rock-creature-src-012",
           "rock-creature-src-014",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -11486,7 +12414,17 @@
         "priority": "",
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11508,7 +12446,17 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成物伤，速度比敌方越高，本次技能威力越高。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -11540,7 +12488,13 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -11605,7 +12559,25 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -11642,7 +12614,13 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -11742,7 +12720,13 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -11983,7 +12967,16 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -12061,7 +13054,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -12088,7 +13087,16 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -12479,7 +13487,11 @@
         "priority": "",
         "effectTags": [],
         "effect": "造成物伤，敌方每有1能量，本次技能威力-10%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -12505,7 +13517,11 @@
           "counterDefense"
         ],
         "effect": "敌方失去3能量，应对防御：改为敌方失去6能量。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -12527,7 +13543,11 @@
         "priority": "",
         "effectTags": [],
         "effect": "敌方获得1层降灵印记。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -12553,7 +13573,11 @@
           "counterAttack"
         ],
         "effect": "减伤70%，应对攻击：敌方失去3能量。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -12652,7 +13676,10 @@
           "rock-creature-bwiki-160c55fe2dfd",
           "rock-creature-bwiki-c8eff43cd094",
           "rock-creature-bwiki-f4b757003dc1",
-          "rock-creature-bwiki-37e9e6d81a33"
+          "rock-creature-bwiki-37e9e6d81a33",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -12703,7 +13730,19 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -12788,7 +13827,16 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -12819,7 +13867,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -12966,7 +14020,19 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -13041,7 +14107,20 @@
           "multiHit"
         ],
         "effect": "造成物伤，3连击，若自己的生命低于50%，本次技能连击数+2。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -13096,7 +14175,11 @@
           "statDebuff"
         ],
         "effect": "造成物伤，若自己生命高于50%，使用后自己获得双攻-50%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -13180,7 +14263,13 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b"
         ]
       },
       "previewMeta": {
@@ -13209,7 +14298,10 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -13232,7 +14324,11 @@
         "priority": "",
         "effectTags": [],
         "effect": "与敌方交换增益和减益。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -13259,7 +14355,11 @@
           "pivot"
         ],
         "effect": "脱离，应对防御：额外使敌方攻击技能能耗+4。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -13281,7 +14381,11 @@
         "priority": "",
         "effectTags": [],
         "effect": "与敌方交换携带的技能。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -13311,7 +14415,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {
@@ -13430,7 +14540,10 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -13553,7 +14666,11 @@
           "counterDefense"
         ],
         "effect": "自己获得双攻和双防-100%，应对防御：改为敌方获得双攻和双防-100%。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -13579,7 +14696,11 @@
           "counterAttack"
         ],
         "effect": "减伤80%，能量不足时，消耗5%生命代替1能量，应对攻击。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -13633,7 +14754,10 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -13678,7 +14802,11 @@
         "priority": "",
         "effectTags": [],
         "effect": "敌方获得1层暗涌印记。",
-        "learnerRefs": []
+        "learnerRefs": [
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
+        ]
       },
       "previewMeta": {
         "source": "bwiki-skill-query",
@@ -14007,7 +15135,16 @@
           "rock-creature-src-013",
           "rock-creature-src-014",
           "rock-creature-src-016",
-          "rock-creature-src-015"
+          "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
+          "rock-creature-bwiki-e7acdd3351cd",
+          "rock-creature-bwiki-b7c1550c108b",
+          "rock-creature-src-020",
+          "rock-creature-src-021",
+          "rock-creature-src-022"
         ]
       },
       "previewMeta": {
@@ -14176,7 +15313,16 @@
           "rock-creature-src-005",
           "rock-creature-src-006",
           "rock-creature-src-007",
-          "rock-creature-src-446"
+          "rock-creature-src-446",
+          "rock-creature-src-356",
+          "rock-creature-src-357",
+          "rock-creature-src-358",
+          "rock-creature-bwiki-836ff913b5bd",
+          "rock-creature-bwiki-9ab657c3a5f5",
+          "rock-creature-src-359",
+          "rock-creature-src-360",
+          "rock-creature-src-361",
+          "rock-creature-bwiki-879f28cfa0d4"
         ]
       },
       "previewMeta": {
@@ -14274,7 +15420,13 @@
           "rock-creature-src-008",
           "rock-creature-src-009",
           "rock-creature-src-010",
-          "rock-creature-src-447"
+          "rock-creature-src-447",
+          "rock-creature-bwiki-bf820721eb70",
+          "rock-creature-src-353",
+          "rock-creature-bwiki-b44ab058ef4a",
+          "rock-creature-src-354",
+          "rock-creature-bwiki-bde230d40211",
+          "rock-creature-src-355"
         ]
       },
       "previewMeta": {

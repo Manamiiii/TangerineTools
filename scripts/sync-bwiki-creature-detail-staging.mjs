@@ -25,6 +25,24 @@ async function fetchText(url) {
   }
 }
 
+
+function sleep(ms) {
+  return new Promise((resolveSleep) => setTimeout(resolveSleep, ms))
+}
+
+async function fetchTextWithRetry(url, attempts = 3) {
+  let lastError
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await fetchText(url)
+    } catch (error) {
+      lastError = error
+      if (attempt < attempts) await sleep(500 * attempt)
+    }
+  }
+  throw lastError
+}
+
 function decodeHtml(value) {
   return String(value ?? '')
     .replace(/&nbsp;/g, ' ')
@@ -262,7 +280,7 @@ async function main() {
 
   for (const row of candidates) {
     try {
-      const html = await fetchText(row.detailUrl)
+      const html = await fetchTextWithRetry(row.detailUrl)
       rows.push(parseDetail(row, html))
     } catch (error) {
       errors.push({ no: row.no, name: row.name, sourceUrl: row.detailUrl, error: error.message })

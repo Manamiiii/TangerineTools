@@ -1,6 +1,6 @@
 # BWiki 预置 preview 报告
 
-生成时间：2026-07-17T08:10:39.768Z
+生成时间：2026-07-17T08:16:14.705Z
 
 > 本报告由 `npm run preview:bwiki` 生成。脚本只读取 BWiki staging / detail staging 与当前 public preset JSON，然后只写入 preview / 审计产物。它**不会**覆盖 `public/presets/*`，**不会**触碰 Dexie / 浏览器用户数据，也**不会**修改 UI 代码。
 
@@ -10,7 +10,7 @@
 |---|---:|
 | BWiki 精灵 staging 行数 | 592 |
 | BWiki 技能 staging 行数 | 553 |
-| BWiki 详情 staging 行数 | 24 |
+| BWiki 详情 staging 行数 | 48 |
 | 已读取当前 public 精灵预置行数 | 496 |
 | 已读取当前 public 技能预置行数 | 487 |
 | 精灵 preview 输出 | `scripts/data/bwiki/rockKingdomRows.preview.json`（592 行） |
@@ -242,7 +242,7 @@
 
 | 详情技能卡总数 | 已匹配技能卡 | 覆盖率 | 未匹配技能名数量 |
 |---:|---:|---:|---:|
-| 1162 | 1162 | 100.00% | 0 |
+| 2272 | 2272 | 100.00% | 0 |
 
 - （无）
 
