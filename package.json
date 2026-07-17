@@ -14,7 +14,8 @@
     "sync:rock": "node scripts/sync-rock-kingdom-preset.mjs",
     "check:nature": "node scripts/check-nature-recommendations.mjs",
     "audit:rocom": "node scripts/generate-rocom-position-audit-plan.mjs",
-    "sync:breeding": "node scripts/sync-bwiki-breeding-preset.mjs"
+    "sync:breeding": "node scripts/sync-bwiki-breeding-preset.mjs",
+    "audit:bwiki": "node scripts/audit-bwiki-rocom-source.mjs"
   },
   "dependencies": {
     "dexie": "^4.4.4",

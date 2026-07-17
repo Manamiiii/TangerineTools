@@ -9,6 +9,7 @@
 | `session-start-prompt.md` | 新 session 的项目接手说明、代码地图和阶段重点。 | 人工维护；长期规则应放到仓库根目录 `AGENTS.md`。 |
 | `system-capabilities.md` | 当前已实现能力与明确非目标。 | 功能范围变化时人工更新。 |
 | `data-sync.md` | Dexie 数据模型、导入/导出语义、预置资料播种/迁移。 | 涉及数据结构或同步逻辑时人工更新。 |
+| `data-sources.md` | 洛克王国世界参考数据源分级、BWiki 页面登记、刷新命令和覆盖策略。 | 数据源、同步口径或 BWiki 页面清单变化时人工更新。 |
 | `nature-recommendation-redesign.md` | 性格推荐的设计草案、输入输出模型和规则讨论背景。 | 性格推荐规则大方向变化时人工更新。 |
 | `nature-single-creature-template.md` | 单只精灵性格核对输出模板，保证每轮分析结构一致。 | 人工维护；单只核对时复制结构，不写入未确认结论。 |
 | `nature-confirmed-results.md` | 用户确认过的单只精灵最终分档台账，用于规则调整后的回归复核。 | 人工维护；只有用户确认后登记。 |
@@ -34,6 +35,7 @@
 | 文件 | 生成命令 | 说明 |
 |---|---|---|
 | `nature-calibration-report.md` | `npm run check:nature` | 性格推荐校准报告，读取官方同步出的预置精灵/技能资料，供人工检查规则原因。 |
+| `bwiki-source-audit.md` | `npm run audit:bwiki` | BWiki 页面可解析性与本地预置覆盖差异审计；不改预置 JSON。 |
 
 ## 已清理内容
 
