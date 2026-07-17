@@ -253,6 +253,39 @@ function parseEggRows(html) {
     .filter(Boolean)
 }
 
+
+function buildEggByCreatureName(eggs) {
+  const result = new Map()
+  for (const egg of eggs) {
+    if (!egg.creatureName || result.has(egg.creatureName)) continue
+    result.set(egg.creatureName, egg)
+  }
+  return result
+}
+
+function enrichCreaturesWithEggAssets(creatures, eggs) {
+  const eggByCreatureName = buildEggByCreatureName(eggs)
+  return creatures.map((creature) => {
+    const egg = eggByCreatureName.get(creature.name)
+    if (!egg) {
+      return {
+        ...creature,
+        eggName: '',
+        fruitName: '',
+        eggImage: '',
+        fruitImage: '',
+      }
+    }
+    return {
+      ...creature,
+      eggName: egg.eggName,
+      fruitName: egg.fruitName,
+      eggImage: egg.eggImage,
+      fruitImage: egg.fruitImage,
+    }
+  })
+}
+
 function countBy(rows, getter) {
   const result = {}
   for (const row of rows) {
@@ -315,6 +348,8 @@ function renderList(items, limit = 30) {
 }
 
 function renderReport({ syncedAt, creatures, skills, eggs, localCreatures, localSkills, creatureDiff, skillDiff }) {
+  const creatureEggAssetCounts = countBy(creatures, (row) => (row.eggImage ? '有精灵蛋图' : '缺精灵蛋图'))
+  const creatureFruitAssetCounts = countBy(creatures, (row) => (row.fruitImage ? '有精灵果实图' : '缺精灵果实图'))
   const formCounts = countBy(creatures, (row) => row.formCategoryLabel)
   const mainFormCounts = countBy(creatures, (row) => (row.isMainForm ? '主形态' : '非主形态/未标注'))
   const stageCounts = countBy(creatures, (row) => row.stageLabel)
@@ -388,7 +423,12 @@ ${renderCountTable(skillCategoryCounts)}
 ### 精灵蛋筛选
 
 - 可解析：精灵蛋、精灵果实、对应精灵、精灵属性，以及三类图标/详情链接。
-- 适合加入资料库为独立静态表；不需要 Dexie schema 变更，只需要新增预置表定义和预置行。
+- 用户已确认蛋和果实不做独立资料表；后续转换时作为精灵资料里的 \`eggImage\` / \`fruitImage\` 两个图片字段写入。
+
+| 精灵资料图片字段 | Count |
+|---|---:|
+${renderCountTable(creatureEggAssetCounts)}
+${renderCountTable(creatureFruitAssetCounts)}
 
 | Element | Count |
 |---|---:|
@@ -411,8 +451,8 @@ ${renderList(skillDiff.extraInBwiki, 50)}
 ## Recommended next steps
 
 1. Parse a controlled batch of BWiki creature detail pages from \`detailUrl\` to confirm trait detail, evolution chain, skill groups, bloodline skills, egg group, and image fields from the detail layout.
-2. Build a deterministic transform from staging JSON to local preset shape, but keep it behind an explicit command until field mapping is reviewed.
-3. Add optional preset table definitions for 精灵蛋 / 精灵果实 after confirming the desired UI names and fields.
+2. Build a deterministic transform from staging JSON to local preset shape; user confirmed BWiki should become the primary source and may fully replace previous preset rows after this explicit transform is reviewed.
+3. Keep 精灵蛋 / 精灵果实 as image fields on creature rows (\`eggImage\` / \`fruitImage\`) instead of creating independent catalog tables.
 4. Upgrade the detail UI to block sections: identity/image, stats, trait, skills, evolution, breeding, source/notes. This can be done without Dexie schema changes because hidden fields are already available in detail views.
 `
 }
@@ -430,9 +470,10 @@ async function main() {
     fetchText(SOURCE_PAGES.eggs),
   ])
 
-  const creatures = parseCreatureRows(creatureHtml)
+  const parsedCreatures = parseCreatureRows(creatureHtml)
   const skills = parseSkillRows(skillHtml)
   const eggs = parseEggRows(eggHtml)
+  const creatures = enrichCreaturesWithEggAssets(parsedCreatures, eggs)
   const localCreatures = await readJson(LOCAL_CREATURE_PRESET)
   const localSkills = await readJson(LOCAL_SKILL_PRESET)
   const creatureDiff = compareNames(creatures, localCreatures)
