@@ -38,6 +38,7 @@
 | `nature-calibration-report.md` | `npm run check:nature` | 性格推荐校准报告，读取官方同步出的预置精灵/技能资料，供人工检查规则原因。 |
 | `bwiki-source-audit.md` | `npm run audit:bwiki` | BWiki 页面可解析性与本地预置覆盖差异审计；不改预置 JSON。 |
 | `bwiki-staging-report.md` | `npm run sync:bwiki:staging` | BWiki 精灵 / 技能 / 精灵蛋 staging 快照与本地预置差异摘要；不改预置 JSON。 |
+| `bwiki-detail-staging-report.md` | `npm run sync:bwiki:details` | BWiki 精灵详情页受控批次解析报告；只生成详情 staging，不改预置 JSON。 |
 
 ## 已清理内容
 

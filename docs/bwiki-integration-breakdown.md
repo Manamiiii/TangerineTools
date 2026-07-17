@@ -17,7 +17,7 @@
 | BWiki 页面登记 | 已完成 | `docs/data-sources.md` | 否 |
 | BWiki 页面审计 | 已完成 | `docs/bwiki-source-audit.md` | 否 |
 | 筛选页 staging | 已完成 | `scripts/data/bwiki/*.staging.json`、`docs/bwiki-staging-report.md` | 否 |
-| 详情页解析 | 未开始 | 待新增 | 否 |
+| 详情页解析 | 已完成首批受控解析 | `scripts/data/bwiki/creature-details.sample.staging.json`、`docs/bwiki-detail-staging-report.md` | 否 |
 | 预置形状 preview / 覆盖 | 未开始 | 待新增 | 否 |
 | 详情页 UI 分块 | 未开始 | 待新增 | 否 |
 
@@ -55,4 +55,4 @@
 
 ## 下一步
 
-P1：新增详情页解析 staging / 报告。不要覆盖 `public/presets/*`，不改 Dexie，不改 UI。
+P2：字段映射冻结。基于筛选页 staging 与首批详情页 staging，确认特性描述、技能来源标签、血脉技能、进化链、蛋组和图片优先级如何映射到现有资料库字段；不要覆盖 `public/presets/*`，不改 Dexie，不改 UI。
