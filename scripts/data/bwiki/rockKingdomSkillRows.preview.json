@@ -1,6 +1,6 @@
 {
   "source": "bwiki-preview",
-  "generatedAt": "2026-07-17T07:11:18.816Z",
+  "generatedAt": "2026-07-17T07:47:46.608Z",
   "inputs": {
     "creatures": "scripts/data/bwiki/creatures.staging.json",
     "skills": "scripts/data/bwiki/skills.staging.json",
@@ -48,7 +48,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -611,7 +614,10 @@
         ],
         "effect": "自己获得物攻+100%。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -637,7 +643,10 @@
         ],
         "effect": "自己获得魔攻+70%。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -976,7 +985,10 @@
         ],
         "effect": "减伤70%，应对攻击。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -1078,7 +1090,10 @@
         "effectTags": [],
         "effect": "每回合随机变成己方队伍中其他精灵的技能。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -1240,7 +1255,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -1715,7 +1733,10 @@
         ],
         "effect": "减伤50%，应对攻击：下一次行动获得先手+1。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -2095,7 +2116,10 @@
         ],
         "effect": "造成物伤，自己回复5能量。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -2220,7 +2244,10 @@
         ],
         "effect": "自己回复4能量，并获得魔攻+70%。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -2486,7 +2513,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -2510,7 +2540,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -2731,7 +2764,10 @@
         ],
         "effect": "造成物伤，应对状态：自己回复50%生命和5能量。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -2889,7 +2925,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -2962,7 +3001,10 @@
         ],
         "effect": "造成物伤，应对状态：本次技能威力变为4倍。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -3388,7 +3430,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -3529,7 +3574,10 @@
         ],
         "effect": "造成高额魔法伤害，自己获得物防-40%。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -3556,7 +3604,10 @@
         ],
         "effect": "自己获得双攻+120%和双防-40%。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -3878,7 +3929,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -3950,7 +4004,10 @@
         ],
         "effect": "造成魔伤，应对状态：本技能能耗永久-6。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -3976,7 +4033,10 @@
         ],
         "effect": "自己获得魔攻+190%。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -4214,7 +4274,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -4284,7 +4347,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -4519,7 +4585,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -4543,7 +4612,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -4567,7 +4639,10 @@
         "effectTags": [],
         "effect": "造成魔伤，每使用过1个其他系别技能，本技能威力永久+30。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -4591,7 +4666,10 @@
         "effectTags": [],
         "effect": "造成魔伤，携带其他系别技能会给本技能带来不同效果。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -4617,7 +4695,10 @@
         ],
         "effect": "每种系别中的至多1个技能，威力+35。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -4666,7 +4747,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -4714,7 +4798,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -4782,7 +4869,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -4856,7 +4946,10 @@
         ],
         "effect": "光系技能威力永久+50%，应对防御：改为永久+100%。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -5161,7 +5254,10 @@
         ],
         "effect": "造成魔伤，本技能位于3号位时威力+40，传动1。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -5577,7 +5673,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -5601,7 +5700,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -6009,7 +6111,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -6666,7 +6771,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -6690,7 +6798,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -6792,7 +6903,10 @@
         ],
         "effect": "造成魔伤，敌方获得魔防-50%。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -7246,7 +7360,10 @@
         ],
         "effect": "蓄力，对敌方造成魔法伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -7601,7 +7718,10 @@
         ],
         "effect": "造成物伤，迸发：本次技能威力+40。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -7650,7 +7770,10 @@
         ],
         "effect": "造成魔伤，迸发：本技能能耗-1。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -7898,7 +8021,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -8543,7 +8669,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -9184,7 +9313,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -9816,7 +9948,10 @@
         ],
         "effect": "造成物伤，2连击。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -10340,7 +10475,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -10950,7 +11088,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -11460,7 +11601,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -11528,7 +11672,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -11812,7 +11959,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -12624,7 +12774,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -12672,7 +12825,10 @@
         ],
         "effect": "造成魔伤，若击败敌方，自己获得魔攻+70%。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {
@@ -12952,7 +13108,10 @@
         "effectTags": [],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
-          "rock-creature-src-001"
+          "rock-creature-src-001",
+          "rock-creature-bwiki-160c55fe2dfd",
+          "rock-creature-bwiki-c8eff43cd094",
+          "rock-creature-bwiki-f4b757003dc1"
         ]
       },
       "previewMeta": {

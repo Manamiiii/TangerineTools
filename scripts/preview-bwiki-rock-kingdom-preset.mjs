@@ -135,13 +135,19 @@ function renderList(items, limit = 40) {
   return visible.join('\n')
 }
 
+function findDuplicateIds(rows) {
+  const counts = new Map()
+  for (const row of rows) counts.set(row.id, (counts.get(row.id) ?? 0) + 1)
+  return [...counts.entries()]
+    .filter(([, count]) => count > 1)
+    .map(([id, count]) => `${id}（${count} 行）`)
+}
+
 function findCreatureMatch(row, indexes) {
   const exact = firstUnique(indexes.creatureByExact, stagedCreatureKey(row))
   if (exact) return { row: exact, strategy: 'no+name' }
   const byName = firstUnique(indexes.creatureByName, normalizeName(row.name))
   if (byName) return { row: byName, strategy: 'name' }
-  const byNo = firstUnique(indexes.creatureByNo, row.no)
-  if (byNo) return { row: byNo, strategy: 'unique-no' }
   return { row: null, strategy: 'new' }
 }
 
@@ -155,7 +161,6 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
   const creatureIndexes = {
     creatureByExact: indexBy(currentRows, creatureMatchKey),
     creatureByName: indexBy(currentRows, (row) => normalizeName(readValue(row, 'name'))),
-    creatureByNo: indexBy(currentRows, (row) => readValue(row, 'no')),
   }
   const skillIndexes = {
     skillByName: indexBy(currentSkills, skillMatchKey),
@@ -317,12 +322,14 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
     creatureIssues,
     skillIssues,
     skillRelationIssues,
+    duplicateCreatureIds: findDuplicateIds(creaturePreviewRows),
+    duplicateSkillIds: findDuplicateIds(skillPreviewRows),
   })
 
   return { creaturePreviewRows, skillPreviewRows, report }
 }
 
-function renderReport({ syncedAt, inputs, outputs, creatureIssues, skillIssues, skillRelationIssues }) {
+function renderReport({ syncedAt, inputs, outputs, creatureIssues, skillIssues, skillRelationIssues, duplicateCreatureIds, duplicateSkillIds }) {
   const imageCounts = countBy(outputs.creaturePreviewRows, (row) => row.previewMeta.imageSource)
   const idStrategyCounts = countBy(outputs.creaturePreviewRows, (row) => row.previewMeta.idStrategy)
   const skillIdStrategyCounts = countBy(outputs.skillPreviewRows, (row) => row.previewMeta.idStrategy)
@@ -355,6 +362,16 @@ ${renderCountTable(idStrategyCounts)}
 | Skill id strategy | Count |
 |---|---:|
 ${renderCountTable(skillIdStrategyCounts)}
+
+### Duplicate preview ids
+
+Creature preview duplicate ids:
+
+${renderList(duplicateCreatureIds)}
+
+Skill preview duplicate ids:
+
+${renderList(duplicateSkillIds)}
 
 ## Name matching and new rows
 
