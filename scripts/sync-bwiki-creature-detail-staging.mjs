@@ -143,15 +143,25 @@ function formatEvolutionSummary(evolution = []) {
   const names = evolution.map((step) => step.name || step.linkName).filter(Boolean)
   if (names.length === 0) return '（无）'
   const first = names[0]
-  const canPair = names.length % 2 === 0 && names.every((name, index) => index % 2 === 1 || name === first)
-  if (canPair) {
-    return names.reduce((pairs, name, index) => {
-      if (index % 2 === 0) pairs.push(`${name} → ${names[index + 1]}`)
-      return pairs
-    }, []).join('；')
+  const branchStarts = names.map((name, index) => (name === first ? index : -1)).filter((index) => index >= 0)
+  const branches = branchStarts.map((start, index) => {
+    const end = branchStarts[index + 1] ?? names.length
+    return names.slice(start, end)
+  }).filter((branch) => branch.length > 0)
+  if (branches.length <= 1) return names.join(' → ')
+
+  let commonLength = 0
+  while (branches.every((branch) => branch[commonLength] && branch[commonLength] === branches[0][commonLength])) {
+    commonLength += 1
   }
-  return names.join(' → ')
+  const commonPrefix = branches[0].slice(0, commonLength)
+  const suffixes = branches.map((branch) => branch.slice(commonLength)).filter((suffix) => suffix.length > 0)
+  if (commonPrefix.length > 0 && suffixes.length === branches.length) {
+    return `${commonPrefix.join(' → ')} →（${suffixes.map((suffix) => suffix.join(' → ')).join(' / ')}）`
+  }
+  return branches.map((branch) => branch.join(' → ')).join('；')
 }
+
 
 function countBy(rows, getter) {
   const result = {}

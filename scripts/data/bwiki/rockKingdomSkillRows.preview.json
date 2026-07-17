@@ -1,6 +1,6 @@
 {
   "source": "bwiki-preview",
-  "generatedAt": "2026-07-17T08:06:16.958Z",
+  "generatedAt": "2026-07-17T08:10:39.768Z",
   "inputs": {
     "creatures": "scripts/data/bwiki/creatures.staging.json",
     "skills": "scripts/data/bwiki/skills.staging.json",

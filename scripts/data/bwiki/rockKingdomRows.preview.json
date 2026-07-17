@@ -1,6 +1,6 @@
 {
   "source": "bwiki-preview",
-  "generatedAt": "2026-07-17T08:06:16.958Z",
+  "generatedAt": "2026-07-17T08:10:39.768Z",
   "inputs": {
     "creatures": "scripts/data/bwiki/creatures.staging.json",
     "skills": "scripts/data/bwiki/skills.staging.json",
@@ -96,7 +96,7 @@
           "rock-skill-23210d701e34",
           "rock-skill-fb6f1daf27da"
         ],
-        "evolutionLine": "迪莫 → 圣光迪莫；迪莫 → 圣草迪莫；迪莫 → 圣火迪莫；迪莫 → 圣水迪莫",
+        "evolutionLine": "迪莫 →（圣光迪莫 / 圣草迪莫 / 圣火迪莫 / 圣水迪莫）",
         "breedingLine": "迪莫",
         "speciesGroup": "迪莫",
         "eggGroups": [
@@ -203,7 +203,7 @@
           "无"
         ],
         "speciesGroup": "",
-        "evolutionLine": "迪莫 → 圣光迪莫；迪莫 → 圣草迪莫；迪莫 → 圣火迪莫；迪莫 → 圣水迪莫",
+        "evolutionLine": "迪莫 →（圣光迪莫 / 圣草迪莫 / 圣火迪莫 / 圣水迪莫）",
         "eggImage": "",
         "fruitImage": ""
       },
@@ -300,7 +300,7 @@
           "无"
         ],
         "speciesGroup": "",
-        "evolutionLine": "迪莫 → 圣光迪莫；迪莫 → 圣草迪莫；迪莫 → 圣火迪莫；迪莫 → 圣水迪莫",
+        "evolutionLine": "迪莫 →（圣光迪莫 / 圣草迪莫 / 圣火迪莫 / 圣水迪莫）",
         "eggImage": "",
         "fruitImage": ""
       },
@@ -397,7 +397,7 @@
           "无"
         ],
         "speciesGroup": "",
-        "evolutionLine": "迪莫 → 圣光迪莫；迪莫 → 圣草迪莫；迪莫 → 圣火迪莫；迪莫 → 圣水迪莫",
+        "evolutionLine": "迪莫 →（圣光迪莫 / 圣草迪莫 / 圣火迪莫 / 圣水迪莫）",
         "eggImage": "",
         "fruitImage": ""
       },
@@ -494,7 +494,7 @@
           "无"
         ],
         "speciesGroup": "",
-        "evolutionLine": "迪莫 → 圣光迪莫；迪莫 → 圣草迪莫；迪莫 → 圣火迪莫；迪莫 → 圣水迪莫",
+        "evolutionLine": "迪莫 →（圣光迪莫 / 圣草迪莫 / 圣火迪莫 / 圣水迪莫）",
         "eggImage": "",
         "fruitImage": ""
       },
@@ -590,7 +590,7 @@
           "rock-skill-7a57125bbc6b",
           "rock-skill-5e6abf215991"
         ],
-        "evolutionLine": "喵喵 → 喵呜 → 魔力猫 → 叶冕魔力猫 → 喵喵 → 喵呜 → 魔力猫 → 武斗酷猫",
+        "evolutionLine": "喵喵 → 喵呜 → 魔力猫 →（叶冕魔力猫 / 武斗酷猫）",
         "breedingLine": "喵喵",
         "speciesGroup": "喵喵",
         "eggGroups": [
@@ -698,7 +698,7 @@
           "rock-skill-7a57125bbc6b",
           "rock-skill-5e6abf215991"
         ],
-        "evolutionLine": "喵喵 → 喵呜 → 魔力猫 → 叶冕魔力猫 → 喵喵 → 喵呜 → 魔力猫 → 武斗酷猫",
+        "evolutionLine": "喵喵 → 喵呜 → 魔力猫 →（叶冕魔力猫 / 武斗酷猫）",
         "breedingLine": "喵喵",
         "speciesGroup": "喵喵",
         "eggGroups": [
@@ -807,7 +807,7 @@
           "rock-skill-7a57125bbc6b",
           "rock-skill-5e6abf215991"
         ],
-        "evolutionLine": "喵喵 → 喵呜 → 魔力猫 → 叶冕魔力猫 → 喵喵 → 喵呜 → 魔力猫 → 武斗酷猫",
+        "evolutionLine": "喵喵 → 喵呜 → 魔力猫 →（叶冕魔力猫 / 武斗酷猫）",
         "breedingLine": "喵喵",
         "speciesGroup": "喵喵",
         "eggGroups": [
@@ -916,7 +916,7 @@
           "rock-skill-7a57125bbc6b",
           "rock-skill-5e6abf215991"
         ],
-        "evolutionLine": "喵喵 → 喵呜 → 魔力猫 → 叶冕魔力猫 → 喵喵 → 喵呜 → 魔力猫 → 武斗酷猫",
+        "evolutionLine": "喵喵 → 喵呜 → 魔力猫 →（叶冕魔力猫 / 武斗酷猫）",
         "breedingLine": "喵喵",
         "speciesGroup": "喵喵",
         "eggGroups": [
@@ -1021,7 +1021,7 @@
           "无"
         ],
         "speciesGroup": "",
-        "evolutionLine": "喵喵 → 喵呜 → 魔力猫 → 叶冕魔力猫 → 喵喵 → 喵呜 → 魔力猫 → 武斗酷猫",
+        "evolutionLine": "喵喵 → 喵呜 → 魔力猫 →（叶冕魔力猫 / 武斗酷猫）",
         "eggImage": "",
         "fruitImage": ""
       },

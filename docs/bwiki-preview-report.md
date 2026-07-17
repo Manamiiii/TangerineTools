@@ -1,6 +1,6 @@
 # BWiki 预置 preview 报告
 
-生成时间：2026-07-17T08:06:16.958Z
+生成时间：2026-07-17T08:10:39.768Z
 
 > 本报告由 `npm run preview:bwiki` 生成。脚本只读取 BWiki staging / detail staging 与当前 public preset JSON，然后只写入 preview / 审计产物。它**不会**覆盖 `public/presets/*`，**不会**触碰 Dexie / 浏览器用户数据，也**不会**修改 UI 代码。
 
