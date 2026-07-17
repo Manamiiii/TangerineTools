@@ -1,0 +1,2633 @@
+{
+  "source": "scripts/data/bwiki/creatures.staging.json",
+  "syncedAt": "2026-07-17T06:20:42.697Z",
+  "limit": 5,
+  "rowCount": 4,
+  "errorCount": 1,
+  "rows": [
+    {
+      "source": "bwiki-creature-detail",
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E8%BF%AA%E8%8E%AB",
+      "no": "NO.001",
+      "name": "迪莫",
+      "trait": {
+        "name": "最好的伙伴",
+        "description": "造成克制伤害后，获得攻防速+20%，并回复2能量。",
+        "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0b/3n6tt0mfpgne1cyektvv5bin1apvx4m.png/48px-Feature_200191.png"
+      },
+      "skills": [
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "普通",
+          "name": "猛烈撞击",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "头比计划先达到目的地。",
+          "unlock": "解锁：Lv.1",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/76/fuif8wzjojl0lfi0a0n54vfuiw78mh9.png/56px-Skill_700001.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%8C%9B%E7%83%88%E6%92%9E%E5%87%BB"
+        },
+        {
+          "sourceType": "默认",
+          "category": "防御",
+          "element": "普通",
+          "name": "防御",
+          "effect": "减伤70%，应对攻击。",
+          "story": "",
+          "unlock": "解锁：Lv.1",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f3/f2rqxcbl1nqxcsuz8qf73zp40vsfbwl.png/56px-Skill_700023.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%98%B2%E5%BE%A1"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "闪光",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "米特族存在人口断层，原因尚不得而知。",
+          "unlock": "解锁：Lv.1",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/1c/rk8i4pp5wmm7wkd5y8gd7ar0lxiyozr.png/56px-Skill_704002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%97%AA%E5%85%89"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "普通",
+          "name": "魔法增效",
+          "effect": "自己获得魔攻+70%。",
+          "story": "",
+          "unlock": "解锁：Lv.7",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/c/ce/nrv1a9f6ed7qxkndpyep2141radkads.png/56px-Skill_700020.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%AD%94%E6%B3%95%E5%A2%9E%E6%95%88"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "光球",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "一颗未孵化的星辰。",
+          "unlock": "解锁：Lv.9",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/08/3xt4r2ovpqtbaehbo5bej4541uwilmd.png/56px-Skill_105008.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%85%89%E7%90%83"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "火",
+          "name": "火焰箭",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.11",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/1a/5xeddeesy8nsrly0xkcjf51zzbxrppg.png/56px-Skill_103026.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%81%AB%E7%84%B0%E7%AE%AD"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "普通",
+          "name": "力量增效",
+          "effect": "自己获得物攻+100%。",
+          "story": "",
+          "unlock": "解锁：Lv.13",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/87/40a4gold9pngys98nd3pj7g4fr24mrp.png/56px-Skill_700021.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%8A%9B%E9%87%8F%E5%A2%9E%E6%95%88"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "草",
+          "name": "棘突",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.16",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/77/bn963nlyryk5isx6c2ejojkvuq0ajwg.png/56px-Skill_102027.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%A3%98%E7%AA%81"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "水",
+          "name": "潮涌",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.19",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8e/mpsl8040d4uay2vpax4o6cgcvb5342m.png/56px-Skill_104025.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%BD%AE%E6%B6%8C"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "电",
+          "name": "超导",
+          "effect": "造成魔伤，迸发：本技能能耗-1。",
+          "story": "",
+          "unlock": "解锁：Lv.22",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8a/gq0v35ph2wifrd04ms3lx0o63v1acrm.png/56px-Skill_711002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%B6%85%E5%AF%BC"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "光",
+          "name": "闪光冲击",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.27",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/b/b3/mxprse1lz1c3qih463n1lt9cj4e8o21.png/56px-Skill_704003.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%97%AA%E5%85%89%E5%86%B2%E5%87%BB"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "光",
+          "name": "漫反射",
+          "effect": "每种系别中的至多1个技能，威力+35。",
+          "story": "",
+          "unlock": "解锁：Lv.30",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/61/76r9kxe7w48frunuc7lirqys8712pt2.png/56px-Skill_706008.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%BC%AB%E5%8F%8D%E5%B0%84"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "冰",
+          "name": "冰爪",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.32",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/48/86vdvdx20ejvg8ubyohpdb02evwfxip.png/56px-Skill_108020.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%86%B0%E7%88%AA"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "地",
+          "name": "热砂",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.34",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/9/9a/6nn4wj9995n8m8ix24gm9x4f81bljp9.png/56px-Skill_107026.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%83%AD%E7%A0%82"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "幻",
+          "name": "念力膨胀",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "曾有洛克企图用愿力重塑现实，但他毕竟只是凡人。",
+          "unlock": "解锁：Lv.36",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/aa/fn438yz25t2idjtaa01esii83qode4s.png/56px-Skill_719008.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%BF%B5%E5%8A%9B%E8%86%A8%E8%83%80"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "光",
+          "name": "放晴",
+          "effect": "光系技能威力永久+50%，应对防御：改为永久+100%。",
+          "story": "光系研究员的最高杰作——让光最终的归处，与自然融为一体，变成晴天。",
+          "unlock": "解锁：Lv.40",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8a/3laah6g5g3x1z19gtzq4zw5ylt6jdin.png/56px-Skill_205017.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%94%BE%E6%99%B4"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "过曝",
+          "effect": "造成魔伤，每使用过1个其他系别技能，本技能威力永久+30。",
+          "story": "",
+          "unlock": "解锁：Lv.42",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/08/gyxcbca5jht97lsikmm9twzte1368ov.png/56px-Skill_704005.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%BF%87%E6%9B%9D"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "光",
+          "name": "光刃",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "高能量的离子束，一不小心就会划伤皮肤，让粗心的研究员深受其害。",
+          "unlock": "解锁：Lv.47",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8c/01ynjc53ldqoqw9fpmfu4708m34hrpi.png/56px-Skill_105010.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%85%89%E5%88%83"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "折射",
+          "effect": "造成魔伤，携带其他系别技能会给本技能带来不同效果。",
+          "story": "",
+          "unlock": "解锁：Lv.48",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/05/tdznmuovgdq3mjd6irt07urnnbnbrlr.png/56px-Skill_706009.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%8A%98%E5%B0%84"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "普通",
+          "name": "星星撞击",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：普通系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/1f/plpw7xy678ozjdkbcoycjw5hgxn1lr0.png/56px-Skill_101073.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%98%9F%E6%98%9F%E6%92%9E%E5%87%BB"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "草",
+          "name": "花香",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：草系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f6/epjcco8q39605shxhex6nnrva8rs5u2.png/56px-Skill_102026.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%8A%B1%E9%A6%99"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "火",
+          "name": "火焰冲锋",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：火系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/aa/o2easqobfvvo1w8txawaoksgzlbnu3k.png/56px-Skill_704010.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%81%AB%E7%84%B0%E5%86%B2%E9%94%8B"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "水",
+          "name": "泡沫",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "白的、轻的、易碎的。",
+          "unlock": "解锁：水系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/e/eb/7qxig0ovpou7q1byo5x5w8gqkit4x0x.png/56px-Skill_104022.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B3%A1%E6%B2%AB"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "光",
+          "name": "折线冲击",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：光系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/aa/lwwn0660hdl1dps22w0fsha0owoxloh.png/56px-Skill_105013.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%8A%98%E7%BA%BF%E5%86%B2%E5%87%BB"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "地",
+          "name": "扬沙",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "聚沙，成塔，成为利刃。",
+          "unlock": "解锁：地系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/5/5b/hsk9lwc9rgmbpg74dkosj6isxfz5grn.png/56px-Skill_708015.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%89%AC%E6%B2%99"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "冰",
+          "name": "冷风",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：冰系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/67/4vnh6y0ojjm3mcuc98lpl86b4vcxbb3.png/56px-Skill_108019.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%86%B7%E9%A3%8E"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "龙",
+          "name": "升龙咆哮",
+          "effect": "蓄力，对敌方造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：龙系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0d/iagtiwvtsi68z04uqtjny6m1oxcgiw8.png/56px-Skill_710004.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%8D%87%E9%BE%99%E5%92%86%E5%93%AE"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "电",
+          "name": "球状闪电",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：电系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0f/3on0bmubebn9isrfa4jxz6cr3m8gi57.png/56px-Skill_110015.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%90%83%E7%8A%B6%E9%97%AA%E7%94%B5"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "毒",
+          "name": "溃烂触碰",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：毒系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/19/lewxxlol8ereubioww482pg7yv4fnaw.png/56px-Skill_111016.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%BA%83%E7%83%82%E8%A7%A6%E7%A2%B0"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "虫",
+          "name": "噬心",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：虫系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/e/e2/lc1p5dtcquidrdgayqezpgi8wau33gp.png/56px-Skill_112018.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%99%AC%E5%BF%83"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "武",
+          "name": "缠丝劲",
+          "effect": "造成物伤，2连击。",
+          "story": "",
+          "unlock": "解锁：武系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/ac/dhhzm1q035biz0yn93t73vu4t98akd2.png/56px-Skill_113027.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%BC%A0%E4%B8%9D%E5%8A%B2"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "翼",
+          "name": "鹰爪",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：翼系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/a3/92ue18779747d6y66f13wf7wq5mfb8q.png/56px-Skill_114014.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%B9%B0%E7%88%AA"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "萌",
+          "name": "魅惑",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：萌系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f2/cy6a3n6pj9a2ucjno1c7vmgy26k7ijd.png/56px-Skill_115011.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%AD%85%E6%83%91"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "幽",
+          "name": "幻象",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：幽系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/60/dq1soz3umgaofmmuids5zwwlhk00fza.png/56px-Skill_116014.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%B9%BB%E8%B1%A1"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "恶",
+          "name": "恶能量",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "没有恶意的恶。",
+          "unlock": "解锁：恶系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/72/rloy84pn78aasuju8focyqwopw6bsnt.png/56px-Skill_718013.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%81%B6%E8%83%BD%E9%87%8F"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "机械",
+          "name": "离子震荡",
+          "effect": "造成魔伤，本技能位于3号位时威力+40，传动1。",
+          "story": "",
+          "unlock": "解锁：机械系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8f/3gznppkotebgtnet339bm4pj522zb2m.png/56px-Skill_106011.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%A6%BB%E5%AD%90%E9%9C%87%E8%8D%A1"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "幻",
+          "name": "星云漩涡",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：幻系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/3/3e/ezgzeq2qn4no0ppfomwb5d34uzlukmr.png/56px-Skill_118018.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%98%9F%E4%BA%91%E6%BC%A9%E6%B6%A1"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "水",
+          "name": "气泡",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：[技能石] 气泡",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/9/91/ospywjlp16hj57sgxw2fx2gykgec02z.png/56px-Skill_703102.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B0%94%E6%B3%A1"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "水",
+          "name": "天洪",
+          "effect": "造成魔伤，应对状态：本技能能耗永久-6。",
+          "story": "月兔暗港最好的水手，可以让船在洪水风暴里张满帆。",
+          "unlock": "解锁：[技能石] 天洪",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/44/nusa9tayik92wm8m36rh9200644bhqc.png/56px-Skill_705015.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%A4%A9%E6%B4%AA"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "水",
+          "name": "润泽",
+          "effect": "自己获得魔攻+190%。",
+          "story": "水就挨着陆地，摸到水就摸到了世界的尽头。",
+          "unlock": "解锁：[技能石] 润泽",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/79/7oqv1pnw1b3zjfnjq7ljv8mgrhc2qt5.png/56px-Skill_104001.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B6%A6%E6%B3%BD"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "火",
+          "name": "炎打",
+          "effect": "造成高额魔法伤害，自己获得物防-40%。",
+          "story": "进攻是最好的防守",
+          "unlock": "解锁：[技能石] 炎打",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2e/2i66banutj8sdqpyk5wyi30unv9v0ka.png/56px-Skill_103032.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%82%8E%E6%89%93"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "火",
+          "name": "闪燃",
+          "effect": "造成物伤，应对状态：本次技能威力变为4倍。",
+          "story": "火系部族最基础的手法，让烈火在最正确的地方出现。",
+          "unlock": "解锁：[技能石] 闪燃",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/79/nmmfyhf55f96ze72du00grx7cfbcg57.png/56px-Skill_704013.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%97%AA%E7%87%83"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "火",
+          "name": "怒火",
+          "effect": "自己获得双攻+120%和双防-40%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 怒火",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f3/93pty6a5kocy6f166kzagtdlvtiobip.png/56px-Skill_103033.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%80%92%E7%81%AB"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "草",
+          "name": "藤绞",
+          "effect": "造成物伤，自己回复5能量。",
+          "story": "",
+          "unlock": "解锁：[技能石] 藤绞",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/4c/nerl75v95pedrt9ptmhbghswv2qw651.png/56px-Skill_703020.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%97%A4%E7%BB%9E"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "草",
+          "name": "抽枝",
+          "effect": "造成物伤，应对状态：自己回复50%生命和5能量。",
+          "story": "",
+          "unlock": "解锁：[技能石] 抽枝",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/c/cc/oa9iknqsw1uprq7hd3s71g3g8ret7x8.png/56px-Skill_102038.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%8A%BD%E6%9E%9D"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "草",
+          "name": "氧输送",
+          "effect": "自己回复4能量，并获得魔攻+70%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 氧输送",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/48/4ttba4pifi8q8thvhmqqqk2ldayip6l.png/56px-Skill_703012.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B0%A7%E8%BE%93%E9%80%81"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "电",
+          "name": "电弧",
+          "effect": "造成物伤，迸发：本次技能威力+40。",
+          "story": "",
+          "unlock": "解锁：[技能石] 电弧",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/79/rln6cl56ujkz851y38skmolkmmucj2h.png/56px-Skill_110002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%94%B5%E5%BC%A7"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "地",
+          "name": "跺地",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：[技能石] 跺地",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0c/3udtbkc9at79hxiwtwa98fsgupp2h3r.png/56px-Skill_708012.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%B7%BA%E5%9C%B0"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "幻",
+          "name": "坍缩",
+          "effect": "造成魔伤，若击败敌方，自己获得魔攻+70%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 坍缩",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/68/clyh4jsteik36qhedhb2dc0eqa2z64j.png/56px-Skill_719011.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%9D%8D%E7%BC%A9"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "冰",
+          "name": "寒风吹",
+          "effect": "造成魔伤，敌方获得魔防-50%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 寒风吹",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f1/eatfcpkcrfejznn22tbv5ehjsbog7ao.png/56px-Skill_108024.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%AF%92%E9%A3%8E%E5%90%B9"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "普通",
+          "name": "借用",
+          "effect": "每回合随机变成己方队伍中其他精灵的技能。",
+          "story": "",
+          "unlock": "解锁：[技能石] 借用",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/b/bc/qrm05tyol3wgoew2gejrqk8nl1fzifk.png/56px-Skill_700029.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%80%9F%E7%94%A8"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "防御",
+          "element": "普通",
+          "name": "有效预防",
+          "effect": "减伤50%，应对攻击：下一次行动获得先手+1。",
+          "story": "",
+          "unlock": "解锁：[技能石] 有效预防",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/7f/6i3jf44jtbru4tuf4vem3j3oi6lwoqn.png/56px-Skill_201094.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%9C%89%E6%95%88%E9%A2%84%E9%98%B2"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "幽",
+          "name": "恐吓",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "做了个噩梦，老师说如果我如果下次再上课睡觉的话，就让我的魔力之源永远不能回复魔力。",
+          "unlock": "解锁：[技能石] 恐吓",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/5/5e/2r7m8us6zs3ujeqkp2u3xkrt98k5cmi.png/56px-Skill_705002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%81%90%E5%90%93"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣光迪莫",
+          "linkName": "圣光迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2c/7qezwl2nb2ymfw4dos2vu163szd9p2h.png/160px-JL_shengguangdimo.png"
+        },
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣草迪莫",
+          "linkName": "圣草迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/11/dfjw0rmtvjca55818p4zrv3rgh53wuc.png/160px-JL_shengcaodimo.png"
+        },
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣火迪莫",
+          "linkName": "圣火迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f0/f9i1rwu00yct36m8hwm9lra0kkjcry0.png/160px-JL_shenghuodimo.png"
+        },
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣水迪莫",
+          "linkName": "圣水迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/69/h6he56fvj9hogroxuwde360noeykscr.png/160px-JL_shengshuidimo.png"
+        }
+      ],
+      "counts": {
+        "skills": 53,
+        "defaultSkills": 19,
+        "bloodlineSkills": 18,
+        "skillStoneSkills": 16,
+        "evolutionSteps": 8,
+        "hasTraitDescription": true
+      }
+    },
+    {
+      "source": "bwiki-creature-detail",
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%9C%A3%E5%85%89%E8%BF%AA%E8%8E%AB",
+      "no": "NO.001",
+      "name": "圣光迪莫",
+      "trait": {
+        "name": "裁决",
+        "description": "造成克制伤害后，获得攻防速+20%，回复2能量，首个技能替换为光系愿力冲击。",
+        "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0b/3n6tt0mfpgne1cyektvv5bin1apvx4m.png/48px-Feature_200191.png"
+      },
+      "skills": [
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "普通",
+          "name": "猛烈撞击",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "头比计划先达到目的地。",
+          "unlock": "解锁：Lv.1",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/76/fuif8wzjojl0lfi0a0n54vfuiw78mh9.png/56px-Skill_700001.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%8C%9B%E7%83%88%E6%92%9E%E5%87%BB"
+        },
+        {
+          "sourceType": "默认",
+          "category": "防御",
+          "element": "普通",
+          "name": "防御",
+          "effect": "减伤70%，应对攻击。",
+          "story": "",
+          "unlock": "解锁：Lv.1",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f3/f2rqxcbl1nqxcsuz8qf73zp40vsfbwl.png/56px-Skill_700023.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%98%B2%E5%BE%A1"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "闪光",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "米特族存在人口断层，原因尚不得而知。",
+          "unlock": "解锁：Lv.1",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/1c/rk8i4pp5wmm7wkd5y8gd7ar0lxiyozr.png/56px-Skill_704002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%97%AA%E5%85%89"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "普通",
+          "name": "魔法增效",
+          "effect": "自己获得魔攻+70%。",
+          "story": "",
+          "unlock": "解锁：Lv.7",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/c/ce/nrv1a9f6ed7qxkndpyep2141radkads.png/56px-Skill_700020.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%AD%94%E6%B3%95%E5%A2%9E%E6%95%88"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "光球",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "一颗未孵化的星辰。",
+          "unlock": "解锁：Lv.9",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/08/3xt4r2ovpqtbaehbo5bej4541uwilmd.png/56px-Skill_105008.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%85%89%E7%90%83"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "火",
+          "name": "火焰箭",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.11",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/1a/5xeddeesy8nsrly0xkcjf51zzbxrppg.png/56px-Skill_103026.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%81%AB%E7%84%B0%E7%AE%AD"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "普通",
+          "name": "力量增效",
+          "effect": "自己获得物攻+100%。",
+          "story": "",
+          "unlock": "解锁：Lv.13",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/87/40a4gold9pngys98nd3pj7g4fr24mrp.png/56px-Skill_700021.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%8A%9B%E9%87%8F%E5%A2%9E%E6%95%88"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "草",
+          "name": "棘突",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.16",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/77/bn963nlyryk5isx6c2ejojkvuq0ajwg.png/56px-Skill_102027.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%A3%98%E7%AA%81"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "水",
+          "name": "潮涌",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.19",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8e/mpsl8040d4uay2vpax4o6cgcvb5342m.png/56px-Skill_104025.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%BD%AE%E6%B6%8C"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "电",
+          "name": "超导",
+          "effect": "造成魔伤，迸发：本技能能耗-1。",
+          "story": "",
+          "unlock": "解锁：Lv.22",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8a/gq0v35ph2wifrd04ms3lx0o63v1acrm.png/56px-Skill_711002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%B6%85%E5%AF%BC"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "光",
+          "name": "闪光冲击",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.27",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/b/b3/mxprse1lz1c3qih463n1lt9cj4e8o21.png/56px-Skill_704003.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%97%AA%E5%85%89%E5%86%B2%E5%87%BB"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "光",
+          "name": "漫反射",
+          "effect": "每种系别中的至多1个技能，威力+35。",
+          "story": "",
+          "unlock": "解锁：Lv.30",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/61/76r9kxe7w48frunuc7lirqys8712pt2.png/56px-Skill_706008.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%BC%AB%E5%8F%8D%E5%B0%84"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "冰",
+          "name": "冰爪",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.32",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/48/86vdvdx20ejvg8ubyohpdb02evwfxip.png/56px-Skill_108020.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%86%B0%E7%88%AA"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "地",
+          "name": "热砂",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.34",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/9/9a/6nn4wj9995n8m8ix24gm9x4f81bljp9.png/56px-Skill_107026.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%83%AD%E7%A0%82"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "幻",
+          "name": "念力膨胀",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "曾有洛克企图用愿力重塑现实，但他毕竟只是凡人。",
+          "unlock": "解锁：Lv.36",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/aa/fn438yz25t2idjtaa01esii83qode4s.png/56px-Skill_719008.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%BF%B5%E5%8A%9B%E8%86%A8%E8%83%80"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "光",
+          "name": "放晴",
+          "effect": "光系技能威力永久+50%，应对防御：改为永久+100%。",
+          "story": "光系研究员的最高杰作——让光最终的归处，与自然融为一体，变成晴天。",
+          "unlock": "解锁：Lv.40",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8a/3laah6g5g3x1z19gtzq4zw5ylt6jdin.png/56px-Skill_205017.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%94%BE%E6%99%B4"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "过曝",
+          "effect": "造成魔伤，每使用过1个其他系别技能，本技能威力永久+30。",
+          "story": "",
+          "unlock": "解锁：Lv.42",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/08/gyxcbca5jht97lsikmm9twzte1368ov.png/56px-Skill_704005.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%BF%87%E6%9B%9D"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "光",
+          "name": "光刃",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "高能量的离子束，一不小心就会划伤皮肤，让粗心的研究员深受其害。",
+          "unlock": "解锁：Lv.47",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8c/01ynjc53ldqoqw9fpmfu4708m34hrpi.png/56px-Skill_105010.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%85%89%E5%88%83"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "折射",
+          "effect": "造成魔伤，携带其他系别技能会给本技能带来不同效果。",
+          "story": "",
+          "unlock": "解锁：Lv.48",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/05/tdznmuovgdq3mjd6irt07urnnbnbrlr.png/56px-Skill_706009.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%8A%98%E5%B0%84"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "普通",
+          "name": "星星撞击",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：普通系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/1f/plpw7xy678ozjdkbcoycjw5hgxn1lr0.png/56px-Skill_101073.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%98%9F%E6%98%9F%E6%92%9E%E5%87%BB"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "草",
+          "name": "花香",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：草系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f6/epjcco8q39605shxhex6nnrva8rs5u2.png/56px-Skill_102026.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%8A%B1%E9%A6%99"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "火",
+          "name": "火焰冲锋",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：火系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/aa/o2easqobfvvo1w8txawaoksgzlbnu3k.png/56px-Skill_704010.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%81%AB%E7%84%B0%E5%86%B2%E9%94%8B"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "水",
+          "name": "泡沫",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "白的、轻的、易碎的。",
+          "unlock": "解锁：水系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/e/eb/7qxig0ovpou7q1byo5x5w8gqkit4x0x.png/56px-Skill_104022.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B3%A1%E6%B2%AB"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "光",
+          "name": "折线冲击",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：光系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/aa/lwwn0660hdl1dps22w0fsha0owoxloh.png/56px-Skill_105013.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%8A%98%E7%BA%BF%E5%86%B2%E5%87%BB"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "地",
+          "name": "扬沙",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "聚沙，成塔，成为利刃。",
+          "unlock": "解锁：地系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/5/5b/hsk9lwc9rgmbpg74dkosj6isxfz5grn.png/56px-Skill_708015.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%89%AC%E6%B2%99"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "冰",
+          "name": "冷风",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：冰系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/67/4vnh6y0ojjm3mcuc98lpl86b4vcxbb3.png/56px-Skill_108019.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%86%B7%E9%A3%8E"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "龙",
+          "name": "升龙咆哮",
+          "effect": "蓄力，对敌方造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：龙系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0d/iagtiwvtsi68z04uqtjny6m1oxcgiw8.png/56px-Skill_710004.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%8D%87%E9%BE%99%E5%92%86%E5%93%AE"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "电",
+          "name": "球状闪电",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：电系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0f/3on0bmubebn9isrfa4jxz6cr3m8gi57.png/56px-Skill_110015.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%90%83%E7%8A%B6%E9%97%AA%E7%94%B5"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "毒",
+          "name": "溃烂触碰",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：毒系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/19/lewxxlol8ereubioww482pg7yv4fnaw.png/56px-Skill_111016.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%BA%83%E7%83%82%E8%A7%A6%E7%A2%B0"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "虫",
+          "name": "噬心",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：虫系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/e/e2/lc1p5dtcquidrdgayqezpgi8wau33gp.png/56px-Skill_112018.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%99%AC%E5%BF%83"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "武",
+          "name": "缠丝劲",
+          "effect": "造成物伤，2连击。",
+          "story": "",
+          "unlock": "解锁：武系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/ac/dhhzm1q035biz0yn93t73vu4t98akd2.png/56px-Skill_113027.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%BC%A0%E4%B8%9D%E5%8A%B2"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "翼",
+          "name": "鹰爪",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：翼系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/a3/92ue18779747d6y66f13wf7wq5mfb8q.png/56px-Skill_114014.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%B9%B0%E7%88%AA"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "萌",
+          "name": "魅惑",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：萌系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f2/cy6a3n6pj9a2ucjno1c7vmgy26k7ijd.png/56px-Skill_115011.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%AD%85%E6%83%91"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "幽",
+          "name": "幻象",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：幽系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/60/dq1soz3umgaofmmuids5zwwlhk00fza.png/56px-Skill_116014.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%B9%BB%E8%B1%A1"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "恶",
+          "name": "恶能量",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "没有恶意的恶。",
+          "unlock": "解锁：恶系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/72/rloy84pn78aasuju8focyqwopw6bsnt.png/56px-Skill_718013.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%81%B6%E8%83%BD%E9%87%8F"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "机械",
+          "name": "离子震荡",
+          "effect": "造成魔伤，本技能位于3号位时威力+40，传动1。",
+          "story": "",
+          "unlock": "解锁：机械系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8f/3gznppkotebgtnet339bm4pj522zb2m.png/56px-Skill_106011.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%A6%BB%E5%AD%90%E9%9C%87%E8%8D%A1"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "幻",
+          "name": "星云漩涡",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：幻系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/3/3e/ezgzeq2qn4no0ppfomwb5d34uzlukmr.png/56px-Skill_118018.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%98%9F%E4%BA%91%E6%BC%A9%E6%B6%A1"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "水",
+          "name": "气泡",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：[技能石] 气泡",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/9/91/ospywjlp16hj57sgxw2fx2gykgec02z.png/56px-Skill_703102.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B0%94%E6%B3%A1"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "水",
+          "name": "天洪",
+          "effect": "造成魔伤，应对状态：本技能能耗永久-6。",
+          "story": "月兔暗港最好的水手，可以让船在洪水风暴里张满帆。",
+          "unlock": "解锁：[技能石] 天洪",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/44/nusa9tayik92wm8m36rh9200644bhqc.png/56px-Skill_705015.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%A4%A9%E6%B4%AA"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "水",
+          "name": "润泽",
+          "effect": "自己获得魔攻+190%。",
+          "story": "水就挨着陆地，摸到水就摸到了世界的尽头。",
+          "unlock": "解锁：[技能石] 润泽",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/79/7oqv1pnw1b3zjfnjq7ljv8mgrhc2qt5.png/56px-Skill_104001.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B6%A6%E6%B3%BD"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "火",
+          "name": "炎打",
+          "effect": "造成高额魔法伤害，自己获得物防-40%。",
+          "story": "进攻是最好的防守",
+          "unlock": "解锁：[技能石] 炎打",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2e/2i66banutj8sdqpyk5wyi30unv9v0ka.png/56px-Skill_103032.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%82%8E%E6%89%93"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "火",
+          "name": "闪燃",
+          "effect": "造成物伤，应对状态：本次技能威力变为4倍。",
+          "story": "火系部族最基础的手法，让烈火在最正确的地方出现。",
+          "unlock": "解锁：[技能石] 闪燃",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/79/nmmfyhf55f96ze72du00grx7cfbcg57.png/56px-Skill_704013.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%97%AA%E7%87%83"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "火",
+          "name": "怒火",
+          "effect": "自己获得双攻+120%和双防-40%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 怒火",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f3/93pty6a5kocy6f166kzagtdlvtiobip.png/56px-Skill_103033.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%80%92%E7%81%AB"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "草",
+          "name": "藤绞",
+          "effect": "造成物伤，自己回复5能量。",
+          "story": "",
+          "unlock": "解锁：[技能石] 藤绞",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/4c/nerl75v95pedrt9ptmhbghswv2qw651.png/56px-Skill_703020.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%97%A4%E7%BB%9E"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "草",
+          "name": "抽枝",
+          "effect": "造成物伤，应对状态：自己回复50%生命和5能量。",
+          "story": "",
+          "unlock": "解锁：[技能石] 抽枝",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/c/cc/oa9iknqsw1uprq7hd3s71g3g8ret7x8.png/56px-Skill_102038.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%8A%BD%E6%9E%9D"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "草",
+          "name": "氧输送",
+          "effect": "自己回复4能量，并获得魔攻+70%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 氧输送",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/48/4ttba4pifi8q8thvhmqqqk2ldayip6l.png/56px-Skill_703012.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B0%A7%E8%BE%93%E9%80%81"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "电",
+          "name": "电弧",
+          "effect": "造成物伤，迸发：本次技能威力+40。",
+          "story": "",
+          "unlock": "解锁：[技能石] 电弧",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/79/rln6cl56ujkz851y38skmolkmmucj2h.png/56px-Skill_110002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%94%B5%E5%BC%A7"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "地",
+          "name": "跺地",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：[技能石] 跺地",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0c/3udtbkc9at79hxiwtwa98fsgupp2h3r.png/56px-Skill_708012.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%B7%BA%E5%9C%B0"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "幻",
+          "name": "坍缩",
+          "effect": "造成魔伤，若击败敌方，自己获得魔攻+70%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 坍缩",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/68/clyh4jsteik36qhedhb2dc0eqa2z64j.png/56px-Skill_719011.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%9D%8D%E7%BC%A9"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "冰",
+          "name": "寒风吹",
+          "effect": "造成魔伤，敌方获得魔防-50%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 寒风吹",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f1/eatfcpkcrfejznn22tbv5ehjsbog7ao.png/56px-Skill_108024.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%AF%92%E9%A3%8E%E5%90%B9"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "普通",
+          "name": "借用",
+          "effect": "每回合随机变成己方队伍中其他精灵的技能。",
+          "story": "",
+          "unlock": "解锁：[技能石] 借用",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/b/bc/qrm05tyol3wgoew2gejrqk8nl1fzifk.png/56px-Skill_700029.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%80%9F%E7%94%A8"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "防御",
+          "element": "普通",
+          "name": "有效预防",
+          "effect": "减伤50%，应对攻击：下一次行动获得先手+1。",
+          "story": "",
+          "unlock": "解锁：[技能石] 有效预防",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/7f/6i3jf44jtbru4tuf4vem3j3oi6lwoqn.png/56px-Skill_201094.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%9C%89%E6%95%88%E9%A2%84%E9%98%B2"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "幽",
+          "name": "恐吓",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "做了个噩梦，老师说如果我如果下次再上课睡觉的话，就让我的魔力之源永远不能回复魔力。",
+          "unlock": "解锁：[技能石] 恐吓",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/5/5e/2r7m8us6zs3ujeqkp2u3xkrt98k5cmi.png/56px-Skill_705002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%81%90%E5%90%93"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣光迪莫",
+          "linkName": "圣光迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2c/7qezwl2nb2ymfw4dos2vu163szd9p2h.png/160px-JL_shengguangdimo.png"
+        },
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣草迪莫",
+          "linkName": "圣草迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/11/dfjw0rmtvjca55818p4zrv3rgh53wuc.png/160px-JL_shengcaodimo.png"
+        },
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣火迪莫",
+          "linkName": "圣火迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f0/f9i1rwu00yct36m8hwm9lra0kkjcry0.png/160px-JL_shenghuodimo.png"
+        },
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣水迪莫",
+          "linkName": "圣水迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/69/h6he56fvj9hogroxuwde360noeykscr.png/160px-JL_shengshuidimo.png"
+        }
+      ],
+      "counts": {
+        "skills": 53,
+        "defaultSkills": 19,
+        "bloodlineSkills": 18,
+        "skillStoneSkills": 16,
+        "evolutionSteps": 8,
+        "hasTraitDescription": true
+      }
+    },
+    {
+      "source": "bwiki-creature-detail",
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%9C%A3%E8%8D%89%E8%BF%AA%E8%8E%AB",
+      "no": "NO.001",
+      "name": "圣草迪莫",
+      "trait": {
+        "name": "滋养",
+        "description": "造成克制伤害后，获得攻防速+20%，回复2能量，首个技能替换为草系愿力冲击。",
+        "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0b/3n6tt0mfpgne1cyektvv5bin1apvx4m.png/48px-Feature_200191.png"
+      },
+      "skills": [
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "普通",
+          "name": "猛烈撞击",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "头比计划先达到目的地。",
+          "unlock": "解锁：Lv.1",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/76/fuif8wzjojl0lfi0a0n54vfuiw78mh9.png/56px-Skill_700001.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%8C%9B%E7%83%88%E6%92%9E%E5%87%BB"
+        },
+        {
+          "sourceType": "默认",
+          "category": "防御",
+          "element": "普通",
+          "name": "防御",
+          "effect": "减伤70%，应对攻击。",
+          "story": "",
+          "unlock": "解锁：Lv.1",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f3/f2rqxcbl1nqxcsuz8qf73zp40vsfbwl.png/56px-Skill_700023.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%98%B2%E5%BE%A1"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "闪光",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "米特族存在人口断层，原因尚不得而知。",
+          "unlock": "解锁：Lv.1",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/1c/rk8i4pp5wmm7wkd5y8gd7ar0lxiyozr.png/56px-Skill_704002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%97%AA%E5%85%89"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "普通",
+          "name": "魔法增效",
+          "effect": "自己获得魔攻+70%。",
+          "story": "",
+          "unlock": "解锁：Lv.7",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/c/ce/nrv1a9f6ed7qxkndpyep2141radkads.png/56px-Skill_700020.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%AD%94%E6%B3%95%E5%A2%9E%E6%95%88"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "光球",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "一颗未孵化的星辰。",
+          "unlock": "解锁：Lv.9",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/08/3xt4r2ovpqtbaehbo5bej4541uwilmd.png/56px-Skill_105008.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%85%89%E7%90%83"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "火",
+          "name": "火焰箭",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.11",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/1a/5xeddeesy8nsrly0xkcjf51zzbxrppg.png/56px-Skill_103026.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%81%AB%E7%84%B0%E7%AE%AD"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "普通",
+          "name": "力量增效",
+          "effect": "自己获得物攻+100%。",
+          "story": "",
+          "unlock": "解锁：Lv.13",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/87/40a4gold9pngys98nd3pj7g4fr24mrp.png/56px-Skill_700021.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%8A%9B%E9%87%8F%E5%A2%9E%E6%95%88"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "草",
+          "name": "棘突",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.16",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/77/bn963nlyryk5isx6c2ejojkvuq0ajwg.png/56px-Skill_102027.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%A3%98%E7%AA%81"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "水",
+          "name": "潮涌",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.19",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8e/mpsl8040d4uay2vpax4o6cgcvb5342m.png/56px-Skill_104025.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%BD%AE%E6%B6%8C"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "电",
+          "name": "超导",
+          "effect": "造成魔伤，迸发：本技能能耗-1。",
+          "story": "",
+          "unlock": "解锁：Lv.22",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8a/gq0v35ph2wifrd04ms3lx0o63v1acrm.png/56px-Skill_711002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%B6%85%E5%AF%BC"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "光",
+          "name": "闪光冲击",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.27",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/b/b3/mxprse1lz1c3qih463n1lt9cj4e8o21.png/56px-Skill_704003.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%97%AA%E5%85%89%E5%86%B2%E5%87%BB"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "光",
+          "name": "漫反射",
+          "effect": "每种系别中的至多1个技能，威力+35。",
+          "story": "",
+          "unlock": "解锁：Lv.30",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/61/76r9kxe7w48frunuc7lirqys8712pt2.png/56px-Skill_706008.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%BC%AB%E5%8F%8D%E5%B0%84"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "冰",
+          "name": "冰爪",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.32",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/48/86vdvdx20ejvg8ubyohpdb02evwfxip.png/56px-Skill_108020.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%86%B0%E7%88%AA"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "地",
+          "name": "热砂",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.34",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/9/9a/6nn4wj9995n8m8ix24gm9x4f81bljp9.png/56px-Skill_107026.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%83%AD%E7%A0%82"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "幻",
+          "name": "念力膨胀",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "曾有洛克企图用愿力重塑现实，但他毕竟只是凡人。",
+          "unlock": "解锁：Lv.36",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/aa/fn438yz25t2idjtaa01esii83qode4s.png/56px-Skill_719008.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%BF%B5%E5%8A%9B%E8%86%A8%E8%83%80"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "光",
+          "name": "放晴",
+          "effect": "光系技能威力永久+50%，应对防御：改为永久+100%。",
+          "story": "光系研究员的最高杰作——让光最终的归处，与自然融为一体，变成晴天。",
+          "unlock": "解锁：Lv.40",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8a/3laah6g5g3x1z19gtzq4zw5ylt6jdin.png/56px-Skill_205017.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%94%BE%E6%99%B4"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "过曝",
+          "effect": "造成魔伤，每使用过1个其他系别技能，本技能威力永久+30。",
+          "story": "",
+          "unlock": "解锁：Lv.42",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/08/gyxcbca5jht97lsikmm9twzte1368ov.png/56px-Skill_704005.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%BF%87%E6%9B%9D"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "光",
+          "name": "光刃",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "高能量的离子束，一不小心就会划伤皮肤，让粗心的研究员深受其害。",
+          "unlock": "解锁：Lv.47",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8c/01ynjc53ldqoqw9fpmfu4708m34hrpi.png/56px-Skill_105010.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%85%89%E5%88%83"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "折射",
+          "effect": "造成魔伤，携带其他系别技能会给本技能带来不同效果。",
+          "story": "",
+          "unlock": "解锁：Lv.48",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/05/tdznmuovgdq3mjd6irt07urnnbnbrlr.png/56px-Skill_706009.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%8A%98%E5%B0%84"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "普通",
+          "name": "星星撞击",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：普通系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/1f/plpw7xy678ozjdkbcoycjw5hgxn1lr0.png/56px-Skill_101073.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%98%9F%E6%98%9F%E6%92%9E%E5%87%BB"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "草",
+          "name": "花香",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：草系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f6/epjcco8q39605shxhex6nnrva8rs5u2.png/56px-Skill_102026.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%8A%B1%E9%A6%99"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "火",
+          "name": "火焰冲锋",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：火系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/aa/o2easqobfvvo1w8txawaoksgzlbnu3k.png/56px-Skill_704010.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%81%AB%E7%84%B0%E5%86%B2%E9%94%8B"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "水",
+          "name": "泡沫",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "白的、轻的、易碎的。",
+          "unlock": "解锁：水系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/e/eb/7qxig0ovpou7q1byo5x5w8gqkit4x0x.png/56px-Skill_104022.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B3%A1%E6%B2%AB"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "光",
+          "name": "折线冲击",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：光系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/aa/lwwn0660hdl1dps22w0fsha0owoxloh.png/56px-Skill_105013.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%8A%98%E7%BA%BF%E5%86%B2%E5%87%BB"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "地",
+          "name": "扬沙",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "聚沙，成塔，成为利刃。",
+          "unlock": "解锁：地系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/5/5b/hsk9lwc9rgmbpg74dkosj6isxfz5grn.png/56px-Skill_708015.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%89%AC%E6%B2%99"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "冰",
+          "name": "冷风",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：冰系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/67/4vnh6y0ojjm3mcuc98lpl86b4vcxbb3.png/56px-Skill_108019.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%86%B7%E9%A3%8E"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "龙",
+          "name": "升龙咆哮",
+          "effect": "蓄力，对敌方造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：龙系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0d/iagtiwvtsi68z04uqtjny6m1oxcgiw8.png/56px-Skill_710004.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%8D%87%E9%BE%99%E5%92%86%E5%93%AE"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "电",
+          "name": "球状闪电",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：电系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0f/3on0bmubebn9isrfa4jxz6cr3m8gi57.png/56px-Skill_110015.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%90%83%E7%8A%B6%E9%97%AA%E7%94%B5"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "毒",
+          "name": "溃烂触碰",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：毒系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/19/lewxxlol8ereubioww482pg7yv4fnaw.png/56px-Skill_111016.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%BA%83%E7%83%82%E8%A7%A6%E7%A2%B0"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "虫",
+          "name": "噬心",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：虫系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/e/e2/lc1p5dtcquidrdgayqezpgi8wau33gp.png/56px-Skill_112018.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%99%AC%E5%BF%83"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "武",
+          "name": "缠丝劲",
+          "effect": "造成物伤，2连击。",
+          "story": "",
+          "unlock": "解锁：武系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/ac/dhhzm1q035biz0yn93t73vu4t98akd2.png/56px-Skill_113027.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%BC%A0%E4%B8%9D%E5%8A%B2"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "翼",
+          "name": "鹰爪",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：翼系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/a3/92ue18779747d6y66f13wf7wq5mfb8q.png/56px-Skill_114014.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%B9%B0%E7%88%AA"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "萌",
+          "name": "魅惑",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：萌系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f2/cy6a3n6pj9a2ucjno1c7vmgy26k7ijd.png/56px-Skill_115011.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%AD%85%E6%83%91"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "幽",
+          "name": "幻象",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：幽系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/60/dq1soz3umgaofmmuids5zwwlhk00fza.png/56px-Skill_116014.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%B9%BB%E8%B1%A1"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "恶",
+          "name": "恶能量",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "没有恶意的恶。",
+          "unlock": "解锁：恶系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/72/rloy84pn78aasuju8focyqwopw6bsnt.png/56px-Skill_718013.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%81%B6%E8%83%BD%E9%87%8F"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "机械",
+          "name": "离子震荡",
+          "effect": "造成魔伤，本技能位于3号位时威力+40，传动1。",
+          "story": "",
+          "unlock": "解锁：机械系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8f/3gznppkotebgtnet339bm4pj522zb2m.png/56px-Skill_106011.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%A6%BB%E5%AD%90%E9%9C%87%E8%8D%A1"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "幻",
+          "name": "星云漩涡",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：幻系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/3/3e/ezgzeq2qn4no0ppfomwb5d34uzlukmr.png/56px-Skill_118018.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%98%9F%E4%BA%91%E6%BC%A9%E6%B6%A1"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "水",
+          "name": "气泡",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：[技能石] 气泡",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/9/91/ospywjlp16hj57sgxw2fx2gykgec02z.png/56px-Skill_703102.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B0%94%E6%B3%A1"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "水",
+          "name": "天洪",
+          "effect": "造成魔伤，应对状态：本技能能耗永久-6。",
+          "story": "月兔暗港最好的水手，可以让船在洪水风暴里张满帆。",
+          "unlock": "解锁：[技能石] 天洪",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/44/nusa9tayik92wm8m36rh9200644bhqc.png/56px-Skill_705015.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%A4%A9%E6%B4%AA"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "水",
+          "name": "润泽",
+          "effect": "自己获得魔攻+190%。",
+          "story": "水就挨着陆地，摸到水就摸到了世界的尽头。",
+          "unlock": "解锁：[技能石] 润泽",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/79/7oqv1pnw1b3zjfnjq7ljv8mgrhc2qt5.png/56px-Skill_104001.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B6%A6%E6%B3%BD"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "火",
+          "name": "炎打",
+          "effect": "造成高额魔法伤害，自己获得物防-40%。",
+          "story": "进攻是最好的防守",
+          "unlock": "解锁：[技能石] 炎打",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2e/2i66banutj8sdqpyk5wyi30unv9v0ka.png/56px-Skill_103032.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%82%8E%E6%89%93"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "火",
+          "name": "闪燃",
+          "effect": "造成物伤，应对状态：本次技能威力变为4倍。",
+          "story": "火系部族最基础的手法，让烈火在最正确的地方出现。",
+          "unlock": "解锁：[技能石] 闪燃",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/79/nmmfyhf55f96ze72du00grx7cfbcg57.png/56px-Skill_704013.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%97%AA%E7%87%83"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "火",
+          "name": "怒火",
+          "effect": "自己获得双攻+120%和双防-40%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 怒火",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f3/93pty6a5kocy6f166kzagtdlvtiobip.png/56px-Skill_103033.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%80%92%E7%81%AB"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "草",
+          "name": "藤绞",
+          "effect": "造成物伤，自己回复5能量。",
+          "story": "",
+          "unlock": "解锁：[技能石] 藤绞",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/4c/nerl75v95pedrt9ptmhbghswv2qw651.png/56px-Skill_703020.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%97%A4%E7%BB%9E"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "草",
+          "name": "抽枝",
+          "effect": "造成物伤，应对状态：自己回复50%生命和5能量。",
+          "story": "",
+          "unlock": "解锁：[技能石] 抽枝",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/c/cc/oa9iknqsw1uprq7hd3s71g3g8ret7x8.png/56px-Skill_102038.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%8A%BD%E6%9E%9D"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "草",
+          "name": "氧输送",
+          "effect": "自己回复4能量，并获得魔攻+70%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 氧输送",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/48/4ttba4pifi8q8thvhmqqqk2ldayip6l.png/56px-Skill_703012.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B0%A7%E8%BE%93%E9%80%81"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "电",
+          "name": "电弧",
+          "effect": "造成物伤，迸发：本次技能威力+40。",
+          "story": "",
+          "unlock": "解锁：[技能石] 电弧",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/79/rln6cl56ujkz851y38skmolkmmucj2h.png/56px-Skill_110002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%94%B5%E5%BC%A7"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "地",
+          "name": "跺地",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：[技能石] 跺地",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0c/3udtbkc9at79hxiwtwa98fsgupp2h3r.png/56px-Skill_708012.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%B7%BA%E5%9C%B0"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "幻",
+          "name": "坍缩",
+          "effect": "造成魔伤，若击败敌方，自己获得魔攻+70%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 坍缩",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/68/clyh4jsteik36qhedhb2dc0eqa2z64j.png/56px-Skill_719011.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%9D%8D%E7%BC%A9"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "冰",
+          "name": "寒风吹",
+          "effect": "造成魔伤，敌方获得魔防-50%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 寒风吹",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f1/eatfcpkcrfejznn22tbv5ehjsbog7ao.png/56px-Skill_108024.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%AF%92%E9%A3%8E%E5%90%B9"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "普通",
+          "name": "借用",
+          "effect": "每回合随机变成己方队伍中其他精灵的技能。",
+          "story": "",
+          "unlock": "解锁：[技能石] 借用",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/b/bc/qrm05tyol3wgoew2gejrqk8nl1fzifk.png/56px-Skill_700029.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%80%9F%E7%94%A8"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "防御",
+          "element": "普通",
+          "name": "有效预防",
+          "effect": "减伤50%，应对攻击：下一次行动获得先手+1。",
+          "story": "",
+          "unlock": "解锁：[技能石] 有效预防",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/7f/6i3jf44jtbru4tuf4vem3j3oi6lwoqn.png/56px-Skill_201094.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%9C%89%E6%95%88%E9%A2%84%E9%98%B2"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "幽",
+          "name": "恐吓",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "做了个噩梦，老师说如果我如果下次再上课睡觉的话，就让我的魔力之源永远不能回复魔力。",
+          "unlock": "解锁：[技能石] 恐吓",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/5/5e/2r7m8us6zs3ujeqkp2u3xkrt98k5cmi.png/56px-Skill_705002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%81%90%E5%90%93"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣光迪莫",
+          "linkName": "圣光迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2c/7qezwl2nb2ymfw4dos2vu163szd9p2h.png/160px-JL_shengguangdimo.png"
+        },
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣草迪莫",
+          "linkName": "圣草迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/11/dfjw0rmtvjca55818p4zrv3rgh53wuc.png/160px-JL_shengcaodimo.png"
+        },
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣火迪莫",
+          "linkName": "圣火迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f0/f9i1rwu00yct36m8hwm9lra0kkjcry0.png/160px-JL_shenghuodimo.png"
+        },
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣水迪莫",
+          "linkName": "圣水迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/69/h6he56fvj9hogroxuwde360noeykscr.png/160px-JL_shengshuidimo.png"
+        }
+      ],
+      "counts": {
+        "skills": 53,
+        "defaultSkills": 19,
+        "bloodlineSkills": 18,
+        "skillStoneSkills": 16,
+        "evolutionSteps": 8,
+        "hasTraitDescription": true
+      }
+    },
+    {
+      "source": "bwiki-creature-detail",
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%9C%A3%E7%81%AB%E8%BF%AA%E8%8E%AB",
+      "no": "NO.001",
+      "name": "圣火迪莫",
+      "trait": {
+        "name": "点燃",
+        "description": "造成克制伤害后，获得攻防速+20%，回复2能量，首个技能替换为火系愿力冲击。",
+        "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0b/3n6tt0mfpgne1cyektvv5bin1apvx4m.png/48px-Feature_200191.png"
+      },
+      "skills": [
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "普通",
+          "name": "猛烈撞击",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "头比计划先达到目的地。",
+          "unlock": "解锁：Lv.1",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/76/fuif8wzjojl0lfi0a0n54vfuiw78mh9.png/56px-Skill_700001.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%8C%9B%E7%83%88%E6%92%9E%E5%87%BB"
+        },
+        {
+          "sourceType": "默认",
+          "category": "防御",
+          "element": "普通",
+          "name": "防御",
+          "effect": "减伤70%，应对攻击。",
+          "story": "",
+          "unlock": "解锁：Lv.1",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f3/f2rqxcbl1nqxcsuz8qf73zp40vsfbwl.png/56px-Skill_700023.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%98%B2%E5%BE%A1"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "闪光",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "米特族存在人口断层，原因尚不得而知。",
+          "unlock": "解锁：Lv.1",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/1c/rk8i4pp5wmm7wkd5y8gd7ar0lxiyozr.png/56px-Skill_704002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%97%AA%E5%85%89"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "普通",
+          "name": "魔法增效",
+          "effect": "自己获得魔攻+70%。",
+          "story": "",
+          "unlock": "解锁：Lv.7",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/c/ce/nrv1a9f6ed7qxkndpyep2141radkads.png/56px-Skill_700020.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%AD%94%E6%B3%95%E5%A2%9E%E6%95%88"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "光球",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "一颗未孵化的星辰。",
+          "unlock": "解锁：Lv.9",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/08/3xt4r2ovpqtbaehbo5bej4541uwilmd.png/56px-Skill_105008.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%85%89%E7%90%83"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "火",
+          "name": "火焰箭",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.11",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/1a/5xeddeesy8nsrly0xkcjf51zzbxrppg.png/56px-Skill_103026.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%81%AB%E7%84%B0%E7%AE%AD"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "普通",
+          "name": "力量增效",
+          "effect": "自己获得物攻+100%。",
+          "story": "",
+          "unlock": "解锁：Lv.13",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/87/40a4gold9pngys98nd3pj7g4fr24mrp.png/56px-Skill_700021.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%8A%9B%E9%87%8F%E5%A2%9E%E6%95%88"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "草",
+          "name": "棘突",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.16",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/77/bn963nlyryk5isx6c2ejojkvuq0ajwg.png/56px-Skill_102027.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%A3%98%E7%AA%81"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "水",
+          "name": "潮涌",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.19",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8e/mpsl8040d4uay2vpax4o6cgcvb5342m.png/56px-Skill_104025.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%BD%AE%E6%B6%8C"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "电",
+          "name": "超导",
+          "effect": "造成魔伤，迸发：本技能能耗-1。",
+          "story": "",
+          "unlock": "解锁：Lv.22",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8a/gq0v35ph2wifrd04ms3lx0o63v1acrm.png/56px-Skill_711002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%B6%85%E5%AF%BC"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "光",
+          "name": "闪光冲击",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.27",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/b/b3/mxprse1lz1c3qih463n1lt9cj4e8o21.png/56px-Skill_704003.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%97%AA%E5%85%89%E5%86%B2%E5%87%BB"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "光",
+          "name": "漫反射",
+          "effect": "每种系别中的至多1个技能，威力+35。",
+          "story": "",
+          "unlock": "解锁：Lv.30",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/61/76r9kxe7w48frunuc7lirqys8712pt2.png/56px-Skill_706008.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%BC%AB%E5%8F%8D%E5%B0%84"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "冰",
+          "name": "冰爪",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.32",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/48/86vdvdx20ejvg8ubyohpdb02evwfxip.png/56px-Skill_108020.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%86%B0%E7%88%AA"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "地",
+          "name": "热砂",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：Lv.34",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/9/9a/6nn4wj9995n8m8ix24gm9x4f81bljp9.png/56px-Skill_107026.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%83%AD%E7%A0%82"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "幻",
+          "name": "念力膨胀",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "曾有洛克企图用愿力重塑现实，但他毕竟只是凡人。",
+          "unlock": "解锁：Lv.36",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/aa/fn438yz25t2idjtaa01esii83qode4s.png/56px-Skill_719008.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%BF%B5%E5%8A%9B%E8%86%A8%E8%83%80"
+        },
+        {
+          "sourceType": "默认",
+          "category": "状态",
+          "element": "光",
+          "name": "放晴",
+          "effect": "光系技能威力永久+50%，应对防御：改为永久+100%。",
+          "story": "光系研究员的最高杰作——让光最终的归处，与自然融为一体，变成晴天。",
+          "unlock": "解锁：Lv.40",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8a/3laah6g5g3x1z19gtzq4zw5ylt6jdin.png/56px-Skill_205017.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%94%BE%E6%99%B4"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "过曝",
+          "effect": "造成魔伤，每使用过1个其他系别技能，本技能威力永久+30。",
+          "story": "",
+          "unlock": "解锁：Lv.42",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/08/gyxcbca5jht97lsikmm9twzte1368ov.png/56px-Skill_704005.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%BF%87%E6%9B%9D"
+        },
+        {
+          "sourceType": "默认",
+          "category": "物攻",
+          "element": "光",
+          "name": "光刃",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "高能量的离子束，一不小心就会划伤皮肤，让粗心的研究员深受其害。",
+          "unlock": "解锁：Lv.47",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8c/01ynjc53ldqoqw9fpmfu4708m34hrpi.png/56px-Skill_105010.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%85%89%E5%88%83"
+        },
+        {
+          "sourceType": "默认",
+          "category": "魔攻",
+          "element": "光",
+          "name": "折射",
+          "effect": "造成魔伤，携带其他系别技能会给本技能带来不同效果。",
+          "story": "",
+          "unlock": "解锁：Lv.48",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/05/tdznmuovgdq3mjd6irt07urnnbnbrlr.png/56px-Skill_706009.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%8A%98%E5%B0%84"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "普通",
+          "name": "星星撞击",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：普通系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/1f/plpw7xy678ozjdkbcoycjw5hgxn1lr0.png/56px-Skill_101073.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%98%9F%E6%98%9F%E6%92%9E%E5%87%BB"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "草",
+          "name": "花香",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：草系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f6/epjcco8q39605shxhex6nnrva8rs5u2.png/56px-Skill_102026.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%8A%B1%E9%A6%99"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "火",
+          "name": "火焰冲锋",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：火系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/aa/o2easqobfvvo1w8txawaoksgzlbnu3k.png/56px-Skill_704010.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%81%AB%E7%84%B0%E5%86%B2%E9%94%8B"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "水",
+          "name": "泡沫",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "白的、轻的、易碎的。",
+          "unlock": "解锁：水系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/e/eb/7qxig0ovpou7q1byo5x5w8gqkit4x0x.png/56px-Skill_104022.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B3%A1%E6%B2%AB"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "光",
+          "name": "折线冲击",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：光系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/aa/lwwn0660hdl1dps22w0fsha0owoxloh.png/56px-Skill_105013.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%8A%98%E7%BA%BF%E5%86%B2%E5%87%BB"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "地",
+          "name": "扬沙",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "聚沙，成塔，成为利刃。",
+          "unlock": "解锁：地系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/5/5b/hsk9lwc9rgmbpg74dkosj6isxfz5grn.png/56px-Skill_708015.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%89%AC%E6%B2%99"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "冰",
+          "name": "冷风",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：冰系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/67/4vnh6y0ojjm3mcuc98lpl86b4vcxbb3.png/56px-Skill_108019.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%86%B7%E9%A3%8E"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "龙",
+          "name": "升龙咆哮",
+          "effect": "蓄力，对敌方造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：龙系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0d/iagtiwvtsi68z04uqtjny6m1oxcgiw8.png/56px-Skill_710004.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%8D%87%E9%BE%99%E5%92%86%E5%93%AE"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "电",
+          "name": "球状闪电",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：电系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0f/3on0bmubebn9isrfa4jxz6cr3m8gi57.png/56px-Skill_110015.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%90%83%E7%8A%B6%E9%97%AA%E7%94%B5"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "毒",
+          "name": "溃烂触碰",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：毒系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/19/lewxxlol8ereubioww482pg7yv4fnaw.png/56px-Skill_111016.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%BA%83%E7%83%82%E8%A7%A6%E7%A2%B0"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "虫",
+          "name": "噬心",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：虫系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/e/e2/lc1p5dtcquidrdgayqezpgi8wau33gp.png/56px-Skill_112018.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%99%AC%E5%BF%83"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "武",
+          "name": "缠丝劲",
+          "effect": "造成物伤，2连击。",
+          "story": "",
+          "unlock": "解锁：武系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/ac/dhhzm1q035biz0yn93t73vu4t98akd2.png/56px-Skill_113027.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%BC%A0%E4%B8%9D%E5%8A%B2"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "翼",
+          "name": "鹰爪",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：翼系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/a/a3/92ue18779747d6y66f13wf7wq5mfb8q.png/56px-Skill_114014.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%B9%B0%E7%88%AA"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "萌",
+          "name": "魅惑",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：萌系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f2/cy6a3n6pj9a2ucjno1c7vmgy26k7ijd.png/56px-Skill_115011.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%AD%85%E6%83%91"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "幽",
+          "name": "幻象",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：幽系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/60/dq1soz3umgaofmmuids5zwwlhk00fza.png/56px-Skill_116014.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%B9%BB%E8%B1%A1"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "恶",
+          "name": "恶能量",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "没有恶意的恶。",
+          "unlock": "解锁：恶系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/72/rloy84pn78aasuju8focyqwopw6bsnt.png/56px-Skill_718013.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%81%B6%E8%83%BD%E9%87%8F"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "魔攻",
+          "element": "机械",
+          "name": "离子震荡",
+          "effect": "造成魔伤，本技能位于3号位时威力+40，传动1。",
+          "story": "",
+          "unlock": "解锁：机械系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/8/8f/3gznppkotebgtnet339bm4pj522zb2m.png/56px-Skill_106011.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%A6%BB%E5%AD%90%E9%9C%87%E8%8D%A1"
+        },
+        {
+          "sourceType": "血脉",
+          "category": "物攻",
+          "element": "幻",
+          "name": "星云漩涡",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：幻系血脉",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/3/3e/ezgzeq2qn4no0ppfomwb5d34uzlukmr.png/56px-Skill_118018.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%98%9F%E4%BA%91%E6%BC%A9%E6%B6%A1"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "水",
+          "name": "气泡",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "",
+          "unlock": "解锁：[技能石] 气泡",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/9/91/ospywjlp16hj57sgxw2fx2gykgec02z.png/56px-Skill_703102.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B0%94%E6%B3%A1"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "水",
+          "name": "天洪",
+          "effect": "造成魔伤，应对状态：本技能能耗永久-6。",
+          "story": "月兔暗港最好的水手，可以让船在洪水风暴里张满帆。",
+          "unlock": "解锁：[技能石] 天洪",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/44/nusa9tayik92wm8m36rh9200644bhqc.png/56px-Skill_705015.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%A4%A9%E6%B4%AA"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "水",
+          "name": "润泽",
+          "effect": "自己获得魔攻+190%。",
+          "story": "水就挨着陆地，摸到水就摸到了世界的尽头。",
+          "unlock": "解锁：[技能石] 润泽",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/79/7oqv1pnw1b3zjfnjq7ljv8mgrhc2qt5.png/56px-Skill_104001.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B6%A6%E6%B3%BD"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "火",
+          "name": "炎打",
+          "effect": "造成高额魔法伤害，自己获得物防-40%。",
+          "story": "进攻是最好的防守",
+          "unlock": "解锁：[技能石] 炎打",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2e/2i66banutj8sdqpyk5wyi30unv9v0ka.png/56px-Skill_103032.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%82%8E%E6%89%93"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "火",
+          "name": "闪燃",
+          "effect": "造成物伤，应对状态：本次技能威力变为4倍。",
+          "story": "火系部族最基础的手法，让烈火在最正确的地方出现。",
+          "unlock": "解锁：[技能石] 闪燃",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/79/nmmfyhf55f96ze72du00grx7cfbcg57.png/56px-Skill_704013.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E9%97%AA%E7%87%83"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "火",
+          "name": "怒火",
+          "effect": "自己获得双攻+120%和双防-40%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 怒火",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f3/93pty6a5kocy6f166kzagtdlvtiobip.png/56px-Skill_103033.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%80%92%E7%81%AB"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "草",
+          "name": "藤绞",
+          "effect": "造成物伤，自己回复5能量。",
+          "story": "",
+          "unlock": "解锁：[技能石] 藤绞",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/4c/nerl75v95pedrt9ptmhbghswv2qw651.png/56px-Skill_703020.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%97%A4%E7%BB%9E"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "草",
+          "name": "抽枝",
+          "effect": "造成物伤，应对状态：自己回复50%生命和5能量。",
+          "story": "",
+          "unlock": "解锁：[技能石] 抽枝",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/c/cc/oa9iknqsw1uprq7hd3s71g3g8ret7x8.png/56px-Skill_102038.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%8A%BD%E6%9E%9D"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "草",
+          "name": "氧输送",
+          "effect": "自己回复4能量，并获得魔攻+70%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 氧输送",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/4/48/4ttba4pifi8q8thvhmqqqk2ldayip6l.png/56px-Skill_703012.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%B0%A7%E8%BE%93%E9%80%81"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "电",
+          "name": "电弧",
+          "effect": "造成物伤，迸发：本次技能威力+40。",
+          "story": "",
+          "unlock": "解锁：[技能石] 电弧",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/79/rln6cl56ujkz851y38skmolkmmucj2h.png/56px-Skill_110002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E7%94%B5%E5%BC%A7"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "物攻",
+          "element": "地",
+          "name": "跺地",
+          "effect": "对敌方精灵造成物理伤害。",
+          "story": "",
+          "unlock": "解锁：[技能石] 跺地",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/0/0c/3udtbkc9at79hxiwtwa98fsgupp2h3r.png/56px-Skill_708012.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E8%B7%BA%E5%9C%B0"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "幻",
+          "name": "坍缩",
+          "effect": "造成魔伤，若击败敌方，自己获得魔攻+70%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 坍缩",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/68/clyh4jsteik36qhedhb2dc0eqa2z64j.png/56px-Skill_719011.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%9D%8D%E7%BC%A9"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "冰",
+          "name": "寒风吹",
+          "effect": "造成魔伤，敌方获得魔防-50%。",
+          "story": "",
+          "unlock": "解锁：[技能石] 寒风吹",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f1/eatfcpkcrfejznn22tbv5ehjsbog7ao.png/56px-Skill_108024.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%AF%92%E9%A3%8E%E5%90%B9"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "状态",
+          "element": "普通",
+          "name": "借用",
+          "effect": "每回合随机变成己方队伍中其他精灵的技能。",
+          "story": "",
+          "unlock": "解锁：[技能石] 借用",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/b/bc/qrm05tyol3wgoew2gejrqk8nl1fzifk.png/56px-Skill_700029.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E5%80%9F%E7%94%A8"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "防御",
+          "element": "普通",
+          "name": "有效预防",
+          "effect": "减伤50%，应对攻击：下一次行动获得先手+1。",
+          "story": "",
+          "unlock": "解锁：[技能石] 有效预防",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/7/7f/6i3jf44jtbru4tuf4vem3j3oi6lwoqn.png/56px-Skill_201094.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%9C%89%E6%95%88%E9%A2%84%E9%98%B2"
+        },
+        {
+          "sourceType": "技能石",
+          "category": "魔攻",
+          "element": "幽",
+          "name": "恐吓",
+          "effect": "对敌方精灵造成魔法伤害。",
+          "story": "做了个噩梦，老师说如果我如果下次再上课睡觉的话，就让我的魔力之源永远不能回复魔力。",
+          "unlock": "解锁：[技能石] 恐吓",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/5/5e/2r7m8us6zs3ujeqkp2u3xkrt98k5cmi.png/56px-Skill_705002.png",
+          "detailUrl": "https://wiki.biligame.com/rocom/%E6%81%90%E5%90%93"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣光迪莫",
+          "linkName": "圣光迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2c/7qezwl2nb2ymfw4dos2vu163szd9p2h.png/160px-JL_shengguangdimo.png"
+        },
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣草迪莫",
+          "linkName": "圣草迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/1/11/dfjw0rmtvjca55818p4zrv3rgh53wuc.png/160px-JL_shengcaodimo.png"
+        },
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣火迪莫",
+          "linkName": "圣火迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/f/f0/f9i1rwu00yct36m8hwm9lra0kkjcry0.png/160px-JL_shenghuodimo.png"
+        },
+        {
+          "name": "迪莫",
+          "linkName": "迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/2/2b/sw0puzl5c0n8hu49ryqk7drh1gxtblr.png/160px-JL_dimo.png"
+        },
+        {
+          "name": "圣水迪莫",
+          "linkName": "圣水迪莫",
+          "condition": "",
+          "image": "https://patchwiki.biligame.com/images/rocom/thumb/6/69/h6he56fvj9hogroxuwde360noeykscr.png/160px-JL_shengshuidimo.png"
+        }
+      ],
+      "counts": {
+        "skills": 53,
+        "defaultSkills": 19,
+        "bloodlineSkills": 18,
+        "skillStoneSkills": 16,
+        "evolutionSteps": 8,
+        "hasTraitDescription": true
+      }
+    }
+  ],
+  "errors": [
+    {
+      "no": "NO.001",
+      "name": "圣水迪莫",
+      "sourceUrl": "https://wiki.biligame.com/rocom/%E5%9C%A3%E6%B0%B4%E8%BF%AA%E8%8E%AB",
+      "error": "Command failed: curl -L --fail --silent --show-error https://wiki.biligame.com/rocom/%E5%9C%A3%E6%B0%B4%E8%BF%AA%E8%8E%AB\ncurl: (22) The requested URL returned error: 567\n"
+    }
+  ]
+}
