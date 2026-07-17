@@ -10,6 +10,7 @@
 | `system-capabilities.md` | 当前已实现能力与明确非目标。 | 功能范围变化时人工更新。 |
 | `data-sync.md` | Dexie 数据模型、导入/导出语义、预置资料播种/迁移。 | 涉及数据结构或同步逻辑时人工更新。 |
 | `data-sources.md` | 洛克王国世界参考数据源分级、BWiki 页面登记、刷新命令和覆盖策略。 | 数据源、同步口径或 BWiki 页面清单变化时人工更新。 |
+| `bwiki-integration-breakdown.md` | BWiki 主数据接入的分阶段拆解、验收门槛和下一步记录。 | BWiki 接入阶段推进或任务边界变化时人工更新。 |
 | `nature-recommendation-redesign.md` | 性格推荐的设计草案、输入输出模型和规则讨论背景。 | 性格推荐规则大方向变化时人工更新。 |
 | `nature-single-creature-template.md` | 单只精灵性格核对输出模板，保证每轮分析结构一致。 | 人工维护；单只核对时复制结构，不写入未确认结论。 |
 | `nature-confirmed-results.md` | 用户确认过的单只精灵最终分档台账，用于规则调整后的回归复核。 | 人工维护；只有用户确认后登记。 |
