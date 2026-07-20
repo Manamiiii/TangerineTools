@@ -57,10 +57,10 @@ db.version(1).stores({
 - 预置资料迁移策略：
   1. 新安装 / 干净 IndexedDB 只会插入官方图鉴行，不应出现旧 `row-rock-*` 占位行。
   2. 老用户若已播种旧占位资料，`migrateRockKingdomRows()` 会在默认洛克王国资料表中删除可明确识别的旧占位行（`id` 以 `row-rock-` 开头，或 `values.image` 以 `data:image/svg+xml` 开头），再按新稳定 id 插入官方行，避免重复。
-  3. 若浏览器里已存在 `rock-creature-src-*` 官方稳定 id 行，但某些官方字段仍为空（如旧缓存缺少 `element` / `form`），启动迁移会只补齐这些空值字段；若旧 `element` 值无法匹配当前系别选项，也会用官方值修正。已有非空字段不会被整体覆盖。
+  3. P4 覆盖会同时发布 `rockKingdomPresetMigration.json`：它只保存发生变化字段的旧官方值 SHA-256，不含用户数据。已有稳定 id 行的字段为空、系别无效，或当前值指纹仍匹配旧官方值时，才更新为新版预置值；不匹配时视为用户自定义并保留。精灵和技能使用同一三方合并规则，不再对同 id 技能整行 `bulkPut`。
   4. 用户自己新增的非占位资料行不会被删除；无法安全判断为占位的数据不会被覆盖。
   5. owned / stock 表及其用户记录不属于默认资料表 `tableId`，迁移不会触碰。
-  6. 迁移通过 `meta.rockKingdomRowsVersion = "official-d-json-2026-06-08"` 标记资料版本，不引入 Dexie schema 版本变更。
+  6. 迁移通过清单 `version` 更新 `meta.rockKingdomRowsVersion` / `rockKingdomSkillRowsVersion`；没有清单时继续使用旧版本常量。不引入 Dexie schema 版本变更。
 
 ## 导出格式
 
