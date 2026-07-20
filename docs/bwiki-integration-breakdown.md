@@ -19,8 +19,8 @@
 | 筛选页 staging | 已完成；已纠正 `data-param8` 为归属赛季 | `scripts/data/bwiki/*.staging.json`、`docs/bwiki-staging-report.md` | 否 |
 | 详情页解析 | 已完成 592 / 592 条解析（0 error）；1 条旧模板使用官方 API 源码回退 | `scripts/data/bwiki/creature-details.sample.staging.json`、`docs/bwiki-detail-staging-report.md` | 否 |
 | 字段映射冻结 | 已完成首版 | `docs/bwiki-field-mapping.md` | 否 |
-| 预置形状 preview | P3 审阅完成；自动准入阻塞项已清零，可进入 P4 命令设计 | `scripts/data/bwiki/*preview.json`、`docs/bwiki-preview-report.md` | 否 |
-| 显式覆盖命令 | P4 dry-run 与三方安全迁移已完成；等待正式覆盖授权 | `scripts/apply-bwiki-rock-kingdom-preset.mjs`、`scripts/data/bwiki/rockKingdomPresetMigration.preview.json`、`docs/bwiki-apply-report.md` | 待明确授权 |
+| 预置形状 preview | P3 审阅完成；自动准入阻塞项已清零 | `scripts/data/bwiki/*preview.json`、`docs/bwiki-preview-report.md` | 已作为 P4 审计输入 |
+| 显式覆盖命令 | P4 已正式覆盖并发布三方安全迁移清单 | `scripts/apply-bwiki-rock-kingdom-preset.mjs`、`public/presets/rockKingdomPresetMigration.json`、`docs/bwiki-apply-report.md` | 已完成 |
 | 详情页 UI 分块 | 未开始 | 待新增 | 否 |
 
 ## 后续阶段
@@ -63,4 +63,4 @@
 
 ## 下一步
 
-P4 显式覆盖和已有浏览器安全迁移已完成 dry-run。覆盖脚本会同时发布精灵、技能和版本化迁移清单；运行时只更新空值、无效值或 SHA-256 仍匹配旧官方值的字段，用户自定义非空值、29 个旧 id、用户新增行及 owned / stock 引用均保留。当前目标为 592 条精灵 / 553 条技能，迁移清单涉及 467 条精灵的 2510 个字段和 487 条技能的 1615 个字段；真实三文件写入已在临时目录验证。下一步由用户明确授权后运行正式覆盖命令，再执行完整 build / 数据关系 / 产物 diff 验收；本阶段仍未修改 `public/presets/*`。
+P4 已正式发布 592 条精灵、553 条技能和版本化迁移清单；运行时只更新空值、无效值或 SHA-256 仍匹配旧官方值的字段，用户自定义非空值、29 个旧 id、用户新增行及 owned / stock 引用均保留。迁移清单涉及 467 条精灵的 2510 个字段和 487 条技能的 1615 个字段，29042 条技能关系双向一致且无悬空引用。下一步先在已有浏览器数据上走查升级、图片和核心工具，再进入 P5 洛克王国精灵详情分块 UI。

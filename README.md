@@ -12,7 +12,7 @@ TangerineTools 是一个本地优先（local-first）的个人资料管理 Web A
 - **统计视图**：从资料库或收集记录选择数据源，按字段分组并叠加数值阈值条件统计。
 - **性格推荐**：手动录入或从洛克王国精灵资料带入六维，读取特性标签和技能引用，展示全部合法性格候选及解释。
 - **全量导入/导出**：在首页通过 JSON 文件手动备份或迁移全部本地数据。
-- **洛克王国预置资料**：首次启动会自动创建“洛克王国”场景，包含精灵基础资料和技能资料；预置数据由可信 `d.json` 通过同步脚本生成。
+- **洛克王国预置资料**：首次启动会自动创建“洛克王国”场景，包含精灵基础资料和技能资料；当前正式预置由版本化 BWiki staging / preview 审计产物显式发布，可信 `d.json` 保留为回退与对照源。
 
 ## 技术栈
 
@@ -76,8 +76,9 @@ npm run sync:rock scripts/data/rockKingdom.d.json
 ├── docs/                         # 能力说明、数据同步说明、交接提示、性格推荐设计草案
 ├── public/
 │   └── presets/
-│       ├── rockKingdomRows.json       # 精灵 / 形态预置资料
-│       └── rockKingdomSkillRows.json  # 技能预置资料
+│       ├── rockKingdomRows.json            # 精灵 / 形态预置资料
+│       ├── rockKingdomSkillRows.json       # 技能预置资料
+│       └── rockKingdomPresetMigration.json # 已有浏览器三方迁移指纹
 ├── scripts/
 │   ├── data/rockKingdom.d.json        # 当前可信 d.json 源文件
 │   └── sync-rock-kingdom-preset.mjs   # 生成预置资料脚本
@@ -102,12 +103,12 @@ npm run sync:rock scripts/data/rockKingdom.d.json
 
 - 默认启用资料库、收集记录、统计视图、性格推荐四个工具。
 - 包含「精灵基础资料」和「技能资料」普通资料表。
-- `rockKingdomRows.json` 包含 496 条精灵 / 形态资料。
-- `rockKingdomSkillRows.json` 包含技能资料。
+- `rockKingdomRows.json` 包含 592 条精灵 / 形态资料。
+- `rockKingdomSkillRows.json` 包含 553 条技能资料。
 - 精灵通过 `skillRefs` 多引用关联技能；技能通过 `learnerRefs` 多引用反向关联可学精灵。
-- 精灵图、系别图标、特性图标、技能图标和技能类型图标均来自 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/`。
+- 精灵与技能图片以 BWiki / patchwiki 审计快照为主；仍受支持的旧资源和 UI 图标继续使用可信静态资源。
 
-预置资料只会安全补齐；迁移官方行时只删除明确可识别的旧 `row-rock-*` / `data:image/svg+xml` 占位行或废弃预置字段，不会删除用户新增资料、收集记录或统计视图记录。
+预置资料通过版本化旧官方值指纹做三方合并：仅更新空值、无效值或仍匹配旧官方值的字段，保留用户自定义非空值、用户新增资料、收集记录和统计视图记录。
 
 ## 数据存储、备份与导入
 
