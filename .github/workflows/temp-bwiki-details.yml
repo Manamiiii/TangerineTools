@@ -1,6 +1,11 @@
 name: Temporary BWiki legacy source fetch
 
 on:
+  push:
+    branches:
+      - agent/bwiki-p3-preview-checkpoint
+    paths:
+      - .github/workflows/temp-bwiki-details.yml
   workflow_dispatch:
 
 permissions:
