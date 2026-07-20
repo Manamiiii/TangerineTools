@@ -53,7 +53,7 @@ db.version(1).stores({
 - 精灵图、系别图标、特性图标、技能图标、技能类型图标均使用同源公开静态资源前缀 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/`，路径逐段 `encodeURIComponent` 编码；不使用本地 SVG 或 `data:image/svg+xml` 作为精灵图。
 - 系别字段使用 `multiselect` 类型，覆盖官方 18 个系别：普通/草/火/水/光/地/冰/龙/电/毒/虫/武/翼/萌/幽/恶/机械/幻，对应内部值为 `normal`/`grass`/`fire`/`water`/`light`/`earth`/`ice`/`dragon`/`electric`/`poison`/`bug`/`fighting`/`flying`/`cute`/`ghost`/`dark`/`mech`/`illusion`。精灵行使用 `skillRefs` 多引用指向技能行；技能行使用 `learnerRefs` 多引用反向指向可学习该技能的精灵行。技能行还包含派生的 `effectTags` 多选效果标签（先手、速度、回复、减伤、能量、强化、控制、应对、轮转等），这些标签由官方技能效果文本生成，用于资料查看与性格推荐解释；它们不是战斗模拟结果。
 - 资料库、收集记录、统计视图三者关系：资料库是对象种类 / 图鉴 / 静态资料；收集记录是用户与这些资料项的一对一或一对多关系；统计视图从资料库和收集记录中即时汇总，不再为新场景创建固定字段统计表。
-- BWiki 是 WIKI 页面数据快照（页面自身显示更新日期），不是本应用运行时实时查询接口。用户已确认后续以 BWiki 为新版本主同步来源：维护者先运行 `npm run sync:bwiki:staging` 生成精灵 / 技能 / 精灵蛋 staging 与报告；详情页解析和字段映射确认后，再运行后续显式转换命令完全覆盖精灵 / 技能预置产物。精灵蛋和精灵果实不再做独立资料表，而是作为精灵基础资料中的 `eggImage` / `fruitImage` 两个图片字段写入。应用启动迁移仍只读取仓库内预置 JSON，不在用户浏览器里实时抓取 BWiki。
+- BWiki 是 WIKI 页面数据快照（页面自身显示更新日期），不是本应用运行时实时查询接口。完整 staging / preview 完成后，维护者先运行 `npm run check:bwiki:preset` 做 P4 dry-run；真正覆盖必须显式运行 `BWIKI_PRESET_OVERWRITE=CONFIRM_BWIKI_P4 npm run apply:bwiki:preset`。覆盖脚本只把 preview 的 `id` / `values` 写入精灵和技能预置，不把审计用 `previewMeta` 带入运行时。精灵蛋和精灵果实不做独立资料表，而是作为精灵基础资料中的 `eggImage` / `fruitImage` 字段写入。应用启动迁移仍只读取仓库内预置 JSON，不在用户浏览器里实时抓取 BWiki。
 - 预置资料迁移策略：
   1. 新安装 / 干净 IndexedDB 只会插入官方图鉴行，不应出现旧 `row-rock-*` 占位行。
   2. 老用户若已播种旧占位资料，`migrateRockKingdomRows()` 会在默认洛克王国资料表中删除可明确识别的旧占位行（`id` 以 `row-rock-` 开头，或 `values.image` 以 `data:image/svg+xml` 开头），再按新稳定 id 插入官方行，避免重复。

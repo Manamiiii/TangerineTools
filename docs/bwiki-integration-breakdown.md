@@ -20,6 +20,7 @@
 | 详情页解析 | 已完成 592 / 592 条解析（0 error）；1 条旧模板使用官方 API 源码回退 | `scripts/data/bwiki/creature-details.sample.staging.json`、`docs/bwiki-detail-staging-report.md` | 否 |
 | 字段映射冻结 | 已完成首版 | `docs/bwiki-field-mapping.md` | 否 |
 | 预置形状 preview | P3 审阅完成；自动准入阻塞项已清零，可进入 P4 命令设计 | `scripts/data/bwiki/*preview.json`、`docs/bwiki-preview-report.md` | 否 |
+| 显式覆盖命令 | P4 dry-run 已实现；正式覆盖前需完成已有浏览器的技能安全迁移 | `scripts/apply-bwiki-rock-kingdom-preset.mjs`、`docs/bwiki-apply-report.md` | 待明确授权 |
 | 详情页 UI 分块 | 未开始 | 待新增 | 否 |
 
 ## 后续阶段
@@ -62,4 +63,4 @@
 
 ## 下一步
 
-P3 已完成 592 / 592 条详情 staging（0 error）和全量 preview 审阅：592 条精灵均有图片、特性描述、进化节点和技能引用；详情技能卡匹配率 100%，preview 的 `skillRefs` / `learnerRefs` 双向关系无缺失或悬空引用。用户已确认旧稳定 id 的括号名称差异可接受，并确认 BWiki 系别变化符合预期；现有浏览器继续依靠 merge-by-id 保留旧行和 owned 引用，不做删除或引用重写。唯一旧模板页 `NO.375 学院呱呱` 通过官方 MediaWiki API 源码回退解析；旧源码中的 `冰封` 不在当前技能 staging 中，因此只记审计信息，不生成虚构技能行。下一步进入 P4 显式覆盖命令设计：命令必须明确命名，并报告覆盖前后行数、id 复用 / 新增情况和关系完整性；只有用户明确授权时才能实际替换 `public/presets/*`。
+P4 显式覆盖脚本已实现：`npm run check:bwiki:preset` 默认只做 dry-run 并生成 `docs/bwiki-apply-report.md`；真正写入必须额外使用 `BWIKI_PRESET_OVERWRITE=CONFIRM_BWIKI_P4 npm run apply:bwiki:preset`。当前 dry-run 确认目标为 592 条精灵 / 553 条技能，精灵 id 复用 467、新增 125、目标不再包含旧 id 29，技能 id 复用 487、新增 66、遗漏 0，双向关系 29042 / 29042 且无悬空引用。下一步先设计已有浏览器的安全技能迁移：当前 `migrateRockKingdomSkillRows()` 会整行 `bulkPut` 同 id 技能，必须避免覆盖用户非空自定义值；完成并验证该迁移后，再由用户明确授权实际替换 `public/presets/*`。

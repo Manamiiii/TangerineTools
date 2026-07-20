@@ -41,6 +41,7 @@
 | `bwiki-staging-report.md` | `npm run sync:bwiki:staging` | BWiki 精灵 / 技能 / 精灵蛋 staging 快照与本地预置差异摘要；不改预置 JSON。若完整同步受限流影响，可用 `BWIKI_CATALOG_ONLY=1 npm run sync:bwiki:staging` 基于现有成功快照单独刷新精灵图鉴补图。 |
 | `bwiki-detail-staging-report.md` | `BWIKI_DETAIL_LIMIT=<批次上限> BWIKI_DETAIL_DELAY_MS=10000 npm run sync:bwiki:details`（默认复用已有成功行）或 `BWIKI_DETAIL_OFFLINE=1 npm run sync:bwiki:details`（离线重渲染） | BWiki 精灵详情页受控批次解析报告；只生成详情 staging，不改预置 JSON；可用 `BWIKI_DETAIL_DELAY_MS` 控制请求间隔，中途失败时只保存失败页之前的 0-error 成功前缀，强制全量重抓时额外设置 `BWIKI_DETAIL_REFRESH=1`。旧模板页使用官方 MediaWiki API 源码回退，无法在当前技能 staging 核验的旧引用只进审计记录。 |
 | `bwiki-preview-report.md` | `npm run preview:bwiki` | BWiki staging 到预置 JSON 形状的 preview 审计报告；只生成 preview / 报告，不覆盖 `public/presets/*`。 |
+| `bwiki-apply-report.md` | `npm run check:bwiki:preset` | P4 显式覆盖的 dry-run 报告；校验覆盖前后行数、id 复用 / 新增 / 遗漏和双向技能关系，默认不修改 `public/presets/*`。 |
 
 ## 已清理内容
 
