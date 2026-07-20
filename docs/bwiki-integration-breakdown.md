@@ -17,9 +17,9 @@
 | BWiki 页面登记 | 已完成 | `docs/data-sources.md` | 否 |
 | BWiki 页面审计 | 已完成 | `docs/bwiki-source-audit.md` | 否 |
 | 筛选页 staging | 已完成；已纠正 `data-param8` 为归属赛季 | `scripts/data/bwiki/*.staging.json`、`docs/bwiki-staging-report.md` | 否 |
-| 详情页解析 | 已扩展至 342 条受控解析（0 error） | `scripts/data/bwiki/creature-details.sample.staging.json`、`docs/bwiki-detail-staging-report.md` | 否 |
+| 详情页解析 | 已完成 592 / 592 条解析（0 error）；1 条旧模板使用官方 API 源码回退 | `scripts/data/bwiki/creature-details.sample.staging.json`、`docs/bwiki-detail-staging-report.md` | 否 |
 | 字段映射冻结 | 已完成首版 | `docs/bwiki-field-mapping.md` | 否 |
-| 预置形状 preview | P3.1 审计加固完成；仍有准入阻塞项 | `scripts/data/bwiki/*preview.json`、`docs/bwiki-preview-report.md` | 否 |
+| 预置形状 preview | P3 审阅完成；自动准入阻塞项已清零，可进入 P4 命令设计 | `scripts/data/bwiki/*preview.json`、`docs/bwiki-preview-report.md` | 否 |
 | 详情页 UI 分块 | 未开始 | 待新增 | 否 |
 
 ## 后续阶段
@@ -62,4 +62,4 @@
 
 ## 下一步
 
-P3.1 已修正赛季误写蛋组、精确形态被泛化、技能空值转 0 和 `learnerRefs` 仅覆盖详情样本的问题，并补充全量双向关系、字段变化、旧稳定 id 缺失、空图片和 P4 准入报告。用户已确认 29 个旧稳定 id 对应新版精灵、括号名称差异可接受，并确认 BWiki 系别变化符合预期；现有浏览器继续依靠 merge-by-id 保留旧行和 owned 引用，不做删除或引用重写。BWiki 精灵图鉴现已为 592 条 preview 精灵补齐真实图片，详情 staging 已扩展到 342 条且 0 error；详情同步默认复用已有成功行、只抓新增页，并支持请求间隔。若新增抓取中途失败，脚本会保存失败页之前的连续成功前缀、排除失败行并保持 0-error 快照，下次从失败页继续。下一步在 BWiki 限流窗口解除后继续低频扩大详情 staging，减少当前 72 条无技能引用精灵；在剩余阻塞项清零前不进入 P4 覆盖。覆盖命令仍必须明确命名、报告覆盖前后行数与关系完整性，并且只有用户明确授权时才能替换 `public/presets/*`。
+P3 已完成 592 / 592 条详情 staging（0 error）和全量 preview 审阅：592 条精灵均有图片、特性描述、进化节点和技能引用；详情技能卡匹配率 100%，preview 的 `skillRefs` / `learnerRefs` 双向关系无缺失或悬空引用。用户已确认旧稳定 id 的括号名称差异可接受，并确认 BWiki 系别变化符合预期；现有浏览器继续依靠 merge-by-id 保留旧行和 owned 引用，不做删除或引用重写。唯一旧模板页 `NO.375 学院呱呱` 通过官方 MediaWiki API 源码回退解析；旧源码中的 `冰封` 不在当前技能 staging 中，因此只记审计信息，不生成虚构技能行。下一步进入 P4 显式覆盖命令设计：命令必须明确命名，并报告覆盖前后行数、id 复用 / 新增情况和关系完整性；只有用户明确授权时才能实际替换 `public/presets/*`。

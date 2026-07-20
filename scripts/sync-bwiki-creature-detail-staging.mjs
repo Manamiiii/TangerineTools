@@ -6,6 +6,7 @@ import { promisify } from 'node:util'
 const execFileAsync = promisify(execFile)
 
 const CREATURE_STAGING = 'scripts/data/bwiki/creatures.staging.json'
+const SKILL_STAGING = 'scripts/data/bwiki/skills.staging.json'
 const OUTPUT_JSON = 'scripts/data/bwiki/creature-details.sample.staging.json'
 const OUTPUT_MD = 'docs/bwiki-detail-staging-report.md'
 const DEFAULT_LIMIT = 24
@@ -31,14 +32,21 @@ function sleep(ms) {
   return new Promise((resolveSleep) => setTimeout(resolveSleep, ms))
 }
 
-async function fetchTextWithRetry(url, attempts = 3) {
+async function fetchTextWithRetry(
+  url,
+  attempts = Math.max(1, Number.parseInt(process.env.BWIKI_DETAIL_RETRY_ATTEMPTS || '3', 10) || 3),
+) {
   let lastError
+  const configuredRetryDelay = process.env.BWIKI_DETAIL_RETRY_DELAY_MS
+  const retryDelayMs = configuredRetryDelay === undefined
+    ? null
+    : Math.max(0, Number.parseInt(configuredRetryDelay, 10) || 0)
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
       return await fetchText(url)
     } catch (error) {
       lastError = error
-      if (attempt < attempts) await sleep(500 * attempt)
+      if (attempt < attempts) await sleep(retryDelayMs ?? 500 * attempt)
     }
   }
   throw lastError
@@ -158,6 +166,126 @@ function parseDetail(row, html) {
   }
 }
 
+function parseTemplateParams(sourceText) {
+  const params = {}
+  for (const line of sourceText.split(/\r?\n/)) {
+    const match = line.match(/^\s*\|\s*([^=]+?)\s*=\s*(.*?)\s*$/)
+    if (match) params[match[1].trim()] = match[2].trim()
+  }
+  return params
+}
+
+function splitTemplateList(value) {
+  return String(value ?? '').split(/[，,]/).map((item) => item.trim()).filter(Boolean)
+}
+
+function createLegacySkill(name, sourceType, unlock, skillByName) {
+  const skill = skillByName.get(name)
+  if (!skill) return null
+  return {
+    sourceType,
+    category: skill.category || '',
+    element: skill.element || '',
+    name,
+    effect: skill.effect || '',
+    story: '',
+    unlock,
+    image: skill.image || '',
+    detailUrl: skill.detailUrl || '',
+  }
+}
+
+function parseLegacyDetail(row, sourceText, skillByName) {
+  const params = parseTemplateParams(sourceText)
+  const defaultNames = splitTemplateList(params['技能'])
+  const defaultLevels = splitTemplateList(params['技能解锁等级'])
+  const groups = [
+    ['默认', defaultNames, (index) => defaultLevels[index] ? `解锁：Lv.${defaultLevels[index]}` : ''],
+    ['血脉', splitTemplateList(params['血脉技能']), () => ''],
+    ['技能石', splitTemplateList(params['可学技能石']), () => ''],
+  ]
+  const skills = []
+  const legacyUnmatchedSkillNames = []
+  for (const [sourceType, names, unlockForIndex] of groups) {
+    names.forEach((name, index) => {
+      const parsed = createLegacySkill(name, sourceType, unlockForIndex(index), skillByName)
+      if (parsed) skills.push(parsed)
+      else legacyUnmatchedSkillNames.push(name)
+    })
+  }
+
+  const evolutionNames = [
+    ...splitTemplateList(params['精灵初阶名称']),
+    ...splitTemplateList(params['精灵中阶名称']),
+    ...splitTemplateList(params['精灵高阶名称']),
+  ]
+  if (evolutionNames.length === 0) evolutionNames.push(row.name)
+  const evolution = [...new Set(evolutionNames)].map((name) => ({
+    name,
+    linkName: name,
+    condition: '',
+    image: name === row.name ? row.image || '' : '',
+  }))
+  const trait = {
+    name: params['特性'] || row.traitName || '',
+    description: params['特性描述'] || '',
+    image: '',
+  }
+
+  return {
+    source: 'bwiki-creature-detail',
+    sourceUrl: row.detailUrl,
+    no: row.no,
+    name: row.name,
+    trait,
+    skills,
+    evolution,
+    legacyTemplate: true,
+    legacySourceUrl: `https://wiki.biligame.com/rocom/api.php?action=query&prop=revisions&rvprop=content&rvslots=main&titles=${encodeURIComponent(row.name)}&format=json&formatversion=2`,
+    legacyUnmatchedSkillNames: [...new Set(legacyUnmatchedSkillNames)],
+    counts: {
+      skills: skills.length,
+      defaultSkills: skills.filter((skill) => skill.sourceType === '默认').length,
+      bloodlineSkills: skills.filter((skill) => skill.sourceType === '血脉').length,
+      skillStoneSkills: skills.filter((skill) => skill.sourceType === '技能石').length,
+      evolutionSteps: evolution.length,
+      hasTraitDescription: Boolean(trait.description),
+    },
+  }
+}
+
+function needsLegacyFallback(detail) {
+  return !detail.trait.description && detail.skills.length === 0 && detail.evolution.length === 0
+}
+
+function isReusableDetail(detail) {
+  return !needsLegacyFallback(detail) && (!detail.legacyTemplate || Boolean(detail.legacySourceUrl))
+}
+
+async function fetchLegacySource(title) {
+  const sourceJsonPath = process.env.BWIKI_DETAIL_LEGACY_SOURCE_JSON
+  if (sourceJsonPath) {
+    const payload = JSON.parse(await readFile(sourceJsonPath, 'utf8'))
+    const sourceText = payload.query?.pages?.[0]?.revisions?.[0]?.slots?.main?.content
+    if (!sourceText) throw new Error(`BWiki API source file contains no source text for ${title}`)
+    return sourceText
+  }
+  const url = new URL('https://wiki.biligame.com/rocom/api.php')
+  url.search = new URLSearchParams({
+    action: 'query',
+    prop: 'revisions',
+    rvprop: 'content',
+    rvslots: 'main',
+    titles: title,
+    format: 'json',
+    formatversion: '2',
+  })
+  const payload = JSON.parse(await fetchTextWithRetry(url.href))
+  const sourceText = payload.query?.pages?.[0]?.revisions?.[0]?.slots?.main?.content
+  if (!sourceText) throw new Error(`BWiki API returned no source text for ${title}`)
+  return sourceText
+}
+
 function formatEvolutionSummary(evolution = []) {
   const names = evolution.map((step) => step.name || step.linkName).filter(Boolean)
   if (names.length === 0) return '（无）'
@@ -212,6 +340,9 @@ function renderReport({
   const traitRows = rows.filter((row) => row.counts.hasTraitDescription).length
   const bloodlineRows = rows.filter((row) => row.counts.bloodlineSkills > 0).length
   const evolutionRows = rows.filter((row) => row.counts.evolutionSteps > 0).length
+  const legacyRows = rows.filter((row) => row.legacyTemplate)
+  const legacyUnmatched = legacyRows.flatMap((row) =>
+    (row.legacyUnmatchedSkillNames ?? []).map((name) => `${row.no} ${row.name}：${name}`))
   const examples = rows.slice(0, 12).map((row) => `| ${row.no} | ${row.name} | ${row.trait.name || '（空）'} | ${row.counts.skills} | ${row.counts.bloodlineSkills} | ${row.counts.evolutionSteps} | ${formatEvolutionSummary(row.evolution)} |`).join('\n')
 
   return `# BWiki 精灵详情 staging 报告
@@ -246,6 +377,12 @@ ${renderCountTable(skillSourceCounts)}
 |---|---:|
 ${renderCountTable(skillCategoryCounts)}
 
+## 旧模板 API 回退
+
+- 旧模板详情页：${legacyRows.length} 行${legacyRows.length ? `（${legacyRows.map((row) => `${row.no} ${row.name}`).join('、')}）` : ''}
+- 当前技能 staging 中无法确认的旧引用：${legacyUnmatched.length ? legacyUnmatched.join('；') : '（无）'}
+- 无法确认的旧引用只记入审计信息，不生成虚构技能行，也不进入 preview 技能关系。
+
 ## 样本行
 
 | 编号 | 名称 | 特性 | 技能数 | 血脉技能数 | 进化链节点数 | 进化链摘要 |
@@ -258,9 +395,9 @@ ${lastFetchFailure ? `- ${lastFetchFailure.no} ${lastFetchFailure.name}: ${lastF
 
 ## 建议下一步
 
-1. 对照少量手动打开的 BWiki 页面复核详情解析器，尤其是多形态精灵和进化数据缺失页面。
-2. 确认特性描述、技能来源标签、血脉技能、进化链节点 / 摘要、蛋组和图片优先级的映射口径后，再继续扩大详情解析批次。
-3. 在 preview 转换口径完成审阅前，只继续生成 staging / 报告；本阶段不要覆盖 \`public/presets/*\`。
+1. 审阅完整详情 staging 与 preview 报告；旧模板无法确认的技能引用继续只作审计记录。
+2. 若 P4 准入项保持清零，下一批设计具有明确命令名、覆盖前后统计和安全检查的显式覆盖命令。
+3. 在用户明确授权正式替换前，不覆盖 \`public/presets/*\`。
 `
 }
 
@@ -273,6 +410,8 @@ async function main() {
   const limit = Number.parseInt(process.env.BWIKI_DETAIL_LIMIT || `${DEFAULT_LIMIT}`, 10)
   const delayMs = Math.max(0, Number.parseInt(process.env.BWIKI_DETAIL_DELAY_MS || `${DEFAULT_DELAY_MS}`, 10) || 0)
   const source = JSON.parse(await readFile(CREATURE_STAGING, 'utf8'))
+  const skillSource = JSON.parse(await readFile(SKILL_STAGING, 'utf8'))
+  const skillByName = new Map(skillSource.rows.map((row) => [row.name, row]))
   if (process.env.BWIKI_DETAIL_OFFLINE === '1') {
     const existing = JSON.parse(await readFile(OUTPUT_JSON, 'utf8'))
     await writeFile(resolve(OUTPUT_MD), renderReport({
@@ -311,14 +450,23 @@ async function main() {
 
   for (const row of candidates) {
     const existing = existingBySourceUrl.get(row.detailUrl)
-    if (existing?.no === row.no && existing?.name === row.name) {
+    if (existing?.no === row.no && existing?.name === row.name && isReusableDetail(existing)) {
       rows.push(existing)
       reusedCount += 1
       continue
     }
     try {
+      if (existing?.no === row.no && existing?.name === row.name && (needsLegacyFallback(existing) || existing.legacyTemplate)) {
+        rows.push(parseLegacyDetail(row, await fetchLegacySource(row.name), skillByName))
+        fetchedCount += 1
+        if (delayMs > 0) await sleep(delayMs)
+        continue
+      }
       const html = await fetchTextWithRetry(row.detailUrl)
-      rows.push(parseDetail(row, html))
+      const parsed = parseDetail(row, html)
+      rows.push(needsLegacyFallback(parsed)
+        ? parseLegacyDetail(row, await fetchLegacySource(row.name), skillByName)
+        : parsed)
       fetchedCount += 1
       if (delayMs > 0) await sleep(delayMs)
     } catch (error) {

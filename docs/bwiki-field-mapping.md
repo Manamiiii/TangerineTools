@@ -9,7 +9,7 @@
 | `scripts/data/bwiki/creatures.staging.json` | 精灵筛选页 staging | 精灵基础信息、六维、形态、图片入口、蛋 / 果实图片、详情页链接 |
 | `scripts/data/bwiki/skills.staging.json` | 技能查询 staging | 技能基础字段和独立技能行候选 |
 | `scripts/data/bwiki/eggs.staging.json` | 精灵蛋筛选 staging | `eggImage` / `fruitImage` 图片来源 |
-| `scripts/data/bwiki/creature-details.sample.staging.json` | 精灵详情页受控批次 staging | 特性描述、技能卡关系、血脉 / 技能石标签、进化链验证 |
+| `scripts/data/bwiki/creature-details.sample.staging.json` | 精灵详情页完整 staging | 特性描述、技能卡关系、血脉 / 技能石标签、进化链验证；旧模板使用官方 API 源码回退 |
 | `public/presets/rockKingdomRows.json` | 当前精灵预置 | P3 preview 的目标形状参考，不在 P2 覆盖 |
 | `public/presets/rockKingdomSkillRows.json` | 当前技能预置 | P3 preview 的目标形状参考，不在 P2 覆盖 |
 
@@ -49,7 +49,7 @@
 | `priority` | 先制/速度 | 暂无稳定 staging 字段 | 保留旧字段或留空；不得猜测 | P3 报告缺口 |
 | `effectTags` | 效果标签 | 本地规则根据 `effect` 派生 | 不从 BWiki 直接照搬 | P3 可重跑派生 |
 | `effect` | 效果 | `skills.rows[].effect`、详情 `skills[].effect` | 以技能查询 staging 为主；详情卡冲突进入报告 | 写入 preview |
-| `learnerRefs` | 可学精灵 | 由全部 preview 精灵 `skillRefs` 反推 | 不从技能页反爬学习者；详情样本更新部分 `skillRefs`，其他复用行保留旧关系，再对完整 preview 重建反向引用 | 写入 preview，并报告全量双向一致性 |
+| `learnerRefs` | 可学精灵 | 由全部 preview 精灵 `skillRefs` 反推 | 不从技能页反爬学习者；完整详情 staging 更新全部 `skillRefs`，再对完整 preview 重建反向引用 | 写入 preview，并报告全量双向一致性 |
 
 ## 稳定 id 与迁移边界
 
@@ -75,4 +75,4 @@ P3 只允许生成 preview 和报告，不覆盖正式预置。preview 报告至
 
 ## 下一步
 
-已新增 P3 preview 命令 `npm run preview:bwiki`，只输出 `scripts/data/bwiki/*.preview.json` / `docs/bwiki-preview-report.md` 审计产物，不覆盖 `public/presets/*`。下一步先审阅报告中的 id 复用、字段冲突与技能关系覆盖率；确认后再设计 P4 显式覆盖命令。
+P3 preview 已完成 592 条精灵详情审阅，只输出 `scripts/data/bwiki/*.preview.json` / `docs/bwiki-preview-report.md` 审计产物，不覆盖 `public/presets/*`。当前自动准入阻塞项已清零；下一步设计 P4 显式覆盖命令，实际替换仍需用户明确授权。

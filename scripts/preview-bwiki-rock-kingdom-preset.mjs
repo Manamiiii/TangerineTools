@@ -450,6 +450,8 @@ function renderReport({ syncedAt, inputs, outputs, creatureIssues, skillIssues, 
   const creaturesWithSkillRefs = outputs.creaturePreviewRows.filter((row) => row.values.skillRefs.length > 0).length
   const creaturesWithoutSkillRefs = outputs.creaturePreviewRows.length - creaturesWithSkillRefs
   const emptyImageRows = outputs.creaturePreviewRows.filter((row) => !row.values.image).map((row) => `${row.values.no} ${row.values.name}`)
+  const legacyUnmatchedRefs = inputs.details.flatMap((row) =>
+    (row.legacyUnmatchedSkillNames ?? []).map((name) => `${row.no} ${row.name}：${name}`))
   const p4Blockers = [
     inputs.details.length < inputs.creatures.length ? `详情 staging 仅覆盖 ${inputs.details.length} / ${inputs.creatures.length} 条精灵` : '',
     creaturesWithoutSkillRefs ? `仍有 ${creaturesWithoutSkillRefs} 条精灵没有技能引用` : '',
@@ -573,6 +575,12 @@ ${renderList(skillIssues.unknownCategories)}
 | ${skillRelationIssues.totalCards} | ${skillRelationIssues.matchedCards} | ${relationRate} | ${skillRelationIssues.unmatchedCards.length} |
 
 ${renderList(skillRelationIssues.unmatchedCards)}
+
+### 旧模板未确认引用
+
+${renderList(legacyUnmatchedRefs)}
+
+> 这些名称来自旧模板源码，但不在当前 BWiki 技能 staging 中；preview 不生成虚构技能行，也不把它们计入详情技能卡匹配率。
 
 ### Preview 全量双向一致性
 
