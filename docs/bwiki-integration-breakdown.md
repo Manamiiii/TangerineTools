@@ -16,10 +16,11 @@
 |---|---|---|---|
 | BWiki 页面登记 | 已完成 | `docs/data-sources.md` | 否 |
 | BWiki 页面审计 | 已完成 | `docs/bwiki-source-audit.md` | 否 |
-| 筛选页 staging | 已完成 | `scripts/data/bwiki/*.staging.json`、`docs/bwiki-staging-report.md` | 否 |
-| 详情页解析 | 已扩展至 48 条受控解析 | `scripts/data/bwiki/creature-details.sample.staging.json`、`docs/bwiki-detail-staging-report.md` | 否 |
+| 筛选页 staging | 已完成；已纠正 `data-param8` 为归属赛季 | `scripts/data/bwiki/*.staging.json`、`docs/bwiki-staging-report.md` | 否 |
+| 详情页解析 | 已完成 592 / 592 条解析（0 error）；1 条旧模板使用官方 API 源码回退 | `scripts/data/bwiki/creature-details.sample.staging.json`、`docs/bwiki-detail-staging-report.md` | 否 |
 | 字段映射冻结 | 已完成首版 | `docs/bwiki-field-mapping.md` | 否 |
-| 预置形状 preview | 已完成首版 | `scripts/data/bwiki/*preview.json`、`docs/bwiki-preview-report.md` | 否 |
+| 预置形状 preview | P3 审阅完成；自动准入阻塞项已清零，可进入 P4 命令设计 | `scripts/data/bwiki/*preview.json`、`docs/bwiki-preview-report.md` | 否 |
+| 显式覆盖命令 | P4 dry-run 已实现；正式覆盖前需完成已有浏览器的技能安全迁移 | `scripts/apply-bwiki-rock-kingdom-preset.mjs`、`docs/bwiki-apply-report.md` | 待明确授权 |
 | 详情页 UI 分块 | 未开始 | 待新增 | 否 |
 
 ## 后续阶段
@@ -62,4 +63,4 @@
 
 ## 下一步
 
-先人工审阅 `docs/bwiki-detail-staging-report.md` 的 48 条详情解析样本，以及 `docs/bwiki-preview-report.md` 中的 id 复用、新增行、字段冲突和技能关系覆盖率。若详情解析和 preview 口径确认可接受，再进入 P4：新增显式覆盖命令；覆盖命令必须继续保留覆盖前后行数、id 复用、新增 id 和技能关系覆盖率报告，并且只有用户明确要求时才能替换 `public/presets/*`。
+P4 显式覆盖脚本已实现：`npm run check:bwiki:preset` 默认只做 dry-run 并生成 `docs/bwiki-apply-report.md`；真正写入必须额外使用 `BWIKI_PRESET_OVERWRITE=CONFIRM_BWIKI_P4 npm run apply:bwiki:preset`。当前 dry-run 确认目标为 592 条精灵 / 553 条技能，精灵 id 复用 467、新增 125、目标不再包含旧 id 29，技能 id 复用 487、新增 66、遗漏 0，双向关系 29042 / 29042 且无悬空引用。下一步先设计已有浏览器的安全技能迁移：当前 `migrateRockKingdomSkillRows()` 会整行 `bulkPut` 同 id 技能，必须避免覆盖用户非空自定义值；完成并验证该迁移后，再由用户明确授权实际替换 `public/presets/*`。

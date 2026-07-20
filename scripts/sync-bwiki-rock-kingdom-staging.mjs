@@ -72,6 +72,23 @@ async function fetchText(url) {
   }
 }
 
+function sleep(ms) {
+  return new Promise((resolveSleep) => setTimeout(resolveSleep, ms))
+}
+
+async function fetchTextWithRetry(url, attempts = 3) {
+  let lastError
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await fetchText(url)
+    } catch (error) {
+      lastError = error
+      if (attempt < attempts) await sleep(500 * attempt)
+    }
+  }
+  throw lastError
+}
+
 function decodeHtml(value) {
   return String(value ?? '')
     .replace(/&nbsp;/g, ' ')
@@ -193,10 +210,33 @@ function parseCreatureRows(html) {
         isMainForm,
         shinyLabel: data.param6 || '',
         availabilityLabel: data.param7 || '',
-        eggGroupLabel: data.param8 || '',
+        seasonLabel: data.param8 || '',
         image: extractFirstImage(cells[1]),
         detailUrl: extractFirstLink(cells[2]) || extractFirstLink(cells[1]),
         rawParams: data,
+      }
+    })
+    .filter(Boolean)
+}
+
+function parseCreatureCatalogRows(html) {
+  return html
+    .split(/<div class="divsort dex-card dex-pet-card(?:\s|")/)
+    .slice(1)
+    .map((segment) => {
+      const block = `<div class="divsort dex-card dex-pet-card ${segment}`
+      const nameBlock = block.match(/<div class="dex-card-name[^"]*"[^>]*>([\s\S]*?)<\/div>/i)?.[1] ?? ''
+      const baseName = normalizeName(nameBlock)
+      const subtitle = stripTags(block.match(/<div class="dex-card-subtitle">([\s\S]*?)<\/div>/i)?.[1] ?? '')
+      const name = subtitle && subtitle !== '首领形态' ? `${baseName}（${subtitle}）` : baseName
+      const no = parseNo(block.match(/<div class="dex-card-kicker">([\s\S]*?)<span>/i)?.[1] ?? '')
+      const normalArt = block.match(/<span class="dex-pet-art-layer dex-pet-art-normal">([\s\S]*?)<\/span>/i)?.[0] ?? ''
+      const artBlock = normalArt || block.match(/<div class="dex-pet-art">[\s\S]*?(?=<div class="dex-card-types")/i)?.[0] || ''
+      if (!name || !no) return null
+      return {
+        no,
+        name,
+        image: extractFirstImage(artBlock),
       }
     })
     .filter(Boolean)
@@ -286,6 +326,21 @@ function enrichCreaturesWithEggAssets(creatures, eggs) {
   })
 }
 
+function enrichCreaturesWithCatalogImages(creatures, catalogRows) {
+  const byExact = groupBy(catalogRows, (row) => `${row.no}|${row.name}`)
+  const byName = groupBy(catalogRows, (row) => row.name)
+  return creatures.map((creature) => {
+    const exactMatches = byExact.get(`${creature.no}|${creature.name}`) ?? []
+    const nameMatches = byName.get(creature.name) ?? []
+    const catalog = exactMatches.length === 1 ? exactMatches[0] : nameMatches.length === 1 ? nameMatches[0] : null
+    return {
+      ...creature,
+      image: creature.image || catalog?.image || '',
+      imageSource: creature.image ? 'creature-filter' : catalog?.image ? 'creature-catalog' : 'empty',
+    }
+  })
+}
+
 function countBy(rows, getter) {
   const result = {}
   for (const row of rows) {
@@ -350,10 +405,12 @@ function renderList(items, limit = 30) {
 function renderReport({ syncedAt, creatures, skills, eggs, localCreatures, localSkills, creatureDiff, skillDiff }) {
   const creatureEggAssetCounts = countBy(creatures, (row) => (row.eggImage ? '有精灵蛋图' : '缺精灵蛋图'))
   const creatureFruitAssetCounts = countBy(creatures, (row) => (row.fruitImage ? '有精灵果实图' : '缺精灵果实图'))
+  const creatureImageSourceCounts = countBy(creatures, (row) => row.imageSource)
   const formCounts = countBy(creatures, (row) => row.formCategoryLabel)
   const mainFormCounts = countBy(creatures, (row) => (row.isMainForm ? '主形态' : '非主形态/未标注'))
   const stageCounts = countBy(creatures, (row) => row.stageLabel)
   const availabilityCounts = countBy(creatures, (row) => row.availabilityLabel)
+  const seasonCounts = countBy(creatures, (row) => row.seasonLabel)
   const skillCategoryCounts = countBy(skills, (row) => row.category)
   const eggElementCounts = countBy(eggs, (row) => row.elements.join('/') || '（空）')
   const multiNoGroups = topMultiNoGroups(creatures)
@@ -405,11 +462,19 @@ ${multiNoGroups.map((group) => `| ${group.no} | ${group.count} | ${group.names.j
 
 - 基础：编号、名称、详情页链接、头像、属性、特性、生命、速度、物攻、魔攻、物防、魔防、总种族值。
 - 形态：\`data-param4\` 可区分原始形态 / 地区形态 / 首领形态；\`data-param5\` 标记主形态。
-- 补充：\`data-param7\` 暴露进化 / 活动 / 捕捉等获取线索；\`data-param8\` 暴露蛋组标签。
+- 补充：\`data-param7\` 暴露进化 / 活动 / 捕捉等获取线索；\`data-param8\` 暴露归属赛季（S1 / S2 / S3 / 无），不是蛋组。
+
+| 精灵图来源 | Count |
+|---|---:|
+${renderCountTable(creatureImageSourceCounts)}
 
 | 获取/来源标签 | Count |
 |---|---:|
 ${renderCountTable(availabilityCounts)}
+
+| 归属赛季 | Count |
+|---|---:|
+${renderCountTable(seasonCounts)}
 
 ### 技能查询
 
@@ -464,16 +529,37 @@ async function writeJson(path, data) {
 
 async function main() {
   const syncedAt = new Date().toISOString()
-  const [creatureHtml, skillHtml, eggHtml] = await Promise.all([
-    fetchText(SOURCE_PAGES.creatures),
-    fetchText(SOURCE_PAGES.skills),
-    fetchText(SOURCE_PAGES.eggs),
-  ])
+  const catalogOnly = process.env.BWIKI_CATALOG_ONLY === '1'
+  let parsedCreatures
+  let skills
+  let eggs
+  let creatureCatalogHtml
+  if (catalogOnly) {
+    const [creatureSnapshot, skillSnapshot, eggSnapshot, catalogHtml] = await Promise.all([
+      readJson(OUTPUTS.creatures),
+      readJson(OUTPUTS.skills),
+      readJson(OUTPUTS.eggs),
+      fetchTextWithRetry(SOURCE_PAGES.creatureCatalog),
+    ])
+    parsedCreatures = creatureSnapshot.rows ?? []
+    skills = skillSnapshot.rows ?? []
+    eggs = eggSnapshot.rows ?? []
+    creatureCatalogHtml = catalogHtml
+  } else {
+    const [creatureHtml, skillHtml, eggHtml, catalogHtml] = await Promise.all([
+      fetchTextWithRetry(SOURCE_PAGES.creatures),
+      fetchTextWithRetry(SOURCE_PAGES.skills),
+      fetchTextWithRetry(SOURCE_PAGES.eggs),
+      fetchTextWithRetry(SOURCE_PAGES.creatureCatalog),
+    ])
+    parsedCreatures = parseCreatureRows(creatureHtml)
+    skills = parseSkillRows(skillHtml)
+    eggs = parseEggRows(eggHtml)
+    creatureCatalogHtml = catalogHtml
+  }
 
-  const parsedCreatures = parseCreatureRows(creatureHtml)
-  const skills = parseSkillRows(skillHtml)
-  const eggs = parseEggRows(eggHtml)
-  const creatures = enrichCreaturesWithEggAssets(parsedCreatures, eggs)
+  const creatureCatalogRows = parseCreatureCatalogRows(creatureCatalogHtml)
+  const creatures = enrichCreaturesWithEggAssets(enrichCreaturesWithCatalogImages(parsedCreatures, creatureCatalogRows), eggs)
   const localCreatures = await readJson(LOCAL_CREATURE_PRESET)
   const localSkills = await readJson(LOCAL_SKILL_PRESET)
   const creatureDiff = compareNames(creatures, localCreatures)
@@ -528,6 +614,7 @@ async function main() {
   }))
 
   console.log(`Wrote BWiki creature staging rows: ${creatures.length}`)
+  if (catalogOnly) console.log('Refreshed creature images from the versioned staging snapshots plus the BWiki creature catalog')
   console.log(`Wrote BWiki skill staging rows: ${skills.length}`)
   console.log(`Wrote BWiki egg staging rows: ${eggs.length}`)
   console.log(`Report: ${OUTPUTS.reportMd}`)

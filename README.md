@@ -59,6 +59,8 @@ npm run lint
 | `npm run preview` | 本地预览生产构建产物 |
 | `npm run lint` | 使用 oxlint 做静态检查 |
 | `npm run sync:rock` | 从官方源或本地可信 `d.json` 生成洛克王国精灵与技能预置资料 |
+| `npm run check:bwiki:preset` | dry-run 校验 BWiki preview 的 P4 覆盖范围并生成报告，不修改正式预置 |
+| `npm run apply:bwiki:preset` | P4 显式覆盖命令；还必须提供报告约定的确认环境变量 |
 
 当前环境若无法访问官方源，可使用仓库内可信源复现生成：
 
