@@ -1,6 +1,6 @@
 # BWiki 预置 preview 报告
 
-生成时间：2026-07-17T09:35:11.540Z
+生成时间：2026-07-20T06:26:16.941Z
 
 > 本报告由 `npm run preview:bwiki` 生成。脚本只读取 BWiki staging / detail staging 与当前 public preset JSON，然后只写入 preview / 审计产物。它**不会**覆盖 `public/presets/*`，**不会**触碰 Dexie / 浏览器用户数据，也**不会**修改 UI 代码。
 
@@ -10,7 +10,7 @@
 |---|---:|
 | BWiki 精灵 staging 行数 | 592 |
 | BWiki 技能 staging 行数 | 553 |
-| BWiki 详情 staging 行数 | 288 |
+| BWiki 详情 staging 行数 | 342 |
 | 已读取当前 public 精灵预置行数 | 496 |
 | 已读取当前 public 技能预置行数 | 487 |
 | 已读取孵蛋补充快照行数 | 496 |
@@ -185,12 +185,12 @@
 | spd | 9 |
 | shiny | 29 |
 | traitName | 10 |
-| traitIcon | 246 |
-| traitDesc | 33 |
-| skillRefs | 246 |
+| traitIcon | 289 |
+| traitDesc | 46 |
+| skillRefs | 289 |
 | eggGroups | 0 |
 | speciesGroup | 0 |
-| evolutionLine | 246 |
+| evolutionLine | 289 |
 | eggImage | 121 |
 | fruitImage | 118 |
 
@@ -205,7 +205,7 @@
 | cost | 14 |
 | priority | 0 |
 | effect | 472 |
-| learnerRefs | 331 |
+| learnerRefs | 348 |
 
 ## 字段冲突与缺口
 
@@ -342,7 +342,7 @@
 
 | 详情技能卡总数 | 已匹配技能卡 | 覆盖率 | 未匹配技能名数量 |
 |---:|---:|---:|---:|
-| 14086 | 14086 | 100.00% | 0 |
+| 16834 | 16834 | 100.00% | 0 |
 
 - （无）
 
@@ -350,7 +350,7 @@
 
 | 有技能引用的精灵 | 精灵 → 技能边数 | 技能 → 精灵边数 | 缺反向关系 | 缺正向关系 | 悬空技能引用 | 悬空精灵引用 |
 |---:|---:|---:|---:|---:|---:|---:|
-| 509 / 592 | 24631 | 24631 | 0 | 0 | 0 | 0 |
+| 520 / 592 | 25313 | 25313 | 0 | 0 | 0 | 0 |
 
 > 详情技能卡覆盖率只衡量已抓取详情样本中的技能名能否匹配；全量双向一致性用于检查最终 preview 中的 `skillRefs` / `learnerRefs` 是否互相对应。
 
@@ -373,8 +373,8 @@
 
 当前 **不建议进入 P4 覆盖**：
 
-- 详情 staging 仅覆盖 288 / 592 条精灵
-- 仍有 83 条精灵没有技能引用
+- 详情 staging 仅覆盖 342 / 592 条精灵
+- 仍有 72 条精灵没有技能引用
 
 ## 安全声明
 

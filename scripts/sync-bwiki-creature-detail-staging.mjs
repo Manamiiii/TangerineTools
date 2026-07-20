@@ -195,7 +195,18 @@ function renderCountTable(counts) {
   return Object.entries(counts).map(([label, count]) => `| ${label} | ${count} |`).join('\n') || '| （无） | 0 |'
 }
 
-function renderReport({ syncedAt, sourceCount, limit, rows, errors, reusedCount = 0, fetchedCount = 0, delayMs = 0 }) {
+function renderReport({
+  syncedAt,
+  sourceCount,
+  limit,
+  requestedLimit = limit,
+  rows,
+  errors,
+  lastFetchFailure = null,
+  reusedCount = 0,
+  fetchedCount = 0,
+  delayMs = 0,
+}) {
   const skillSourceCounts = countBy(rows.flatMap((row) => row.skills), (skill) => skill.sourceType)
   const skillCategoryCounts = countBy(rows.flatMap((row) => row.skills), (skill) => skill.category)
   const traitRows = rows.filter((row) => row.counts.hasTraitDescription).length
@@ -211,9 +222,9 @@ function renderReport({ syncedAt, sourceCount, limit, rows, errors, reusedCount 
 
 ## 快照输出
 
-| 精灵 staging 行数 | 已解析详情行数 | 复用已有成功行 | 本次新抓取 | 请求间隔 | 失败行数 | 本次上限 | 输出文件 |
-|---:|---:|---:|---:|---:|---:|---:|---|
-| ${sourceCount} | ${rows.length} | ${reusedCount} | ${fetchedCount} | ${delayMs} ms | ${errors.length} | ${limit} | \`${OUTPUT_JSON}\` |
+| 精灵 staging 行数 | 已解析详情行数 | 复用已有成功行 | 本次新抓取 | 请求间隔 | 快照失败行数 | 快照上限 | 请求上限 | 输出文件 |
+|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| ${sourceCount} | ${rows.length} | ${reusedCount} | ${fetchedCount} | ${delayMs} ms | ${errors.length} | ${limit} | ${requestedLimit} | \`${OUTPUT_JSON}\` |
 
 ## 详情字段覆盖
 
@@ -243,7 +254,7 @@ ${examples || '| （无） | （无） | （无） | 0 | 0 | 0 | （无） |'}
 
 ## 本次抓取失败
 
-${errors.length ? errors.map((error) => `- ${error.no} ${error.name}: ${error.error.split('\n')[0]}`).join('\n') : '- （无）'}
+${lastFetchFailure ? `- ${lastFetchFailure.no} ${lastFetchFailure.name}: ${lastFetchFailure.error.split('\n')[0]}（失败行未写入 staging；已保留此前成功前缀）` : '- （无）'}
 
 ## 建议下一步
 
@@ -268,8 +279,10 @@ async function main() {
       syncedAt: existing.syncedAt,
       sourceCount: source.rowCount,
       limit: existing.limit ?? limit,
+      requestedLimit: existing.requestedLimit ?? existing.limit ?? limit,
       rows: existing.rows ?? [],
       errors: existing.errors ?? [],
+      lastFetchFailure: existing.lastFetchFailure ?? null,
       reusedCount: existing.reusedCount ?? 0,
       fetchedCount: existing.fetchedCount ?? existing.rowCount ?? existing.rows?.length ?? 0,
       delayMs: existing.delayMs ?? 0,
@@ -314,28 +327,36 @@ async function main() {
     }
   }
 
-  if (errors.length) {
+  if (errors.length && fetchedCount === 0) {
     throw new Error(`BWiki detail fetch failed for ${errors.length} row(s); kept the previous 0-error staging snapshot unchanged. First failure: ${errors[0].no} ${errors[0].name}: ${errors[0].error}`)
   }
+
+  const lastFetchFailure = errors[0] ?? null
+  const snapshotLimit = lastFetchFailure ? rows.length : limit
+  const snapshotErrors = []
 
   await writeJson(OUTPUT_JSON, {
     source: CREATURE_STAGING,
     syncedAt,
-    limit,
+    limit: snapshotLimit,
+    requestedLimit: limit,
     rowCount: rows.length,
-    errorCount: errors.length,
+    errorCount: snapshotErrors.length,
     reusedCount,
     fetchedCount,
     delayMs,
     rows,
-    errors,
+    errors: snapshotErrors,
+    lastFetchFailure,
   })
   await writeFile(resolve(OUTPUT_MD), renderReport({
     syncedAt,
     sourceCount: source.rowCount,
-    limit,
+    limit: snapshotLimit,
+    requestedLimit: limit,
     rows,
-    errors,
+    errors: snapshotErrors,
+    lastFetchFailure,
     reusedCount,
     fetchedCount,
     delayMs,
@@ -344,8 +365,10 @@ async function main() {
   console.log(`Wrote BWiki creature detail staging rows: ${rows.length}`)
   console.log(`Reused existing successful rows: ${reusedCount}; fetched rows: ${fetchedCount}`)
   console.log(`Delay between new detail requests: ${delayMs} ms`)
-  if (errors.length) console.warn(`Skipped BWiki detail rows after fetch errors: ${errors.length}`)
   console.log(`Report: ${OUTPUT_MD}`)
+  if (lastFetchFailure) {
+    throw new Error(`BWiki detail fetch stopped at ${lastFetchFailure.no} ${lastFetchFailure.name}; wrote ${rows.length} successful 0-error staging rows and left the failed row out. ${lastFetchFailure.error}`)
+  }
 }
 
 main().catch((error) => {
