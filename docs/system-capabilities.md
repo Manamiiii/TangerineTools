@@ -105,11 +105,12 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
   - 普通资料表包括「精灵基础资料」和「技能资料」。
   - 精灵基础资料包含官方基础资料、六维、特性、`traitTags`、`skillTags`、`skillRefs`，并为孵蛋推荐预留/补齐 `eggGroups`、`speciesGroup`。
   - 技能资料包含技能图标、名称、系别、类型、威力、能耗、先制/速度、效果标签、效果、`learnerRefs`。
-- 数据由 `scripts/sync-rock-kingdom-preset.mjs` 从可信 `d.json` 生成：
-  - 当前仓库保留 `scripts/data/rockKingdom.d.json` 作为本地可信源。
-  - `public/presets/rockKingdomRows.json` 包含 496 条精灵 / 形态资料。
-  - `public/presets/rockKingdomSkillRows.json` 包含技能资料。
-- 精灵图、18 系图标、特性图标、技能图标、技能类型图标均使用官方静态资源前缀 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/`。
+- 正式数据由版本化 BWiki staging / preview 经显式覆盖命令发布：
+  - `public/presets/rockKingdomRows.json` 包含 592 条精灵 / 形态资料。
+  - `public/presets/rockKingdomSkillRows.json` 包含 553 条技能资料。
+  - `public/presets/rockKingdomPresetMigration.json` 保存旧官方值 SHA-256，供已有浏览器做安全三方合并，不含用户数据。
+  - 当前仓库仍保留 `scripts/data/rockKingdom.d.json` 作为旧版可信回退 / 对照源。
+- 精灵与技能图片以 BWiki / patchwiki 审计快照为主；仍受支持的旧资源和 UI 图标继续使用可信静态资源。
 - 迁移策略：老用户升级时通过版本化旧官方值指纹做三方合并，只更新空值、无效值或仍匹配旧官方值的精灵 / 技能字段；用户自定义非空值、用户新增的非占位资料行、owned 收集记录和 stock 统计视图不会被覆盖或删除；不引入 Dexie schema 版本变更。
 
 ### 8. 全量数据导出 / 导入（仅首页）
@@ -143,4 +144,4 @@ npm run lint      # oxlint 静态检查
 npm run preview   # 预览 build 产物
 ```
 
-已验证：`npm run build`、`npm run lint` 均通过；并通过浏览器手动走查确认了场景列表、场景导航、多工具切换（资料库/收集记录/统计视图/性格推荐 四工具切换器）、资料表格渲染（搜索/排序/筛选/分页，496 条洛克王国预置行的滚动/翻页表现）、收集记录增删改查、统计视图分组统计、性格推荐的资料库带入与候选切换、详情弹窗（含同编号形态对比 + 适合方向 + 主要差异列）等核心链路可正常工作，详见 `docs/session-start-prompt.md` 的"已验证的质量基线"。
+已验证：`npm run build`、`npm run lint` 均通过；并通过浏览器手动走查确认了场景列表、场景导航、多工具切换、资料表格渲染、收集记录增删改查、统计视图分组统计、性格推荐的资料库带入与候选切换、详情弹窗等核心链路可正常工作。BWiki 正式预置发布后的 592 条精灵 / 553 条技能浏览器升级走查仍是下一步，详见 `docs/session-start-prompt.md` 的“已验证的质量基线”。

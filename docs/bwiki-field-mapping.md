@@ -11,8 +11,8 @@
 | `scripts/data/bwiki/eggs.staging.json` | 精灵蛋筛选 staging | `eggImage` / `fruitImage` 图片来源 |
 | `scripts/data/bwiki/creature-details.sample.staging.json` | 精灵详情页完整 staging | 特性描述、技能卡关系、血脉 / 技能石标签、进化链验证；旧模板使用官方 API 源码回退 |
 | `scripts/data/bwiki/rockKingdomPresetMigration.preview.json` | P4 三方迁移清单 preview | 仅记录变化字段的旧官方值 SHA-256；正式覆盖时发布到 `public/presets` 供已有浏览器安全升级 |
-| `public/presets/rockKingdomRows.json` | 当前精灵预置 | P3 preview 的目标形状参考，不在 P2 覆盖 |
-| `public/presets/rockKingdomSkillRows.json` | 当前技能预置 | P3 preview 的目标形状参考，不在 P2 覆盖 |
+| `public/presets/rockKingdomRows.json` | 当前精灵预置 | P4 已按冻结映射正式发布 592 行 |
+| `public/presets/rockKingdomSkillRows.json` | 当前技能预置 | P4 已按冻结映射正式发布 553 行 |
 
 ## 精灵基础资料字段映射
 
@@ -76,4 +76,4 @@ P3 只允许生成 preview 和报告，不覆盖正式预置。preview 报告至
 
 ## 下一步
 
-P3 preview 已完成 592 条精灵详情审阅，只输出 `scripts/data/bwiki/*.preview.json` / `docs/bwiki-preview-report.md` 审计产物，不覆盖 `public/presets/*`。当前自动准入阻塞项已清零；下一步设计 P4 显式覆盖命令，实际替换仍需用户明确授权。
+P3 preview 已完成 592 条精灵详情审阅，P4 已将 preview 的 `id` / `values` 显式发布到 `public/presets/*`，同时发布旧官方值 SHA-256 迁移清单。下一步先做已有浏览器升级走查，再进入 P5 详情分块 UI；后续数据更新仍必须先生成 staging / preview 报告并通过显式覆盖命令发布。
