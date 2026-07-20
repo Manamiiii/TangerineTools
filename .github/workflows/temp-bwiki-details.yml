@@ -1,99 +1,29 @@
-name: Temporary BWiki detail staging
+name: Temporary BWiki legacy source fetch
 
 on:
-  push:
-    branches:
-      - agent/bwiki-p3-preview-checkpoint
-    paths:
-      - .github/workflows/temp-bwiki-details.yml
+  workflow_dispatch:
 
 permissions:
   contents: read
 
-concurrency:
-  group: temporary-bwiki-detail-staging
-  cancel-in-progress: false
-
 jobs:
-  sync:
-    name: Complete BWiki detail staging
+  fetch:
+    name: Fetch 学院呱呱 source
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Fetch remaining BWiki details slowly
+      - name: Fetch official MediaWiki API source
         shell: bash
         run: |
-          set -uo pipefail
-          max_attempts=12
-          for ((attempt = 1; attempt <= max_attempts; attempt += 1)); do
-            echo "Attempt ${attempt}/${max_attempts}"
-            set +e
-            BWIKI_DETAIL_LIMIT=592 BWIKI_DETAIL_DELAY_MS=10000 npm run sync:bwiki:details
-            sync_status=$?
-            set -e
+          curl -L --fail --silent --show-error \
+            --retry 30 --retry-all-errors --retry-delay 10 \
+            'https://wiki.biligame.com/rocom/api.php?action=query&prop=revisions&rvprop=content&rvslots=main&titles=%E5%AD%A6%E9%99%A2%E5%91%B1%E5%91%B1&format=json&formatversion=2' \
+            --output xueyuan-guagua-source.json
 
-            detail_rows=$(node -p "JSON.parse(require('node:fs').readFileSync('scripts/data/bwiki/creature-details.sample.staging.json', 'utf8')).rowCount")
-            detail_errors=$(node -p "JSON.parse(require('node:fs').readFileSync('scripts/data/bwiki/creature-details.sample.staging.json', 'utf8')).errorCount")
-            echo "Checkpoint: ${detail_rows}/592 rows, ${detail_errors} errors"
-
-            if [[ "${detail_rows}" -eq 592 && "${detail_errors}" -eq 0 ]]; then
-              exit 0
-            fi
-            if [[ "${attempt}" -eq "${max_attempts}" ]]; then
-              exit 1
-            fi
-
-            for cooldown_minute in 1 2 3 4 5; do
-              sleep 60
-              echo "Cooldown ${cooldown_minute}/5 before retry"
-            done
-          done
-
-      - name: Regenerate preview from latest checkpoint
-        if: always()
-        run: npm run preview:bwiki
-
-      - name: Validate full staging and project
-        run: |
-          node --input-type=module - <<'NODE'
-          import fs from 'node:fs'
-          const details = JSON.parse(fs.readFileSync('scripts/data/bwiki/creature-details.sample.staging.json', 'utf8'))
-          const creatures = JSON.parse(fs.readFileSync('scripts/data/bwiki/rockKingdomRows.preview.json', 'utf8'))
-          const skills = JSON.parse(fs.readFileSync('scripts/data/bwiki/rockKingdomSkillRows.preview.json', 'utf8'))
-          if (details.rowCount !== 592 || details.rows?.length !== 592 || details.errorCount !== 0 || details.errors?.length !== 0) {
-            throw new Error(`Expected 592 zero-error detail rows, got ${details.rowCount} rows and ${details.errorCount} errors`)
-          }
-          if (creatures.length !== 592 || skills.length !== 553) {
-            throw new Error(`Unexpected preview sizes: ${creatures.length} creatures, ${skills.length} skills`)
-          }
-          NODE
-          npm run lint
-          npm run build
-          git diff --check
-          git diff --exit-code -- public/presets
-
-      - name: Upload staging and preview audit artifacts
-        if: always()
+      - name: Upload source
         uses: actions/upload-artifact@v4
         with:
-          name: bwiki-detail-staging-${{ github.run_id }}
+          name: xueyuan-guagua-source-${{ github.run_id }}
           retention-days: 1
           if-no-files-found: error
-          path: |
-            scripts/data/bwiki/creature-details.sample.staging.json
-            scripts/data/bwiki/rockKingdomRows.preview.json
-            scripts/data/bwiki/rockKingdomSkillRows.preview.json
-            docs/bwiki-detail-staging-report.md
-            docs/bwiki-preview-report.md
+          path: xueyuan-guagua-source.json
