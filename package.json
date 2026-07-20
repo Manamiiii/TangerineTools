@@ -20,7 +20,8 @@
     "sync:bwiki:details": "node scripts/sync-bwiki-creature-detail-staging.mjs",
     "preview:bwiki": "node scripts/preview-bwiki-rock-kingdom-preset.mjs",
     "check:bwiki:preset": "node scripts/apply-bwiki-rock-kingdom-preset.mjs",
-    "apply:bwiki:preset": "node scripts/apply-bwiki-rock-kingdom-preset.mjs --write"
+    "apply:bwiki:preset": "node scripts/apply-bwiki-rock-kingdom-preset.mjs --write",
+    "test:preset-migration": "node --test scripts/tests/preset-migration.test.mjs"
   },
   "dependencies": {
     "dexie": "^4.4.4",

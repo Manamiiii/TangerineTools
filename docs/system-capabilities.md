@@ -110,7 +110,7 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
   - `public/presets/rockKingdomRows.json` 包含 496 条精灵 / 形态资料。
   - `public/presets/rockKingdomSkillRows.json` 包含技能资料。
 - 精灵图、18 系图标、特性图标、技能图标、技能类型图标均使用官方静态资源前缀 `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/`。
-- 迁移策略：老用户升级时只补齐预置表/字段/官方行数据，删除明确可识别的旧占位行或已废弃的预置字段；用户新增的非占位资料行、owned 收集记录、stock 统计视图不会被删除；不引入 Dexie schema 版本变更。
+- 迁移策略：老用户升级时通过版本化旧官方值指纹做三方合并，只更新空值、无效值或仍匹配旧官方值的精灵 / 技能字段；用户自定义非空值、用户新增的非占位资料行、owned 收集记录和 stock 统计视图不会被覆盖或删除；不引入 Dexie schema 版本变更。
 
 ### 8. 全量数据导出 / 导入（仅首页）
 

@@ -35,7 +35,7 @@ TangerineTools 是本地优先的个人资料管理 Web App（Vite + React 19 + 
 - 外部资料核对只关注洛克王国世界对精灵定位、机制和实战评价的描述；旧网页游戏洛克王国资料不作为新游定位依据。
 - 全量本地审计台账保留为索引和专题回归工具；当多只精灵暴露同类问题时，再按低生命高单防、速度线、双攻路线等专题批次统一修规则。
 - 单只精灵核对请严格沿用 `docs/nature-single-creature-template.md`。日常默认改为“分歧优先”：用户已在工具里看到的推荐 / 可保留 / 不推荐完整分档不再重复输出，只补充工具不易表达的本地资料与外部定位核对、模型能力分析、PVE 投入判断、工具结果差异和待确认点；只有用户明确要求全量核对时，才参考 `docs/nature-calibration-report.md` 展开全部 30 个候选。推荐性格只表示捕捉保留方向正确，不自动等于值得投入 PVE 资源；若用户讨论异色/炫彩培养，需明确 PVP 属性自动平衡、不作为培养依据，并单独判断 PVE 投入优先级。发现规则偏差先登记 `docs/nature-rule-iteration-log.md`，用户确认最终分档后再写入 `docs/nature-confirmed-results.md`，后续规则调整必须回归这些已确认结论。
-- 当前 `public/presets` 仍是官方 `d.json` 产物；BWiki P3 已完成 592 条精灵 / 553 条技能 preview，P4 显式覆盖命令已完成 dry-run，但尚未获得实际覆盖授权。下一步先修正已有浏览器的技能迁移，避免同 id 技能整行覆盖用户自定义值，再审阅 `docs/bwiki-apply-report.md` 并决定是否正式替换。`public/presets/rockKingdomBreedingRows.json` 继续作为 BWiki 孵蛋补充快照；运行时不在线访问 BWiki。
+- 当前 `public/presets` 仍是官方 `d.json` 产物；BWiki P3 已完成 592 条精灵 / 553 条技能 preview，P4 显式覆盖命令与已有浏览器三方安全迁移已完成 dry-run，但尚未获得实际覆盖授权。迁移只更新空值、无效值或仍匹配旧官方指纹的字段，保留用户非空自定义值和旧 id。下一步审阅 `docs/bwiki-apply-report.md` 并由用户明确授权是否正式替换；运行时不在线访问 BWiki。
 
 ## 代码地图
 

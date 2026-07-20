@@ -1,6 +1,6 @@
 # BWiki P4 显式覆盖检查报告
 
-生成时间：2026-07-20T08:49:04.253Z
+生成时间：2026-07-20T09:47:44.161Z
 
 执行模式：**只读 dry-run，未覆盖 public presets**
 
@@ -58,10 +58,16 @@
 ## 实际覆盖前的运行时复核
 
 - 新安装会直接读取覆盖后的完整预置。
-- 已有浏览器的精灵迁移只插入新 id，并补齐已有行的空值 / 无效系别；不会删除上述 29 个旧 id，也不会覆盖用户非空自定义值。
-- 当前技能迁移会对同 id 技能执行整行 `bulkPut`。在正式覆盖前，必须先把它调整为能区分“旧官方值”和“用户自定义值”的安全迁移，否则新版 BWiki 技能可能覆盖用户对已有技能行的自定义修改。
+- 已有浏览器会读取版本化迁移清单；字段为空、值无效，或当前值的 SHA-256 与旧官方值匹配时才更新为新版预置值。
+- 当前值不匹配任何旧官方指纹时视为用户自定义，精灵和技能字段都保持不变。
+- 迁移不会删除上述 29 个旧 id、用户新增行或 owned / stock 引用。
 
-> 因此本报告确认的是静态预置覆盖命令与目标数据本身；当前仍不应执行正式覆盖。
+| 迁移清单 | 涉及行数 | 涉及字段数 |
+|---|---:|---:|
+| 精灵 | 467 | 2510 |
+| 技能 | 487 | 1615 |
+
+迁移清单 preview：`scripts/data/bwiki/rockKingdomPresetMigration.preview.json`
 
 ## 输入指纹
 
@@ -75,4 +81,5 @@
 - dry-run 只写本报告，不修改 `public/presets/*`。
 - 真正覆盖只能通过 `BWIKI_PRESET_OVERWRITE=CONFIRM_BWIKI_P4 npm run apply:bwiki:preset` 触发。
 - 覆盖产物只保留 `id` / `values`，不会把 `previewMeta` 写入运行时预置。
+- 正式覆盖会同时发布 `public/presets/rockKingdomPresetMigration.json`，使已有浏览器能三方合并旧官方值、新官方值和用户当前值。
 - 命令不读取或写入 Dexie / IndexedDB，不删除 owned / stock 数据，也不改变 import/export 的 merge-by-id 语义。

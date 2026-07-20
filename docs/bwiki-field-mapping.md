@@ -10,6 +10,7 @@
 | `scripts/data/bwiki/skills.staging.json` | 技能查询 staging | 技能基础字段和独立技能行候选 |
 | `scripts/data/bwiki/eggs.staging.json` | 精灵蛋筛选 staging | `eggImage` / `fruitImage` 图片来源 |
 | `scripts/data/bwiki/creature-details.sample.staging.json` | 精灵详情页完整 staging | 特性描述、技能卡关系、血脉 / 技能石标签、进化链验证；旧模板使用官方 API 源码回退 |
+| `scripts/data/bwiki/rockKingdomPresetMigration.preview.json` | P4 三方迁移清单 preview | 仅记录变化字段的旧官方值 SHA-256；正式覆盖时发布到 `public/presets` 供已有浏览器安全升级 |
 | `public/presets/rockKingdomRows.json` | 当前精灵预置 | P3 preview 的目标形状参考，不在 P2 覆盖 |
 | `public/presets/rockKingdomSkillRows.json` | 当前技能预置 | P3 preview 的目标形状参考，不在 P2 覆盖 |
 
@@ -56,7 +57,7 @@
 - 精灵 preview 应优先复用现有 `rock-creature-src-*` 稳定 id，但只在“编号 + 名称”或唯一名称可确认匹配时复用；同编号但名称不同的 BWiki 形态 / 新增精灵必须分配新稳定 id，避免覆盖普通形态。
 - 技能 preview 应优先复用现有技能 row id；新增 BWiki 技能再分配新稳定 id。
 - 名称归一化只影响 preview 生成和迁移候选，不应在 P2 直接改 `public/presets/*`。
-- 旧用户迁移仍遵循“只补齐 / 修正预置官方字段，不覆盖用户自定义非空值”。
+- 旧用户迁移采用旧官方值 SHA-256、新版预置值和浏览器当前值的三方判断：空值 / 无效值或仍匹配旧官方指纹时更新，其他非空值视为用户自定义并保留。
 - 不新增 IndexedDB 表，不改 Dexie schema version；结构化关系仍用现有 `references` 字段表达。
 
 ## P3 preview 验收门槛

@@ -12,6 +12,7 @@ import {
 import { STOCK_FIXED_FIELDS, STOCK_TABLE_NAME } from './domain/stock.js'
 import { OWNED_TABLE_NAME, ROCK_KINGDOM_COLLECTION_FIELDS } from './domain/owned.js'
 import { BREEDING_DEMO_OWNED, BREEDING_PRESET_BY_NAME } from './domain/breedingData.js'
+import { mergeVersionedPresetValues } from './domain/presetMigration.js'
 import { deriveFieldKey, generateId, mergeFieldOptions, normalizeField, nowIso } from './utils.js'
 
 export const db = new Dexie('tangerine-tools')
@@ -41,10 +42,11 @@ export async function ensureSeeded() {
   await migrateRockKingdomSkillReferenceFields()
   await migrateRockKingdomSkillTableFields()
   await migrateRockKingdomFieldOptions()
-  await migrateRockKingdomRows()
+  const presetMigration = await loadRockKingdomPresetMigration()
+  await migrateRockKingdomRows(presetMigration)
   await migrateRockKingdomBreedingFieldLabels()
   await migrateRockKingdomBreedingFields()
-  await migrateRockKingdomSkillRows()
+  await migrateRockKingdomSkillRows(presetMigration)
   await migrateRockKingdomSceneTools()
   await seedRockKingdomBreedingDemoOwnedRows()
 }
@@ -210,29 +212,26 @@ function isInvalidElementValue(value) {
   return values.some((item) => !validValues.has(item))
 }
 
-function mergeMissingOfficialRockKingdomValues(existingValues = {}, presetValues = {}) {
-  const nextValues = { ...existingValues }
-  let changed = false
-  for (const [key, presetValue] of Object.entries(presetValues)) {
-    const currentValue = nextValues[key]
-    const shouldRepair =
-      isEmptyPresetValue(currentValue) || (key === 'element' && isInvalidElementValue(currentValue))
-    if (shouldRepair && !isEmptyPresetValue(presetValue)) {
-      nextValues[key] = presetValue
-      changed = true
-    }
+async function loadRockKingdomPresetMigration() {
+  try {
+    const res = await fetch(`${import.meta.env.BASE_URL}presets/rockKingdomPresetMigration.json`)
+    if (!res.ok) return null
+    const payload = await res.json()
+    if (payload?.source !== 'bwiki-preset-migration') return null
+    return payload
+  } catch {
+    return null
   }
-  return changed ? nextValues : existingValues
 }
 
 // 补齐预置行数据：新安装会插入 public/presets/rockKingdomRows.json 中的官方
 // 图鉴行；升级用户如果本地仍有旧版 row-rock-* / SVG 占位行，会在插入官方
 // 行前删除这些明确可识别的占位行，避免出现“496 占位 + 496 官方”的重复。
-// 对已经写入但缺少官方字段值的 rock-creature-src-* 行，会只补齐空值字段
-// （或修正无法匹配选项的旧系别值），不覆盖已有非空值。
+// 对已有稳定 id 行做三方合并：空值 / 无效系别直接补齐；非空字段只有在其
+// SHA-256 与版本化迁移清单中的旧官方值匹配时才更新。用户自定义值保持不变。
 // 用户自行新增或无法安全判断为占位的普通资料行不会被删除；owned / stock
 // 工具表不在默认资料表 tableId 下，也不会被触碰。资料表已被用户删除时跳过。
-async function migrateRockKingdomRows() {
+async function migrateRockKingdomRows(presetMigration) {
   const tableId = ROCK_KINGDOM_PRESET.tables[0].id
   const table = await db.catalogTables.get(tableId)
   if (!table) return
@@ -240,45 +239,49 @@ async function migrateRockKingdomRows() {
     const res = await fetch(`${import.meta.env.BASE_URL}presets/rockKingdomRows.json`)
     if (!res.ok) return
     const presetRows = await res.json()
-    const isOfficialDJsonPreset = presetRows.some((row) =>
-      row.id?.startsWith('rock-creature-src-'),
+    const isVersionedPreset = presetRows.some((row) =>
+      row.id?.startsWith('rock-creature-src-') || row.id?.startsWith('rock-creature-bwiki-'),
     )
     const now = nowIso()
+    const existingRows = await db.catalogRows.where('tableId').equals(tableId).toArray()
+    const legacyPlaceholderIds = isVersionedPreset
+      ? existingRows.filter(isLegacyRockKingdomPlaceholderRow).map((row) => row.id)
+      : []
+    const existingById = new Map(existingRows
+      .filter((row) => !legacyPlaceholderIds.includes(row.id))
+      .map((row) => [row.id, row]))
+    const patchesById = new Map((presetMigration?.creatures?.rows ?? []).map((row) => [row.id, row.fields ?? []]))
+    const rowsToPut = []
+    for (const row of presetRows.filter((item) => item.id)) {
+      const existing = existingById.get(row.id)
+      if (!existing) {
+        rowsToPut.push({
+          id: row.id,
+          tableId,
+          values: row.values || {},
+          createdAt: row.createdAt || now,
+          updatedAt: row.updatedAt || now,
+        })
+        continue
+      }
+      if (!isVersionedPreset || (!row.id.startsWith('rock-creature-src-') && !row.id.startsWith('rock-creature-bwiki-'))) continue
+      const nextValues = await mergeVersionedPresetValues({
+        existingValues: existing.values,
+        presetValues: row.values || {},
+        fieldPatches: patchesById.get(row.id),
+        isInvalidValue: (key, value) => key === 'element' && isInvalidElementValue(value),
+      })
+      if (nextValues !== existing.values) rowsToPut.push({ ...existing, values: nextValues, updatedAt: now })
+    }
 
     await db.transaction('rw', db.catalogRows, db.meta, async () => {
-      if (isOfficialDJsonPreset) {
-        const existingRows = await db.catalogRows.where('tableId').equals(tableId).toArray()
-        const legacyPlaceholderIds = existingRows
-          .filter(isLegacyRockKingdomPlaceholderRow)
-          .map((row) => row.id)
-        if (legacyPlaceholderIds.length > 0) await db.catalogRows.bulkDelete(legacyPlaceholderIds)
-      }
-
-      const existingRows = await db.catalogRows.where('tableId').equals(tableId).toArray()
-      const existingById = new Map(existingRows.map((row) => [row.id, row]))
-      const rowsToPut = presetRows
-        .filter((row) => row.id)
-        .flatMap((row) => {
-          const existing = existingById.get(row.id)
-          if (!existing) {
-            return [
-              {
-                id: row.id,
-                tableId,
-                values: row.values || {},
-                createdAt: row.createdAt || now,
-                updatedAt: row.updatedAt || now,
-              },
-            ]
-          }
-          if (!isOfficialDJsonPreset || !row.id.startsWith('rock-creature-src-')) return []
-          const nextValues = mergeMissingOfficialRockKingdomValues(existing.values, row.values || {})
-          if (nextValues === existing.values) return []
-          return [{ ...existing, values: nextValues, updatedAt: now }]
-        })
+      if (legacyPlaceholderIds.length > 0) await db.catalogRows.bulkDelete(legacyPlaceholderIds)
       if (rowsToPut.length > 0) await db.catalogRows.bulkPut(rowsToPut)
-      if (isOfficialDJsonPreset) {
-        await db.meta.put({ key: 'rockKingdomRowsVersion', value: ROCK_KINGDOM_ROWS_VERSION })
+      if (isVersionedPreset) {
+        await db.meta.put({
+          key: 'rockKingdomRowsVersion',
+          value: presetMigration?.version || ROCK_KINGDOM_ROWS_VERSION,
+        })
       }
     })
   } catch (err) {
@@ -423,7 +426,7 @@ async function seedRockKingdomBreedingDemoOwnedRows() {
   })
 }
 
-async function migrateRockKingdomSkillRows() {
+async function migrateRockKingdomSkillRows(presetMigration) {
   const table = ROCK_KINGDOM_PRESET.tables.find((item) => item.id === 'table-rock-kingdom-skills')
   if (!table) return
   const existingTable = await db.catalogTables.get(table.id)
@@ -433,19 +436,35 @@ async function migrateRockKingdomSkillRows() {
     if (!res.ok) return
     const presetRows = await res.json()
     const now = nowIso()
-    const rowsToPut = (Array.isArray(presetRows) ? presetRows : [])
-      .filter((row) => row.id)
-      .map((row) => ({
-        id: row.id,
-        tableId: table.id,
-        values: row.values || {},
-        createdAt: row.createdAt || now,
-        updatedAt: row.updatedAt || now,
-      }))
-    if (rowsToPut.length === 0) return
+    const existingRows = await db.catalogRows.where('tableId').equals(table.id).toArray()
+    const existingById = new Map(existingRows.map((row) => [row.id, row]))
+    const patchesById = new Map((presetMigration?.skills?.rows ?? []).map((row) => [row.id, row.fields ?? []]))
+    const rowsToPut = []
+    for (const row of (Array.isArray(presetRows) ? presetRows : []).filter((item) => item.id)) {
+      const existing = existingById.get(row.id)
+      if (!existing) {
+        rowsToPut.push({
+          id: row.id,
+          tableId: table.id,
+          values: row.values || {},
+          createdAt: row.createdAt || now,
+          updatedAt: row.updatedAt || now,
+        })
+        continue
+      }
+      const nextValues = await mergeVersionedPresetValues({
+        existingValues: existing.values,
+        presetValues: row.values || {},
+        fieldPatches: patchesById.get(row.id),
+      })
+      if (nextValues !== existing.values) rowsToPut.push({ ...existing, values: nextValues, updatedAt: now })
+    }
     await db.transaction('rw', db.catalogRows, db.meta, async () => {
-      await db.catalogRows.bulkPut(rowsToPut)
-      await db.meta.put({ key: 'rockKingdomSkillRowsVersion', value: ROCK_KINGDOM_ROWS_VERSION })
+      if (rowsToPut.length > 0) await db.catalogRows.bulkPut(rowsToPut)
+      await db.meta.put({
+        key: 'rockKingdomSkillRowsVersion',
+        value: presetMigration?.version || ROCK_KINGDOM_ROWS_VERSION,
+      })
     })
   } catch (err) {
     console.warn('加载洛克王国技能预置资料行失败：', err)
