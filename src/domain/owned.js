@@ -130,26 +130,6 @@ export const ROCK_KINGDOM_COLLECTION_FIELDS = [
   { key: 'note', name: '备注', type: 'longtext' },
 ]
 
-// 按血脉计数：返回顺序固定为选项定义顺序。
-export function countByBloodline(rows) {
-  const counts = Object.fromEntries(OWNED_BLOODLINE_OPTIONS.map((o) => [o.value, 0]))
-  for (const row of rows) {
-    const value = row.values?.bloodline
-    if (Object.prototype.hasOwnProperty.call(counts, value)) counts[value] += 1
-  }
-  return OWNED_BLOODLINE_OPTIONS.map((o) => ({ ...o, count: counts[o.value] }))
-}
-
-// 炫彩计数：只关心“是”的数量；历史 shiny/boolean 数据也兼容计入。
-export function countShiny(rows) {
-  let colorful = 0
-  for (const row of rows) {
-    const value = row.values?.colorful ?? row.values?.shiny
-    if (value === 'yes' || value === true) colorful += 1
-  }
-  return colorful
-}
-
 // 综合行搜索：对收集记录当前值做字面量匹配，供列表搜索框使用。
 // 引用字段（精灵）需要在组件层结合被引用表的 name 才能匹配，此处不介入。
 export function matchesOwnedSearch(row, keyword) {

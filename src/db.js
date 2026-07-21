@@ -1,7 +1,7 @@
 // Dexie 数据库定义：schema、初始化、预置资料加载、
 // 场景 / 资料表 / 字段 / 行的基础 CRUD，以及全量导出/导入。
 
-import Dexie from 'dexie'
+import { db } from './db/core.js'
 import {
   ELEMENT_LEGACY_DEFAULTS,
   ROCK_KINGDOM_PRESET,
@@ -9,21 +9,13 @@ import {
   SKILL_CATEGORY_LEGACY_DEFAULTS,
   TRAIT_TAG_LEGACY_DEFAULTS,
 } from './presets/rockKingdom.js'
-import { STOCK_FIXED_FIELDS, STOCK_TABLE_NAME } from './domain/stock.js'
 import { OWNED_TABLE_NAME, ROCK_KINGDOM_COLLECTION_FIELDS } from './domain/owned.js'
-import { BREEDING_DEMO_OWNED, BREEDING_PRESET_BY_NAME } from './domain/breedingData.js'
+import { BREEDING_DEMO_OWNED } from './domain/breedingData.js'
 import { mergeVersionedPresetValues } from './domain/presetMigration.js'
 import { deriveFieldKey, generateId, mergeFieldOptions, normalizeField, nowIso } from './utils.js'
 
-export const db = new Dexie('tangerine-tools')
-
-db.version(1).stores({
-  scenes: 'id, order',
-  catalogTables: 'id, sceneId, order',
-  catalogFields: 'id, tableId, order',
-  catalogRows: 'id, tableId',
-  meta: 'key',
-})
+export { db } from './db/core.js'
+export { EXPORT_SCHEMA_VERSION, exportAllData, importAllData, validateImportPayload } from './db/importExport.js'
 
 // ---------------------------------------------------------------------------
 // 初始化 / 预置资料
@@ -35,21 +27,26 @@ export async function ensureSeeded() {
     await seedRockKingdomStructure()
     await db.meta.put({ key: 'seededRockKingdom', value: true })
   }
-  // 以下几步在每次启动时都会执行（不受 seededRockKingdom 一次性标记限制），
-  // 目的是让"已经播种过"的老用户也能安全地补齐后续新增的字段选项/预置行/默认工具，
-  // 同时尊重用户已删除的场景/资料表、已有的自定义编辑，不做覆盖式重置。
+  const migrationKey = 'rockKingdomRuntimeMigrationVersion'
+  const migrated = await db.meta.get(migrationKey)
+  if (migrated?.value === ROCK_KINGDOM_ROWS_VERSION) return
+  // 版本变化或导入后才执行完整迁移，避免每次启动重复扫描全部精灵与技能行。
+  // 各迁移仍保持幂等，并尊重用户删除的表以及非空自定义字段。
   await migrateRockKingdomStructure()
   await migrateRockKingdomSkillReferenceFields()
   await migrateRockKingdomSkillTableFields()
   await migrateRockKingdomFieldOptions()
   await migrateRockKingdomFieldLayout()
   const presetMigration = await loadRockKingdomPresetMigration()
-  await migrateRockKingdomRows(presetMigration)
+  const creatureRowsReady = await migrateRockKingdomRows(presetMigration)
   await migrateRockKingdomBreedingFieldLabels()
-  await migrateRockKingdomBreedingFields()
-  await migrateRockKingdomSkillRows(presetMigration)
+  const skillRowsReady = await migrateRockKingdomSkillRows(presetMigration)
   await migrateRockKingdomSceneTools()
   await seedRockKingdomBreedingDemoOwnedRows()
+  // 静态预置离线时保留未完成状态，下次启动继续尝试，不把空骨架误标成已迁移。
+  if (creatureRowsReady && skillRowsReady) {
+    await db.meta.put({ key: migrationKey, value: ROCK_KINGDOM_ROWS_VERSION })
+  }
 }
 
 // 洛克王国场景经历了几轮默认工具变更：
@@ -226,10 +223,6 @@ function isLegacyRockKingdomPlaceholderRow(row) {
   )
 }
 
-function isEmptyPresetValue(value) {
-  return value == null || value === '' || (Array.isArray(value) && value.length === 0)
-}
-
 function isInvalidElementValue(value) {
   const elementField = ROCK_KINGDOM_PRESET.fields.find((field) => field.key === 'element')
   const validValues = new Set((elementField?.options || []).map((option) => option.value))
@@ -259,10 +252,10 @@ async function loadRockKingdomPresetMigration() {
 async function migrateRockKingdomRows(presetMigration) {
   const tableId = ROCK_KINGDOM_PRESET.tables[0].id
   const table = await db.catalogTables.get(tableId)
-  if (!table) return
+  if (!table) return true
   try {
     const res = await fetch(`${import.meta.env.BASE_URL}presets/rockKingdomRows.json`)
-    if (!res.ok) return
+    if (!res.ok) return false
     const presetRows = await res.json()
     const isVersionedPreset = presetRows.some((row) =>
       row.id?.startsWith('rock-creature-src-') || row.id?.startsWith('rock-creature-bwiki-'),
@@ -309,9 +302,11 @@ async function migrateRockKingdomRows(presetMigration) {
         })
       }
     })
+    return true
   } catch (err) {
     // 预置资料离线或抓取失败时，骨架仍应可用。不能用 mock 数据兜底。
     console.warn('加载洛克王国预置资料行失败：', err)
+    return false
   }
 }
 
@@ -347,66 +342,6 @@ async function migrateRockKingdomBreedingFieldLabels() {
     .first()
   if (traitIconField && !traitIconField.hidden) {
     await db.catalogFields.update(traitIconField.id, { hidden: true, updatedAt: now })
-  }
-}
-
-async function migrateRockKingdomBreedingFields() {
-  const tableId = ROCK_KINGDOM_PRESET.tables[0].id
-  const table = await db.catalogTables.get(tableId)
-  if (!table) return
-  const now = nowIso()
-  const rows = await db.catalogRows.where('tableId').equals(tableId).toArray()
-  const breedingRows = await loadRockKingdomBreedingRows()
-  const presetRows = [
-    ...Object.entries(BREEDING_PRESET_BY_NAME).map(([name, row]) => ({ name, ...row })),
-    ...breedingRows,
-  ]
-  const presetByName = new Map(presetRows.map((row) => [row.name, row]))
-  const presetByLine = new Map()
-  for (const row of presetRows) {
-    if (row.speciesGroup && Array.isArray(row.eggGroups) && row.eggGroups.length > 0 && !presetByLine.has(row.speciesGroup)) {
-      presetByLine.set(row.speciesGroup, row)
-    }
-  }
-  const rowsToPut = []
-  for (const row of rows) {
-    const nextValues = { ...row.values }
-    let changed = false
-    const officialBreedingLine = Array.isArray(nextValues.evolutionLine)
-      ? nextValues.evolutionLine[0]
-      : nextValues.breedingLine
-    const preset = presetByName.get(nextValues.name) || presetByLine.get(officialBreedingLine)
-    if (Array.isArray(preset?.eggGroups) && preset.eggGroups.length > 0) {
-      if (isEmptyPresetValue(nextValues.eggGroups)) {
-        nextValues.eggGroups = [...preset.eggGroups]
-        changed = true
-      } else if (String(row.id || '').startsWith('rock-creature-src-')) {
-        const mergedEggGroups = [...new Set([...nextValues.eggGroups, ...preset.eggGroups])]
-        if (mergedEggGroups.length !== nextValues.eggGroups.length) {
-          nextValues.eggGroups = mergedEggGroups
-          changed = true
-        }
-      }
-    }
-    const supplementBreedingLine = officialBreedingLine || preset?.speciesGroup
-    if (isEmptyPresetValue(nextValues.speciesGroup) && supplementBreedingLine) {
-      nextValues.speciesGroup = supplementBreedingLine
-      changed = true
-    }
-    if (changed) rowsToPut.push({ ...row, values: nextValues, updatedAt: now })
-  }
-  if (rowsToPut.length > 0) await db.catalogRows.bulkPut(rowsToPut)
-}
-
-async function loadRockKingdomBreedingRows() {
-  try {
-    const res = await fetch(`${import.meta.env.BASE_URL}presets/rockKingdomBreedingRows.json`)
-    if (!res.ok) return []
-    const payload = await res.json()
-    return Array.isArray(payload?.rows) ? payload.rows : []
-  } catch (err) {
-    console.warn('加载洛克王国 BWiki 孵蛋资料失败：', err)
-    return []
   }
 }
 
@@ -453,12 +388,12 @@ async function seedRockKingdomBreedingDemoOwnedRows() {
 
 async function migrateRockKingdomSkillRows(presetMigration) {
   const table = ROCK_KINGDOM_PRESET.tables.find((item) => item.id === 'table-rock-kingdom-skills')
-  if (!table) return
+  if (!table) return true
   const existingTable = await db.catalogTables.get(table.id)
   if (!existingTable) return
   try {
     const res = await fetch(`${import.meta.env.BASE_URL}presets/rockKingdomSkillRows.json`)
-    if (!res.ok) return
+    if (!res.ok) return false
     const presetRows = await res.json()
     const now = nowIso()
     const existingRows = await db.catalogRows.where('tableId').equals(table.id).toArray()
@@ -491,8 +426,10 @@ async function migrateRockKingdomSkillRows(presetMigration) {
         value: presetMigration?.version || ROCK_KINGDOM_ROWS_VERSION,
       })
     })
+    return true
   } catch (err) {
     console.warn('加载洛克王国技能预置资料行失败：', err)
+    return false
   }
 }
 
@@ -537,15 +474,6 @@ export async function deleteScene(id) {
   )
 }
 
-export async function reorderScenes(orderedIds) {
-  const now = nowIso()
-  await db.transaction('rw', db.scenes, async () => {
-    await Promise.all(
-      orderedIds.map((id, index) => db.scenes.update(id, { order: index, updatedAt: now })),
-    )
-  })
-}
-
 // ---------------------------------------------------------------------------
 // 资料表（catalogTables）
 // ---------------------------------------------------------------------------
@@ -581,9 +509,9 @@ async function deleteCatalogTableInternal(id) {
   await db.catalogTables.delete(id)
 }
 
-// 为固定/衍生工具资料表（统计视图/收集记录）补齐缺失的固定字段：只新增本地还没有
+// 为收集记录补齐缺失的固定字段：只新增本地还没有
 // （按 key 判断）的字段，已存在的字段（含用户编辑过的选项/名称）一律不动。
-// 用于 ensureStockTable/ensureOwnedTable 在表已存在但字段不全时的补齐场景，
+// 用于 ensureOwnedTable 在表已存在但字段不全时的补齐场景，
 // 例如从旧版本升级、或字段定义在新版本中有增补。
 async function ensureFixedFields(tableId, sceneId, idPrefix, fixedFields, now, extraProps) {
   const existingFields = await db.catalogFields.where('tableId').equals(tableId).toArray()
@@ -615,63 +543,10 @@ async function ensureFixedFields(tableId, sceneId, idPrefix, fixedFields, now, e
   })
 }
 
-// 统计视图：复用 catalogTables/catalogFields 存储，通过 kind: 'stock' 标记
-// 与资料库的普通资料表区分开，避免混入资料库工具的资料表选择器。
-// 幂等：table/field 均使用按 sceneId 派生的稳定 id（而非随机 id），
-// 因此重复调用（例如 React StrictMode 下 effect 被执行两次）不会创建
-// 出重复的资料表——后一次调用会 put 到同一个 id 上，不会新增记录。
-// 兼容旧数据：早期版本用随机 id 创建过统计视图表，若按稳定 id 找不到，
-// 再按 sceneId + kind 找一遍，命中则直接复用那张旧表（不改 id，
-// 避免级联改写 catalogFields/catalogRows 的 tableId），否则才新建。
-export async function ensureStockTable(sceneId) {
-  const tableId = `table-stock-${sceneId}`
-  const now = nowIso()
-  const existing =
-    (await db.catalogTables.get(tableId)) ||
-    (await db.catalogTables
-      .where('sceneId')
-      .equals(sceneId)
-      .filter((t) => t.kind === 'stock')
-      .first())
-  if (existing) {
-    await ensureFixedFields(existing.id, sceneId, 'stock', STOCK_FIXED_FIELDS, now)
-    return existing
-  }
-
-  const order = await db.catalogTables.where('sceneId').equals(sceneId).count()
-  const table = {
-    id: tableId,
-    sceneId,
-    name: STOCK_TABLE_NAME,
-    kind: 'stock',
-    order,
-    createdAt: now,
-    updatedAt: now,
-  }
-  const fields = STOCK_FIXED_FIELDS.map((f, index) =>
-    normalizeField({
-      id: `field-stock-${sceneId}-${f.key}`,
-      tableId: table.id,
-      key: f.key,
-      name: f.name,
-      type: f.type,
-      order: index,
-      options: f.options,
-      createdAt: now,
-      updatedAt: now,
-    }),
-  )
-  await db.transaction('rw', db.catalogTables, db.catalogFields, async () => {
-    await db.catalogTables.put(table)
-    for (const field of fields) await db.catalogFields.put(field)
-  })
-  return table
-}
-
 // 收集记录：与资料库共享 catalogTables 存储，用 kind: 'owned' 标记；
 // 与资料库、统计视图都相互隔离（不会出现在资料库工具的资料表选择器里）。
 // 幂等：table/field 均使用按 sceneId 派生的稳定 id，重复调用不会创建
-// 出重复的资料表（原理同 ensureStockTable，见上方注释，含旧随机 id 兼容）。
+// 出重复的资料表（含旧随机 id 兼容）。
 // ref 字段的 referenceTableId 会自动绑定到当前场景第一个"普通"资料表
 // （即 !table.kind），例如洛克王国场景的"精灵图鉴"。用户新建的场景若
 // 还没有普通资料表，则先创建收集记录表并留空引用，等资料表创建后再手动指定。
@@ -843,62 +718,4 @@ export async function updateRow(id, values) {
 
 export async function deleteRow(id) {
   await db.catalogRows.delete(id)
-}
-
-// ---------------------------------------------------------------------------
-// 全量导出 / 导入
-// ---------------------------------------------------------------------------
-
-export const EXPORT_SCHEMA_VERSION = 1
-
-export async function exportAllData() {
-  const [scenes, catalogTables, catalogFields, catalogRows, meta] = await Promise.all([
-    db.scenes.toArray(),
-    db.catalogTables.toArray(),
-    db.catalogFields.toArray(),
-    db.catalogRows.toArray(),
-    db.meta.toArray(),
-  ])
-  return {
-    schemaVersion: EXPORT_SCHEMA_VERSION,
-    exportedAt: nowIso(),
-    data: { scenes, catalogTables, catalogFields, catalogRows, meta },
-  }
-}
-
-const IMPORTABLE_KEYS = ['scenes', 'catalogTables', 'catalogFields', 'catalogRows', 'meta']
-
-export function validateImportPayload(payload) {
-  if (!payload || typeof payload !== 'object') return '文件内容不是有效的 JSON 对象'
-  if (!payload.data || typeof payload.data !== 'object') return '文件缺少 data 字段'
-  for (const key of IMPORTABLE_KEYS) {
-    if (payload.data[key] !== undefined && !Array.isArray(payload.data[key])) {
-      return `data.${key} 必须是数组`
-    }
-  }
-  const hasAny = IMPORTABLE_KEYS.some((key) => Array.isArray(payload.data[key]))
-  if (!hasAny) return '文件不包含任何可导入的数据'
-  return null
-}
-
-// 导入策略：同 id 覆盖，文件中不存在的本地数据保留。
-export async function importAllData(payload) {
-  const error = validateImportPayload(payload)
-  if (error) throw new Error(error)
-  const { data } = payload
-  await db.transaction(
-    'rw',
-    db.scenes,
-    db.catalogTables,
-    db.catalogFields,
-    db.catalogRows,
-    db.meta,
-    async () => {
-      if (data.scenes) await db.scenes.bulkPut(data.scenes)
-      if (data.catalogTables) await db.catalogTables.bulkPut(data.catalogTables)
-      if (data.catalogFields) await db.catalogFields.bulkPut(data.catalogFields)
-      if (data.catalogRows) await db.catalogRows.bulkPut(data.catalogRows)
-      if (data.meta) await db.meta.bulkPut(data.meta)
-    },
-  )
 }

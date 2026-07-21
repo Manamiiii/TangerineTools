@@ -5,6 +5,7 @@ import { STATS_DIMENSIONS } from '../constants.js'
 import { findFieldByKeyOrName, getStatsValues, optionLabel } from '../utils.js'
 import { OWNED_NATURE_OPTIONS } from './owned.js'
 import { findNumberField } from './rockKingdom.js'
+import { deriveSkillEffectTags } from './rockKingdomTags.js'
 
 const STAT_KEY_BY_CN = {
   生命: 'hp',
@@ -270,32 +271,6 @@ function skillItemText(item) {
     item.description,
     item.desc,
   ].filter(Boolean).join(' ')
-}
-
-function deriveSkillEffectTags(item) {
-  const explicit = Array.isArray(item.effectTags) ? item.effectTags : []
-  const tags = new Set(explicit)
-  const text = skillItemText(item)
-  if (/先手|优先|抢先|迅捷/.test(text)) tags.add('priority')
-  if (/迅捷/.test(text)) tags.add('swift')
-  if (/迅捷|速度[+-]|速度提升|速度降低|先手|高速/.test(text)) tags.add('speed')
-  if (/回复|恢复|治疗|吸血|生命/.test(text)) tags.add('healing')
-  if (/防御|护盾|减伤|承伤|抵抗|免疫/.test(text)) tags.add('damageReduction')
-  if (/回复\d*能量|获得\d*能量|能量回复|迸发/.test(text)) tags.add('energyGain')
-  if (/偷取.*能量|失去\d*能量|扣.*能量|能量减少/.test(text)) tags.add('energyDrain')
-  if (/能耗[+-]|费用[+-]|消耗[+-]|全技能能耗/.test(text)) tags.add('costChange')
-  if (/物攻\+|魔攻\+|双攻\+|物防\+|魔防\+|双防\+|威力\+|强化|提升|增加/.test(text)) tags.add('statBoost')
-  if (/继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(text)) tags.add('boostTransfer')
-  if (/物攻-|魔攻-|双攻-|物防-|魔防-|双防-|速度-|削弱|降低|减少/.test(text)) tags.add('statDebuff')
-  if (/中毒|剧毒|灼烧|烧伤|冻结|冰冻|睡眠|恐惧|麻痹|混乱|沉默|束缚|异常|控制/.test(text)) tags.add('control')
-  if (/应对攻击|反击|受到攻击后|承受.*后/.test(text)) tags.add('counterAttack')
-  if (/应对防御/.test(text)) tags.add('counterDefense')
-  if (/应对状态/.test(text)) tags.add('counterStatus')
-  if (/脱离|换入|换场|换下|返场|替换/.test(text)) tags.add('pivot')
-  if (/\d+\s*连击|连击/.test(text)) tags.add('multiHit')
-  if (/蓄力/.test(text)) tags.add('charge')
-  if (/天气|场地|雨|雪|沙暴|放晴/.test(text)) tags.add('fieldEffect')
-  return [...tags]
 }
 
 function countTagged(items, tag) {
@@ -1447,11 +1422,6 @@ export function evaluateNatureProfiles(baseStats = {}, traitTags = [], skillInfo
   return [...applyDominance(merged)].sort((a, b) =>
     decisionRank[a.decision] - decisionRank[b.decision] || b.score - a.score,
   )
-}
-
-// 兼容旧调用名：返回所有候选而非 top-N。
-export function calculateNatureScores(baseStats = {}, traitTags = [], skillInfo = {}) {
-  return evaluateAllNatures(baseStats, traitTags, skillInfo)
 }
 
 // 对原始六维应用性格加成：强化项 ×1.1、弱化项 ×0.9，四舍五入取整；

@@ -70,11 +70,14 @@ export function deriveSkillTags(skillTexts = []) {
 }
 
 export function deriveSkillEffectTags(skill = {}) {
-  const tags = []
+  const tags = Array.isArray(skill.effectTags) ? [...skill.effectTags] : []
   const add = (tag) => {
     if (!tags.includes(tag)) tags.push(tag)
   }
-  const text = [skill.nm ?? skill.name, skill.tp ?? skill.category, skill.ef ?? skill.effect]
+  const text = [
+    skill.nm, skill.name, skill.tp, skill.type, skill.category, skill.ef, skill.text,
+    skill.effect, skill.description, skill.desc, skill.power, skill.cost, skill.priority,
+  ]
     .filter(Boolean)
     .join(' ')
 

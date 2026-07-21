@@ -21,8 +21,13 @@ import {
 } from 'lucide-react'
 import { FIELD_TYPES, isOptionFieldType, isReferenceFieldType, STATS_DIMENSIONS } from '../constants.js'
 import { createField, db, deleteField, reorderFields, updateField } from '../db.js'
-import { compareRockKingdomCreatureRows, visibleRockKingdomCreatureRows } from '../domain/rockKingdom.js'
-import { ROCK_KINGDOM_CREATURE_TABLE_ID } from '../presets/rockKingdom.js'
+import {
+  creatureReferenceImage,
+  creatureReferenceLabel,
+  isRockKingdomCreatureReference,
+  rockKingdomStatus,
+  selectableReferenceRows,
+} from '../domain/rockKingdomPresentation.js'
 import { generateId, getStatsValues, resolveStatsMapping, stringifyCellValue } from '../utils.js'
 import {
   ClampText,
@@ -369,19 +374,8 @@ function referenceRowLabel(fields, row) {
   return stringifyCellValue(row.values?.[labelField.key], labelField) || row.id
 }
 
-function selectableReferenceRows(field, rows) {
-  return field.referenceTableId === ROCK_KINGDOM_CREATURE_TABLE_ID
-    ? visibleRockKingdomCreatureRows(rows).sort(compareRockKingdomCreatureRows)
-    : rows
-}
-
-function creatureReferenceLabel(row) {
-  const values = row?.values ?? {}
-  return [values.no, values.name, values.form].filter(Boolean).join(' · ')
-}
-
 function ReferenceLabel({ field, row, label }) {
-  const image = field.referenceTableId === ROCK_KINGDOM_CREATURE_TABLE_ID ? row?.values?.image : ''
+  const image = creatureReferenceImage(field, row)
   return (
     <span className={image ? 'reference-creature' : ''}>
       {image && <img src={image} alt="" />}
@@ -449,7 +443,7 @@ function ReferenceFieldInput({ field, value, onChange }) {
   const normalizedKeyword = keyword.trim().toLowerCase()
   const filteredRows = normalizedKeyword
     ? selectableRows.filter((row) => {
-      const label = field.referenceTableId === ROCK_KINGDOM_CREATURE_TABLE_ID
+      const label = isRockKingdomCreatureReference(field)
         ? creatureReferenceLabel(row)
         : referenceRowLabel(fields, row)
       return label.toLowerCase().includes(normalizedKeyword)
@@ -468,7 +462,7 @@ function ReferenceFieldInput({ field, value, onChange }) {
   const selectedRow = selectableRows.find((row) => row.id === value)
   return (
     <div className="reference-picker">
-      {field.referenceTableId === ROCK_KINGDOM_CREATURE_TABLE_ID && (
+      {isRockKingdomCreatureReference(field) && (
         <input
           className="input reference-picker-search"
           type="search"
@@ -484,7 +478,7 @@ function ReferenceFieldInput({ field, value, onChange }) {
         )}
         {filteredRows.map((r) => (
           <option key={r.id} value={r.id}>
-            {field.referenceTableId === ROCK_KINGDOM_CREATURE_TABLE_ID
+            {isRockKingdomCreatureReference(field)
               ? creatureReferenceLabel(r)
               : referenceRowLabel(fields, r)}
           </option>
@@ -572,19 +566,10 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
   if (field.key === 'traitName') return <TraitCellView row={row} mode={mode} />
   if (field.key === 'evolutionLine') return <EvolutionChainView value={row.values?.[field.key]} />
 
-  const statusValue = row.values?.[field.key]
-  if (field.key === 'gender' && statusValue) {
-    const female = statusValue === 'female'
-    return <span className={`rock-status-icon gender-icon ${female ? 'female' : 'male'}`} title={female ? '雌性' : '雄性'}>{female ? '♀' : '♂'}</span>
-  }
-  if (field.key === 'shiny' && statusValue !== '' && statusValue != null) {
-    const enabled = statusValue === 'yes' || statusValue === true
-    return <img className="rock-status-icon status-image" src={enabled ? 'https://patchwiki.biligame.com/images/rocom/2/2e/buxc6y4s0r7d8ix03zzkahnk4h8urtv.png' : 'https://patchwiki.biligame.com/images/rocom/4/4f/20dseynhfc393c6jys1rnwhwwf94xvv.png'} alt={enabled ? '异色' : '非异色'} title={enabled ? '异色' : '非异色'} />
-  }
-  if (field.key === 'colorful' && statusValue !== '' && statusValue != null) {
-    const enabled = statusValue === 'yes' || statusValue === true
-    return <span className={`rock-status-icon colorful-icon ${enabled ? '' : 'disabled'}`} title={enabled ? '炫彩' : '非炫彩'}>✦</span>
-  }
+  const status = rockKingdomStatus(field.key, row.values?.[field.key])
+  if (status?.kind === 'gender') return <span className={`rock-status-icon gender-icon ${status.variant}`} title={status.label}>{status.symbol}</span>
+  if (status?.kind === 'image') return <img className="rock-status-icon status-image" src={status.image} alt={status.label} title={status.label} />
+  if (status?.kind === 'colorful') return <span className={`rock-status-icon colorful-icon ${status.enabled ? '' : 'disabled'}`} title={status.label}>{status.symbol}</span>
 
   if (field.type === 'stats') {
     const stats = getStatsValues(allFields, field.statsMap, row.values, field.statsDimensions)

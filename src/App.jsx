@@ -1,18 +1,20 @@
 // 应用入口组件：基于 hash 的极简路由（首页场景列表 ↔ 场景工作台）、
 // 启动时的预置资料播种、全局 JSON 导出/导入（仅首页展示）。
 
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { ArrowLeft, Download, Upload } from 'lucide-react'
 import { db, ensureSeeded, exportAllData, importAllData } from './db.js'
 import { SCENE_TOOLS } from './constants.js'
 import { SceneList } from './components/scenes.jsx'
-import { CatalogTool } from './components/dataTables.jsx'
-import { NatureTool } from './components/nature.jsx'
-import { StockTool } from './components/stock.jsx'
-import { OwnedTool } from './components/owned.jsx'
-import { BreedingTool } from './components/breeding.jsx'
 import { ConfirmDialog, IconButton } from './components/common.jsx'
+
+const lazyTool = (loader, name) => lazy(() => loader().then((module) => ({ default: module[name] })))
+const CatalogTool = lazyTool(() => import('./components/dataTables.jsx'), 'CatalogTool')
+const NatureTool = lazyTool(() => import('./components/nature.jsx'), 'NatureTool')
+const StockTool = lazyTool(() => import('./components/stock.jsx'), 'StockTool')
+const OwnedTool = lazyTool(() => import('./components/owned.jsx'), 'OwnedTool')
+const BreedingTool = lazyTool(() => import('./components/breeding.jsx'), 'BreedingTool')
 
 // 工具 value -> 对应的工具组件。只有 constants.js 中标记 ready:true 的工具
 // 才会被场景工作台实际渲染、并出现在多工具切换器中。
@@ -119,7 +121,9 @@ function SceneWorkbench({ scene }) {
           ))}
         </div>
       )}
-      <ToolComponent scene={scene} />
+      <Suspense fallback={<div className="empty-state">正在加载工具…</div>}>
+        <ToolComponent scene={scene} />
+      </Suspense>
     </div>
   )
 }

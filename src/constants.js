@@ -40,10 +40,6 @@ export const FIELD_TYPES = [
   { value: 'stats', label: '指标视图' },
 ]
 
-export function fieldTypeLabel(value) {
-  return FIELD_TYPES.find((t) => t.value === value)?.label || value
-}
-
 // 类型是否会在“新增/编辑行”表单里出现输入框。
 // stats 是由其它数值字段派生出的可视化视图，本身没有可编辑的值。
 export function isEditableFieldType(type) {

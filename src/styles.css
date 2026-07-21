@@ -2313,24 +2313,6 @@ img {
   color: var(--text);
 }
 
-.stock-stats-count-lg {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--primary);
-}
-
-.stock-stats-threshold {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.stock-stats-threshold .input {
-  width: 64px;
-}
-
 /* ---------------------------------------------------------------------------
    收集记录工具：搜索栏 + 异色统计
 --------------------------------------------------------------------------- */
@@ -2345,18 +2327,6 @@ img {
 .owned-search-input {
   flex: 1;
   min-width: 160px;
-}
-
-.owned-shiny-row {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.owned-shiny-hint {
-  margin: 0;
-  font-size: 12px;
-  color: var(--text-muted);
 }
 
 /* ---------------------------------------------------------------------------
@@ -3289,17 +3259,6 @@ img {
 .breeding-pairs { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
 .breeding-pair { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface-subtle); }
 .breeding-pair-head { justify-content: space-between; font-size: 13px; color: var(--muted); }
-.breeding-parent { flex-wrap: wrap; font-size: 13px; }
-.breeding-parent span { padding: 3px 7px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); }
-.breeding-family-top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.breeding-parent-card, .breeding-child { display: flex; gap: 10px; align-items: center; padding: 10px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
-.breeding-parent-card img, .breeding-child img { width: 56px; height: 56px; object-fit: contain; flex: 0 0 auto; }
-.breeding-parent-card div, .breeding-child div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.breeding-parent-card span, .breeding-child span { color: var(--muted); font-size: 12px; }
-.breeding-inheritance { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.breeding-inheritance div { display: flex; flex-direction: column; gap: 4px; padding: 10px; border: 1px dashed var(--border); border-radius: 12px; }
-.breeding-inheritance span, .breeding-inheritance small { color: var(--muted); font-size: 12px; }
-@media (max-width: 720px) { .breeding-family-top, .breeding-inheritance { grid-template-columns: 1fr; } }
 .breeding-lineup { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 10px; }
 .breeding-arrow { width: 36px; height: 36px; border-radius: 999px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, #f97316, #f59e0b); font-weight: 900; box-shadow: 0 8px 18px rgba(249, 115, 22, 0.22); }
 .breeding-creature-row { min-width: 0; display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 16px; background: linear-gradient(180deg, #fff, #fff7ed); white-space: nowrap; overflow: hidden; }
@@ -3314,9 +3273,6 @@ img {
 .breeding-creature-text strong { font-size: 14px; }
 .breeding-creature-text em { color: #7c3aed; font-style: normal; font-size: 12px; }
 .breeding-creature-text small { color: var(--muted); font-size: 12px; }
-.breeding-mark { flex: 0 0 auto; padding: 2px 6px; border-radius: 999px; font-size: 11px; font-weight: 800; }
-.shiny-mark { color: #be185d; background: #fce7f3; }
-.colorful-mark { color: #7c2d12; background: linear-gradient(90deg, #fde68a, #fbcfe8, #bfdbfe); }
 .breeding-status-image { width: 26px !important; height: 26px !important; object-fit: contain; flex: 0 0 auto; }
 .breeding-offspring-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 1fr); gap: 10px; }
 .breeding-prob-row { display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 10px; border: 1px dashed #fed7aa; border-radius: 16px; background: #fffbeb; color: #7c2d12; font-size: 12px; white-space: nowrap; overflow: hidden; }
