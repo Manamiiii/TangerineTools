@@ -11,18 +11,15 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "sync:legacy-rock": "node scripts/sync-rock-kingdom-preset.mjs",
     "check:nature": "node scripts/check-nature-recommendations.mjs",
     "audit:rocom": "node scripts/generate-rocom-position-audit-plan.mjs",
     "sync:breeding": "node scripts/sync-bwiki-breeding-preset.mjs",
-    "audit:bwiki": "node scripts/audit-bwiki-rocom-source.mjs",
     "sync:bwiki:staging": "node scripts/sync-bwiki-rock-kingdom-staging.mjs",
     "sync:bwiki:details": "node scripts/sync-bwiki-creature-detail-staging.mjs",
     "preview:bwiki": "node scripts/preview-bwiki-rock-kingdom-preset.mjs",
     "check:bwiki:preset": "node scripts/apply-bwiki-rock-kingdom-preset.mjs",
     "apply:bwiki:preset": "node scripts/apply-bwiki-rock-kingdom-preset.mjs --write",
-    "test": "node --test scripts/tests/*.test.mjs",
-    "test:preset-migration": "npm test"
+    "test": "node --test scripts/tests/*.test.mjs"
   },
   "dependencies": {
     "dexie": "^4.4.4",
@@ -33,6 +30,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.3",
+    "fake-indexeddb": "^6.2.4",
     "oxlint": "^1.74.0",
     "vite": "^8.1.5"
   }

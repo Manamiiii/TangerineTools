@@ -69,23 +69,17 @@ export function StockTool({ scene }) {
   const [numberFieldKey, setNumberFieldKey] = useState('')
   const [threshold, setThreshold] = useState('')
 
-  if (!tables || !fields || !rows) return null
-  if (tables.length === 0) {
-    return (
-      <EmptyState
-        title="还没有可统计的数据源"
-        description="先在资料库创建资料表，或在收集记录中添加字段和记录后，再回来配置统计视图。"
-      />
-    )
-  }
-
-  const groupableFields = fields.filter((field) => field.type !== 'stats')
-  const numberFields = fields.filter((field) => field.type === 'number')
-  const groupField = fields.find((field) => field.key === groupFieldKey) || groupableFields[0] || null
-  const numberField = fields.find((field) => field.key === numberFieldKey) || null
+  // LiveQuery 首次渲染会返回 undefined。所有 Hook 必须在加载前后保持同一调用顺序，
+  // 因此先用空数组计算，再在 useMemo 之后决定是否显示加载/空状态。
+  const safeFields = fields || []
+  const safeRows = rows || []
+  const groupableFields = safeFields.filter((field) => field.type !== 'stats')
+  const numberFields = safeFields.filter((field) => field.type === 'number')
+  const groupField = safeFields.find((field) => field.key === groupFieldKey) || groupableFields[0] || null
+  const numberField = safeFields.find((field) => field.key === numberFieldKey) || null
   const displayRows = sourceTable?.id === ROCK_KINGDOM_CREATURE_TABLE_ID
-    ? visibleRockKingdomCreatureRows(rows)
-    : rows
+    ? visibleRockKingdomCreatureRows(safeRows)
+    : safeRows
 
   const stats = useMemo(() => {
     const map = new Map()
@@ -101,6 +95,16 @@ export function StockTool({ scene }) {
         .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label)),
     }
   }, [displayRows, groupField, numberField, threshold])
+
+  if (!tables || !fields || !rows) return null
+  if (tables.length === 0) {
+    return (
+      <EmptyState
+        title="还没有可统计的数据源"
+        description="先在资料库创建资料表，或在收集记录中添加字段和记录后，再回来配置统计视图。"
+      />
+    )
+  }
 
   return (
     <div className="table-view">

@@ -8,7 +8,7 @@ async function patch(key, oldValue) {
   return { key, acceptedHashes: [await hashPresetValue(oldValue)] }
 }
 
-test('uses the same SHA-256 representation as the P4 generator', async () => {
+test('uses the same SHA-256 representation as the versioned preset generator', async () => {
   const value = ['rock-skill-old', { nested: true }]
   const expected = createHash('sha256').update(JSON.stringify(value)).digest('hex')
   assert.equal(await hashPresetValue(value), expected)
@@ -106,7 +106,7 @@ test('migrates a real reused creature while preserving a customized field', asyn
   const [currentRows, preview, manifest] = await Promise.all([
     readFile(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8').then(JSON.parse),
     readFile(new URL('../data/bwiki/rockKingdomRows.preview.json', import.meta.url), 'utf8').then(JSON.parse),
-    readFile(new URL('../data/bwiki/rockKingdomPresetMigration.preview.json', import.meta.url), 'utf8').then(JSON.parse),
+    readFile(new URL('../../public/presets/rockKingdomPresetMigration.json', import.meta.url), 'utf8').then(JSON.parse),
   ])
   const id = 'rock-creature-src-001'
   const current = currentRows.find((row) => row.id === id)
@@ -126,7 +126,7 @@ test('migrates a real reused creature while preserving a customized field', asyn
 
 test('migrates every reused official row to all material target values', async () => {
   const manifest = await readFile(
-    new URL('../data/bwiki/rockKingdomPresetMigration.preview.json', import.meta.url),
+    new URL('../../public/presets/rockKingdomPresetMigration.json', import.meta.url),
     'utf8',
   ).then(JSON.parse)
   const cases = [

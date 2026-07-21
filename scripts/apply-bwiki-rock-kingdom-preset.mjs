@@ -9,14 +9,14 @@ const repoRoot = path.resolve(__dirname, '..')
 const FILES = {
   creaturePreview: 'scripts/data/bwiki/rockKingdomRows.preview.json',
   skillPreview: 'scripts/data/bwiki/rockKingdomSkillRows.preview.json',
-  details: 'scripts/data/bwiki/creature-details.sample.staging.json',
+  details: 'scripts/data/bwiki/creature-details.staging.json',
   creaturePreset: 'public/presets/rockKingdomRows.json',
   skillPreset: 'public/presets/rockKingdomSkillRows.json',
-  migrationPreview: 'scripts/data/bwiki/rockKingdomPresetMigration.preview.json',
+  migrationPreview: 'artifacts/bwiki/rockKingdomPresetMigration.preview.json',
   migrationPreset: 'public/presets/rockKingdomPresetMigration.json',
-  report: 'docs/history/bwiki-p4/bwiki-apply-report.md',
+  report: 'artifacts/bwiki/apply-report.md',
 }
-const CONFIRMATION = 'CONFIRM_BWIKI_P4'
+const CONFIRMATION = 'CONFIRM_BWIKI_PRESET'
 
 function absolute(relativePath) {
   return path.join(repoRoot, relativePath)
@@ -187,7 +187,7 @@ function renderIdExamples(ids) {
 }
 
 function renderReport({ generatedAt, mode, creatureDiff, skillDiff, relations, hashes, legacyUnmatched, migrationManifest }) {
-  return `# BWiki P4 显式覆盖检查报告
+  return `# BWiki 正式预置发布检查报告
 
 生成时间：${generatedAt}
 
@@ -332,6 +332,7 @@ async function main() {
     generatedAt,
   })
   assertMigrationManifest(migrationManifest)
+  await mkdir(path.dirname(absolute(FILES.migrationPreview)), { recursive: true })
   await writeFile(absolute(FILES.migrationPreview), `${JSON.stringify(migrationManifest, null, 2)}\n`)
 
   if (writeMode) {

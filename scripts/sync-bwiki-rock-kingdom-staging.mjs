@@ -19,8 +19,8 @@ const OUTPUTS = {
   creatures: 'scripts/data/bwiki/creatures.staging.json',
   skills: 'scripts/data/bwiki/skills.staging.json',
   eggs: 'scripts/data/bwiki/eggs.staging.json',
-  reportJson: 'scripts/data/bwiki/source-report.json',
-  reportMd: 'docs/history/bwiki-p4/bwiki-staging-report.md',
+  reportJson: 'artifacts/bwiki/source-report.json',
+  reportMd: 'artifacts/bwiki/staging-report.md',
 }
 
 const LOCAL_CREATURE_PRESET = 'public/presets/rockKingdomRows.json'

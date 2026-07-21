@@ -12,7 +12,7 @@ TangerineTools 是一个本地优先（local-first）的个人资料管理 Web A
 - **统计视图**：从资料库或收集记录选择数据源，按字段分组并叠加数值阈值条件统计。
 - **性格推荐**：手动录入或从洛克王国精灵资料带入六维，读取特性标签和技能引用，展示全部合法性格候选及解释。
 - **全量导入/导出**：在首页通过 JSON 文件手动备份或迁移全部本地数据。
-- **洛克王国预置资料**：首次启动会自动创建“洛克王国”场景，包含精灵基础资料和技能资料；当前正式预置由版本化 BWiki staging / preview 审计产物显式发布，可信 `d.json` 保留为回退与对照源。
+- **洛克王国预置资料**：首次启动会自动创建“洛克王国”场景，包含精灵基础资料和技能资料；当前正式预置只由版本化 BWiki staging / preview 审计产物显式发布。
 
 ## 技术栈
 
@@ -58,16 +58,9 @@ npm run lint
 | `npm run build` | 生成生产构建 |
 | `npm run preview` | 本地预览生产构建产物 |
 | `npm run lint` | 使用 oxlint 做静态检查 |
-| `npm run sync:legacy-rock` | 从旧版可信 `d.json` 生成隔离的对照 preview，不覆盖正式预置 |
-| `npm run check:bwiki:preset` | dry-run 校验 BWiki preview 的 P4 覆盖范围并生成报告，不修改正式预置 |
-| `npm run apply:bwiki:preset` | P4 显式覆盖命令；还必须提供报告约定的确认环境变量 |
-| `npm run test:preset-migration` | 验证 BWiki 三方迁移会升级旧官方值并保留用户自定义值 |
-
-当前环境若无法访问官方源，可使用仓库内可信源复现生成：
-
-```bash
-npm run sync:legacy-rock
-```
+| `npm run check:bwiki:preset` | dry-run 校验 BWiki preview 的正式发布范围并在 `artifacts/` 生成报告，不修改正式预置 |
+| `npm run apply:bwiki:preset` | 显式发布 BWiki preview；还必须提供报告约定的确认环境变量 |
+| `npm test` | 验证领域规则、预置三方迁移和 IndexedDB 播种/重试行为 |
 
 ## 项目结构
 
@@ -80,15 +73,16 @@ npm run sync:legacy-rock
 │       ├── rockKingdomSkillRows.json       # 技能预置资料
 │       └── rockKingdomPresetMigration.json # 已有浏览器三方迁移指纹
 ├── scripts/
-│   ├── data/rockKingdom.d.json        # 当前可信 d.json 源文件
-│   └── sync-rock-kingdom-preset.mjs   # 生成预置资料脚本
+│   ├── data/bwiki/                    # 当前 BWiki staging 与 preview
+│   └── *.mjs                          # BWiki 同步、转换、校验与发布脚本
 ├── src/
 │   ├── components/               # UI 组件与工具组件
 │   ├── domain/                   # 收集记录、统计、性格推荐、洛克王国领域逻辑
 │   ├── presets/                  # 预置场景/字段/选项结构
 │   ├── App.jsx                   # 应用入口、hash 路由、全局导入导出
 │   ├── constants.js              # 全局常量、字段类型、工具定义
-│   ├── db.js                     # Dexie schema、CRUD、预置播种、导入导出
+│   ├── db/                       # Dexie schema、导入导出与数据模块
+│   ├── db.js                     # 数据访问兼容入口
 │   ├── main.jsx                  # React 挂载入口
 │   ├── styles.css                # 全局样式
 │   └── utils.js                  # 通用工具函数
@@ -101,7 +95,7 @@ npm run sync:legacy-rock
 
 首次启动时会自动创建洛克王国场景：
 
-- 默认启用资料库、收集记录、统计视图、性格推荐四个工具。
+- 默认启用资料库、收集记录、统计视图、性格推荐、孵蛋推荐五个工具。
 - 包含「精灵基础资料」和「技能资料」普通资料表。
 - `rockKingdomRows.json` 包含 592 条精灵 / 形态资料。
 - `rockKingdomSkillRows.json` 包含 553 条技能资料。

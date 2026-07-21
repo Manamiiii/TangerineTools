@@ -10,14 +10,13 @@ import { db } from '../db.js'
 import { STATS_DIMENSIONS } from '../constants.js'
 import {
   analyzeStats,
-  buildNatureAnalysisInput,
   evaluateNatureProfiles,
   explainNatureRecommendation,
-  extractRowSummary,
   natureName,
   NATURE_DECISION_LABELS,
   STAT_LABELS,
 } from '../domain/nature.js'
+import { buildNatureAnalysisInput, extractRowSummary } from '../domain/natureRowAdapter.js'
 import {
   compareRockKingdomCreatureRows,
   isRockKingdomNatureSelectableRow,

@@ -66,7 +66,7 @@ export function relatedRockKingdomBossRows(target, rows = []) {
   return bosses.sort(compareRockKingdomCreatureRows)
 }
 
-// P4 之前的 29 个稳定行 id 在 BWiki 展开主形态/地区形态后不再进入正式预置。
+// BWiki 正式预置展开主形态/地区形态前的 29 个稳定行 id 不再进入当前预置。
 // 保留这些行本身以兼容旧 owned / stock 引用，但在资料选择与统计视图中隐藏，
 // 避免已有浏览器同时显示旧概括行和新版精确形态行。
 export const SUPERSEDED_CREATURE_ROW_ALIASES = new Map([

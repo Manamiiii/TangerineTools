@@ -7,8 +7,8 @@ const execFileAsync = promisify(execFile)
 
 const CREATURE_STAGING = 'scripts/data/bwiki/creatures.staging.json'
 const SKILL_STAGING = 'scripts/data/bwiki/skills.staging.json'
-const OUTPUT_JSON = 'scripts/data/bwiki/creature-details.sample.staging.json'
-const OUTPUT_MD = 'docs/history/bwiki-p4/bwiki-detail-staging-report.md'
+const OUTPUT_JSON = 'scripts/data/bwiki/creature-details.staging.json'
+const OUTPUT_MD = 'artifacts/bwiki/detail-staging-report.md'
 const DEFAULT_LIMIT = 24
 const DEFAULT_DELAY_MS = 1000
 
@@ -396,7 +396,7 @@ ${lastFetchFailure ? `- ${lastFetchFailure.no} ${lastFetchFailure.name}: ${lastF
 ## 建议下一步
 
 1. 审阅完整详情 staging 与 preview 报告；旧模板无法确认的技能引用继续只作审计记录。
-2. 若 P4 准入项保持清零，下一批设计具有明确命令名、覆盖前后统计和安全检查的显式覆盖命令。
+2. 若正式发布准入项保持清零，再运行具有明确命令名、发布前后统计和安全检查的显式发布命令。
 3. 在用户明确授权正式替换前，不覆盖 \`public/presets/*\`。
 `
 }
@@ -407,6 +407,7 @@ async function writeJson(path, data) {
 }
 
 async function main() {
+  await mkdir(dirname(OUTPUT_MD), { recursive: true })
   const limit = Number.parseInt(process.env.BWIKI_DETAIL_LIMIT || `${DEFAULT_LIMIT}`, 10)
   const delayMs = Math.max(0, Number.parseInt(process.env.BWIKI_DETAIL_DELAY_MS || `${DEFAULT_DELAY_MS}`, 10) || 0)
   const source = JSON.parse(await readFile(CREATURE_STAGING, 'utf8'))

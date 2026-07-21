@@ -7,7 +7,7 @@ import { deriveSkillTags, deriveTraitTags } from './lib/rock-kingdom-tags.mjs'
 const INPUTS = {
   creatures: 'scripts/data/bwiki/creatures.staging.json',
   skills: 'scripts/data/bwiki/skills.staging.json',
-  details: 'scripts/data/bwiki/creature-details.sample.staging.json',
+  details: 'scripts/data/bwiki/creature-details.staging.json',
   currentRows: 'public/presets/rockKingdomRows.json',
   currentSkills: 'public/presets/rockKingdomSkillRows.json',
   breedingRows: 'scripts/data/bwiki/rockKingdomBreedingRows.staging.json',
@@ -16,7 +16,7 @@ const INPUTS = {
 const OUTPUTS = {
   rows: 'scripts/data/bwiki/rockKingdomRows.preview.json',
   skills: 'scripts/data/bwiki/rockKingdomSkillRows.preview.json',
-  report: 'docs/history/bwiki-p4/bwiki-preview-report.md',
+  report: 'artifacts/bwiki/preview-report.md',
 }
 
 const ELEMENT_MAP = new Map([
@@ -526,7 +526,7 @@ ${renderList(skillIssues.newRows)}
 
 ${renderList(omittedCurrentCreatures)}
 
-> 用户已确认这些旧行均能在新版数据中找到对应精灵，差异主要来自“（本来的样子）”等括号文本消失。它们不再阻塞 P4；现有浏览器仍按 merge-by-id 保留旧行和 owned 引用，覆盖命令不得主动删除或重写用户引用。
+> 用户已确认这些旧行均能在新版数据中找到对应精灵，差异主要来自“（本来的样子）”等括号文本消失。它们不再阻塞正式发布；现有浏览器仍按 merge-by-id 保留旧行和 owned 引用，发布命令不得主动删除或重写用户引用。
 
 ## 字段变化摘要
 
@@ -615,9 +615,9 @@ ${renderCountTable(imageCounts)}
 
 ${renderList(emptyImageRows)}
 
-## P4 准入判断
+## 正式发布准入判断
 
-${p4Blockers.length ? `当前 **不建议进入 P4 覆盖**：\n\n${renderList(p4Blockers)}` : '当前 preview 未发现自动阻塞项，可以进入 P4 显式覆盖命令设计；正式覆盖仍需用户明确授权。'}
+${p4Blockers.length ? `当前 **不建议发布正式预置**：\n\n${renderList(p4Blockers)}` : '当前 preview 未发现自动阻塞项；正式发布仍需用户明确授权。'}
 
 ## 安全声明
 

@@ -675,6 +675,19 @@ img {
   gap: 4px;
 }
 
+.app-boot-error,
+.app-error-state {
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+
+.app-boot-error span,
+.app-error-state span {
+  max-width: 680px;
+  color: var(--muted);
+}
+
 .pagination-jump {
   display: inline-flex;
   align-items: center;

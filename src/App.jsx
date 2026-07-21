@@ -8,6 +8,7 @@ import { db, ensureSeeded, exportAllData, importAllData } from './db.js'
 import { SCENE_TOOLS } from './constants.js'
 import { SceneList } from './components/scenes.jsx'
 import { ConfirmDialog, IconButton } from './components/common.jsx'
+import { ErrorBoundary } from './components/ErrorBoundary.jsx'
 
 const lazyTool = (loader, name) => lazy(() => loader().then((module) => ({ default: module[name] })))
 const CatalogTool = lazyTool(() => import('./components/dataTables.jsx'), 'CatalogTool')
@@ -48,15 +49,35 @@ function goToScene(id) {
 
 export default function App() {
   const [seeded, setSeeded] = useState(false)
+  const [bootError, setBootError] = useState('')
+  const [bootAttempt, setBootAttempt] = useState(0)
 
   useEffect(() => {
-    ensureSeeded().then(() => setSeeded(true))
-  }, [])
+    let active = true
+    setSeeded(false)
+    setBootError('')
+    ensureSeeded()
+      .then(() => { if (active) setSeeded(true) })
+      .catch((error) => { if (active) setBootError(error?.message || '本地数据初始化失败') })
+    return () => { active = false }
+  }, [bootAttempt])
 
   const hash = useHashRoute()
   const sceneId = hash.startsWith('scene/') ? hash.slice('scene/'.length) : null
   const scenes = useLiveQuery(() => db.scenes.orderBy('order').toArray(), [])
   const activeScene = (sceneId && scenes?.find((s) => s.id === sceneId)) || null
+
+  if (bootError) {
+    return (
+      <div className="app-loading app-boot-error" role="alert">
+        <strong>应用启动失败</strong>
+        <span>{bootError}</span>
+        <button type="button" className="btn btn-primary" onClick={() => setBootAttempt((value) => value + 1)}>
+          重新尝试
+        </button>
+      </div>
+    )
+  }
 
   if (!seeded || !scenes) {
     return <div className="app-loading">加载中…</div>
@@ -121,9 +142,11 @@ function SceneWorkbench({ scene }) {
           ))}
         </div>
       )}
-      <Suspense fallback={<div className="empty-state">正在加载工具…</div>}>
-        <ToolComponent scene={scene} />
-      </Suspense>
+      <ErrorBoundary key={current.value} title={`${current.label}加载失败`}>
+        <Suspense fallback={<div className="empty-state">正在加载工具…</div>}>
+          <ToolComponent scene={scene} />
+        </Suspense>
+      </ErrorBoundary>
     </div>
   )
 }

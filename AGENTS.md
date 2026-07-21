@@ -39,7 +39,7 @@ Also check the latest commit, PR description, and review comments when continuin
 - Do not delete or clear user `owned` / `stock` data.
 - Import semantics are merge-by-id: same id overwrites, local records missing from the file remain. Do not change import into clear-and-replace.
 - Keep stable id compatibility for owned / stock records and old random ids.
-- Rock Kingdom World formal preset data must come from the versioned BWiki staging / preview / apply workflow. The trusted `scripts/data/rockKingdom.d.json` is a legacy comparison source only and must not overwrite formal presets. Do not generate mock, placeholder, or fabricated preset rows.
+- Rock Kingdom World formal preset data must come from the versioned BWiki staging / preview / apply workflow. Do not reintroduce retired `d.json` sources or generate mock, placeholder, or fabricated preset rows.
 - Preset migrations may safely fill or correct explicit official fields, but must not overwrite user custom non-empty values.
 - Nature recommendation reads 洛克王国「精灵基础资料」 and follows `skillRefs` to 「技能资料」. Do not reintroduce duplicated skill long-text fields on creature rows.
 - Do not use old web-game 洛克王国 sources as positioning evidence for 洛克王国世界 audits unless the user explicitly asks for historical comparison.
@@ -51,10 +51,10 @@ Also check the latest commit, PR description, and review comments when continuin
 - Node must satisfy `package.json` engines (`>=20.19.0`). Run `node -v` before coding.
 - Common checks:
   - `npm run lint`
+  - `npm test`
   - `npm run build`
   - `git diff --check`
 - Preset data work:
-  - `npm run sync:legacy-rock` (legacy comparison preview only)
   - `npm run check:bwiki:preset` / `npm run apply:bwiki:preset`
 - Nature recommendation work:
   - `npm run check:nature`

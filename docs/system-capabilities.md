@@ -110,7 +110,7 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
   - `public/presets/rockKingdomRows.json` 包含 592 条精灵 / 形态资料。
   - `public/presets/rockKingdomSkillRows.json` 包含 553 条技能资料。
   - `public/presets/rockKingdomPresetMigration.json` 保存旧官方值 SHA-256，供已有浏览器做安全三方合并，不含用户数据。
-  - 当前仓库仍保留 `scripts/data/rockKingdom.d.json` 作为旧版可信回退 / 对照源。
+  - 退役的 `d.json` 数据源与同步脚本已删除；正式资料只维护当前 BWiki 数据链路。
 - 精灵与技能图片以 BWiki / patchwiki 审计快照为主；仍受支持的旧资源和 UI 图标继续使用可信静态资源。
 - 迁移策略：老用户升级时通过版本化旧官方值指纹做三方合并，只更新空值、无效值或仍匹配旧官方值的精灵 / 技能字段；用户自定义非空值、用户新增的非占位资料行、owned 收集记录和 stock 统计视图不会被覆盖或删除；不引入 Dexie schema 版本变更。
 
@@ -130,7 +130,7 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 
 以下能力经过评估后**明确不在当前范围内**，不是遗漏或缺陷：
 
-- **洛克王国对局向深度功能**：当前已把 `d.json` 中的技能作为可查看资料和性格推荐输入，但仍不做完整对战模拟、技能组合求解、进化链、属性克制、PVP 环境或配队工具。
+- **洛克王国对局向深度功能**：当前已把 BWiki 技能资料作为可查看资料和性格推荐输入，但仍不做完整对战模拟、技能组合求解、属性克制、PVP 环境或配队工具。
 - AI 自动打标签、云同步/多用户协作、后端服务：均超出“个人本地资料管理工具”的定位，未纳入规划。
 
 新 session 若要继续扩展上述范围外的能力，请先阅读 `docs/session-start-prompt.md`。
@@ -145,4 +145,4 @@ npm run lint      # oxlint 静态检查
 npm run preview   # 预览 build 产物
 ```
 
-已验证：`npm run build`、`npm run lint`、`npm run test:preset-migration`、`npm run check:nature` 均通过；用户已确认场景导航、多工具切换、资料表格、收集记录、统计、性格推荐和详情弹窗等基本功能可正常工作。BWiki 正式预置目前包含 592 条精灵 / 553 条技能，61 条 BWiki 官方分类记录已标记为首领形态；下一步是在另一台电脑走查形态顺序、性格选择器过滤和首领联合分析。
+已验证：`npm run build`、`npm run lint`、`npm test`、`npm run check:nature` 均通过；用户已确认场景导航、多工具切换、资料表格、收集记录、统计、性格推荐和详情弹窗等基本功能可正常工作。BWiki 正式预置目前包含 592 条精灵 / 553 条技能，61 条 BWiki 官方分类记录已标记为首领形态；下一步是在另一台电脑走查形态顺序、性格选择器过滤和首领联合分析。

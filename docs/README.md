@@ -10,7 +10,6 @@
 | `system-capabilities.md` | 当前已实现能力与明确非目标。 | 功能范围变化时人工更新。 |
 | `data-sync.md` | Dexie 数据模型、导入/导出语义、预置资料播种/迁移。 | 涉及数据结构或同步逻辑时人工更新。 |
 | `data-sources.md` | 洛克王国世界参考数据源分级、BWiki 页面登记、刷新命令和覆盖策略。 | 数据源、同步口径或 BWiki 页面清单变化时人工更新。 |
-| `bwiki-integration-breakdown.md` | BWiki 主数据接入的分阶段拆解、验收门槛和下一步记录。 | BWiki 接入阶段推进或任务边界变化时人工更新。 |
 | `bwiki-field-mapping.md` | BWiki staging 到现有洛克王国资料库字段的冻结映射、id 复用和 preview 验收门槛。 | BWiki 字段来源、转换口径或 preview 门槛变化时人工更新。 |
 | `nature-recommendation-redesign.md` | 性格推荐的设计草案、输入输出模型和规则讨论背景。 | 性格推荐规则大方向变化时人工更新。 |
 | `nature-single-creature-template.md` | 单只精灵性格核对输出模板，保证每轮分析结构一致。 | 人工维护；单只核对时复制结构，不写入未确认结论。 |
@@ -36,13 +35,9 @@
 
 | 文件 | 生成命令 | 说明 |
 |---|---|---|
-| `nature-calibration-report.md` | `npm run check:nature` | 性格推荐校准报告，读取官方同步出的预置精灵/技能资料，供人工检查规则原因。 |
-| `bwiki-source-audit.md` | `npm run audit:bwiki` | BWiki 页面可解析性与本地预置覆盖差异审计；不改预置 JSON。 |
-| `history/bwiki-p4/bwiki-staging-report.md` | `npm run sync:bwiki:staging` | P4 BWiki staging 快照与本地预置差异摘要；不改预置 JSON。 |
-| `bwiki-detail-staging-report.md` | `BWIKI_DETAIL_LIMIT=<批次上限> BWIKI_DETAIL_DELAY_MS=10000 npm run sync:bwiki:details`（默认复用已有成功行）或 `BWIKI_DETAIL_OFFLINE=1 npm run sync:bwiki:details`（离线重渲染） | BWiki 精灵详情页受控批次解析报告；只生成详情 staging，不改预置 JSON；可用 `BWIKI_DETAIL_DELAY_MS` 控制请求间隔，中途失败时只保存失败页之前的 0-error 成功前缀，强制全量重抓时额外设置 `BWIKI_DETAIL_REFRESH=1`。旧模板页使用官方 MediaWiki API 源码回退，无法在当前技能 staging 核验的旧引用只进审计记录。 |
-| `history/bwiki-p4/bwiki-preview-report.md` | `npm run preview:bwiki` | P4 preview 审计报告；只生成 preview / 报告，不覆盖 `public/presets/*`。 |
-| `history/bwiki-p4/bwiki-apply-report.md` | `npm run check:bwiki:preset` | P4 发布 dry-run 报告；默认不修改 `public/presets/*`。 |
+| `nature-calibration-report.md` | `npm run check:nature` | 性格推荐校准报告，读取当前正式 BWiki 预置精灵/技能资料，供人工检查规则原因。 |
+| `artifacts/bwiki/*` | BWiki 同步、preview、dry-run 与 apply 命令 | 临时审计报告和迁移 preview；不提交 Git，可随命令重新生成。 |
 
 ## 已清理内容
 
-历史的 `rocom-data-analysis.md` 已删除。它记录的是早期对第三方 `rocom-data` 项目的学习笔记，和当前“只使用洛克王国世界资料、不用旧游资料、不直接搬外部数据”的审计流程容易混淆；其中仍有效的边界已经沉淀到 `AGENTS.md`、`system-capabilities.md`、`nature-recommendation-redesign.md` 和 `rocom-position-audit-plan.md`。
+历史的 `rocom-data-analysis.md`、BWiki 分阶段拆解/审计文档和阶段性发布报告已删除；可重新生成的 BWiki 报告统一进入 `artifacts/`。退役的 gamecenter `d.json`、旧同步器和只服务旧数据源的审计脚本也已移除。仍有效的边界已经沉淀到 `AGENTS.md`、`system-capabilities.md`、`data-sources.md` 和当前生成脚本中。
