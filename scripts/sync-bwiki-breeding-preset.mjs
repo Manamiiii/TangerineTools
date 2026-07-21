@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 从 B 站洛克王国手游 WIKI 同步孵蛋推荐所需的蛋组/繁育谱系补充数据。
 // 说明：BWiki 页面数据是维护者手动同步的快照，不是应用运行时实时 API。
-// 本脚本联网运行，产物写入 public/presets/rockKingdomBreedingRows.json；
+// 本脚本联网运行，产物写入 staging；正式预置中的繁育字段由 BWiki 发布流程合并。
 // App 启动迁移时只用它补齐官方资料缺失的空字段，不覆盖官方/用户已有非空值。
 
 import { execFile } from 'node:child_process'
@@ -9,7 +9,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { promisify } from 'node:util'
 
 const EGG_GROUP_LIST_URL = 'https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2'
-const OUTPUT_FILE = new URL('../public/presets/rockKingdomBreedingRows.json', import.meta.url)
+const OUTPUT_FILE = new URL('./data/bwiki/rockKingdomBreedingRows.staging.json', import.meta.url)
 const LOCAL_ROWS_FILE = new URL('../public/presets/rockKingdomRows.json', import.meta.url)
 const USER_AGENT = 'TangerineTools breeding preset sync (+local-first personal data tool)'
 const execFileAsync = promisify(execFile)

@@ -17,7 +17,7 @@ TangerineTools 是本地优先的个人资料管理 Web App（Vite + React 19 + 
 - `public/presets/rockKingdomRows.json`：592 条精灵 / 形态资料。
 - `public/presets/rockKingdomSkillRows.json`：553 条技能资料。
 - `public/presets/rockKingdomPresetMigration.json`：已有浏览器安全升级所需的旧官方值 SHA-256，不含用户数据。
-- `scripts/data/rockKingdom.d.json`：旧版可信源文件，保留为回退 / 对照源。
+- `scripts/data/rockKingdom.d.json`：旧版可信源文件，只用于 `sync:legacy-rock` 隔离对照预览。
 
 ## 开发前先看
 
@@ -36,7 +36,7 @@ TangerineTools 是本地优先的个人资料管理 Web App（Vite + React 19 + 
 - 外部资料核对只关注洛克王国世界对精灵定位、机制和实战评价的描述；旧网页游戏洛克王国资料不作为新游定位依据。
 - 全量本地审计台账保留为索引和专题回归工具；当多只精灵暴露同类问题时，再按低生命高单防、速度线、双攻路线等专题批次统一修规则。
 - 单只精灵核对请严格沿用 `docs/nature-single-creature-template.md`。日常默认改为“分歧优先”：用户已在工具里看到的推荐 / 可保留 / 不推荐完整分档不再重复输出，只补充工具不易表达的本地资料与外部定位核对、模型能力分析、PVE 投入判断、工具结果差异和待确认点；只有用户明确要求全量核对时，才参考 `docs/nature-calibration-report.md` 展开全部 30 个候选。推荐性格只表示捕捉保留方向正确，不自动等于值得投入 PVE 资源；若用户讨论异色/炫彩培养，需明确 PVP 属性自动平衡、不作为培养依据，并单独判断 PVE 投入优先级。发现规则偏差先登记 `docs/nature-rule-iteration-log.md`，用户确认最终分档后再写入 `docs/nature-confirmed-results.md`，后续规则调整必须回归这些已确认结论。
-- BWiki P4 已正式覆盖 `public/presets`，发布 592 条精灵、553 条技能及三方迁移清单；后续优化已补齐标签和繁育字段、切换 BWiki 无文字系别图标，并以只读归并视图隐藏旧概括行/随机 id 精确重复行。资料库与性格选择器的默认顺序已统一为编号、X 阶、普通变体、最终形态、首领形态；性格选择器隐藏 X 阶和首领形态，但会把所选可培养形态与同编号关联首领形态联合分析。BWiki `formCategoryLabel=首领形态` 现作为形态分类依据，烈火战神等 61 条已校正为首领形态。迁移仍只更新空值、无效值或匹配旧预置指纹的字段，保留用户非空自定义值、旧 id、用户新增行及 owned / stock 数据；运行时不在线访问 BWiki。资料库 UI 已补齐首页/末页/页码跳转、双行标签和完整详情标签，并隐藏繁育谱系；收集记录已增加精灵图、按资料库顺序搜索选择、异色/炫彩/性别图标，孵蛋推荐同步使用红蓝性别图标。下一步由用户在另一台电脑走查本分支的表格密度、收集记录图标和选择器交互，再进入 P5 洛克王国精灵详情分块 UI。
+- BWiki P4 已正式覆盖 `public/presets`，发布 592 条精灵、553 条技能及三方迁移清单。繁育字段已合入正式精灵行，独立快照只保留在 staging，不再参与运行时；完整启动迁移按正式预置版本执行，导入后自动失效并重新安全合并。旧 `d.json` 命令已隔离为 preview，不能覆盖正式预置。工具组件按需加载，Dexie core、导入导出和洛克王国展示适配已拆出独立模块；统一测试与 GitHub Pages CI 会依次运行 lint、test、build。
 
 ## 代码地图
 
@@ -44,16 +44,19 @@ TangerineTools 是本地优先的个人资料管理 Web App（Vite + React 19 + 
 src/
   main.jsx            # 入口，挂载 <App />，引入 styles.css
   App.jsx             # hash 路由（首页 ↔ 场景工作台）、全局导出/导入
-  db.js               # Dexie schema + CRUD + 导出/导入 + 预置播种/迁移
+  db.js               # CRUD + 预置播种/迁移的兼容门面
+  db/core.js          # Dexie schema（保持 v1）
+  db/importExport.js  # JSON 导出、校验与合并导入
   constants.js         # 场景/工具/字段类型、六维定义、分页选项等常量与标签函数
   utils.js             # id、字段归一化、排序/筛选/分页、选项合并等通用函数
   presets/
     rockKingdom.js      # 洛克王国场景、资料表、字段、选项定义
   domain/
     owned.js            # 收集记录字段、选项、搜索/统计纯函数
-    stock.js            # 统计视图纯函数
     nature.js           # 性格推荐规则引擎、技能分析、资料行提取函数
     rockKingdom.js       # 同编号形态对比、适合方向、主要差异纯函数
+    rockKingdomPresentation.js # 洛克王国引用排序、标签与状态展示适配
+    rockKingdomTags.js   # 浏览器与同步脚本共享标签规则入口
   components/
     common.jsx          # Modal / ConfirmDialog / IconButton / Popover / Pagination / StatsChart 等
     scenes.jsx           # 首页场景列表 + 新建/编辑场景弹窗
@@ -69,7 +72,7 @@ public/
     rockKingdomPresetMigration.json # 版本化三方迁移指纹
 scripts/
   data/rockKingdom.d.json      # 可信 d.json 源文件
-  sync-rock-kingdom-preset.mjs # 生成 rows / skillRows 的同步脚本
+  sync-rock-kingdom-preset.mjs # 旧 d.json 隔离 preview 脚本，不覆盖正式预置
 docs/
   README.md / system-capabilities.md / data-sync.md / nature-recommendation-redesign.md / session-start-prompt.md
   nature-single-creature-template.md / nature-confirmed-results.md / nature-rule-iteration-log.md

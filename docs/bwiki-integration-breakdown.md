@@ -16,11 +16,11 @@
 |---|---|---|---|
 | BWiki 页面登记 | 已完成 | `docs/data-sources.md` | 否 |
 | BWiki 页面审计 | 已完成 | `docs/bwiki-source-audit.md` | 否 |
-| 筛选页 staging | 已完成；已纠正 `data-param8` 为归属赛季 | `scripts/data/bwiki/*.staging.json`、`docs/bwiki-staging-report.md` | 否 |
-| 详情页解析 | 已完成 592 / 592 条解析（0 error）；1 条旧模板使用官方 API 源码回退 | `scripts/data/bwiki/creature-details.sample.staging.json`、`docs/bwiki-detail-staging-report.md` | 否 |
+| 筛选页 staging | 已完成；已纠正 `data-param8` 为归属赛季 | `scripts/data/bwiki/*.staging.json`、`docs/history/bwiki-p4/bwiki-staging-report.md` | 否 |
+| 详情页解析 | 已完成 592 / 592 条解析（0 error）；1 条旧模板使用官方 API 源码回退 | `scripts/data/bwiki/creature-details.sample.staging.json`、`docs/history/bwiki-p4/bwiki-detail-staging-report.md` | 否 |
 | 字段映射冻结 | 已完成首版 | `docs/bwiki-field-mapping.md` | 否 |
-| 预置形状 preview | P3 审阅完成；自动准入阻塞项已清零 | `scripts/data/bwiki/*preview.json`、`docs/bwiki-preview-report.md` | 已作为 P4 审计输入 |
-| 显式覆盖命令 | P4 已正式覆盖并发布三方安全迁移清单 | `scripts/apply-bwiki-rock-kingdom-preset.mjs`、`public/presets/rockKingdomPresetMigration.json`、`docs/bwiki-apply-report.md` | 已完成 |
+| 预置形状 preview | P3 审阅完成；自动准入阻塞项已清零 | `scripts/data/bwiki/*preview.json`、`docs/history/bwiki-p4/bwiki-preview-report.md` | 已作为 P4 审计输入 |
+| 显式覆盖命令 | P4 已正式覆盖并发布三方安全迁移清单 | `scripts/apply-bwiki-rock-kingdom-preset.mjs`、`public/presets/rockKingdomPresetMigration.json`、`docs/history/bwiki-p4/bwiki-apply-report.md` | 已完成 |
 | 详情页 UI 分块 | 未开始 | 待新增 | 否 |
 
 ## 后续阶段
@@ -45,7 +45,7 @@
 
 - `scripts/data/bwiki/rockKingdomRows.preview.json`：精灵基础资料 preview，形状对齐 `public/presets/rockKingdomRows.json`。
 - `scripts/data/bwiki/rockKingdomSkillRows.preview.json`：技能资料 preview，形状对齐 `public/presets/rockKingdomSkillRows.json`。
-- `docs/bwiki-preview-report.md`：preview 审计报告，记录行数、id 复用、新增 id、字段冲突、技能关系覆盖率、图片来源和仍需人工确认的问题。
+- `docs/history/bwiki-p4/bwiki-preview-report.md`：P4 preview 审计报告，记录行数、id 复用、新增 id、字段冲突、技能关系覆盖率、图片来源和仍需人工确认的问题。
 
 验收：生成 preview 和报告；不覆盖 public presets；报告明确写出本次命令未触碰 `public/presets/*`、Dexie、用户数据和 UI。
 

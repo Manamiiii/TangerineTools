@@ -25,7 +25,7 @@
 |---|---|
 | 新增或移除工作台工具、路由、部署能力 | `README.md`、`system-capabilities.md`、`session-start-prompt.md` |
 | 修改 Dexie schema、导入/导出、预置播种或迁移语义 | `data-sync.md`、`AGENTS.md` 中的数据安全边界 |
-| 修改洛克王国预置同步脚本或预置 JSON 产物 | 运行 `npm run sync:rock scripts/data/rockKingdom.d.json`，并检查 `data-sync.md` 与根 `README.md` 的脚本说明 |
+| 修改洛克王国正式预置或发布脚本 | 运行 `npm run check:bwiki:preset`；确认后再运行 `npm run apply:bwiki:preset`，并检查 `data-sync.md` 与根 `README.md` |
 | 修改性格推荐规则或解释口径 | `nature-recommendation-redesign.md`，并运行 `npm run check:nature` 重新生成校准报告 |
 | 单只精灵性格核对 | 使用 `nature-single-creature-template.md`；若发现通用规则问题，更新 `nature-rule-iteration-log.md`；用户确认最终结论后写入 `nature-confirmed-results.md` |
 | 修改性格推荐规则后 | 重跑 `npm run check:nature`，并对 `nature-confirmed-results.md` 中已确认精灵做回归复核 |
@@ -38,10 +38,10 @@
 |---|---|---|
 | `nature-calibration-report.md` | `npm run check:nature` | 性格推荐校准报告，读取官方同步出的预置精灵/技能资料，供人工检查规则原因。 |
 | `bwiki-source-audit.md` | `npm run audit:bwiki` | BWiki 页面可解析性与本地预置覆盖差异审计；不改预置 JSON。 |
-| `bwiki-staging-report.md` | `npm run sync:bwiki:staging` | BWiki 精灵 / 技能 / 精灵蛋 staging 快照与本地预置差异摘要；不改预置 JSON。若完整同步受限流影响，可用 `BWIKI_CATALOG_ONLY=1 npm run sync:bwiki:staging` 基于现有成功快照单独刷新精灵图鉴补图。 |
+| `history/bwiki-p4/bwiki-staging-report.md` | `npm run sync:bwiki:staging` | P4 BWiki staging 快照与本地预置差异摘要；不改预置 JSON。 |
 | `bwiki-detail-staging-report.md` | `BWIKI_DETAIL_LIMIT=<批次上限> BWIKI_DETAIL_DELAY_MS=10000 npm run sync:bwiki:details`（默认复用已有成功行）或 `BWIKI_DETAIL_OFFLINE=1 npm run sync:bwiki:details`（离线重渲染） | BWiki 精灵详情页受控批次解析报告；只生成详情 staging，不改预置 JSON；可用 `BWIKI_DETAIL_DELAY_MS` 控制请求间隔，中途失败时只保存失败页之前的 0-error 成功前缀，强制全量重抓时额外设置 `BWIKI_DETAIL_REFRESH=1`。旧模板页使用官方 MediaWiki API 源码回退，无法在当前技能 staging 核验的旧引用只进审计记录。 |
-| `bwiki-preview-report.md` | `npm run preview:bwiki` | BWiki staging 到预置 JSON 形状的 preview 审计报告；只生成 preview / 报告，不覆盖 `public/presets/*`。 |
-| `bwiki-apply-report.md` | `npm run check:bwiki:preset` | P4 显式覆盖的 dry-run 报告；校验覆盖前后行数、id 复用 / 新增 / 遗漏、双向技能关系及三方安全迁移字段数，默认不修改 `public/presets/*`。 |
+| `history/bwiki-p4/bwiki-preview-report.md` | `npm run preview:bwiki` | P4 preview 审计报告；只生成 preview / 报告，不覆盖 `public/presets/*`。 |
+| `history/bwiki-p4/bwiki-apply-report.md` | `npm run check:bwiki:preset` | P4 发布 dry-run 报告；默认不修改 `public/presets/*`。 |
 
 ## 已清理内容
 

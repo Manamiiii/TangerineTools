@@ -17,9 +17,10 @@ const ELEMENT_VALUES = [...ELEMENT_MAP.values()]
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '..')
-const outputPath = path.join(repoRoot, 'public/presets/rockKingdomRows.json')
-const skillOutputPath = path.join(repoRoot, 'public/presets/rockKingdomSkillRows.json')
-const breedingRowsPath = path.join(repoRoot, 'public/presets/rockKingdomBreedingRows.json')
+const legacyOutputDir = path.join(repoRoot, 'scripts/data/legacy')
+const outputPath = path.join(legacyOutputDir, 'rockKingdomRows.preview.json')
+const skillOutputPath = path.join(legacyOutputDir, 'rockKingdomSkillRows.preview.json')
+const breedingRowsPath = path.join(repoRoot, 'scripts/data/bwiki/rockKingdomBreedingRows.staging.json')
 
 function fullUrl(assetPath) {
   if (!assetPath) return ''
@@ -351,7 +352,9 @@ const breedingSnapshotStats = await applyBreedingSnapshot(rows)
 const skillRows = buildSkillRows(data)
 printStats(rows, baseCount, formCount)
 if (breedingSnapshotStats.total > 0) console.log(`breeding snapshot matched rows: ${breedingSnapshotStats.matched}/${rows.length}; propagated same-number rows: ${breedingSnapshotStats.propagated}; supplemental rows: ${breedingSnapshotStats.total}`)
+await import('node:fs/promises').then(({ mkdir }) => mkdir(legacyOutputDir, { recursive: true }))
 await writeFile(outputPath, `${JSON.stringify(rows, null, 2)}\n`, 'utf8')
 await writeFile(skillOutputPath, `${JSON.stringify(skillRows, null, 2)}\n`, 'utf8')
 console.log(`wrote ${path.relative(repoRoot, outputPath)}`)
 console.log(`wrote ${path.relative(repoRoot, skillOutputPath)} (${skillRows.length} skills)`)
+console.log('legacy d.json 结果只写入 preview，不会覆盖当前 BWiki 正式预置。')

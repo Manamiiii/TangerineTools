@@ -92,8 +92,8 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 场景启用「孵蛋推荐」工具后会渲染 `BreedingTool`：
 
 - 读取当前「收集记录」里的精灵引用、性别、是否异色、是否炫彩和性格。
-- 读取「精灵基础资料」里的 `eggGroups`（蛋组）与 `speciesGroup`（繁育谱系）字段；官方 `d.json` / 本地可信 `scripts/data/rockKingdom.d.json` 仍是精灵基础资料主来源，B 站洛克王国手游 WIKI 只作为官方资料缺失字段的校正和补充来源。蛋组字段选项参考 B 站蛋组计算器（https://wiki.biligame.com/rocom/蛋组计算器），补充快照可由 `npm run sync:breeding` 从 B 站孵蛋组别查询（https://wiki.biligame.com/rocom/孵蛋组别查询）生成，并可再通过 `npm run sync:rock scripts/data/rockKingdom.d.json` 回写到官方本地预置行。
-- 启动迁移会读取官方同步后的精灵行，再用 `public/presets/rockKingdomBreedingRows.json` 里的 BWiki 孵蛋补充快照和内置已核对条目补齐空白蛋组/繁育谱系字段；不覆盖官方同步出的非空字段，也不覆盖用户非空自定义值。
+- 读取「精灵基础资料」里的 `eggGroups`（蛋组）与 `speciesGroup`（繁育谱系）字段；当前正式资料来自版本化 BWiki 发布流程。`npm run sync:breeding` 生成 staging，发布流程将繁育字段合入正式精灵行。
+- 启动时不再加载重复的繁育快照；精灵预置三方合并会补齐或更新明确的正式字段，同时保留用户非空自定义值。
 - 默认只分析拥有记录里的异色个体；只推荐一公一母且至少共享一个可孵蛋组的组合；每组最多 5 对，即 10 只精灵，默认输出最多 5 组。
 - 推荐优先级按“未拥有该同种异色 > 可孵出推荐性格 > 双异色父母 > 异色炫彩父 + 普通母 > 已有父母”的口径排序。
 - 后代种类按母亲提示，性格继承按父/母/随机概率说明展示；异色/炫彩父母数量只作为期望排序线索，不写死未确认的精确概率。

@@ -14,7 +14,7 @@ const FILES = {
   skillPreset: 'public/presets/rockKingdomSkillRows.json',
   migrationPreview: 'scripts/data/bwiki/rockKingdomPresetMigration.preview.json',
   migrationPreset: 'public/presets/rockKingdomPresetMigration.json',
-  report: 'docs/bwiki-apply-report.md',
+  report: 'docs/history/bwiki-p4/bwiki-apply-report.md',
 }
 const CONFIRMATION = 'CONFIRM_BWIKI_P4'
 

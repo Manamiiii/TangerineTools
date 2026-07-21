@@ -8,7 +8,7 @@ const execFileAsync = promisify(execFile)
 const CREATURE_STAGING = 'scripts/data/bwiki/creatures.staging.json'
 const SKILL_STAGING = 'scripts/data/bwiki/skills.staging.json'
 const OUTPUT_JSON = 'scripts/data/bwiki/creature-details.sample.staging.json'
-const OUTPUT_MD = 'docs/bwiki-detail-staging-report.md'
+const OUTPUT_MD = 'docs/history/bwiki-p4/bwiki-detail-staging-report.md'
 const DEFAULT_LIMIT = 24
 const DEFAULT_DELAY_MS = 1000
 

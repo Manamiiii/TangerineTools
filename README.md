@@ -58,7 +58,7 @@ npm run lint
 | `npm run build` | 生成生产构建 |
 | `npm run preview` | 本地预览生产构建产物 |
 | `npm run lint` | 使用 oxlint 做静态检查 |
-| `npm run sync:rock` | 从官方源或本地可信 `d.json` 生成洛克王国精灵与技能预置资料 |
+| `npm run sync:legacy-rock` | 从旧版可信 `d.json` 生成隔离的对照 preview，不覆盖正式预置 |
 | `npm run check:bwiki:preset` | dry-run 校验 BWiki preview 的 P4 覆盖范围并生成报告，不修改正式预置 |
 | `npm run apply:bwiki:preset` | P4 显式覆盖命令；还必须提供报告约定的确认环境变量 |
 | `npm run test:preset-migration` | 验证 BWiki 三方迁移会升级旧官方值并保留用户自定义值 |
@@ -66,7 +66,7 @@ npm run lint
 当前环境若无法访问官方源，可使用仓库内可信源复现生成：
 
 ```bash
-npm run sync:rock scripts/data/rockKingdom.d.json
+npm run sync:legacy-rock
 ```
 
 ## 项目结构

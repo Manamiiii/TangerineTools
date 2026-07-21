@@ -45,10 +45,10 @@
 | 命令 | 作用 |
 |---|---|
 | `npm run audit:bwiki` | 联网抓取已登记 BWiki 页面，生成 `docs/bwiki-source-audit.md`，只做可解析性与覆盖差异审计 |
-| `npm run sync:bwiki:staging` | 从 BWiki 精灵筛选 / 技能查询 / 精灵蛋筛选生成 `scripts/data/bwiki/*.staging.json` 与 `docs/bwiki-staging-report.md`；精灵 staging 会合并 `eggImage` / `fruitImage`，但仍不直接替换预置 |
-| `npm run sync:bwiki:details` | 从精灵 staging 的 `detailUrl` 抓取受控批次详情页，生成 `scripts/data/bwiki/creature-details.sample.staging.json` 与 `docs/bwiki-detail-staging-report.md`；仍不替换预置 |
-| `npm run sync:breeding` | 从 BWiki 孵蛋组别查询生成 `public/presets/rockKingdomBreedingRows.json` |
-| `npm run sync:rock scripts/data/rockKingdom.d.json` | 从当前本地 `d.json` 生成精灵 / 技能预置，并合并孵蛋补充快照 |
+| `npm run sync:bwiki:staging` | 从 BWiki 精灵筛选 / 技能查询 / 精灵蛋筛选生成 staging 与 `docs/history/bwiki-p4/bwiki-staging-report.md`；不直接替换预置 |
+| `npm run sync:bwiki:details` | 从精灵 staging 抓取详情页，生成详情 staging 与 `docs/history/bwiki-p4/bwiki-detail-staging-report.md`；仍不替换预置 |
+| `npm run sync:breeding` | 从 BWiki 孵蛋组别查询生成 `scripts/data/bwiki/rockKingdomBreedingRows.staging.json`；正式发布时合入精灵行 |
+| `npm run sync:legacy-rock` | 从本地 `d.json` 生成隔离的旧版对照 preview，不覆盖正式预置 |
 
 ## 推荐落地顺序
 

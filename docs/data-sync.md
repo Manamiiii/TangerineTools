@@ -48,8 +48,9 @@ db.version(1).stores({
 
 - 应用启动时 `App.jsx` 调用 `ensureSeeded()`。
 - 该函数检查 `meta` 表中 `seededRockKingdom` 是否已为 `true`；若不是，则先写入 `src/presets/rockKingdom.js` 中定义的洛克王国场景 / 默认资料表 / 字段结构。场景骨架只播种一次，不会覆盖用户后续的修改或删除。
-- 精灵行数据通过 `fetch(`${BASE_URL}presets/rockKingdomRows.json`)` 拉取，技能行数据通过 `fetch(`${BASE_URL}presets/rockKingdomSkillRows.json`)` 拉取，孵蛋辅助资料通过 `fetch(`${BASE_URL}presets/rockKingdomBreedingRows.json`)` 拉取，文件放在 `public/` 下，不参与 JS 打包。当前正式精灵 / 技能预置已由 BWiki staging / preview 显式发布；拉取失败（如离线）时仅打印警告，不阻塞场景/表/字段骨架。
-- 旧版目标行数据来源是洛克王国公开图鉴静态 JSON：`https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/d.json`。当前仓库保留可信本地源 `scripts/data/rockKingdom.d.json` 以及 `npm run sync:rock`，作为旧版回退 / 对照工作流；它可复现 `375 + 121 = 496` 条旧精灵 / 形态资料和对应技能资料，但不再是当前正式预置主来源。
+- 精灵行数据通过 `fetch(`${BASE_URL}presets/rockKingdomRows.json`)` 拉取，技能行数据通过 `fetch(`${BASE_URL}presets/rockKingdomSkillRows.json`)` 拉取，文件放在 `public/` 下，不参与 JS 打包。繁育字段已经合入正式精灵行，不再额外请求第二份运行时快照。拉取失败（如离线）时仅打印警告，不阻塞场景/表/字段骨架。
+- 旧版目标行数据来源是洛克王国公开图鉴静态 JSON：`https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/d.json`。当前仓库保留可信本地源 `scripts/data/rockKingdom.d.json` 以及 `npm run sync:legacy-rock`，只生成 `scripts/data/legacy/*preview.json` 作为对照；它不会覆盖当前正式预置。
+- 完整运行时迁移按 `ROCK_KINGDOM_ROWS_VERSION` 写入 `meta.rockKingdomRuntimeMigrationVersion`，同一版本不再每次启动全表扫描。导入备份后会清除此标记，并在下次启动重新执行三方安全合并。
 - 当前精灵与技能图片以 BWiki / patchwiki 已审计 URL 为主；仍受支持的旧资源和 UI 图标可继续使用可信静态资源。不使用本地 SVG 或 `data:image/svg+xml` 作为精灵图。
 - 系别字段使用 `multiselect` 类型，覆盖官方 18 个系别：普通/草/火/水/光/地/冰/龙/电/毒/虫/武/翼/萌/幽/恶/机械/幻，对应内部值为 `normal`/`grass`/`fire`/`water`/`light`/`earth`/`ice`/`dragon`/`electric`/`poison`/`bug`/`fighting`/`flying`/`cute`/`ghost`/`dark`/`mech`/`illusion`。精灵行使用 `skillRefs` 多引用指向技能行；技能行使用 `learnerRefs` 多引用反向指向可学习该技能的精灵行。技能行还包含派生的 `effectTags` 多选效果标签（先手、速度、回复、减伤、能量、强化、控制、应对、轮转等），这些标签由官方技能效果文本生成，用于资料查看与性格推荐解释；它们不是战斗模拟结果。
 - 资料库、收集记录、统计视图三者关系：资料库是对象种类 / 图鉴 / 静态资料；收集记录是用户与这些资料项的一对一或一对多关系；统计视图从资料库和收集记录中即时汇总，不再为新场景创建固定字段统计表。

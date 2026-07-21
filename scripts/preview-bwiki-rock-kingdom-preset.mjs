@@ -10,13 +10,13 @@ const INPUTS = {
   details: 'scripts/data/bwiki/creature-details.sample.staging.json',
   currentRows: 'public/presets/rockKingdomRows.json',
   currentSkills: 'public/presets/rockKingdomSkillRows.json',
-  breedingRows: 'public/presets/rockKingdomBreedingRows.json',
+  breedingRows: 'scripts/data/bwiki/rockKingdomBreedingRows.staging.json',
 }
 
 const OUTPUTS = {
   rows: 'scripts/data/bwiki/rockKingdomRows.preview.json',
   skills: 'scripts/data/bwiki/rockKingdomSkillRows.preview.json',
-  report: 'docs/bwiki-preview-report.md',
+  report: 'docs/history/bwiki-p4/bwiki-preview-report.md',
 }
 
 const ELEMENT_MAP = new Map([
