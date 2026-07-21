@@ -42,6 +42,7 @@ export async function ensureSeeded() {
   await migrateRockKingdomSkillReferenceFields()
   await migrateRockKingdomSkillTableFields()
   await migrateRockKingdomFieldOptions()
+  await migrateRockKingdomFieldLayout()
   const presetMigration = await loadRockKingdomPresetMigration()
   await migrateRockKingdomRows(presetMigration)
   await migrateRockKingdomBreedingFieldLabels()
@@ -192,6 +193,30 @@ async function migrateRockKingdomFieldOptions() {
       await db.catalogFields.update(presetField.id, { options: mergedOptions, updatedAt: nowIso() })
     }
   }
+}
+
+async function migrateRockKingdomFieldLayout() {
+  const migrationKey = 'rockKingdomFieldLayoutVersion'
+  const targetVersion = 'catalog-layout-2026-07-21'
+  const migrated = await db.meta.get(migrationKey)
+  if (migrated?.value === targetVersion) return
+  const tableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const presetFields = ROCK_KINGDOM_PRESET.fields.filter((field) => field.tableId === tableId)
+  const existingFields = await db.catalogFields.where('tableId').equals(tableId).toArray()
+  const presetByKey = new Map(presetFields.map((field) => [field.key, field]))
+  const now = nowIso()
+  const updates = existingFields.flatMap((field) => {
+    const preset = presetByKey.get(field.key)
+    if (!preset) return []
+    const patch = {}
+    if (field.order !== preset.order) patch.order = preset.order
+    if (['shiny', 'traitIcon', 'traitDesc'].includes(field.key) && !field.hidden) patch.hidden = true
+    return Object.keys(patch).length > 0 ? [{ id: field.id, patch: { ...patch, updatedAt: now } }] : []
+  })
+  await db.transaction('rw', db.catalogFields, db.meta, async () => {
+    await Promise.all(updates.map(({ id, patch }) => db.catalogFields.update(id, patch)))
+    await db.meta.put({ key: migrationKey, value: targetVersion })
+  })
 }
 
 function isLegacyRockKingdomPlaceholderRow(row) {
