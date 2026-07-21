@@ -80,8 +80,7 @@ npm run lint
 │   ├── nature/                           # 性格规则、核对模板和人工确认台账
 │   ├── generated/                        # 脚本生成并随版本审阅的报告
 │   ├── system-capabilities.md            # 已实现能力和明确非目标
-│   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
-│   └── session-start-prompt.md           # 当前分支交接与代码地图
+│   └── data-sync.md                      # IndexedDB、导入和预置迁移语义
 ├── public/presets/
 │   ├── rockKingdomRows.json              # 运行时精灵 / 形态预置
 │   ├── rockKingdomSkillRows.json         # 运行时技能预置
@@ -177,7 +176,6 @@ git diff --check
 - [`docs/system-capabilities.md`](docs/system-capabilities.md)：当前已实现能力与明确排除范围。
 - [`docs/data-sync.md`](docs/data-sync.md)：数据模型、导入/导出、预置资料同步与迁移语义。
 - [`docs/data-sources/README.md`](docs/data-sources/README.md)：数据来源分级，以及 BWiki 管线和字段血缘文档入口。
-- [`docs/session-start-prompt.md`](docs/session-start-prompt.md)：当前代码地图、开发检查和活跃待办。
 - [`docs/nature/README.md`](docs/nature/README.md)：性格规则、单只核对模板、确认结果和迭代台账入口。
 - [`docs/generated/README.md`](docs/generated/README.md)：版本化生成报告及对应输入、生成命令。
 - [`scripts/data/README.md`](scripts/data/README.md)：性格校准样例和 RoCom 外部核对结论等结构化人工输入。

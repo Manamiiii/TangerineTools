@@ -9,7 +9,6 @@ docs/
 ├── README.md                    # 本索引
 ├── system-capabilities.md       # 当前能力和明确非目标
 ├── data-sync.md                 # IndexedDB、导入导出和预置迁移语义
-├── session-start-prompt.md      # 当前分支的轻量交接信息
 ├── data-sources/                # 数据来源、BWiki 管线和字段血缘
 ├── nature/                      # 性格规则、模板和人工确认台账
 └── generated/                   # 脚本生成、随版本审阅的报告
@@ -21,7 +20,6 @@ docs/
 |---|---|---|
 | `system-capabilities.md` | 当前能力与明确非目标 | 功能范围变化时人工更新 |
 | `data-sync.md` | Dexie 数据模型、导入导出、播种与迁移约束 | 数据语义变化时人工更新 |
-| `session-start-prompt.md` | 新 session 的代码地图和阶段重点 | 每个开发批次结束时轻量更新 |
 | `data-sources/README.md` | 正式数据来源和外部旁证边界入口 | 数据来源体系变化时更新 |
 | `data-sources/bwiki-pipeline.md` | BWiki 页面、快照目录、刷新和发布流程 | 管线变化时更新 |
 | `data-sources/bwiki-field-mapping.md` | staging 到正式字段的映射和验收门槛 | 字段来源或转换口径变化时更新 |
@@ -42,7 +40,7 @@ docs/
 
 | 改动类型 | 应同步检查 / 更新 |
 |---|---|
-| 新增或移除工具、路由、部署能力 | 根 `README.md`、`system-capabilities.md`、`session-start-prompt.md` |
+| 新增或移除工具、路由、部署能力 | 根 `README.md`、`system-capabilities.md` |
 | 修改 Dexie schema、导入导出、播种或迁移 | `data-sync.md` 和 `AGENTS.md` 数据边界 |
 | 修改 BWiki 来源、解析或发布流程 | `data-sources/`，并运行 `npm run check:bwiki:preset` |
 | 修改性格规则或解释口径 | `nature/rules.md`，运行 `npm run check:nature` 并回归确认台账 |
