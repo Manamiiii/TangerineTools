@@ -10,7 +10,8 @@ const repoRoot = path.resolve(__dirname, '..')
 const rowsPath = path.join(repoRoot, 'public/presets/rockKingdomRows.json')
 const skillRowsPath = path.join(repoRoot, 'public/presets/rockKingdomSkillRows.json')
 const samplesPath = path.join(repoRoot, 'scripts/data/natureCalibrationSamples.json')
-const outputPath = path.join(repoRoot, 'docs/rocom-position-audit-plan.md')
+const findingsPath = path.join(repoRoot, 'scripts/data/rocomAuditFindings.json')
+const outputPath = path.join(repoRoot, 'docs/generated/rocom-position-audit-plan.md')
 
 const TRAIT_LABELS = Object.fromEntries(TRAIT_TAG_OPTIONS.map((option) => [option.value, option.label]))
 const STAT_KEYS = ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
@@ -22,66 +23,22 @@ const P75_MDEF = 101
 const P75_SPD = 100
 const BULK_P75 = 301
 
-const EXTERNAL_AUDIT_FINDINGS = {
-  '音速犬::最终形态': {
-    status: '已核对-无差异',
-    summary: '洛克王国世界资料评价其速度与物攻突出，属于先手输出型精灵；与本地“物攻输出 / 高速先手”一致。旧网页洛克王国资料已排除。',
-    source: '豌豆荚：https://m.wandoujia.com/apps/8100514/12274742904409534266.html；搜索日期：2026-07-09',
-  },
-  '彩蝶鲨::最终形态': {
-    status: '已核对-无差异',
-    summary: '洛克王国世界资料更强调速度、控制/技能效果和魔攻输出倾向；本地在耐久阈值收紧后已移除强耐久标签，主要定位回到高速节奏/能量循环/魔法技能线，暂判与外部定位更一致。',
-    source: '3DM：https://ol.3dmgame.com/gl/337408.html；BWIKI：https://wiki.biligame.com/rocom/彩蝶鲨；搜索日期：2026-07-09',
-  },
-  '白金独角兽::最终形态': {
-    status: '已核对-无差异',
-    summary: '洛克王国世界资料评价其魔攻和速度突出，符合魔法高速输出定位；与本地“魔攻输出 / 高速先手”一致。',
-    source: '豌豆荚：https://m.wandoujia.com/apps/8100514/8804251513711481370.html；搜狐：https://www.sohu.com/a/890910762_121963726；搜索日期：2026-07-09',
-  },
-  '黑猫巫师::最终形态': {
-    status: '已核对-无差异',
-    summary: '洛克王国世界资料评价其魔攻、速度突出，适合作为速攻魔法输出；与本地魔攻输出和速度线一致。',
-    source: '3DM：https://ol.3dmgame.com/gl/337516.html；豌豆荚：https://m.wandoujia.com/apps/8100514/1054053429764449975.html；搜索日期：2026-07-09',
-  },
-  '影狸::最终形态': {
-    status: '已核对-无差异',
-    summary: '洛克王国世界资料评价其速度优势明显；本地仍保留双攻面板，但已允许技能组明显偏物理时把魔攻降级为单攻分支风险，因此当前推荐以高速物理路线为主、双攻可能作为风险提示保留，暂判与定位口径一致。',
-    source: '3DM：https://ol.3dmgame.com/gl/337518.html；豌豆荚：https://m.wandoujia.com/apps/8100514/6375325330263313946.html；用户确认双攻精灵可由技能组证明单攻分支；搜索日期：2026-07-09',
-  },
-  '圣羽翼王::最终形态': {
-    status: '待人工确认',
-    summary: '用户补充“迅捷”机制：主动切换精灵上场时会自动释放第一个能耗足够且带迅捷词条的技能，并必定先手；若双方都是迅捷技能则比较速度。当前已新增迅捷触发标签与速度风险解释，仍需后续确认翼王是否主要按频繁切换触发迅捷的启动/轮转压制来建模。旧网页洛克王国资料已排除。',
-    source: '什么值得买：https://post.smzdm.com/p/az8w3635；用户机制说明：迅捷切入自动先手释放且同迅捷拼速度；搜索日期：2026-07-09',
-  },
-  '圆号鱼::最终形态': {
-    status: '核对中',
-    summary: '已找到洛克王国世界图鉴/技能搭配资料，外部更强调水火技能和喧哗干扰，但缺少稳定的定位评价；需继续搜索视频/社区来源。',
-    source: '17173：https://news.17173.com/z/lkwgsj/content/04232025/110938055.shtml；BWIKI：https://wiki.biligame.com/rocom/圆号鱼；搜索日期：2026-07-09',
-  },
-  '迷迷箱怪::最终形态': {
-    status: '待人工确认',
-    summary: '洛克王国世界资料对其输出方向存在分歧，有的强调物攻/双向，有的强调魔法输出；本地暂无推荐，需确认技能版本与实际定位口径。',
-    source: '3DM：https://ol.3dmgame.com/gl/337695.html；17173：https://news.17173.com/z/lkwgsj/content/04232025/215208821.shtml；搜索日期：2026-07-09',
-  },
-  '裘卡::最终形态': {
-    status: '待人工确认',
-    summary: '洛克王国世界资料评价其速度线重要，但物攻/魔攻路线仍需结合技能确认；与本地重视速度大体一致，需继续确认攻击方向。旧网页洛克王国资料已排除。',
-    source: '3DM：https://ol.3dmgame.com/gl/337720.html；搜索日期：2026-07-09',
-  },
-  '冰钻布鲁斯::最终形态': {
-    status: '待人工确认',
-    summary: '洛克王国世界资料能确认其物攻倾向与较高物防，但低生命导致实战肉度仍有争议；结合用户反馈“评价很脆”，需要继续核对社区/视频对低生命的评价。',
-    source: '3DM：https://ol.3dmgame.com/gl/337722.html；豌豆荚：https://m.wandoujia.com/apps/8100514/7748344484480778216.html；BWIKI：https://wiki.biligame.com/rocom/冰钻布鲁斯；搜索日期：2026-07-09',
-  },
-  '寂灭骨龙::最终形态': {
-    status: '已核对-无差异',
-    summary: '洛克王国世界资料集中在技能与机制，整体支持物攻和一定耐久/后手机制；与本地主物攻方向一致，后手/耐久仍可继续细核。旧网页洛克王国资料已排除。',
-    source: '豌豆荚：https://m.wandoujia.com/apps/8100514/11262448109933625767.html；搜索日期：2026-07-09',
-  },
-}
-
 function readJson(filePath) {
   return readFile(filePath, 'utf8').then((text) => JSON.parse(text))
+}
+
+function validateFindings(findings) {
+  if (!findings || typeof findings !== 'object' || Array.isArray(findings)) {
+    throw new TypeError('rocomAuditFindings.json 必须是以“精灵名::形态”为键的对象')
+  }
+  for (const [key, finding] of Object.entries(findings)) {
+    if (!key.includes('::')) throw new TypeError(`RoCom 核对键格式错误：${key}`)
+    for (const field of ['status', 'summary', 'source']) {
+      if (typeof finding?.[field] !== 'string' || !finding[field].trim()) {
+        throw new TypeError(`RoCom 核对项 ${key} 缺少 ${field}`)
+      }
+    }
+  }
 }
 
 function md(value) {
@@ -155,7 +112,7 @@ function batchSortValue(batch) {
   return { '第 1 批': 1, '第 2 批': 2, '第 3 批': 3, '第 4 批': 4, 后续批次: 5 }[batch] || 9
 }
 
-function tableRows(rows, skillById, calibrationKeys) {
+function tableRows(rows, skillById, calibrationKeys, externalAuditFindings) {
   return rows
     .map((row) => {
       const values = row.values || {}
@@ -172,7 +129,7 @@ function tableRows(rows, skillById, calibrationKeys) {
         roles: topRoles(values, traits, skills),
         recommendations: recommendedSummary(values, traits, skills),
         focus,
-        finding: EXTERNAL_AUDIT_FINDINGS[rowKey(row)] || null,
+        finding: externalAuditFindings[rowKey(row)] || null,
       }
     })
     .sort((a, b) => batchSortValue(a.batch) - batchSortValue(b.batch) || a.no.localeCompare(b.no, 'zh-Hans-CN'))
@@ -180,10 +137,16 @@ function tableRows(rows, skillById, calibrationKeys) {
 }
 
 async function main() {
-  const [rows, skillRows, samples] = await Promise.all([readJson(rowsPath), readJson(skillRowsPath), readJson(samplesPath)])
+  const [rows, skillRows, samples, externalAuditFindings] = await Promise.all([
+    readJson(rowsPath),
+    readJson(skillRowsPath),
+    readJson(samplesPath),
+    readJson(findingsPath),
+  ])
   const skillById = new Map(skillRows.map((row) => [row.id, row]))
+  validateFindings(externalAuditFindings)
   const calibrationKeys = new Set(samples.map((sample) => `${sample.name}::${sample.form || '最终形态'}`))
-  const bodyRows = tableRows(rows, skillById, calibrationKeys)
+  const bodyRows = tableRows(rows, skillById, calibrationKeys, externalAuditFindings)
   const batchCounts = bodyRows.reduce((counts, row) => {
     const batch = row.split('|')[1].trim()
     counts[batch] = (counts[batch] || 0) + 1
@@ -192,7 +155,7 @@ async function main() {
 
   const markdown = `# 洛克王国精灵定位外部核对计划
 
-> 本文由 \`npm run audit:rocom\` 生成基础清单与本地推荐摘要；脚本内维护已确认的外部核对结论。请不要把批次当作日常执行顺序：日常仍按用户捕捉进度“一只精灵一轮”推进。
+> 本文由 \`npm run audit:rocom\` 生成基础清单与本地推荐摘要；已确认的外部核对结论维护在 \`scripts/data/rocomAuditFindings.json\`。请不要手工编辑本报告，也不要把批次当作日常执行顺序：日常仍按用户捕捉进度“一只精灵一轮”推进。
 
 > 目的：按图鉴顺序逐只核对洛克王国世界外部攻略/百科/社区对精灵定位的描述，与本工具的资料倾向标签、综合定位和性格推荐规则做对照，帮助玩家捕捉时当场确认“推荐 / 可保留 / 不推荐”的性格取舍，并沉淀可复查的校准依据。
 
@@ -327,7 +290,7 @@ async function main() {
 | 字段 | 说明 |
 |---|---|
 | 批次 | 自动按当前争议样例、低生命高单防、综合肉度、速度线和剩余样例分类；主要用于筛选专题问题，不再代表日常处理顺序。 |
-| 当前状态 | 初始均为“待外部核对”，后续人工维护。 |
+| 当前状态 | 初始均为“待外部核对”；已核对状态在 \`scripts/data/rocomAuditFindings.json\` 中人工维护。 |
 | 本地六维 | 生命、物攻、魔攻、物防、魔防、速度。 |
 | 本地标签 | 当前资料行的 \`traitTags\`。 |
 | 本地综合定位 | \`inferRoles()\` 当前前三项和权重。 |

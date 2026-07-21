@@ -9,7 +9,7 @@
 | `scripts/bwiki/data/staging/creatures.json` | 精灵筛选页 staging | 精灵基础信息、六维、形态、图片入口、蛋 / 果实图片、详情页链接 |
 | `scripts/bwiki/data/staging/skills.json` | 技能查询 staging | 技能基础字段和独立技能行候选 |
 | `scripts/bwiki/data/staging/eggs.json` | 精灵蛋筛选 staging | `eggImage` / `fruitImage` 图片来源 |
-| `scripts/bwiki/data/staging/creature-details.json` | 精灵详情页完整 staging | 特性描述、技能卡关系、血脉 / 技能石标签、进化链验证；旧模板使用官方 API 源码回退 |
+| `scripts/bwiki/data/staging/creature-details.json` | 精灵详情关系 staging | 特性描述、技能名、来源类型、解锁提示和进化链；完整技能正文统一由 `skills.json` 维护，避免每只精灵重复存储 |
 | `artifacts/bwiki/rockKingdomPresetMigration.preview.json` | 临时三方迁移清单 | 仅记录变化字段的旧正式值 SHA-256；显式发布时写入 `public/presets`，不提交临时文件 |
 | `public/presets/rockKingdomRows.json` | 当前精灵预置 | 已按冻结映射正式发布 592 行 |
 | `public/presets/rockKingdomSkillRows.json` | 当前技能预置 | 已按冻结映射正式发布 553 行 |
@@ -41,15 +41,15 @@
 
 | 现有字段 key | 字段名 | BWiki 来源 | 转换 / 合并口径 | preview 处理 |
 |---|---|---|---|---|
-| `image` | 技能图标 | `skills.rows[].image` 或详情技能卡 `image` | 优先技能查询 staging；详情技能卡只作关系补充和缺图候选 | 写入 preview |
+| `image` | 技能图标 | `skills.rows[].image` | 以技能查询 staging 为唯一正文来源；详情技能卡只维护学习关系 | 写入 preview |
 | `name` | 技能名称 | `skills.rows[].name`、详情 `skills[].name` | 名称是技能匹配主键；重名或缺失进入报告 | 写入 preview |
-| `element` | 系别 | `skills.rows[].element`、详情 `skills[].element` | 映射到现有 18 系选项；冲突进入报告 | 写入 preview |
-| `category` | 类型 | `skills.rows[].category`、详情 `skills[].category` | 映射到现有 物攻 / 魔攻 / 状态 / 防御 等选项；未知值进入报告 | 写入 preview |
+| `element` | 系别 | `skills.rows[].element` | 映射到现有 18 系选项；详情卡中的值仅保留在关系 staging 供来源审计 | 写入 preview |
+| `category` | 类型 | `skills.rows[].category` | 映射到现有 物攻 / 魔攻 / 状态 / 防御 等选项；详情卡中的值仅供关系审计 | 写入 preview |
 | `power` | 威力 | `skills.rows[].power` | 数字映射；空值表示无威力技能 | 写入 preview |
-| `cost` | 能耗 | `skills.rows[].cost`、详情解锁卡里的耗能展示 | 以技能查询 staging 为主；详情卡只作校验 | 写入 preview |
+| `cost` | 能耗 | `skills.rows[].cost` | 以技能查询 staging 为唯一正文来源 | 写入 preview |
 | `priority` | 先制/速度 | 暂无稳定 staging 字段 | 保留旧字段或留空；不得猜测 | 报告缺口 |
 | `effectTags` | 效果标签 | 本地规则根据 `effect` 派生 | 不从 BWiki 直接照搬 | 可重跑派生 |
-| `effect` | 效果 | `skills.rows[].effect`、详情 `skills[].effect` | 以技能查询 staging 为主；详情卡冲突进入报告 | 写入 preview |
+| `effect` | 效果 | `skills.rows[].effect` | 以技能查询 staging 为唯一正文来源，避免详情快照重复保存长文本 | 写入 preview |
 | `learnerRefs` | 可学精灵 | 由全部 preview 精灵 `skillRefs` 反推 | 不从技能页反爬学习者；完整详情 staging 更新全部 `skillRefs`，再对完整 preview 重建反向引用 | 写入 preview，并报告全量双向一致性 |
 
 ## 稳定 id 与迁移边界

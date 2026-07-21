@@ -7,11 +7,11 @@
 ```text
 scripts/bwiki/
 ├── sync-staging.mjs       # 精灵、技能、蛋 / 果实页面 → staging
-├── sync-details.mjs       # 精灵详情页 → detail staging
+├── sync-details.mjs       # 精灵详情页 → 特性、进化链和技能关系 staging
 ├── sync-breeding.mjs      # 孵蛋组别页 → breeding staging
 ├── build-preview.mjs      # staging + 当前正式预置 → preview
 ├── apply-preset.mjs       # dry-run 校验 / 显式写入正式预置
-├── lib/                   # 仅供本管线使用的 Node 适配层
+├── lib/                   # 管线路径约定和浏览器领域规则适配层
 └── data/
     ├── staging/           # 版本化源快照
     └── preview/           # 版本化发布候选
@@ -40,5 +40,6 @@ Windows PowerShell 可先设置同名环境变量，再执行 npm 命令。
 - sync、preview 和 dry-run 不修改 `public/presets/*`。
 - apply 只写精灵、技能和三方迁移清单，不访问或修改浏览器 IndexedDB。
 - 正式预置继续位于 `public/presets/`，不复制到本目录。
+- `creature-details.json` 只保留特性、进化链和技能关系审计字段；完整技能正文统一由 `skills.json` 维护。
 - 稳定 id、用户非空自定义值、owned / stock 引用兼容性必须保持。
 - 字段来源和映射规则见 [`../../docs/data-sources/`](../../docs/data-sources/)。

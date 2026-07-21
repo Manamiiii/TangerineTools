@@ -1,44 +1,55 @@
 # TangerineTools 文档索引
 
-本文档用于说明 `docs/` 下文件的用途，避免后续 session 不知道该读哪一份、哪些是生成物、哪些是长期维护文档。
+`docs/` 按维护责任分为“系统说明、专题人工文档、版本化生成报告”三层，避免规则、台账和脚本输出混在同一目录。
 
-## 必读 / 长期维护
+## 目录结构
+
+```text
+docs/
+├── README.md                    # 本索引
+├── system-capabilities.md       # 当前能力和明确非目标
+├── data-sync.md                 # IndexedDB、导入导出和预置迁移语义
+├── session-start-prompt.md      # 当前分支的轻量交接信息
+├── data-sources/                # 数据来源、BWiki 管线和字段血缘
+├── nature/                      # 性格规则、模板和人工确认台账
+└── generated/                   # 脚本生成、随版本审阅的报告
+```
+
+## 长期维护文档
 
 | 文件 | 用途 | 维护方式 |
 |---|---|---|
-| `session-start-prompt.md` | 新 session 的项目接手说明、代码地图和阶段重点。 | 人工维护；长期规则应放到仓库根目录 `AGENTS.md`。 |
-| `system-capabilities.md` | 当前已实现能力与明确非目标。 | 功能范围变化时人工更新。 |
-| `data-sync.md` | Dexie 数据模型、导入/导出语义、预置资料播种/迁移。 | 涉及数据结构或同步逻辑时人工更新。 |
-| `data-sources/README.md` | 数据来源分级、正式来源与外部旁证边界的入口索引。 | 数据源优先级或来源体系变化时人工更新。 |
-| `data-sources/bwiki-pipeline.md` | BWiki 页面登记、快照目录、刷新命令和覆盖策略。 | BWiki 页面、脚本或发布流程变化时人工更新。 |
-| `data-sources/bwiki-field-mapping.md` | BWiki staging 到现有洛克王国资料库字段的冻结映射、id 复用和 preview 验收门槛。 | BWiki 字段来源、转换口径或 preview 门槛变化时人工更新。 |
-| `nature-recommendation-redesign.md` | 性格推荐的设计草案、输入输出模型和规则讨论背景。 | 性格推荐规则大方向变化时人工更新。 |
-| `nature-single-creature-template.md` | 单只精灵性格核对输出模板，保证每轮分析结构一致。 | 人工维护；单只核对时复制结构，不写入未确认结论。 |
-| `nature-confirmed-results.md` | 用户确认过的单只精灵最终分档台账，用于规则调整后的回归复核。 | 人工维护；只有用户确认后登记。 |
-| `nature-rule-iteration-log.md` | 单只核对中发现的通用规则问题、累计观察和处理状态。 | 人工维护；发现规则偏差或完成通用修正时更新。 |
-| `rocom-position-audit-plan.md` | 洛克王国世界外部定位核对计划、批次、状态台账和协作流程。 | 由 `npm run audit:rocom` 生成基础表；外部核对结论可人工补充。 |
+| `system-capabilities.md` | 已实现能力与明确非目标 | 功能范围变化时人工更新 |
+| `data-sync.md` | Dexie 数据模型、导入导出、播种与迁移约束 | 数据语义变化时人工更新 |
+| `session-start-prompt.md` | 新 session 的代码地图和阶段重点 | 每个开发批次结束时轻量更新 |
+| `data-sources/README.md` | 正式数据来源和外部旁证边界入口 | 数据来源体系变化时更新 |
+| `data-sources/bwiki-pipeline.md` | BWiki 页面、快照目录、刷新和发布流程 | 管线变化时更新 |
+| `data-sources/bwiki-field-mapping.md` | staging 到正式字段的映射和验收门槛 | 字段来源或转换口径变化时更新 |
+| `nature/README.md` | 性格专题文档入口和维护边界 | 性格工作流变化时更新 |
 
+长期开发安全边界、必读范围和验证命令以根目录 `AGENTS.md` 为准，不在这里重复维护。
 
-## 文档更新触发条件
-
-| 改动类型 | 应同步检查 / 更新 |
-|---|---|
-| 新增或移除工作台工具、路由、部署能力 | `README.md`、`system-capabilities.md`、`session-start-prompt.md` |
-| 修改 Dexie schema、导入/导出、预置播种或迁移语义 | `data-sync.md`、`AGENTS.md` 中的数据安全边界 |
-| 修改洛克王国正式预置或发布脚本 | 运行 `npm run check:bwiki:preset`；确认后再运行 `npm run apply:bwiki:preset`，并检查 `data-sources/`、`data-sync.md` 与根 `README.md` |
-| 修改性格推荐规则或解释口径 | `nature-recommendation-redesign.md`，并运行 `npm run check:nature` 重新生成校准报告 |
-| 单只精灵性格核对 | 使用 `nature-single-creature-template.md`；若发现通用规则问题，更新 `nature-rule-iteration-log.md`；用户确认最终结论后写入 `nature-confirmed-results.md` |
-| 修改性格推荐规则后 | 重跑 `npm run check:nature`，并对 `nature-confirmed-results.md` 中已确认精灵做回归复核 |
-| 修改外部定位核对流程或批次生成逻辑 | `rocom-position-audit-plan.md`，必要时运行 `npm run audit:rocom` |
-| 只做生成报告刷新 | 不手改报告正文；优先记录生成命令、时间和输入来源 |
-
-## 生成报告
+## 版本化生成报告
 
 | 文件 | 生成命令 | 说明 |
 |---|---|---|
-| `nature-calibration-report.md` | `npm run check:nature` | 性格推荐校准报告，读取当前正式 BWiki 预置精灵/技能资料，供人工检查规则原因。 |
-| `artifacts/bwiki/*` | BWiki 同步、preview、dry-run 与 apply 命令 | 临时审计报告和迁移 preview；不提交 Git，可随命令重新生成。 |
+| `generated/nature-calibration-report.md` | `npm run check:nature` | 当前正式预置与性格规则的可解释回归报告 |
+| `generated/rocom-position-audit-plan.md` | `npm run audit:rocom` | 全量定位核对清单；人工结论维护在 `scripts/data/rocomAuditFindings.json` |
+
+以上报告正文不手工编辑。BWiki 同步、preview、dry-run 产生的临时报告进入 Git 忽略的 `artifacts/`，不属于版本化文档。
+
+## 更新触发条件
+
+| 改动类型 | 应同步检查 / 更新 |
+|---|---|
+| 新增或移除工具、路由、部署能力 | 根 `README.md`、`system-capabilities.md`、`session-start-prompt.md` |
+| 修改 Dexie schema、导入导出、播种或迁移 | `data-sync.md` 和 `AGENTS.md` 数据边界 |
+| 修改 BWiki 来源、解析或发布流程 | `data-sources/`，并运行 `npm run check:bwiki:preset` |
+| 修改性格规则或解释口径 | `nature/rules.md`，运行 `npm run check:nature` 并回归确认台账 |
+| 单只精灵核对 | 使用 `nature/single-creature-template.md`；问题记入迭代台账，用户确认后写入确认台账 |
+| 更新外部定位结论 | 修改 `scripts/data/rocomAuditFindings.json`，再运行 `npm run audit:rocom` |
+| 只刷新生成报告 | 不手改正文，记录生成命令并检查差异 |
 
 ## 已清理内容
 
-历史的 `rocom-data-analysis.md`、BWiki 分阶段拆解/审计文档和阶段性发布报告已删除；可重新生成的 BWiki 报告统一进入 `artifacts/`。退役的 gamecenter `d.json`、旧同步器和只服务旧数据源的审计脚本也已移除。仍有效的边界已经沉淀到 `AGENTS.md`、`system-capabilities.md`、`data-sources/` 和当前生成脚本中。
+退役的 gamecenter `d.json`、旧同步器、阶段性 BWiki 发布报告和只服务旧数据源的审计脚本已经删除。仍有效的规则分别归属 `AGENTS.md`、系统文档、`data-sources/`、`nature/` 与生成脚本。

@@ -17,7 +17,7 @@
 | 页面 | URL | 用途 |
 |---|---|---|
 | 精灵筛选 | https://wiki.biligame.com/rocom/精灵筛选 | 编号、名称、系别、形态、六维、特性名、图片入口 |
-| 精灵详情 | 由精灵 staging 的 `detailUrl` 提供 | 特性描述、技能关系、进化链和详情图片 |
+| 精灵详情 | 由精灵 staging 的 `detailUrl` 提供 | 特性描述、技能关系、进化链和详情图片；技能卡只保留关系审计字段，完整技能正文由技能 staging 统一维护 |
 | 技能查询 | https://wiki.biligame.com/rocom/技能查询 | 技能名、系别、分类、能耗、威力、效果 |
 | 精灵蛋筛选 | https://wiki.biligame.com/rocom/精灵蛋筛选 | 精灵蛋与果实图片 |
 | 孵蛋组别查询 | https://wiki.biligame.com/rocom/孵蛋组别查询 | 蛋组和繁育谱系 staging |

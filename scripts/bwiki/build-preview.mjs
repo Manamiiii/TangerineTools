@@ -3,20 +3,21 @@ import { createHash } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { deriveSkillTags, deriveTraitTags } from './lib/rock-kingdom-tags.mjs'
+import { BWIKI_PATHS } from './lib/paths.mjs'
 
 const INPUTS = {
-  creatures: 'scripts/bwiki/data/staging/creatures.json',
-  skills: 'scripts/bwiki/data/staging/skills.json',
-  details: 'scripts/bwiki/data/staging/creature-details.json',
-  currentRows: 'public/presets/rockKingdomRows.json',
-  currentSkills: 'public/presets/rockKingdomSkillRows.json',
-  breedingRows: 'scripts/bwiki/data/staging/breeding-rows.json',
+  creatures: BWIKI_PATHS.staging.creatures,
+  skills: BWIKI_PATHS.staging.skills,
+  details: BWIKI_PATHS.staging.details,
+  currentRows: BWIKI_PATHS.presets.creatures,
+  currentSkills: BWIKI_PATHS.presets.skills,
+  breedingRows: BWIKI_PATHS.staging.breeding,
 }
 
 const OUTPUTS = {
-  rows: 'scripts/bwiki/data/preview/creature-rows.json',
-  skills: 'scripts/bwiki/data/preview/skill-rows.json',
-  report: 'artifacts/bwiki/preview-report.md',
+  rows: BWIKI_PATHS.preview.creatures,
+  skills: BWIKI_PATHS.preview.skills,
+  report: BWIKI_PATHS.artifacts.previewReport,
 }
 
 const ELEMENT_MAP = new Map([

@@ -21,7 +21,7 @@ const repoRoot = path.resolve(__dirname, '..')
 const rowsPath = path.join(repoRoot, 'public/presets/rockKingdomRows.json')
 const skillRowsPath = path.join(repoRoot, 'public/presets/rockKingdomSkillRows.json')
 const samplesPath = path.join(repoRoot, 'scripts/data/natureCalibrationSamples.json')
-const reportPath = path.join(repoRoot, 'docs/nature-calibration-report.md')
+const reportPath = path.join(repoRoot, 'docs/generated/nature-calibration-report.md')
 
 const TRAIT_LABELS = Object.fromEntries(TRAIT_TAG_OPTIONS.map((option) => [option.value, option.label]))
 const EFFECT_LABELS = Object.fromEntries(SKILL_EFFECT_TAG_OPTIONS.map((option) => [option.value, option.label]))

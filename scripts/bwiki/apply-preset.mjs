@@ -3,18 +3,19 @@ import { createHash } from 'node:crypto'
 import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { BWIKI_PATHS } from './lib/paths.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '../..')
 const FILES = {
-  creaturePreview: 'scripts/bwiki/data/preview/creature-rows.json',
-  skillPreview: 'scripts/bwiki/data/preview/skill-rows.json',
-  details: 'scripts/bwiki/data/staging/creature-details.json',
-  creaturePreset: 'public/presets/rockKingdomRows.json',
-  skillPreset: 'public/presets/rockKingdomSkillRows.json',
-  migrationPreview: 'artifacts/bwiki/rockKingdomPresetMigration.preview.json',
-  migrationPreset: 'public/presets/rockKingdomPresetMigration.json',
-  report: 'artifacts/bwiki/apply-report.md',
+  creaturePreview: BWIKI_PATHS.preview.creatures,
+  skillPreview: BWIKI_PATHS.preview.skills,
+  details: BWIKI_PATHS.staging.details,
+  creaturePreset: BWIKI_PATHS.presets.creatures,
+  skillPreset: BWIKI_PATHS.presets.skills,
+  migrationPreview: BWIKI_PATHS.artifacts.migrationPreview,
+  migrationPreset: BWIKI_PATHS.presets.migration,
+  report: BWIKI_PATHS.artifacts.applyReport,
 }
 const CONFIRMATION = 'CONFIRM_BWIKI_PRESET'
 

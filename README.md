@@ -1,16 +1,17 @@
 # TangerineTools
 
-TangerineTools 是一个本地优先（local-first）的个人资料管理 Web App，用来按“场景”组织资料库、收集记录、统计视图和性格推荐等小工具。当前默认演示场景为洛克王国，也可以新建通用/游戏/资料类场景并按需启用工具。
+TangerineTools 是一个本地优先（local-first）的个人资料管理 Web App，用来按“场景”组织资料库、收集记录和辅助分析工具。当前默认场景为「洛克王国世界」，也可以新建通用、游戏或资料类场景并按需启用工具。
 
 ## 特性概览
 
 - **本地优先，无后端依赖**：数据保存在浏览器 IndexedDB 中，通过 Dexie.js 读写；应用可作为静态站点部署。
-- **场景化工具箱**：首页管理多个场景，每个场景可单独启用资料库、收集记录、统计视图、性格推荐工具。
+- **场景化工具箱**：首页管理多个场景，每个场景可单独启用资料库、收集记录、统计视图、性格推荐和孵蛋推荐五种工具。
 - **可配置资料库**：支持多资料表、字段管理、搜索、排序、筛选、分页、详情弹窗、同编号形态对比等能力。
 - **引用与多引用字段**：支持单条资料引用和一对多资料引用；洛克王国精灵通过 `skillRefs` 关联技能资料，技能通过 `learnerRefs` 反向关联可学精灵。
 - **收集记录**：记录“我具体拥有哪一只 / 哪一份”，支持一对一和一对多模式。
 - **统计视图**：从资料库或收集记录选择数据源，按字段分组并叠加数值阈值条件统计。
 - **性格推荐**：手动录入或从洛克王国精灵资料带入六维，读取特性标签和技能引用，展示全部合法性格候选及解释。
+- **孵蛋推荐**：结合收集记录、性别、异色/炫彩、性格、蛋组和繁育谱系，对可用父母组合进行排序。
 - **全量导入/导出**：在首页通过 JSON 文件手动备份或迁移全部本地数据。
 - **洛克王国预置资料**：首次启动会自动创建“洛克王国”场景，包含精灵基础资料和技能资料；当前正式预置只由版本化 BWiki staging / preview 审计产物显式发布。
 
@@ -58,6 +59,12 @@ npm run lint
 | `npm run build` | 生成生产构建 |
 | `npm run preview` | 本地预览生产构建产物 |
 | `npm run lint` | 使用 oxlint 做静态检查 |
+| `npm run check:nature` | 重建版本化的性格推荐校准报告 |
+| `npm run audit:rocom` | 根据结构化人工结论重建外部定位核对报告 |
+| `npm run sync:bwiki:staging` | 刷新 BWiki 精灵、技能、蛋和果实 staging |
+| `npm run sync:bwiki:details` | 刷新 BWiki 精灵详情 staging |
+| `npm run sync:breeding` | 刷新蛋组和繁育谱系 staging |
+| `npm run preview:bwiki` | 从 staging 构建版本化发布候选 |
 | `npm run check:bwiki:preset` | dry-run 校验 BWiki preview 的正式发布范围并在 `artifacts/` 生成报告，不修改正式预置 |
 | `npm run apply:bwiki:preset` | 显式发布 BWiki preview；还必须提供报告约定的确认环境变量 |
 | `npm test` | 验证领域规则、预置三方迁移和 IndexedDB 播种/重试行为 |
@@ -70,19 +77,21 @@ npm run lint
 ├── docs/
 │   ├── README.md                         # 文档用途与更新方式索引
 │   ├── data-sources/                     # 数据源总览、BWiki 管线与字段血缘
+│   ├── nature/                           # 性格规则、核对模板和人工确认台账
+│   ├── generated/                        # 脚本生成并随版本审阅的报告
 │   ├── system-capabilities.md            # 已实现能力和明确非目标
 │   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
-│   ├── session-start-prompt.md           # 当前分支交接与代码地图
-│   └── nature-*.md                       # 性格规则、校准、审计和确认记录
+│   └── session-start-prompt.md           # 当前分支交接与代码地图
 ├── public/presets/
 │   ├── rockKingdomRows.json              # 运行时精灵 / 形态预置
 │   ├── rockKingdomSkillRows.json         # 运行时技能预置
 │   └── rockKingdomPresetMigration.json   # 已有浏览器安全升级所需的官方值指纹
 ├── scripts/
 │   ├── bwiki/                            # BWiki 同步、preview、发布及版本化快照
-│   ├── data/natureCalibrationSamples.json # 性格校准样例
+│   ├── data/                             # 生成器使用的人工结构化输入
 │   ├── tests/                            # node:test 纯逻辑与 fake-indexeddb 集成测试
-│   └── check-nature-recommendations.mjs  # 性格校准报告生成器
+│   ├── check-nature-recommendations.mjs  # 性格校准报告生成器
+│   └── generate-rocom-position-audit-plan.mjs # 外部定位报告生成器
 ├── src/
 │   ├── components/
 │   │   ├── dataTables.jsx                # 资料库工具编排
@@ -169,9 +178,9 @@ git diff --check
 - [`docs/data-sync.md`](docs/data-sync.md)：数据模型、导入/导出、预置资料同步与迁移语义。
 - [`docs/data-sources/README.md`](docs/data-sources/README.md)：数据来源分级，以及 BWiki 管线和字段血缘文档入口。
 - [`docs/session-start-prompt.md`](docs/session-start-prompt.md)：下一轮 session 启动提示、代码地图和阶段重点。
-- [`docs/nature-recommendation-redesign.md`](docs/nature-recommendation-redesign.md)：性格推荐规则设计草案，下一轮规则调参从这里继续。
-- [`docs/rocom-position-audit-plan.md`](docs/rocom-position-audit-plan.md)：洛克王国世界外部定位核对计划和批次台账。
-- [`docs/nature-calibration-report.md`](docs/nature-calibration-report.md)：由 `npm run check:nature` 生成的性格推荐校准报告。
+- [`docs/nature/README.md`](docs/nature/README.md)：性格规则、单只核对模板、确认结果和迭代台账入口。
+- [`docs/generated/README.md`](docs/generated/README.md)：版本化生成报告及对应输入、生成命令。
+- [`scripts/data/README.md`](scripts/data/README.md)：性格校准样例和 RoCom 外部核对结论等结构化人工输入。
 
 ## 部署
 

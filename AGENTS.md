@@ -10,6 +10,7 @@ The default built-in scenario is 洛克王国世界. The currently implemented w
 - 收集记录 `owned`
 - 统计视图 `stock`
 - 性格推荐 `nature`
+- 孵蛋推荐 `breeding`
 
 ## Development posture
 
@@ -24,12 +25,12 @@ Before making code changes, read the docs that match the task scope:
 - Always read `docs/session-start-prompt.md` for the current handoff context.
 - Read `docs/system-capabilities.md` for implemented scope and explicit non-goals.
 - Read `docs/data-sync.md` before touching Dexie data, import/export behavior, preset seeding, or migration logic.
-- Read `docs/nature-recommendation-redesign.md` before changing nature recommendation rules or UI.
-- Read `docs/nature-single-creature-template.md` before writing single-creature nature audit results.
-- Read `docs/nature-rule-iteration-log.md` before deciding whether a single-creature finding should become a rule change.
-- Read `docs/nature-confirmed-results.md` before changing nature rules, so confirmed single-creature conclusions can be regression checked.
-- Read `docs/rocom-position-audit-plan.md` before doing external 洛克王国世界 positioning audits.
-- Read `docs/nature-calibration-report.md` before calibrating or discussing current nature recommendation samples.
+- Read `docs/nature/rules.md` before changing nature recommendation rules or UI.
+- Read `docs/nature/single-creature-template.md` before writing single-creature nature audit results.
+- Read `docs/nature/rule-iteration-log.md` before deciding whether a single-creature finding should become a rule change.
+- Read `docs/nature/confirmed-results.md` before changing nature rules, so confirmed single-creature conclusions can be regression checked.
+- Read `docs/generated/rocom-position-audit-plan.md` before doing external 洛克王国世界 positioning audits.
+- Read `docs/generated/nature-calibration-report.md` before calibrating or discussing current nature recommendation samples.
 
 Also check the latest commit, PR description, and review comments when continuing an existing branch.
 
@@ -76,14 +77,14 @@ Run the checks relevant to the files changed. If a command cannot run because of
 ## Nature recommendation workflow
 
 - Preserve the output model of 推荐 / 可保留 / 不推荐.
-- When changing recommendation logic, regenerate `docs/nature-calibration-report.md` with `npm run check:nature`.
+- When changing recommendation logic, regenerate `docs/generated/nature-calibration-report.md` with `npm run check:nature`.
 - Reports should make rule causes inspectable: stat distribution, trait/effect labels, role breakdown, candidate reasons, and risks.
 - Keep 洛克王国世界 preset data based on official sync results; external materials may inspire audits but must not replace official preset rows.
 - For external positioning audits, default to one creature per turn following the user's capture progress; keep batch fields for thematic regression and backlog triage.
 - When several single-creature audits reveal the same rule issue, pause for user confirmation, then apply a rule-level change and rerun the relevant full reports.
 - If external materials conflict with local roles or with each other, mark the case for user confirmation before changing broad rules.
-- Use `docs/nature-single-creature-template.md` for one-creature output. After the user confirms a final result, record it in `docs/nature-confirmed-results.md`; if a rule issue is found but not yet settled, record it in `docs/nature-rule-iteration-log.md`.
-- After changing nature rules, regression-check any entries in `docs/nature-confirmed-results.md` and note expected or unexpected drift.
+- Use `docs/nature/single-creature-template.md` for one-creature output. After the user confirms a final result, record it in `docs/nature/confirmed-results.md`; if a rule issue is found but not yet settled, record it in `docs/nature/rule-iteration-log.md`.
+- After changing nature rules, regression-check any entries in `docs/nature/confirmed-results.md` and note expected or unexpected drift.
 
 ## Documentation workflow
 

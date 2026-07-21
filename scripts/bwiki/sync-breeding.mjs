@@ -7,10 +7,11 @@
 import { execFile } from 'node:child_process'
 import { readFile, writeFile } from 'node:fs/promises'
 import { promisify } from 'node:util'
+import { BWIKI_PATHS, resolveRepoPath } from './lib/paths.mjs'
 
 const EGG_GROUP_LIST_URL = 'https://wiki.biligame.com/rocom/%E5%AD%B5%E8%9B%8B%E7%BB%84%E5%88%AB%E6%9F%A5%E8%AF%A2'
-const OUTPUT_FILE = new URL('./data/staging/breeding-rows.json', import.meta.url)
-const LOCAL_ROWS_FILE = new URL('../../public/presets/rockKingdomRows.json', import.meta.url)
+const OUTPUT_FILE = resolveRepoPath(BWIKI_PATHS.staging.breeding)
+const LOCAL_ROWS_FILE = resolveRepoPath(BWIKI_PATHS.presets.creatures)
 const USER_AGENT = 'TangerineTools breeding preset sync (+local-first personal data tool)'
 const execFileAsync = promisify(execFile)
 const UNBREEDABLE_GROUP = '无法孵蛋'

@@ -2,13 +2,14 @@ import { execFile } from 'node:child_process'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { promisify } from 'node:util'
+import { BWIKI_PATHS } from './lib/paths.mjs'
 
 const execFileAsync = promisify(execFile)
 
-const CREATURE_STAGING = 'scripts/bwiki/data/staging/creatures.json'
-const SKILL_STAGING = 'scripts/bwiki/data/staging/skills.json'
-const OUTPUT_JSON = 'scripts/bwiki/data/staging/creature-details.json'
-const OUTPUT_MD = 'artifacts/bwiki/detail-staging-report.md'
+const CREATURE_STAGING = BWIKI_PATHS.staging.creatures
+const SKILL_STAGING = BWIKI_PATHS.staging.skills
+const OUTPUT_JSON = BWIKI_PATHS.staging.details
+const OUTPUT_MD = BWIKI_PATHS.artifacts.detailReport
 const DEFAULT_LIMIT = 24
 const DEFAULT_DELAY_MS = 1000
 
@@ -97,7 +98,7 @@ function parseTrait(html, baseUrl) {
   }
 }
 
-function parseSkillCards(html, baseUrl) {
+function parseSkillCards(html) {
   return html
     .split('<div class="divsort skill-single"')
     .slice(1)
@@ -109,18 +110,12 @@ function parseSkillCards(html, baseUrl) {
         param2: decodeHtml(openTag.match(/data-param2=(["'])(.*?)\1/i)?.[2] ?? '').trim(),
         param3: decodeHtml(openTag.match(/data-param3=(["'])(.*?)\1/i)?.[2] ?? '').trim(),
       }
-      const skillDetailTag = block.match(/<a\b[^>]*class="skill-detail-link"[^>]*>/i)?.[0] ?? ''
-      const detailHref = extractAttr(skillDetailTag, 'href')
       return {
         sourceType: attrs.param1 || '',
         category: attrs.param2 || '',
         element: attrs.param3 || '',
         name: stripTags(getMatch(block, /<span class="skill-name[^>]*">([\s\S]*?)<\/span>/i)),
-        effect: stripTags(getMatch(block, /<div class="skill-desc-atk">([\s\S]*?)<\/div>/i)),
-        story: stripTags(getMatch(block, /<div class="skill-desc-story">([\s\S]*?)<\/div>/i)),
         unlock: stripTags(getMatch(block, /<div class="skill-source">([\s\S]*?)<\/div>/i)),
-        image: extractFirstImage(block, baseUrl),
-        detailUrl: detailHref ? absoluteUrl(detailHref, baseUrl) : '',
       }
     })
     .filter((skill) => skill.name)
@@ -145,7 +140,7 @@ function parseEvolutionChains(html, baseUrl) {
 function parseDetail(row, html) {
   const baseUrl = row.detailUrl
   const trait = parseTrait(html, baseUrl)
-  const skills = parseSkillCards(html, baseUrl)
+  const skills = parseSkillCards(html)
   const evolution = parseEvolutionChains(html, baseUrl)
   return {
     source: 'bwiki-creature-detail',
@@ -187,11 +182,7 @@ function createLegacySkill(name, sourceType, unlock, skillByName) {
     category: skill.category || '',
     element: skill.element || '',
     name,
-    effect: skill.effect || '',
-    story: '',
     unlock,
-    image: skill.image || '',
-    detailUrl: skill.detailUrl || '',
   }
 }
 

@@ -2,6 +2,7 @@ import { execFile } from 'node:child_process'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { promisify } from 'node:util'
+import { BWIKI_PATHS } from './lib/paths.mjs'
 
 const execFileAsync = promisify(execFile)
 
@@ -16,15 +17,15 @@ const SOURCE_PAGES = {
 }
 
 const OUTPUTS = {
-  creatures: 'scripts/bwiki/data/staging/creatures.json',
-  skills: 'scripts/bwiki/data/staging/skills.json',
-  eggs: 'scripts/bwiki/data/staging/eggs.json',
-  reportJson: 'artifacts/bwiki/source-report.json',
-  reportMd: 'artifacts/bwiki/staging-report.md',
+  creatures: BWIKI_PATHS.staging.creatures,
+  skills: BWIKI_PATHS.staging.skills,
+  eggs: BWIKI_PATHS.staging.eggs,
+  reportJson: BWIKI_PATHS.artifacts.stagingJson,
+  reportMd: BWIKI_PATHS.artifacts.stagingReport,
 }
 
-const LOCAL_CREATURE_PRESET = 'public/presets/rockKingdomRows.json'
-const LOCAL_SKILL_PRESET = 'public/presets/rockKingdomSkillRows.json'
+const LOCAL_CREATURE_PRESET = BWIKI_PATHS.presets.creatures
+const LOCAL_SKILL_PRESET = BWIKI_PATHS.presets.skills
 
 const FORM_CATEGORY_MAP = new Map([
   ['原始形态', 'original'],
