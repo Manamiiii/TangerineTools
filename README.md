@@ -67,7 +67,7 @@ npm run lint
 | `npm run preview:bwiki` | 从 staging 构建版本化发布候选 |
 | `npm run check:bwiki:preset` | dry-run 校验 BWiki preview 的正式发布范围并在 `artifacts/` 生成报告，不修改正式预置 |
 | `npm run apply:bwiki:preset` | 显式发布 BWiki preview；还必须提供报告约定的确认环境变量 |
-| `npm test` | 验证领域规则、预置三方迁移和 IndexedDB 播种/重试行为 |
+| `npm test` | 验证领域规则、数据兼容、BWiki 管线和文档当前态约束 |
 
 ## 项目结构
 
@@ -134,7 +134,7 @@ npm run build
 git diff --check
 ```
 
-- `npm test` 覆盖领域规则、PVE 判定、预置三方迁移、导入校验、仓储级联和 IndexedDB 播种/失败重试。
+- `npm test` 覆盖领域规则、PVE 判定、预置三方迁移、导入校验、仓储级联、IndexedDB 播种/失败重试、BWiki staging 结构和文档当前态约束。
 - 涉及性格规则时额外运行 `npm run check:nature`，并检查已确认样例是否出现非预期漂移。
 - 涉及 BWiki 预置时先运行 `npm run check:bwiki:preset`；该命令只生成 `artifacts/` 审计报告，不会写入正式预置。
 - 涉及工具入口、懒加载或 Hook 时，启动 `npm run dev` 后依次切换资料库、收集记录、统计视图、性格推荐和孵蛋推荐，确认均完成渲染且没有进入错误恢复页。
@@ -149,9 +149,9 @@ git diff --check
 - `rockKingdomRows.json` 包含 592 条精灵 / 形态资料。
 - `rockKingdomSkillRows.json` 包含 553 条技能资料。
 - 精灵通过 `skillRefs` 多引用关联技能；技能通过 `learnerRefs` 多引用反向关联可学精灵。
-- 精灵与技能图片以 BWiki / patchwiki 审计快照为主；仍受支持的旧资源和 UI 图标继续使用可信静态资源。
+- 精灵与技能图片使用经审计的 BWiki / patchwiki URL，UI 图标使用可信静态资源。
 
-预置资料通过版本化旧官方值指纹做三方合并：仅更新空值、无效值或仍匹配旧官方值的字段，保留用户自定义非空值、用户新增资料、收集记录和统计视图记录。
+预置资料通过版本化基线正式值指纹做三方合并：仅更新空值、无效值或匹配基线正式值的字段，保留用户自定义非空值、用户新增资料、收集记录和统计视图记录。
 
 ## 数据存储、备份与导入
 
@@ -177,7 +177,7 @@ git diff --check
 - [`docs/system-capabilities.md`](docs/system-capabilities.md)：当前已实现能力与明确排除范围。
 - [`docs/data-sync.md`](docs/data-sync.md)：数据模型、导入/导出、预置资料同步与迁移语义。
 - [`docs/data-sources/README.md`](docs/data-sources/README.md)：数据来源分级，以及 BWiki 管线和字段血缘文档入口。
-- [`docs/session-start-prompt.md`](docs/session-start-prompt.md)：下一轮 session 启动提示、代码地图和阶段重点。
+- [`docs/session-start-prompt.md`](docs/session-start-prompt.md)：当前代码地图、开发检查和活跃待办。
 - [`docs/nature/README.md`](docs/nature/README.md)：性格规则、单只核对模板、确认结果和迭代台账入口。
 - [`docs/generated/README.md`](docs/generated/README.md)：版本化生成报告及对应输入、生成命令。
 - [`scripts/data/README.md`](scripts/data/README.md)：性格校准样例和 RoCom 外部核对结论等结构化人工输入。

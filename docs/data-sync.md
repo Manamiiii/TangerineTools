@@ -1,6 +1,6 @@
 # TangerineTools · 数据模型与同步说明
 
-本文档描述数据是如何存储、导出、导入的，以及预置资料的加载机制。供后续维护和"全量数据同步"相关的开发工作参考。
+本文档描述数据存储、导出、导入和预置资料加载的当前语义。
 
 ## 存储引擎
 
@@ -27,7 +27,7 @@ db.version(1).stores({
 | 表 | 主键 | 索引 | 说明 |
 |---|---|---|---|
 | `scenes` | `id` | `order` | 场景：`name` / `type` / `tools[]` / `order` / `createdAt` / `updatedAt` |
-| `catalogTables` | `id` | `sceneId`, `order` | 资料表：`sceneId` / `name` / `order` / 时间戳 / 可选的 `kind`（非索引属性；值为 `'owned'` 时表示收集记录表，`undefined`/缺省表示普通资料库表；历史版本可能存在 `kind: 'stock'` 的旧统计表，导入导出会保留但新统计视图不再依赖它） |
+| `catalogTables` | `id` | `sceneId`, `order` | 资料表：`sceneId` / `name` / `order` / 时间戳 / 可选的 `kind`（非索引属性；`'owned'` 表示收集记录表，缺省表示普通资料库表；导入兼容 `kind: 'stock'` 记录，但统计视图不读取该类固定表） |
 | `catalogFields` | `id` | `tableId`, `order` | 字段：`tableId` / `key` / `name` / `type` / `order` / `hidden` / 类型相关配置（`options` / `statsMap` / `statsDimensions` / `statsStyle` / `referenceTableId` 等） |
 | `catalogRows` | `id` | `tableId` | 行：`tableId` / `values`（以字段 `key` 为键的对象） / 时间戳 |
 | `meta` | `key` | — | 内部标记，如播种标记 `seededRockKingdom` |
@@ -39,29 +39,29 @@ db.version(1).stores({
 - 收集记录工具（`owned`）复用 `catalogTables` / `catalogFields` / `catalogRows` 三张表存储数据，通过 `catalogTables.kind === 'owned'` 与普通资料库表区分。
 - 收集记录表还可以带非索引配置 `collectionMode: 'single' | 'multiple'`：`single` 表示同一 reference 只保留一条收集记录，`multiple` 表示同一 reference 可记录多条。
 - 普通新建场景首次打开收集记录工具时，只创建空的收集记录表，不写入默认字段；洛克王国场景会补齐精灵收集字段，这是该预置场景自身的数据模板，不是全局模板。
-- 统计视图工具（仍沿用内部工具值 `stock`）不再创建固定字段表；它从当前场景的普通资料表和收集记录表中选择数据源，按字段分组并叠加数值阈值条件做即时统计。
+- 统计视图工具的内部工具值为 `stock`；它从当前场景的普通资料表和收集记录表中选择数据源，按字段分组并叠加数值阈值条件做即时统计，不创建固定字段表。
 - `kind` 和 `collectionMode` 都是非索引属性（不在 `.stores()` 的索引串里），只在按 `sceneId` 查询后用 JS 过滤/读取，因此**没有引入 Dexie schema 版本变更**。
-- 资料库工具（`CatalogTool`）的普通资料表选择器会用 `.filter((t) => !t.kind)` 只保留普通资料表，避免收集记录表混入。性格推荐工具现在固定绑定洛克王国 `精灵基础资料` 表，并通过 `skillRefs` 读取技能资料，不再提供任意资料表选择。
-- 因为导出/导入是对整张 Dexie 表做全量操作（不区分 `kind`），`kind` 与 `collectionMode` 会随 `catalogTables` 记录本身一起被导出/导入，**无需任何额外的导出/导入代码改动**。
+- 资料库工具（`CatalogTool`）的普通资料表选择器使用 `.filter((t) => !t.kind)` 排除收集记录表。性格推荐工具固定绑定洛克王国 `精灵基础资料` 表，并通过 `skillRefs` 读取技能资料。
+- 导出/导入对整张 Dexie 表操作且不区分 `kind`，因此 `kind` 与 `collectionMode` 随 `catalogTables` 记录一起传输。
 
 ## 预置资料加载（播种）
 
 - 应用启动时 `App.jsx` 调用 `ensureSeeded()`。
-- 该函数检查 `meta` 表中 `seededRockKingdom` 是否已为 `true`；若不是，则先写入 `src/presets/rockKingdom.js` 中定义的洛克王国场景 / 默认资料表 / 字段结构。场景骨架只播种一次，不会覆盖用户后续的修改或删除。
-- 精灵行数据通过 `fetch(`${BASE_URL}presets/rockKingdomRows.json`)` 拉取，技能行数据通过 `fetch(`${BASE_URL}presets/rockKingdomSkillRows.json`)` 拉取，文件放在 `public/` 下，不参与 JS 打包。繁育字段已经合入正式精灵行，不再额外请求第二份运行时快照。拉取失败（如离线）时保留场景/表/字段骨架且不写完成标记，下次启动会自动重试；首次启动错误也会在 UI 提供重试入口。
-- 退役的 gamecenter `d.json` 与旧同步脚本已删除。当前正式预置只通过 BWiki staging → preview → 显式 apply 链路维护。
-- 完整运行时迁移按 `ROCK_KINGDOM_ROWS_VERSION` 写入 `meta.rockKingdomRuntimeMigrationVersion`，同一版本不再每次启动全表扫描。导入备份后会清除此标记，并在下次启动重新执行三方安全合并。
-- 当前精灵与技能图片以 BWiki / patchwiki 已审计 URL 为主；仍受支持的旧资源和 UI 图标可继续使用可信静态资源。不使用本地 SVG 或 `data:image/svg+xml` 作为精灵图。
+- 该函数检查 `meta.seededRockKingdom`；未播种时写入 `src/presets/rockKingdom.js` 定义的洛克王国场景、默认资料表和字段结构。场景骨架只播种一次，不覆盖用户修改。
+- 精灵行通过 `fetch(`${BASE_URL}presets/rockKingdomRows.json`)` 加载，技能行通过 `fetch(`${BASE_URL}presets/rockKingdomSkillRows.json`)` 加载；文件位于 `public/` 且不参与 JS 打包。繁育字段包含在正式精灵行中。加载失败时保留场景、表和字段骨架，不写完成标记，并在启动流程提供重试入口。
+- 正式预置只通过 BWiki staging → preview → 显式 apply 链路维护。
+- 完整运行时迁移按 `ROCK_KINGDOM_ROWS_VERSION` 写入 `meta.rockKingdomRuntimeMigrationVersion`；同一版本只扫描一次。导入备份会清除此标记，使三方安全合并在启动时重新执行。
+- 精灵与技能图片使用经审计的 BWiki / patchwiki URL，UI 图标使用可信静态资源。精灵图不得使用本地 SVG 或 `data:image/svg+xml`。
 - 系别字段使用 `multiselect` 类型，覆盖官方 18 个系别：普通/草/火/水/光/地/冰/龙/电/毒/虫/武/翼/萌/幽/恶/机械/幻，对应内部值为 `normal`/`grass`/`fire`/`water`/`light`/`earth`/`ice`/`dragon`/`electric`/`poison`/`bug`/`fighting`/`flying`/`cute`/`ghost`/`dark`/`mech`/`illusion`。精灵行使用 `skillRefs` 多引用指向技能行；技能行使用 `learnerRefs` 多引用反向指向可学习该技能的精灵行。技能行还包含派生的 `effectTags` 多选效果标签（先手、速度、回复、减伤、能量、强化、控制、应对、轮转等），这些标签由官方技能效果文本生成，用于资料查看与性格推荐解释；它们不是战斗模拟结果。
-- 资料库、收集记录、统计视图三者关系：资料库是对象种类 / 图鉴 / 静态资料；收集记录是用户与这些资料项的一对一或一对多关系；统计视图从资料库和收集记录中即时汇总，不再为新场景创建固定字段统计表。
-- BWiki 是 WIKI 页面数据快照（页面自身显示更新日期），不是本应用运行时实时查询接口。维护者先运行 `npm run check:bwiki:preset` 做 dry-run；正式发布必须显式运行 `BWIKI_PRESET_OVERWRITE=CONFIRM_BWIKI_PRESET npm run apply:bwiki:preset`。当前已按此流程发布 592 条精灵、553 条技能和迁移清单。发布脚本只把 preview 的 `id` / `values` 写入精灵和技能预置，不把审计用 `previewMeta` 带入运行时。精灵蛋和精灵果实不做独立资料表，而是作为精灵基础资料中的 `eggImage` / `fruitImage` 字段写入。应用启动迁移仍只读取仓库内预置 JSON，不在用户浏览器里实时抓取 BWiki。
+- 资料库保存对象种类、图鉴和静态资料；收集记录保存用户与资料项的一对一或一对多关系；统计视图从两类数据中即时汇总，不创建固定字段统计表。
+- BWiki 是版本化页面快照，不是运行时查询接口。维护者先运行 `npm run check:bwiki:preset` 做 dry-run；正式发布必须显式运行 `BWIKI_PRESET_OVERWRITE=CONFIRM_BWIKI_PRESET npm run apply:bwiki:preset`。正式基线包含 592 条精灵、553 条技能和迁移清单。发布脚本只把 preview 的 `id` / `values` 写入预置，不把 `previewMeta` 带入运行时。精灵蛋和果实以 `eggImage` / `fruitImage` 字段存入精灵资料。应用启动迁移只读取仓库内预置 JSON。
 - 预置资料迁移策略：
   1. 新安装 / 干净 IndexedDB 只会插入官方图鉴行，不应出现旧 `row-rock-*` 占位行。
   2. 老用户若已播种旧占位资料，`migrateRockKingdomRows()` 会在默认洛克王国资料表中删除可明确识别的旧占位行（`id` 以 `row-rock-` 开头，或 `values.image` 以 `data:image/svg+xml` 开头），再按新稳定 id 插入官方行，避免重复。
-  3. 正式发布会同时更新 `rockKingdomPresetMigration.json`：它只保存发生变化字段的旧官方值 SHA-256，不含用户数据。已有稳定 id 行的字段为空、系别无效，或当前值指纹仍匹配旧官方值时，才更新为新版预置值；不匹配时视为用户自定义并保留。精灵和技能使用同一三方合并规则，不再对同 id 技能整行 `bulkPut`。
+  3. `rockKingdomPresetMigration.json` 保存发生变化字段的基线正式值 SHA-256，不含用户数据。稳定 id 行的字段为空、系别无效，或当前值指纹匹配基线正式值时，才写入目标预置值；不匹配时视为用户自定义并保留。精灵和技能使用相同的字段级三方合并规则。
   4. 用户自己新增的非占位资料行不会被删除；无法安全判断为占位的数据不会被覆盖。
   5. owned / stock 表及其用户记录不属于默认资料表 `tableId`，迁移不会触碰。
-  6. 迁移通过清单 `version` 更新 `meta.rockKingdomRowsVersion` / `rockKingdomSkillRowsVersion`；没有清单时继续使用旧版本常量。不引入 Dexie schema 版本变更。
+  6. 迁移通过清单 `version` 更新 `meta.rockKingdomRowsVersion` / `rockKingdomSkillRowsVersion`；缺少清单时使用兼容版本常量。该流程不改变 Dexie schema 版本。
 
 ## 导出格式
 
@@ -81,7 +81,7 @@ db.version(1).stores({
 }
 ```
 
-- `schemaVersion`（`EXPORT_SCHEMA_VERSION`，当前为 `1`）用于未来 schema 变更时做兼容判断，第一轮尚未实现基于该版本号的迁移逻辑。
+- `schemaVersion`（`EXPORT_SCHEMA_VERSION`，当前为 `1`）用于兼容判断；导入流程不执行基于该字段的自动 schema 迁移。
 - 导出通过首页的「导出数据」按钮触发，文件名形如 `tangerine-tools-2026-07-02.json`。
 - 导出范围是**全部** Dexie 表的**全部**数据，不支持按场景/按表部分导出。
 
@@ -102,7 +102,7 @@ db.version(1).stores({
 - 若导入文件中的某条记录 `id` 本地不存在 → 新增。
 - 若本地存在但导入文件中**没有**该 `id` 的记录 → **不会被删除**，原样保留。
 
-这意味着导入操作**不是**"用文件完全替换本地数据"，而是**增量合并**。如果用户需要"用导出文件完全恢复/替换"的语义（例如清空后再导入），当前实现不支持，需要用户自行先清空数据（第一轮未提供"清空全部数据"的入口）。
+导入属于**增量合并**，不提供“用文件完全替换本地数据”或“清空全部数据”的入口。
 
 UI 层（`App.jsx` 的 `GlobalDataActions`）在实际执行导入前会用 `ConfirmDialog` 向用户明确提示这一合并语义（"相同 id 的数据会被覆盖，文件中未包含的数据将保留在本地，此操作不可撤销"）。
 

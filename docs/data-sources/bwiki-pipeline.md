@@ -1,6 +1,6 @@
 # BWiki 数据生产与发布链路
 
-洛克王国世界正式预置只维护一条数据链路：BWiki 页面快照 → staging → preview → 显式发布。应用运行时不联网抓取 BWiki，也不再保留旧 `d.json` 数据源。
+洛克王国世界正式预置的数据链路是：BWiki 页面快照 → staging → preview → 显式发布。应用运行时不联网抓取 BWiki。
 
 ## 数据优先级
 

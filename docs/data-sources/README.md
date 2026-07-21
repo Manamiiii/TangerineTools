@@ -12,7 +12,7 @@
 
 ## 当前正式来源
 
-洛克王国世界只维护 BWiki 页面快照这一条正式生产线。旧 gamecenter `d.json` 已退役，不得重新引入。
+洛克王国世界的正式生产线是 BWiki 页面快照，不得引入其他预置来源或把抓取逻辑放入浏览器运行时。
 
 - [`bwiki-pipeline.md`](bwiki-pipeline.md)：页面清单、目录、刷新与显式发布流程。
 - [`bwiki-field-mapping.md`](bwiki-field-mapping.md)：字段来源、转换、稳定 id 和验收门槛。

@@ -19,7 +19,7 @@ docs/
 
 | 文件 | 用途 | 维护方式 |
 |---|---|---|
-| `system-capabilities.md` | 已实现能力与明确非目标 | 功能范围变化时人工更新 |
+| `system-capabilities.md` | 当前能力与明确非目标 | 功能范围变化时人工更新 |
 | `data-sync.md` | Dexie 数据模型、导入导出、播种与迁移约束 | 数据语义变化时人工更新 |
 | `session-start-prompt.md` | 新 session 的代码地图和阶段重点 | 每个开发批次结束时轻量更新 |
 | `data-sources/README.md` | 正式数据来源和外部旁证边界入口 | 数据来源体系变化时更新 |
@@ -49,7 +49,3 @@ docs/
 | 单只精灵核对 | 使用 `nature/single-creature-template.md`；问题记入迭代台账，用户确认后写入确认台账 |
 | 更新外部定位结论 | 修改 `scripts/data/rocomAuditFindings.json`，再运行 `npm run audit:rocom` |
 | 只刷新生成报告 | 不手改正文，记录生成命令并检查差异 |
-
-## 已清理内容
-
-退役的 gamecenter `d.json`、旧同步器、阶段性 BWiki 发布报告和只服务旧数据源的审计脚本已经删除。仍有效的规则分别归属 `AGENTS.md`、系统文档、`data-sources/`、`nature/` 与生成脚本。
