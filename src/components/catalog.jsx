@@ -1,7 +1,7 @@
 // 资料库通用控件：字段管理弹窗、列头菜单、单元格展示/编辑组件。
 // 这些是资料表格的底层构件，被 dataTables.jsx 中的资料库/资料表/详情页组合使用。
 
-import { useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import {
   ArrowDown,
@@ -367,6 +367,33 @@ function useReferenceContext(tableId) {
   return result || { fields: [], rows: [] }
 }
 
+const ReferenceLookupContext = createContext(null)
+
+function ReferenceLookupProvider({ fields, children }) {
+  const tableIds = useMemo(() => [...new Set(
+    fields
+      .filter((field) => isReferenceFieldType(field.type) && field.referenceTableId)
+      .map((field) => field.referenceTableId),
+  )].sort(), [fields])
+  const tableIdsKey = tableIds.join('|')
+  const lookup = useLiveQuery(async () => {
+    const entries = await Promise.all(tableIds.map(async (tableId) => {
+      const [referenceFields, rows] = await Promise.all([
+        db.catalogFields.where('tableId').equals(tableId).sortBy('order'),
+        db.catalogRows.where('tableId').equals(tableId).toArray(),
+      ])
+      return [tableId, { fields: referenceFields, rows }]
+    }))
+    return Object.fromEntries(entries)
+  }, [tableIdsKey])
+
+  return (
+    <ReferenceLookupContext.Provider value={lookup || {}}>
+      {children}
+    </ReferenceLookupContext.Provider>
+  )
+}
+
 function referenceRowLabel(fields, row) {
   if (!row) return ''
   const labelField = fields.find((f) => f.type === 'text') || fields[0]
@@ -384,8 +411,8 @@ function ReferenceLabel({ field, row, label }) {
   )
 }
 
-function ReferenceCellView({ field, value, onOpenReference }) {
-  const { fields, rows } = useReferenceContext(field.referenceTableId)
+function ReferenceCellContent({ field, value, onOpenReference, referenceContext }) {
+  const { fields, rows } = referenceContext
   if (!value) return <span className="cell-empty">—</span>
   const row = rows.find((r) => r.id === value)
   const label = row ? referenceRowLabel(fields, row) : value
@@ -405,8 +432,24 @@ function ReferenceCellView({ field, value, onOpenReference }) {
   )
 }
 
-function ReferenceListCellView({ field, value, onOpenReference }) {
-  const { fields, rows } = useReferenceContext(field.referenceTableId)
+function StandaloneReferenceCellView(props) {
+  const referenceContext = useReferenceContext(props.field.referenceTableId)
+  return <ReferenceCellContent {...props} referenceContext={referenceContext} />
+}
+
+function ReferenceCellView(props) {
+  const lookup = useContext(ReferenceLookupContext)
+  if (lookup === null) return <StandaloneReferenceCellView {...props} />
+  return (
+    <ReferenceCellContent
+      {...props}
+      referenceContext={lookup[props.field.referenceTableId] || { fields: [], rows: [] }}
+    />
+  )
+}
+
+function ReferenceListCellContent({ field, value, onOpenReference, referenceContext }) {
+  const { fields, rows } = referenceContext
   const ids = Array.isArray(value) ? value : value ? [value] : []
   if (ids.length === 0) return <span className="cell-empty">—</span>
   const visibleIds = field.__detailMode ? ids : ids.slice(0, 6)
@@ -485,6 +528,22 @@ function ReferenceFieldInput({ field, value, onChange }) {
         ))}
       </select>
     </div>
+  )
+}
+
+function StandaloneReferenceListCellView(props) {
+  const referenceContext = useReferenceContext(props.field.referenceTableId)
+  return <ReferenceListCellContent {...props} referenceContext={referenceContext} />
+}
+
+function ReferenceListCellView(props) {
+  const lookup = useContext(ReferenceLookupContext)
+  if (lookup === null) return <StandaloneReferenceListCellView {...props} />
+  return (
+    <ReferenceListCellContent
+      {...props}
+      referenceContext={lookup[props.field.referenceTableId] || { fields: [], rows: [] }}
+    />
   )
 }
 
@@ -900,8 +959,9 @@ export function DataGrid({
   const visibleFields = fields.filter((f) => !f.hidden)
 
   return (
-    <div className="data-grid-scroll">
-      <table className="data-grid">
+    <ReferenceLookupProvider fields={visibleFields}>
+      <div className="data-grid-scroll">
+        <table className="data-grid">
         <thead>
           <tr>
             {visibleFields.map((field) => {
@@ -961,8 +1021,9 @@ export function DataGrid({
             </tr>
           )}
         </tbody>
-      </table>
-    </div>
+        </table>
+      </div>
+    </ReferenceLookupProvider>
   )
 }
 

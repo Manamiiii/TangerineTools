@@ -66,30 +66,73 @@ npm run lint
 
 ```text
 .
-├── docs/                         # 能力说明、数据同步说明、交接提示、性格推荐设计草案
-├── public/
-│   └── presets/
-│       ├── rockKingdomRows.json            # 精灵 / 形态预置资料
-│       ├── rockKingdomSkillRows.json       # 技能预置资料
-│       └── rockKingdomPresetMigration.json # 已有浏览器三方迁移指纹
+├── .github/workflows/pages.yml           # GitHub Pages 构建与部署
+├── docs/
+│   ├── README.md                         # 文档用途与更新方式索引
+│   ├── system-capabilities.md            # 已实现能力和明确非目标
+│   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
+│   ├── session-start-prompt.md           # 当前分支交接与代码地图
+│   └── nature-*.md                       # 性格规则、校准、审计和确认记录
+├── public/presets/
+│   ├── rockKingdomRows.json              # 运行时精灵 / 形态预置
+│   ├── rockKingdomSkillRows.json         # 运行时技能预置
+│   └── rockKingdomPresetMigration.json   # 已有浏览器安全升级所需的官方值指纹
 ├── scripts/
-│   ├── data/bwiki/                    # 当前 BWiki staging 与 preview
-│   └── *.mjs                          # BWiki 同步、转换、校验与发布脚本
+│   ├── data/bwiki/                       # 可审计的 BWiki staging 与 preview
+│   ├── data/natureCalibrationSamples.json # 性格校准样例
+│   ├── lib/rock-kingdom-tags.mjs         # Node 侧共享标签规则转发
+│   ├── tests/                            # node:test 纯逻辑与 fake-indexeddb 集成测试
+│   ├── sync-bwiki-*.mjs                  # BWiki 抓取 / staging 同步
+│   ├── preview-bwiki-*.mjs               # staging 转 preview
+│   ├── apply-bwiki-*.mjs                 # dry-run 校验与显式正式发布
+│   └── check-nature-recommendations.mjs  # 性格校准报告生成器
 ├── src/
-│   ├── components/               # UI 组件与工具组件
-│   ├── domain/                   # 收集记录、统计、性格推荐、洛克王国领域逻辑
-│   ├── presets/                  # 预置场景/字段/选项结构
-│   ├── App.jsx                   # 应用入口、hash 路由、全局导入导出
-│   ├── constants.js              # 全局常量、字段类型、工具定义
-│   ├── db/                       # Dexie schema、导入导出与数据模块
-│   ├── db.js                     # 数据访问兼容入口
-│   ├── main.jsx                  # React 挂载入口
-│   ├── styles.css                # 全局样式
-│   └── utils.js                  # 通用工具函数
+│   ├── components/
+│   │   ├── dataTables.jsx                # 资料库工具编排
+│   │   ├── catalog.jsx                   # 通用表格、字段、批量引用解析
+│   │   ├── owned.jsx / stock.jsx         # 收集记录 / 统计视图
+│   │   ├── nature.jsx / breeding.jsx     # 性格推荐 / 孵蛋推荐 UI
+│   │   └── common.jsx / ErrorBoundary.jsx # 通用控件与工具级错误恢复
+│   ├── db/
+│   │   ├── core.js                       # Dexie v1 schema 与数据库实例
+│   │   ├── importExport.js               # JSON 校验、导出与 merge-by-id 导入
+│   │   ├── repository.js                 # 场景、表、字段和行的 CRUD
+│   │   └── rockKingdomSeed.js            # 预置播种与三方迁移
+│   ├── domain/
+│   │   ├── nature.js / naturePve.js      # 性格规则引擎 / PVE 展示判定
+│   │   ├── natureRowAdapter.js            # 资料行到推荐输入的适配
+│   │   ├── rockKingdom*.js               # 形态、展示和共享标签规则
+│   │   └── owned.js / stock.js / breeding*.js # 各工具纯领域逻辑
+│   ├── presets/rockKingdom.js             # 场景、字段和选项定义
+│   ├── App.jsx                            # hash 路由、工具懒加载、全局导入导出
+│   ├── db.js                              # 稳定的数据访问兼容门面
+│   ├── constants.js / utils.js            # 全局约定与通用工具
+│   ├── main.jsx                           # React 挂载入口
+│   └── styles.css                         # 全局样式唯一入口
+├── AGENTS.md                              # 长期开发边界和必读约束
 ├── index.html
 ├── package.json
 └── vite.config.js
 ```
+
+核心依赖方向保持为 `components → domain / db → Dexie`：组件负责交互和展示，`domain/` 保持可直接测试的纯逻辑，`db/` 统一承担持久化。同步脚本只产出版本化预置，不作为浏览器运行时依赖。
+
+## 验证清单
+
+日常代码修改建议按下面顺序验证：
+
+```bash
+npm run lint
+npm test
+npm run build
+git diff --check
+```
+
+- `npm test` 覆盖领域规则、PVE 判定、预置三方迁移、导入校验、仓储级联和 IndexedDB 播种/失败重试。
+- 涉及性格规则时额外运行 `npm run check:nature`，并检查已确认样例是否出现非预期漂移。
+- 涉及 BWiki 预置时先运行 `npm run check:bwiki:preset`；该命令只生成 `artifacts/` 审计报告，不会写入正式预置。
+- 涉及工具入口、懒加载或 Hook 时，启动 `npm run dev` 后依次切换资料库、收集记录、统计视图、性格推荐和孵蛋推荐，确认均完成渲染且没有进入错误恢复页。
+- 上述验证不会清空浏览器中的收集记录或统计配置；导入仍按 id 合并。
 
 ## 洛克王国预置资料
 
