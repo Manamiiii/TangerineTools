@@ -21,7 +21,7 @@ import {
 } from 'lucide-react'
 import { FIELD_TYPES, isOptionFieldType, isReferenceFieldType, STATS_DIMENSIONS } from '../constants.js'
 import { createField, db, deleteField, reorderFields, updateField } from '../db.js'
-import { visibleRockKingdomCreatureRows } from '../domain/rockKingdom.js'
+import { compareRockKingdomCreatureRows, visibleRockKingdomCreatureRows } from '../domain/rockKingdom.js'
 import { ROCK_KINGDOM_CREATURE_TABLE_ID } from '../presets/rockKingdom.js'
 import { generateId, getStatsValues, resolveStatsMapping, stringifyCellValue } from '../utils.js'
 import {
@@ -371,8 +371,23 @@ function referenceRowLabel(fields, row) {
 
 function selectableReferenceRows(field, rows) {
   return field.referenceTableId === ROCK_KINGDOM_CREATURE_TABLE_ID
-    ? visibleRockKingdomCreatureRows(rows)
+    ? visibleRockKingdomCreatureRows(rows).sort(compareRockKingdomCreatureRows)
     : rows
+}
+
+function creatureReferenceLabel(row) {
+  const values = row?.values ?? {}
+  return [values.no, values.name, values.form].filter(Boolean).join(' · ')
+}
+
+function ReferenceLabel({ field, row, label }) {
+  const image = field.referenceTableId === ROCK_KINGDOM_CREATURE_TABLE_ID ? row?.values?.image : ''
+  return (
+    <span className={image ? 'reference-creature' : ''}>
+      {image && <img src={image} alt="" />}
+      <span>{label}</span>
+    </span>
+  )
 }
 
 function ReferenceCellView({ field, value, onOpenReference }) {
@@ -380,7 +395,7 @@ function ReferenceCellView({ field, value, onOpenReference }) {
   if (!value) return <span className="cell-empty">—</span>
   const row = rows.find((r) => r.id === value)
   const label = row ? referenceRowLabel(fields, row) : value
-  if (!row || !onOpenReference) return <span className="reference-tag">{label}</span>
+  if (!row || !onOpenReference) return <span className="reference-tag"><ReferenceLabel field={field} row={row} label={label} /></span>
   return (
     <button
       type="button"
@@ -391,7 +406,7 @@ function ReferenceCellView({ field, value, onOpenReference }) {
       }}
       title="查看引用资料"
     >
-      {label}
+      <ReferenceLabel field={field} row={row} label={label} />
     </button>
   )
 }
@@ -400,7 +415,7 @@ function ReferenceListCellView({ field, value, onOpenReference }) {
   const { fields, rows } = useReferenceContext(field.referenceTableId)
   const ids = Array.isArray(value) ? value : value ? [value] : []
   if (ids.length === 0) return <span className="cell-empty">—</span>
-  const visibleIds = field.__detailMode ? ids : ids.slice(0, 3)
+  const visibleIds = field.__detailMode ? ids : ids.slice(0, 6)
   return (
     <span className="reference-list">
       {visibleIds.map((id) => {
@@ -430,6 +445,16 @@ function ReferenceListCellView({ field, value, onOpenReference }) {
 function ReferenceFieldInput({ field, value, onChange }) {
   const { fields, rows } = useReferenceContext(field.referenceTableId)
   const selectableRows = selectableReferenceRows(field, rows)
+  const [keyword, setKeyword] = useState('')
+  const normalizedKeyword = keyword.trim().toLowerCase()
+  const filteredRows = normalizedKeyword
+    ? selectableRows.filter((row) => {
+      const label = field.referenceTableId === ROCK_KINGDOM_CREATURE_TABLE_ID
+        ? creatureReferenceLabel(row)
+        : referenceRowLabel(fields, row)
+      return label.toLowerCase().includes(normalizedKeyword)
+    })
+    : selectableRows
   if (!field.referenceTableId) {
     return (
       <input
@@ -440,15 +465,32 @@ function ReferenceFieldInput({ field, value, onChange }) {
       />
     )
   }
+  const selectedRow = selectableRows.find((row) => row.id === value)
   return (
-    <select className="select" value={value || ''} onChange={(e) => onChange(e.target.value)}>
-      <option value="">未选择</option>
-      {selectableRows.map((r) => (
-        <option key={r.id} value={r.id}>
-          {referenceRowLabel(fields, r)}
-        </option>
-      ))}
-    </select>
+    <div className="reference-picker">
+      {field.referenceTableId === ROCK_KINGDOM_CREATURE_TABLE_ID && (
+        <input
+          className="input reference-picker-search"
+          type="search"
+          value={keyword}
+          onChange={(event) => setKeyword(event.target.value)}
+          placeholder="按编号、名称或形态搜索精灵…"
+        />
+      )}
+      <select className="select" value={value || ''} onChange={(e) => onChange(e.target.value)}>
+        <option value="">未选择</option>
+        {selectedRow && normalizedKeyword && !filteredRows.some((row) => row.id === selectedRow.id) && (
+          <option value={selectedRow.id}>{creatureReferenceLabel(selectedRow)}</option>
+        )}
+        {filteredRows.map((r) => (
+          <option key={r.id} value={r.id}>
+            {field.referenceTableId === ROCK_KINGDOM_CREATURE_TABLE_ID
+              ? creatureReferenceLabel(r)
+              : referenceRowLabel(fields, r)}
+          </option>
+        ))}
+      </select>
+    </div>
   )
 }
 
@@ -530,6 +572,20 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
   if (field.key === 'traitName') return <TraitCellView row={row} mode={mode} />
   if (field.key === 'evolutionLine') return <EvolutionChainView value={row.values?.[field.key]} />
 
+  const statusValue = row.values?.[field.key]
+  if (field.key === 'gender' && statusValue) {
+    const female = statusValue === 'female'
+    return <span className={`rock-status-icon gender-icon ${female ? 'female' : 'male'}`} title={female ? '雌性' : '雄性'}>{female ? '♀' : '♂'}</span>
+  }
+  if (field.key === 'shiny' && statusValue !== '' && statusValue != null) {
+    const enabled = statusValue === 'yes' || statusValue === true
+    return <img className="rock-status-icon status-image" src={enabled ? 'https://patchwiki.biligame.com/images/rocom/2/2e/buxc6y4s0r7d8ix03zzkahnk4h8urtv.png' : 'https://patchwiki.biligame.com/images/rocom/4/4f/20dseynhfc393c6jys1rnwhwwf94xvv.png'} alt={enabled ? '异色' : '非异色'} title={enabled ? '异色' : '非异色'} />
+  }
+  if (field.key === 'colorful' && statusValue !== '' && statusValue != null) {
+    const enabled = statusValue === 'yes' || statusValue === true
+    return <span className={`rock-status-icon colorful-icon ${enabled ? '' : 'disabled'}`} title={enabled ? '炫彩' : '非炫彩'}>✦</span>
+  }
+
   if (field.type === 'stats') {
     const stats = getStatsValues(allFields, field.statsMap, row.values, field.statsDimensions)
     return <StatsChart stats={stats} variant={field.statsStyle || 'bars'} size={mode === 'detail' ? 'lg' : 'sm'} />
@@ -565,7 +621,7 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
     case 'multiselect': {
       const values = Array.isArray(value) ? value : []
       if (values.length === 0) return <span className="cell-empty">—</span>
-      const shown = mode === 'detail' ? values : values.slice(0, 3)
+      const shown = mode === 'detail' ? values : values.slice(0, 6)
       const extra = values.length - shown.length
       return (
         <span className="cell-tag-group">
@@ -866,7 +922,7 @@ export function DataGrid({
             {visibleFields.map((field) => {
               const fullIndex = fields.findIndex((f) => f.id === field.id)
               return (
-                <th key={field.id}>
+                <th key={field.id} data-field-key={field.key}>
                   <div className="th-content">
                     <span className="th-label">
                       {field.name}
@@ -893,7 +949,7 @@ export function DataGrid({
           {rows.map((row) => (
             <tr key={row.id} className="data-grid-row" onClick={() => onRowClick(row)}>
               {visibleFields.map((field) => (
-                <td key={field.id}>
+                <td key={field.id} data-field-key={field.key}>
                   <CellView
                     field={field}
                     row={row}
@@ -904,9 +960,11 @@ export function DataGrid({
                 </td>
               ))}
               <td className="td-actions" onClick={(e) => e.stopPropagation()}>
-                <IconButton icon={Eye} title="查看详情" onClick={() => onRowClick(row)} />
-                <IconButton icon={Pencil} title="编辑" onClick={() => onEditRow(row)} />
-                <IconButton icon={Trash2} variant="danger" title="删除" onClick={() => onDeleteRow(row)} />
+                <span className="data-grid-actions">
+                  <IconButton icon={Eye} title="查看详情" onClick={() => onRowClick(row)} />
+                  <IconButton icon={Pencil} title="编辑" onClick={() => onEditRow(row)} />
+                  <IconButton icon={Trash2} variant="danger" title="删除" onClick={() => onDeleteRow(row)} />
+                </span>
               </td>
             </tr>
           ))}

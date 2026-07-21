@@ -204,7 +204,7 @@ const fields = [
     label: name,
     color: ['#64748b', '#f97316', '#8b5cf6', '#64748b', '#d946ef', '#38bdf8', '#14b8a6', '#22c55e', '#a16207', '#f472b6', '#84cc16', '#06b6d4', '#475569', '#0ea5e9', '#ef4444'][index] || '#64748b',
   })) }, 11),
-  makeField({ key: 'speciesGroup', name: '繁育谱系', type: 'text' }, 12),
+  makeField({ key: 'speciesGroup', name: '繁育谱系', type: 'text', hidden: true }, 12),
   makeField({ key: 'shiny', name: '异色形态', type: 'select', options: SHINY_OPTIONS, hidden: true }, 13),
   makeField({ key: 'traitIcon', name: '特性图标', type: 'image', hidden: true }, 14),
   makeField({ key: 'traitDesc', name: '特性描述', type: 'longtext', hidden: true }, 15),

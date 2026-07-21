@@ -2,7 +2,7 @@
 // 指标视图、分页、弹出菜单、拖拽排序等。所有工具型页面共用。
 
 import { useEffect, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, GripVertical, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, GripVertical, X } from 'lucide-react'
 import { COLOR_PALETTE, PAGE_SIZE_OPTIONS, STATS_SCALE_MAX } from '../constants.js'
 import { clamp } from '../utils.js'
 
@@ -303,10 +303,33 @@ export function Pagination({
   onPageSizeChange,
   pageSizeOptions = PAGE_SIZE_OPTIONS,
 }) {
+  const safePageCount = Math.max(1, pageCount || 1)
+  const [pageInput, setPageInput] = useState(String(page))
+
+  useEffect(() => setPageInput(String(page)), [page])
+
+  function submitPage(event) {
+    event.preventDefault()
+    const parsed = Number.parseInt(pageInput, 10)
+    const nextPage = Number.isFinite(parsed) ? clamp(parsed, 1, safePageCount) : page
+    setPageInput(String(nextPage))
+    onPageChange(nextPage)
+  }
+
   return (
     <div className="pagination-bar">
       <span className="pagination-info">共 {total} 条</span>
       <div className="pagination-controls">
+        <button
+          type="button"
+          className="icon-btn"
+          disabled={page <= 1}
+          onClick={() => onPageChange(1)}
+          aria-label="第一页"
+          title="第一页"
+        >
+          <ChevronsLeft size={16} />
+        </button>
         <button
           type="button"
           className="icon-btn"
@@ -316,17 +339,37 @@ export function Pagination({
         >
           <ChevronLeft size={16} />
         </button>
-        <span className="pagination-page">
-          {page} / {pageCount}
-        </span>
+        <form className="pagination-jump" onSubmit={submitPage}>
+          <input
+            className="pagination-page-input"
+            type="number"
+            min="1"
+            max={safePageCount}
+            value={pageInput}
+            onChange={(event) => setPageInput(event.target.value)}
+            onBlur={submitPage}
+            aria-label="输入页码"
+          />
+          <span className="pagination-page">/ {safePageCount}</span>
+        </form>
         <button
           type="button"
           className="icon-btn"
-          disabled={page >= pageCount}
+          disabled={page >= safePageCount}
           onClick={() => onPageChange(page + 1)}
           aria-label="下一页"
         >
           <ChevronRight size={16} />
+        </button>
+        <button
+          type="button"
+          className="icon-btn"
+          disabled={page >= safePageCount}
+          onClick={() => onPageChange(safePageCount)}
+          aria-label="最后一页"
+          title="最后一页"
+        >
+          <ChevronsRight size={16} />
         </button>
       </div>
       <select
