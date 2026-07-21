@@ -15,7 +15,7 @@ The default built-in scenario is 洛克王国世界. The currently implemented w
 ## Development posture
 
 - This repository is for the user's personal use, not a public, multi-tenant, or enterprise product. Optimize design and implementation for the user's own workflow instead of hypothetical organizational compatibility.
-- When the requirement and data source are clear, prefer decisive experimentation and coherent refactors over excessive conservatism. It is acceptable to change developer-only workflows, scripts, generated audit artifacts, and internal implementation details when the result is simpler and verifiably better.
+- When the requirement and data source are clear, prefer decisive experimentation and coherent refactors over excessive conservatism. It is acceptable to change developer-only workflows, scripts, local audit artifacts, and internal implementation details when the result is simpler and verifiably better.
 - Personal-use context does not waive the hard boundaries below, credential/privacy safeguards, external-service rules, or destructive-action precautions. Continue protecting the user's IndexedDB data, stable ids, import compatibility, and versioned source integrity; obtain explicit authorization where these instructions require it.
 
 ## Required reading
@@ -25,6 +25,8 @@ Before making code changes, read the docs that match the task scope:
 - Always inspect the current branch, working tree, latest commit, and task-relevant docs before making changes.
 - Read `docs/system-capabilities.md` for implemented scope and explicit non-goals.
 - Read `docs/data-sync.md` before touching Dexie data, import/export behavior, preset seeding, or migration logic.
+- Read `docs/data-sources/bwiki-pipeline.md` before changing BWiki collection, staging, preview, or publishing workflows.
+- Read `docs/data-sources/bwiki-field-mapping.md` before changing BWiki field transforms, stable ids, validation thresholds, or formal preset contents.
 - Read `docs/nature/rules.md` before changing nature recommendation rules or UI.
 - Read `docs/nature/single-creature-template.md` before writing single-creature nature audit results.
 - Read `docs/nature/open-issues.md` before deciding whether a single-creature finding should become a rule change.
@@ -58,6 +60,7 @@ Also check the latest commit, PR description, and review comments when continuin
   - `npm run check:bwiki:preset` / `npm run apply:bwiki:preset`
 - Nature recommendation work:
   - `npm run check:nature`
+
 Run the checks relevant to the files changed. If a command cannot run because of an environment limitation, report that clearly.
 
 ## Code style and architecture
@@ -85,19 +88,23 @@ Run the checks relevant to the files changed. If a command cannot run because of
 ## Documentation workflow
 
 - `AGENTS.md` stores long-lived Codex instructions and safety boundaries.
+- `README.md` is the human-facing project entry and the authoritative map of current commands, top-level structure, and maintained documents. Update it when any of those change.
+- Topic documents store durable specifications, maintenance rules, source provenance, unresolved issues, or confirmed regression baselines that would be cumbersome or inappropriate in the root README.
+- Avoid directory-level index README files that only repeat the root project map. Add one only when the directory has a distinct workflow or safety contract that cannot be stated clearly in an existing topic document.
 - Do not maintain a general session handoff document. New sessions should derive current context from the live repository, Git state, `README.md`, and task-relevant docs.
 - Task prompts should focus on the current goal, target branch/PR, scope, and acceptance criteria rather than repeating all stable project rules.
 - Script-generated reports belong in Git-ignored `artifacts/` unless a task explicitly defines them as versioned source material. Regenerate them instead of hand-editing them.
+- Every maintained script or structured script input must have a package command, an importing consumer, or a documented operational role. Remove orphaned scripts, inputs, commands, reports, and references together.
 - Treat maintained documentation as a description of the current system, not as a development diary. State what exists, how it behaves, where it lives, and how to verify or maintain it.
 - Do not retain transition narration such as “changed from A to B”, “now uses”, “no longer uses”, “was removed”, “was completed”, “this round”, dated implementation summaries, or explanations of discarded approaches in current-state docs. Git history is the source for implementation history.
 - When replacing an implementation or source, update the authoritative current description and remove obsolete narrative instead of appending a cleanup note.
 - Historical facts may remain only when they have current operational value: compatibility and migration semantics, user-confirmed regression baselines, external-source provenance, and genuinely unresolved decisions. Express compatibility requirements as present-tense constraints rather than project-history commentary.
 - Purpose-built ledgers must contain only active issues or durable decision provenance. Remove resolved implementation notes once their final rule is captured in the authoritative spec or confirmed-results baseline.
 - Apply the same final-state standard to report templates and README files. Before finishing a documentation batch, search for stale transition language and either rewrite it as a present-tense constraint or remove it.
-- When finishing a development or documentation batch, include a short “Next steps” note in the final response so the user knows what to do or ask for next. If the batch advances a staged plan, also keep the relevant plan document's `下一步` / current-status section aligned.
+- When finishing a development or documentation batch, include a short “Next steps” note in the final response so the user knows what to do or ask for next.
 
 ## Answer-only and documentation audit tasks
 
 - If the user asks for analysis, review, or documentation audit only, do not edit files unless they explicitly ask for cleanup or say to proceed with recommendations.
 - When answering repository questions, cite the files and commands inspected, and separate current state, recommendations, and optional next edits.
-- For documentation cleanup, prefer clarifying ownership and update triggers over deleting history; keep user-facing README content, agent instructions, local artifacts, and maintained docs distinct.
+- For documentation cleanup, remove redundant indexes and process history while preserving current operational constraints, source provenance, compatibility rules, unresolved decisions, and confirmed regression baselines.

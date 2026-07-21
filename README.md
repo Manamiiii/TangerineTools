@@ -74,18 +74,28 @@ npm run lint
 .
 ├── .github/workflows/pages.yml           # GitHub Pages 构建与部署
 ├── docs/
-│   ├── README.md                         # 文档用途与更新方式索引
-│   ├── data-sources/                     # 数据源总览、BWiki 管线与字段血缘
-│   ├── nature/                           # 性格规则、核对模板和人工确认台账
-│   ├── system-capabilities.md            # 已实现能力和明确非目标
-│   └── data-sync.md                      # IndexedDB、导入和预置迁移语义
+│   ├── data-sources/
+│   │   ├── bwiki-pipeline.md             # BWiki 来源、快照与显式发布流程
+│   │   └── bwiki-field-mapping.md        # 字段血缘、稳定 id 与验收门槛
+│   ├── nature/
+│   │   ├── rules.md                      # 性格推荐当前规则
+│   │   ├── single-creature-template.md   # 单只精灵核对模板
+│   │   ├── confirmed-results.md          # 用户确认的回归基线
+│   │   └── open-issues.md                # 尚待确认的通用规则问题
+│   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
+│   └── system-capabilities.md            # 已实现能力和明确非目标
 ├── public/presets/
 │   ├── rockKingdomRows.json              # 运行时精灵 / 形态预置
 │   ├── rockKingdomSkillRows.json         # 运行时技能预置
 │   └── rockKingdomPresetMigration.json   # 已有浏览器安全升级所需的官方值指纹
 ├── scripts/
-│   ├── bwiki/                            # BWiki 同步、preview、发布及版本化快照
-│   ├── data/                             # 生成器使用的人工结构化输入
+│   ├── bwiki/
+│   │   ├── sync-*.mjs                    # BWiki 页面到 staging 快照
+│   │   ├── build-preview.mjs             # staging 到发布候选
+│   │   ├── apply-preset.mjs              # dry-run 校验与显式发布
+│   │   ├── lib/                          # 路径和标签规则共享模块
+│   │   └── data/                         # 版本化 staging 与 preview
+│   ├── data/natureCalibrationSamples.json # 性格校准样例
 │   ├── tests/                            # node:test 纯逻辑与 fake-indexeddb 集成测试
 │   └── check-nature-recommendations.mjs  # 本地性格校准报告生成器
 ├── src/
@@ -169,12 +179,16 @@ git diff --check
 ## 维护文档
 
 - [`AGENTS.md`](AGENTS.md)：长期有效的 Codex/agent 开发边界、必读文件与测试命令。
-- [`docs/README.md`](docs/README.md)：`docs/` 长期维护文档的用途与更新方式索引。
 - [`docs/system-capabilities.md`](docs/system-capabilities.md)：当前已实现能力与明确排除范围。
 - [`docs/data-sync.md`](docs/data-sync.md)：数据模型、导入/导出、预置资料同步与迁移语义。
-- [`docs/data-sources/README.md`](docs/data-sources/README.md)：数据来源分级，以及 BWiki 管线和字段血缘文档入口。
-- [`docs/nature/README.md`](docs/nature/README.md)：性格规则、单只核对模板、确认结果和迭代台账入口。
-- [`scripts/data/README.md`](scripts/data/README.md)：性格校准样例等结构化人工输入。
+- [`docs/data-sources/bwiki-pipeline.md`](docs/data-sources/bwiki-pipeline.md)：BWiki 页面、版本化快照、刷新顺序和发布边界。
+- [`docs/data-sources/bwiki-field-mapping.md`](docs/data-sources/bwiki-field-mapping.md)：staging 到正式预置的字段血缘、稳定 id 和验收门槛。
+- [`docs/nature/rules.md`](docs/nature/rules.md)：性格推荐规则、输入输出和校准约束。
+- [`docs/nature/single-creature-template.md`](docs/nature/single-creature-template.md)：单只精灵定位与性格核对格式。
+- [`docs/nature/confirmed-results.md`](docs/nature/confirmed-results.md)：用户确认过的单只结果，用作规则回归基线。
+- [`docs/nature/open-issues.md`](docs/nature/open-issues.md)：尚未形成稳定规则的通用问题。
+
+根 README 是项目结构、命令和维护文档的统一入口；专题文档只保存各自领域内不可由代码结构直接表达的规则与约束。
 
 ## 部署
 
