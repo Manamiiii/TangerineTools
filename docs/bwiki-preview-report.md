@@ -1,6 +1,6 @@
 # BWiki 预置 preview 报告
 
-生成时间：2026-07-21T03:24:04.543Z
+生成时间：2026-07-21T06:40:36.571Z
 
 > 本报告由 `npm run preview:bwiki` 生成。脚本只读取 BWiki staging / detail staging 与当前 public preset JSON，然后只写入 preview / 审计产物。它**不会**覆盖 `public/presets/*`，**不会**触碰 Dexie / 浏览器用户数据，也**不会**修改 UI 代码。
 
@@ -65,7 +65,7 @@
 |---|---:|
 | image | 0 |
 | element | 0 |
-| form | 0 |
+| form | 50 |
 | bst | 0 |
 | hp | 0 |
 | patk | 0 |
@@ -78,8 +78,8 @@
 | traitIcon | 0 |
 | traitDesc | 0 |
 | skillRefs | 0 |
-| eggGroups | 125 |
-| speciesGroup | 125 |
+| eggGroups | 0 |
+| speciesGroup | 0 |
 | evolutionLine | 0 |
 | eggImage | 0 |
 | fruitImage | 0 |

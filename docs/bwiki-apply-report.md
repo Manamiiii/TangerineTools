@@ -1,6 +1,6 @@
 # BWiki P4 显式覆盖检查报告
 
-生成时间：2026-07-21T03:25:58.986Z
+生成时间：2026-07-21T06:40:51.229Z
 
 执行模式：**已显式覆盖**
 
@@ -44,7 +44,7 @@
 
 | 迁移清单 | 涉及行数 | 涉及字段数 |
 |---|---:|---:|
-| 精灵 | 592 | 3015 |
+| 精灵 | 592 | 3065 |
 | 技能 | 487 | 1615 |
 
 迁移清单 preview：`scripts/data/bwiki/rockKingdomPresetMigration.preview.json`
@@ -53,8 +53,8 @@
 
 | 文件 | SHA-256 |
 |---|---|
-| `scripts/data/bwiki/rockKingdomRows.preview.json` | `57c5488d80687c99cbc85ab95f7a9c515d8971d822f71ce81e945e6abdb33a19` |
-| `scripts/data/bwiki/rockKingdomSkillRows.preview.json` | `a0f85adf42b8015eb3cf4702e198d3bac24d909dedba9a244a6fe68e8fa09889` |
+| `scripts/data/bwiki/rockKingdomRows.preview.json` | `317c72d4041aa287ecb6c77a20a3ded7823d663939eaac3323337307f1127efa` |
+| `scripts/data/bwiki/rockKingdomSkillRows.preview.json` | `cfee170dc127bade7acd046bfe3de25e0825a22be726db49483a4e63373fe18d` |
 
 ## 安全边界
 

@@ -1,16 +1,16 @@
 {
   "source": "bwiki-preset-migration",
-  "version": "bwiki-2026-07-21-57c5488da0f85adf",
-  "generatedAt": "2026-07-21T03:25:58.986Z",
+  "version": "bwiki-2026-07-21-317c72d4cfee170d",
+  "generatedAt": "2026-07-21T06:40:51.229Z",
   "target": {
     "creatureRows": 592,
     "skillRows": 553,
-    "creaturePreviewSha256": "57c5488d80687c99cbc85ab95f7a9c515d8971d822f71ce81e945e6abdb33a19",
-    "skillPreviewSha256": "a0f85adf42b8015eb3cf4702e198d3bac24d909dedba9a244a6fe68e8fa09889"
+    "creaturePreviewSha256": "317c72d4041aa287ecb6c77a20a3ded7823d663939eaac3323337307f1127efa",
+    "skillPreviewSha256": "cfee170dc127bade7acd046bfe3de25e0825a22be726db49483a4e63373fe18d"
   },
   "creatures": {
     "rowCount": 592,
-    "fieldCount": 3015,
+    "fieldCount": 3065,
     "rows": [
       {
         "id": "rock-creature-bwiki-018569e36ec5",
@@ -135,6 +135,12 @@
             "key": "eggGroups",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "8e42058a5d35a4d82171f3db3206e61749d52484e705ae396eb39dd5cbcdbf5a"
             ]
           },
           {
@@ -280,6 +286,12 @@
             "key": "eggGroups",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "7895f13f8923932d9aa06e5dfd7ad0edb719fef73ba66b616c8cc8dfcd20bf10"
             ]
           },
           {
@@ -689,6 +701,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "76d8456c762cb7893164e8249e0d991ab4c18e6dc2cd18d5c789f01e51448c36"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -1008,6 +1026,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "3e214fc6823157deb499e19df05b171383d149e1e587d9ce0acda12a5d838249"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -1063,6 +1087,12 @@
             "key": "eggGroups",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "d9bfd4f77444c196e21abacee05a9400cbfddcd4cd10009be2123712f0c94701"
             ]
           },
           {
@@ -1153,6 +1183,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "9897d206c706d7948f9bc3022e0477608479bdea76506293b821f5cab48428da"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -1182,6 +1218,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "dff89c41d40ebd203babbc8e3a20f564fdc77469bcbaccef4d8e118ce13fc912"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -1208,6 +1250,12 @@
             "key": "eggGroups",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "b95ef0c1aa65551e2c5df528e582b75a2fe97fc1424e31be8f7cc8961d1aa259"
             ]
           },
           {
@@ -1414,6 +1462,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "40d06bda4038acb67392b63ff53579e2a45990569bfe0ac467955b048990af6a"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -1588,6 +1642,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "550c0741f827025606128c273787805b3c29b82933e968c59aa3a5a160280294"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -1614,6 +1674,12 @@
             "key": "eggGroups",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "8d61b01a208d7119d4a1b386c07357bfb91ddaaf2799c2bd6366e81a7d33df32"
             ]
           },
           {
@@ -1704,6 +1770,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "47e8238bc730229aae32f6b44632d4e4f3249b2ff0102f38911b7af52bf56131"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -1759,6 +1831,12 @@
             "key": "eggGroups",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "67897c808cafc5d1948f0134391cfd2e468dc00a9932f6dc86254ee56bdfbbdb"
             ]
           },
           {
@@ -2052,6 +2130,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "0d58d86ad0e7870c31ae3a9f09a33274bfcd80ce1b0269beea0b3d6667ab9514"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -2139,6 +2223,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "f96d6d3cfbcaa546ec534afbba5a6077f29969dbb4b8315c3d916844814ddc74"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -2197,6 +2287,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "6eb864aac699ad9342c2975e6deba8aad02192d409315c75ed659fed8b5f545c"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -2223,6 +2319,12 @@
             "key": "eggGroups",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "112a7900d1cfacc4822b03ade36f6beb630c43efc14b7582049f12344eb33fc1"
             ]
           },
           {
@@ -2310,6 +2412,12 @@
             "key": "eggGroups",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "45a610e38c900af2fe19a1236699ad8241478045d9bff330116ca2abe8a76b3f"
             ]
           },
           {
@@ -2487,6 +2595,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "72da665b6bd3e75836e2a4224605d80771bba23a55241784bd43d5bdbf789348"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -2542,6 +2656,12 @@
             "key": "eggGroups",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "f4ca370ec99254d87a99831e0ee7cf5f21f501ee5ef61f29281f93d56cf8879d"
             ]
           },
           {
@@ -2603,6 +2723,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "146d22b847ff201708615e2f6987ba20fea4cb1c5326721684d1b222739a1da2"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -2661,6 +2787,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "6b9e915f0be71535048bf708afe7a074d5276c3d6e11d93f5d9b984161521b84"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -2716,6 +2848,12 @@
             "key": "eggGroups",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "848c5ee9dceaaabe74fac62c670e9cc5d775c6918ad08ca78a0cd9c9f0e1f8ad"
             ]
           },
           {
@@ -3154,6 +3292,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "f5ceff0447c0993825274077b558fc0077e7fd9090e188ed5cbded15af0925f1"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -3299,6 +3443,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "47cbdc82e2249c852e1cb7469abdb8675ae5dae3543eba6229afe56afda01155"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -3354,6 +3504,12 @@
             "key": "eggGroups",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "424ec94ff4ddce44e8699d9411d7cbee241a45114af7d005ffd47713f657c9c9"
             ]
           },
           {
@@ -3444,6 +3600,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "d10cdfa2b3a155e4bb81c11cedd29af4fec7b3e33354fc64d2b45322a8f1e5eb"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -3470,6 +3632,12 @@
             "key": "eggGroups",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "c7548acd34c769bfd12e898d9b1416efb0c74add11469829e7f08baac0caa1e2"
             ]
           },
           {
@@ -3531,6 +3699,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "1a16166cf24c104cbba6c35a4d7ee4f0a9b5b903bd226045fe747f59e31f4aa2"
+            ]
+          },
+          {
             "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
@@ -3586,6 +3760,12 @@
             "key": "eggGroups",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "e05b4897d3321e7594ee3cbc541e82f68cf7a6906e6877f6054267f3d4ce613a"
             ]
           },
           {
@@ -6238,6 +6418,12 @@
             "key": "evolutionLine",
             "acceptedHashes": [
               "565e27c973a14edb11620ecfeaa6db3a06a863ff4b73edbec8a82b46ceab5471"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
             ]
           },
           {
@@ -10973,6 +11159,12 @@
             "key": "evolutionLine",
             "acceptedHashes": [
               "535384ba25d691f2eac9c5eff53c23e30e926f3f982ebccffee0d8ae836d9d83"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
             ]
           },
           {
@@ -19404,6 +19596,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
+            ]
+          },
+          {
             "key": "image",
             "acceptedHashes": [
               "563b0d2cda49c709ca076bec6835f1560629d740564bee0c4df13bf160bcc13f"
@@ -19430,6 +19628,12 @@
             "key": "evolutionLine",
             "acceptedHashes": [
               "12fe46f4a3772b41704473e4e4708f4cd814140ac04697b0ea1a0b8ef968ed79"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
             ]
           },
           {
@@ -19468,6 +19672,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
+            ]
+          },
+          {
             "key": "image",
             "acceptedHashes": [
               "d62b775efad4e1d4ee95d9ab598a3822c579907c9fdc8d6de9b2665afc862555"
@@ -19497,6 +19707,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
+            ]
+          },
+          {
             "key": "image",
             "acceptedHashes": [
               "e03a65c1a0eab34d0a30e198d4eff725ecd227e62d8c2a3b8dea14ce887a556b"
@@ -19523,6 +19739,12 @@
             "key": "evolutionLine",
             "acceptedHashes": [
               "47debdba916c7fe9321e35f480dcdd01b2e5fe13fbeddcb2f2b3fba56bcbef60"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
             ]
           },
           {
@@ -19564,6 +19786,12 @@
             "key": "evolutionLine",
             "acceptedHashes": [
               "6e13b24c0ce4a7fcc43e52621ea210133e59d6f52ebce13f267d25ea568a6bd0"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
             ]
           },
           {
@@ -19626,6 +19854,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
+            ]
+          },
+          {
             "key": "image",
             "acceptedHashes": [
               "3b8c645aa3c3d4e76517b6bcbe38c16a36ed13adbaa6f7f4fdc5ffef4763cf3d"
@@ -19661,6 +19895,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
+            ]
+          },
+          {
             "key": "image",
             "acceptedHashes": [
               "bfa31f4a89e065230be78dda51c49db13a77730dae11997f12df990d3a5b1b23"
@@ -19687,6 +19927,12 @@
             "key": "evolutionLine",
             "acceptedHashes": [
               "b81b844c2c1c5abe6d4ca2b74d4ffd8887430ff9a2c5f22a2cc2a60da098abe8"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
             ]
           },
           {
@@ -19772,6 +20018,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
+            ]
+          },
+          {
             "key": "image",
             "acceptedHashes": [
               "4f9baae288d09866d472d6fafee175b40a91e4ad798763c9183ef3e1dd390743"
@@ -19816,6 +20068,12 @@
             "key": "evolutionLine",
             "acceptedHashes": [
               "7af3b3dd75a3d81728bc391c15ee1f2da2399f39f6ed21929b4007ccff0f8359"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
             ]
           },
           {
@@ -19866,6 +20124,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
+            ]
+          },
+          {
             "key": "image",
             "acceptedHashes": [
               "d321bd5f5f4152b37703ac4b4a33f5f763036ce5864b9330685e276c5c262706"
@@ -19904,6 +20168,12 @@
             "key": "evolutionLine",
             "acceptedHashes": [
               "e7343deee775648ddbd8afb44f3dff370018c1d5878afdf4942c01b5d87885f1"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
             ]
           },
           {
@@ -19966,6 +20236,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
+            ]
+          },
+          {
             "key": "image",
             "acceptedHashes": [
               "54364569a992deac0e12d28a26a23969069e5c4391b431c8dd913b04f0ed9e8a"
@@ -20001,6 +20277,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
+            ]
+          },
+          {
             "key": "image",
             "acceptedHashes": [
               "28bc48e10b76208ae33b8df365471f2c5cf0f0f95708652447b5dfca9e52029c"
@@ -20033,6 +20315,12 @@
             "key": "evolutionLine",
             "acceptedHashes": [
               "ed06e4f35f9f87a8cb4be13547ac705b3783cea556b524645ab0c611b68471f5"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
             ]
           },
           {
@@ -20118,6 +20406,12 @@
             ]
           },
           {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
+            ]
+          },
+          {
             "key": "image",
             "acceptedHashes": [
               "e09cffce1dc48e20b959ea175b4b9c4b25f8f9e2b7294d2ca164c9d79e7fc4a6"
@@ -20162,6 +20456,12 @@
             "key": "evolutionLine",
             "acceptedHashes": [
               "c68f0ff734b6bdffd6f588b271cf14b765a8c30d1f7ed3c542961de5618cf4db"
+            ]
+          },
+          {
+            "key": "form",
+            "acceptedHashes": [
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
             ]
           },
           {

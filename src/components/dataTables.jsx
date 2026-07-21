@@ -28,6 +28,7 @@ import {
 import {
   buildFormComparisonRows,
   buildFormComparisonSummary,
+  compareRockKingdomCreatureRows,
   findNumberField,
   getSameNumberRows,
   visibleRockKingdomCreatureRows,
@@ -191,7 +192,9 @@ function TableView({ table, tables, sceneId, onSwitchTable }) {
   const filteredRows = displayRows
     .filter((r) => rowMatchesSearch(r, sortedFields, search))
     .filter((r) => rowMatchesFilters(r, sortedFields, filters))
-    .sort((a, b) => compareRowsBySort(a, b, sort, sortedFields))
+    .sort((a, b) => table.id === ROCK_KINGDOM_CREATURE_TABLE_ID && !sort
+      ? compareRockKingdomCreatureRows(a, b)
+      : compareRowsBySort(a, b, sort, sortedFields))
 
   const pageCount = totalPages(filteredRows.length, pageSize)
   const pageRows = paginate(filteredRows, page, pageSize)

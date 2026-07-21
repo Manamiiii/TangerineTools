@@ -817,7 +817,7 @@
       "element": [
         "grass"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 649,
       "shiny": "no",
       "traitName": "深层氧循环",
@@ -1303,7 +1303,7 @@
       "element": [
         "fire"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 672,
       "shiny": "no",
       "traitName": "爆燃",
@@ -1677,7 +1677,7 @@
       "element": [
         "water"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 667,
       "shiny": "no",
       "traitName": "浪潮",
@@ -2351,7 +2351,7 @@
       "element": [
         "normal"
       ],
-      "form": "蓬松的样子",
+      "form": "首领形态",
       "bst": 607,
       "hp": 136,
       "patk": 159,
@@ -2447,7 +2447,7 @@
       "element": [
         "normal"
       ],
-      "form": "紧实的样子",
+      "form": "首领形态",
       "bst": 607,
       "hp": 136,
       "patk": 64,
@@ -2544,7 +2544,7 @@
       "element": [
         "normal"
       ],
-      "form": "急急急鸭",
+      "form": "首领形态",
       "bst": 607,
       "hp": 130,
       "patk": 160,
@@ -2640,7 +2640,7 @@
       "element": [
         "normal"
       ],
-      "form": "等一等鸭",
+      "form": "首领形态",
       "bst": 606,
       "hp": 137,
       "patk": 64,
@@ -2737,7 +2737,7 @@
       "element": [
         "normal"
       ],
-      "form": "燃了鸭",
+      "form": "首领形态",
       "bst": 620,
       "hp": 108,
       "patk": 150,
@@ -2833,7 +2833,7 @@
       "element": [
         "normal"
       ],
-      "form": "起来鸭",
+      "form": "首领形态",
       "bst": 640,
       "hp": 107,
       "patk": 77,
@@ -4887,7 +4887,7 @@
       "element": [
         "flying"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 592,
       "shiny": "no",
       "traitName": "破空",
@@ -4981,7 +4981,7 @@
       "element": [
         "flying"
       ],
-      "form": "春天的样子",
+      "form": "首领形态",
       "bst": 580,
       "hp": 93,
       "patk": 142,
@@ -5073,7 +5073,7 @@
       "element": [
         "flying"
       ],
-      "form": "夏天的样子",
+      "form": "首领形态",
       "bst": 588,
       "hp": 99,
       "patk": 147,
@@ -5166,7 +5166,7 @@
       "element": [
         "flying"
       ],
-      "form": "秋天的样子",
+      "form": "首领形态",
       "bst": 579,
       "hp": 90,
       "patk": 141,
@@ -6450,7 +6450,7 @@
       "element": [
         "earth"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 704,
       "shiny": "no",
       "traitName": "地脉馈赠",
@@ -7521,7 +7521,7 @@
         "grass",
         "ghost"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 576,
       "shiny": "yes",
       "traitName": "大捞一笔",
@@ -8637,7 +8637,7 @@
         "light",
         "earth"
       ],
-      "form": "西瓜碧玺的样子",
+      "form": "首领形态",
       "bst": 570,
       "hp": 93,
       "patk": 96,
@@ -8739,7 +8739,7 @@
         "light",
         "earth"
       ],
-      "form": "莲花刚玉的样子",
+      "form": "首领形态",
       "bst": 573,
       "hp": 89,
       "patk": 97,
@@ -8840,7 +8840,7 @@
         "light",
         "earth"
       ],
-      "form": "星彩榴石的样子",
+      "form": "首领形态",
       "bst": 571,
       "hp": 92,
       "patk": 101,
@@ -8942,7 +8942,7 @@
         "light",
         "earth"
       ],
-      "form": "火山琉璃的样子",
+      "form": "首领形态",
       "bst": 571,
       "hp": 92,
       "patk": 97,
@@ -9043,7 +9043,7 @@
         "light",
         "earth"
       ],
-      "form": "蓝锥矿的样子",
+      "form": "首领形态",
       "bst": 572,
       "hp": 94,
       "patk": 97,
@@ -9145,7 +9145,7 @@
         "light",
         "earth"
       ],
-      "form": "烧蓝黄金的样子",
+      "form": "首领形态",
       "bst": 572,
       "hp": 89,
       "patk": 97,
@@ -9545,7 +9545,7 @@
       "element": [
         "grass"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 686,
       "shiny": "yes",
       "traitName": "养分内循环",
@@ -10946,7 +10946,7 @@
       "element": [
         "fire"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 562,
       "shiny": "no",
       "traitName": "全神贯注",
@@ -14027,7 +14027,7 @@
         "grass",
         "poison"
       ],
-      "form": "海神球形态",
+      "form": "首领形态",
       "bst": 580,
       "hp": 100,
       "patk": 107,
@@ -14131,7 +14131,7 @@
         "grass",
         "poison"
       ],
-      "form": "彩玉球形态",
+      "form": "首领形态",
       "bst": 576,
       "hp": 103,
       "patk": 101,
@@ -14235,7 +14235,7 @@
         "grass",
         "poison"
       ],
-      "form": "短毛球形态",
+      "form": "首领形态",
       "bst": 579,
       "hp": 95,
       "patk": 103,
@@ -14339,7 +14339,7 @@
         "grass",
         "poison"
       ],
-      "form": "象牙球形态",
+      "form": "首领形态",
       "bst": 578,
       "hp": 99,
       "patk": 100,
@@ -16020,7 +16020,7 @@
         "water",
         "poison"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 562,
       "shiny": "yes",
       "traitName": "溶解腐蚀",
@@ -16117,7 +16117,7 @@
         "water",
         "poison"
       ],
-      "form": "磨损的样子",
+      "form": "首领形态",
       "bst": 560,
       "hp": 117,
       "patk": 32,
@@ -17000,7 +17000,7 @@
         "bug",
         "flying"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 364,
       "shiny": "no",
       "traitName": "虫群突袭",
@@ -19746,7 +19746,7 @@
         "water",
         "flying"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 621,
       "shiny": "no",
       "traitName": "水翼飞升",
@@ -20344,7 +20344,7 @@
         "earth",
         "illusion"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 622,
       "shiny": "no",
       "traitName": "坠星",
@@ -20640,7 +20640,7 @@
       "element": [
         "light"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 643,
       "shiny": "yes",
       "traitName": "夺目",
@@ -21307,7 +21307,7 @@
         "normal",
         "bug"
       ],
-      "form": "金黄的样子",
+      "form": "首领形态",
       "bst": 575,
       "hp": 105,
       "patk": 30,
@@ -21402,7 +21402,7 @@
         "normal",
         "bug"
       ],
-      "form": "枯叶的样子",
+      "form": "首领形态",
       "bst": 574,
       "hp": 107,
       "patk": 31,
@@ -21683,7 +21683,7 @@
       "element": [
         "normal"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 646,
       "shiny": "no",
       "traitName": "先知",
@@ -22672,7 +22672,7 @@
       "element": [
         "dark"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 560,
       "shiny": "yes",
       "traitName": "悼亡",
@@ -24053,7 +24053,7 @@
         "ice",
         "cute"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 650,
       "shiny": "yes",
       "traitName": "抓到你了",
@@ -29361,7 +29361,7 @@
         "earth",
         "fighting"
       ],
-      "form": "白棋棋骑士分支",
+      "form": "首领形态",
       "bst": 761,
       "hp": 90,
       "patk": 200,
@@ -29467,7 +29467,7 @@
         "earth",
         "fighting"
       ],
-      "form": "黑棋棋骑士分支",
+      "form": "首领形态",
       "bst": 736,
       "hp": 83,
       "patk": 194,
@@ -29780,7 +29780,7 @@
         "earth",
         "fighting"
       ],
-      "form": "白棋棋绮后分支",
+      "form": "首领形态",
       "bst": 725,
       "hp": 93,
       "patk": 143,
@@ -29885,7 +29885,7 @@
         "earth",
         "fighting"
       ],
-      "form": "黑棋棋绮后分支",
+      "form": "首领形态",
       "bst": 725,
       "hp": 93,
       "patk": 143,
@@ -30202,7 +30202,7 @@
         "earth",
         "fighting"
       ],
-      "form": "白棋棋齐垒分支",
+      "form": "首领形态",
       "bst": 705,
       "hp": 89,
       "patk": 157,
@@ -30305,7 +30305,7 @@
         "earth",
         "fighting"
       ],
-      "form": "黑棋棋齐垒分支",
+      "form": "首领形态",
       "bst": 705,
       "hp": 89,
       "patk": 157,
@@ -30618,7 +30618,7 @@
         "earth",
         "fighting"
       ],
-      "form": "白棋棋祈督分支",
+      "form": "首领形态",
       "bst": 766,
       "hp": 126,
       "patk": 147,
@@ -30723,7 +30723,7 @@
         "earth",
         "fighting"
       ],
-      "form": "黑棋棋祈督分支",
+      "form": "首领形态",
       "bst": 766,
       "hp": 126,
       "patk": 147,
@@ -31627,7 +31627,7 @@
       "element": [
         "cute"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 684,
       "shiny": "no",
       "traitName": "三鼓作气",
@@ -32117,7 +32117,7 @@
       "element": [
         "dragon"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 651,
       "shiny": "no",
       "traitName": "游弋",
@@ -34977,7 +34977,7 @@
       "element": [
         "electric"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 499,
       "shiny": "no",
       "traitName": "超级电池",
@@ -42630,7 +42630,7 @@
       "element": [
         "mech"
       ],
-      "form": "最终形态",
+      "form": "首领形态",
       "bst": 920,
       "shiny": "no",
       "traitName": "宝剑王牌",

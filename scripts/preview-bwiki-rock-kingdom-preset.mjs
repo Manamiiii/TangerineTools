@@ -112,6 +112,9 @@ function normalizeNumber(value) {
 }
 
 function deriveForm(creature, existingValues) {
+  if (creature.formCategoryLabel === '首领形态') {
+    return { value: '首领形态', strategy: 'category-boss' }
+  }
   if (existingValues.form) return { value: existingValues.form, strategy: 'existing' }
   const nameForm = String(creature.name ?? '').match(/（([^）]+)）/)?.[1] ?? ''
   if (nameForm) return { value: nameForm, strategy: 'name' }

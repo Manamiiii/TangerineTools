@@ -9,20 +9,21 @@ import { ArrowDownCircle, ArrowUpCircle, Sparkles } from 'lucide-react'
 import { db } from '../db.js'
 import { STATS_DIMENSIONS } from '../constants.js'
 import {
-  evaluateAllNatures,
   analyzeStats,
+  buildNatureAnalysisInput,
+  evaluateNatureProfiles,
   explainNatureRecommendation,
-  extractSkillInfoFromReferenceRows,
-  extractSkillRefsFromRow,
-  extractSkillInfoFromRow,
   extractRowSummary,
-  extractStatsFromRow,
-  extractTraitTagsFromRow,
   natureName,
   NATURE_DECISION_LABELS,
   STAT_LABELS,
 } from '../domain/nature.js'
-import { visibleRockKingdomCreatureRows } from '../domain/rockKingdom.js'
+import {
+  compareRockKingdomCreatureRows,
+  isRockKingdomNatureSelectableRow,
+  relatedRockKingdomBossRows,
+  visibleRockKingdomCreatureRows,
+} from '../domain/rockKingdom.js'
 import { TRAIT_TAG_OPTIONS } from '../presets/rockKingdom.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
 import { EmptyState, FormRow } from './common.jsx'
@@ -38,6 +39,7 @@ export function NatureTool({ scene }) {
     stats: { ...EMPTY_STATS },
     traitTags: [],
     skillInfo: { skills: [] },
+    analysisProfiles: [],
   })
   const [input, setInput] = useState(draftInput)
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -46,12 +48,13 @@ export function NatureTool({ scene }) {
     setDraftInput((prev) => ({ ...prev, stats: { ...prev.stats, [key]: value } }))
   }
 
-  function handleImport({ name, stats, traitTags, skillInfo }) {
+  function handleImport({ name, stats, traitTags, skillInfo, analysisProfiles }) {
     const next = {
       name: name || '',
       stats: { ...EMPTY_STATS, ...stats },
       traitTags: traitTags || [],
       skillInfo: skillInfo || { skills: [] },
+      analysisProfiles: analysisProfiles || [],
     }
     setDraftInput(next)
     setInput(next)
@@ -64,8 +67,8 @@ export function NatureTool({ scene }) {
   )
   const hasAnyStat = STATS_DIMENSIONS.some((d) => numericStats[d.key] > 0)
   const candidates = useMemo(
-    () => evaluateAllNatures(numericStats, input.traitTags, input.skillInfo),
-    [numericStats, input.traitTags, input.skillInfo],
+    () => evaluateNatureProfiles(numericStats, input.traitTags, input.skillInfo, input.analysisProfiles),
+    [numericStats, input.traitTags, input.skillInfo, input.analysisProfiles],
   )
   // 输入变化后如果原选中下标越界（例如输入被清空、候选变少），回退到首选。
   useEffect(() => {
@@ -116,6 +119,9 @@ export function NatureTool({ scene }) {
         <FormRow label="技能关联" hint="从精灵基础资料选择后，会通过「可用技能」引用读取技能资料参与分析">
           <div className="nature-linked-skills">
             已关联 {draftInput.skillInfo?.skills?.length || 0} 个技能
+            {draftInput.analysisProfiles?.length > 0
+              ? `；同时分析 ${draftInput.analysisProfiles.length} 个首领形态`
+              : ''}
           </div>
         </FormRow>
 
@@ -195,29 +201,14 @@ function RowImportPanel({ scene, onImport }) {
     )
   }
 
-  const visibleRows = visibleRockKingdomCreatureRows(rows)
-  const summaries = visibleRows.map((row) => ({ row, summary: extractRowSummary(row, fields) }))
+  const visibleRows = visibleRockKingdomCreatureRows(rows).sort(compareRockKingdomCreatureRows)
+  const selectableRows = visibleRows.filter(isRockKingdomNatureSelectableRow)
+  const summaries = selectableRows.map((row) => ({ row, summary: extractRowSummary(row, fields) }))
 
   function importRow(target) {
     if (!target) return
-    const summary = extractRowSummary(target, fields)
-    const stats = extractStatsFromRow(target, fields)
-    const traitTags = extractTraitTagsFromRow(target, fields)
-    const skillRefs = extractSkillRefsFromRow(target, fields)
-    const referencedSkillRows = skillRows.filter((row) => skillRefs.includes(row.id))
-    const skillInfo = referencedSkillRows.length > 0
-      ? extractSkillInfoFromReferenceRows(referencedSkillRows)
-      : extractSkillInfoFromRow(target, fields)
-    const traitDesc = target.values?.traitDesc || ''
-    const traitText = /继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(traitDesc)
-      ? traitDesc
-      : ''
-    onImport({
-      name: summary.name,
-      stats,
-      traitTags,
-      skillInfo: traitText ? { ...skillInfo, traitText } : skillInfo,
-    })
+    const bossRows = relatedRockKingdomBossRows(target, visibleRows)
+    onImport(buildNatureAnalysisInput(target, bossRows, fields, skillRows))
   }
 
   return (
@@ -229,7 +220,7 @@ function RowImportPanel({ scene, onImport }) {
           onChange={(e) => {
             const nextRowId = e.target.value
             setRowId(nextRowId)
-            importRow(visibleRows.find((r) => r.id === nextRowId))
+            importRow(selectableRows.find((r) => r.id === nextRowId))
           }}
         >
           <option value="">从资料库选择一行带入</option>
@@ -240,6 +231,7 @@ function RowImportPanel({ scene, onImport }) {
           ))}
         </select>
       </div>
+      <small>默认隐藏成长阶段和首领形态；选择可培养形态后，会自动合并分析同编号的关联首领形态。</small>
     </div>
   )
 }

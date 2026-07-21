@@ -1403,6 +1403,52 @@ export function evaluateAllNatures(baseStats = {}, traitTags = [], skillInfo = {
   })
 }
 
+export function evaluateNatureProfiles(baseStats = {}, traitTags = [], skillInfo = {}, profiles = [], preference = {}) {
+  const primary = evaluateAllNatures(baseStats, traitTags, skillInfo, preference)
+  const extraProfiles = (profiles || []).filter((profile) => profile?.stats)
+  if (extraProfiles.length === 0) return primary
+  const profileResults = extraProfiles.map((profile) =>
+    evaluateAllNatures(profile.stats, profile.traitTags || [], profile.skillInfo || {}, preference),
+  )
+  const decisionRank = { recommended: 0, keepable: 1, notRecommended: 2 }
+  const byCandidate = profileResults.map((items) =>
+    new Map(items.map((item) => [`${item.raise}-${item.lower}`, item])),
+  )
+  const merged = primary.map((item) => {
+    const matches = byCandidate.map((items) => items.get(`${item.raise}-${item.lower}`)).filter(Boolean)
+    const all = [item, ...matches]
+    const worst = all.reduce((current, candidate) =>
+      decisionRank[candidate.decision] > decisionRank[current.decision] ? candidate : current,
+    )
+    const bossWarnings = matches.flatMap((candidate) => candidate.warnings || [])
+      .filter((warning) => !(item.warnings || []).includes(warning))
+      .filter((warning, index, list) => list.indexOf(warning) === index)
+      .slice(0, 3)
+      .map((warning) => `首领形态：${warning}`)
+    const roleLabels = all.flatMap((candidate) => String(candidate.roleLabel || '').split(' / '))
+      .filter(Boolean)
+      .filter((label, index, list) => list.indexOf(label) === index)
+      .slice(0, 3)
+    return {
+      ...item,
+      score: Math.round((all.reduce((sum, candidate) => sum + candidate.score, 0) / all.length) * 10) / 10,
+      decision: worst.decision,
+      hardRisk: all.some((candidate) => candidate.hardRisk),
+      roleTags: [...new Set(all.flatMap((candidate) => candidate.roleTags || []))],
+      roleLabel: roleLabels.join(' / '),
+      reasons: [
+        ...(item.reasons || []),
+        `已同时核对最终形态与 ${extraProfiles.length} 个关联首领形态的属性、特性和技能变化`,
+      ],
+      warnings: [...(item.warnings || []), ...bossWarnings],
+      analysisFormCount: 1 + extraProfiles.length,
+    }
+  })
+  return [...applyDominance(merged)].sort((a, b) =>
+    decisionRank[a.decision] - decisionRank[b.decision] || b.score - a.score,
+  )
+}
+
 // 兼容旧调用名：返回所有候选而非 top-N。
 export function calculateNatureScores(baseStats = {}, traitTags = [], skillInfo = {}) {
   return evaluateAllNatures(baseStats, traitTags, skillInfo)
@@ -1517,4 +1563,37 @@ export function extractRowSummary(row, fields) {
   const formValue = formField ? row.values?.[formField.key] : null
   const form = formField && formValue != null ? optionLabel(formField, formValue) : ''
   return { name: name || '未命名', no: no || '', form }
+}
+
+function uniqueSkillInfo(rows, fields, skillRows, includeAllTraitText = false) {
+  const refs = [...new Set(rows.flatMap((row) => extractSkillRefsFromRow(row, fields)))]
+  const referenced = (skillRows || []).filter((row) => refs.includes(row.id))
+  const skillInfo = referenced.length > 0
+    ? extractSkillInfoFromReferenceRows(referenced)
+    : { skills: rows.flatMap((row) => extractSkillInfoFromRow(row, fields).skills || []) }
+  const traitTexts = rows.map((row) => String(row.values?.traitDesc || '').trim()).filter(Boolean)
+  const traitText = [...new Set(traitTexts)].join('；')
+  if (
+    traitText &&
+    (includeAllTraitText || /继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(traitText))
+  ) skillInfo.traitText = traitText
+  return skillInfo
+}
+
+export function buildNatureAnalysisInput(target, bossRows = [], fields = [], skillRows = []) {
+  if (!target) return null
+  const relatedRows = [target, ...(bossRows || [])]
+  const summary = extractRowSummary(target, fields)
+  return {
+    name: summary.name,
+    stats: extractStatsFromRow(target, fields),
+    traitTags: [...new Set(relatedRows.flatMap((row) => extractTraitTagsFromRow(row, fields)))],
+    skillInfo: uniqueSkillInfo(relatedRows, fields, skillRows, bossRows.length > 0),
+    analysisProfiles: (bossRows || []).map((row) => ({
+      name: extractRowSummary(row, fields).name,
+      stats: extractStatsFromRow(row, fields),
+      traitTags: extractTraitTagsFromRow(row, fields),
+      skillInfo: uniqueSkillInfo([row], fields, skillRows, true),
+    })),
+  }
 }

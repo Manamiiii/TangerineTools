@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import {
   NATURE_DECISION_LABELS,
   STAT_LABELS,
-  evaluateAllNatures,
+  evaluateNatureProfiles,
   analyzeSkillInfo,
   analyzeFormulaAssist,
   analyzeStats,
@@ -13,6 +13,7 @@ import {
   TRAIT_TAG_STAT_WEIGHTS,
   groupRejectedNatures,
 } from '../src/domain/nature.js'
+import { relatedRockKingdomBossRows } from '../src/domain/rockKingdom.js'
 import { TRAIT_TAG_OPTIONS, SKILL_EFFECT_TAG_OPTIONS } from '../src/presets/rockKingdom.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -110,8 +111,10 @@ function findSampleRows(rows, sample) {
   return matched.slice(0, 1)
 }
 
-function buildSkillInfo(row, skillById) {
-  const refs = Array.isArray(row.values?.skillRefs) ? row.values.skillRefs : []
+function buildSkillInfo(sourceRows, skillById, includeAllTraitText = false) {
+  const rows = Array.isArray(sourceRows) ? sourceRows : [sourceRows]
+  const refs = [...new Set(rows.flatMap((row) =>
+    Array.isArray(row.values?.skillRefs) ? row.values.skillRefs : []))]
   const skills = refs
     .map((id) => skillById.get(id)?.values)
     .filter(Boolean)
@@ -126,11 +129,20 @@ function buildSkillInfo(row, skillById) {
       effect: values.effect,
       description: values.effect,
     }))
-  const traitText = [row.values?.traitName, row.values?.traitDesc].filter(Boolean).join('：')
+  const traitText = rows.flatMap((row) => [row.values?.traitName, row.values?.traitDesc])
+    .filter(Boolean)
+    .join('：')
   return {
     skills,
-    traitText: /继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(traitText) ? traitText : '',
+    traitText: includeAllTraitText || /继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(traitText)
+      ? traitText
+      : '',
   }
+}
+
+function rowStats(row) {
+  return Object.fromEntries(['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
+    .map((key) => [key, row.values?.[key]]))
 }
 
 
@@ -350,16 +362,17 @@ async function main() {
       continue
     }
     const row = matchedRows[0]
-    const skillInfo = buildSkillInfo(row, skillById)
-    const stats = {
-      hp: row.values?.hp,
-      patk: row.values?.patk,
-      matk: row.values?.matk,
-      pdef: row.values?.pdef,
-      mdef: row.values?.mdef,
-      spd: row.values?.spd,
-    }
-    const evaluations = evaluateAllNatures(stats, row.values?.traitTags || [], skillInfo)
+    const bossRows = relatedRockKingdomBossRows(row, rows)
+    const skillInfo = buildSkillInfo([row, ...bossRows], skillById, bossRows.length > 0)
+    const stats = rowStats(row)
+    const traitTags = [...new Set([row, ...bossRows].flatMap((item) => item.values?.traitTags || []))]
+    const profiles = bossRows.map((bossRow) => ({
+      name: bossRow.values?.name,
+      stats: rowStats(bossRow),
+      traitTags: bossRow.values?.traitTags || [],
+      skillInfo: buildSkillInfo(bossRow, skillById, true),
+    }))
+    const evaluations = evaluateNatureProfiles(stats, traitTags, skillInfo, profiles)
     sections.push(renderSample({ sample, row, skillInfo, evaluations }))
   }
 
