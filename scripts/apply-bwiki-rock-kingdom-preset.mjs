@@ -216,7 +216,7 @@ ${renderIdExamples(creatureDiff.omitted)}
 
 ${renderIdExamples(skillDiff.omitted)}
 
-> 用户已确认精灵旧 id 对应新版数据，差异主要来自括号名称变化，可以接受。静态 preset 覆盖不会直接操作 IndexedDB；现有浏览器的 merge-by-id 迁移不会删除这些旧行或 owned / stock 引用。
+> 静态 preset 覆盖不会直接操作 IndexedDB。历史上未进入新版预置的 29 个旧 id 仍保留在已有浏览器中，以兼容 owned / stock 引用；资料库、引用选择、性格推荐和统计视图会在对应新版行存在时隐藏这些旧概括行。
 
 ## 旧模板审计
 
@@ -229,7 +229,7 @@ ${legacyUnmatched.length ? legacyUnmatched.map((item) => `- ${item}`).join('\n')
 - 新安装会直接读取覆盖后的完整预置。
 - 已有浏览器会读取版本化迁移清单；字段为空、值无效，或当前值的 SHA-256 与旧官方值匹配时才更新为新版预置值。
 - 当前值不匹配任何旧官方指纹时视为用户自定义，精灵和技能字段都保持不变。
-- 迁移不会删除上述 29 个旧 id、用户新增行或 owned / stock 引用。
+- 迁移不会删除历史旧 id、用户新增行或 owned / stock 引用；重复显示由只读归并视图处理。
 
 | 迁移清单 | 涉及行数 | 涉及字段数 |
 |---|---:|---:|

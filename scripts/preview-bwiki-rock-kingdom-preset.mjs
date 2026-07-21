@@ -2,6 +2,7 @@
 import { createHash } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
+import { deriveSkillTags, deriveTraitTags } from './lib/rock-kingdom-tags.mjs'
 
 const INPUTS = {
   creatures: 'scripts/data/bwiki/creatures.staging.json',
@@ -338,6 +339,12 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
       }
     }
 
+    const traitDesc = detail?.trait?.description || existingValues.traitDesc || ''
+    const skillTexts = skillRefs.map((skillId) => {
+      const values = skillPreviewById.get(skillId)?.values ?? {}
+      return [values.category, values.effect].filter(Boolean).join(' ')
+    })
+
     return {
       id,
       values: {
@@ -350,10 +357,10 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
         ...stats,
         shiny: mapShiny(creature.shinyLabel),
         traitName: detail?.trait?.name || creature.traitName || existingValues.traitName || '',
-        traitTags: existingValues.traitTags || [],
+        traitTags: existingValues.traitTags?.length ? existingValues.traitTags : deriveTraitTags(traitDesc, stats),
         traitIcon: detail?.trait?.image || existingValues.traitIcon || '',
-        traitDesc: detail?.trait?.description || existingValues.traitDesc || '',
-        skillTags: existingValues.skillTags || [],
+        traitDesc,
+        skillTags: existingValues.skillTags?.length ? existingValues.skillTags : deriveSkillTags(skillTexts),
         skillRefs: skillRefs.length > 0 ? skillRefs : existingValues.skillRefs || [],
         eggGroups: existingValues.eggGroups?.length ? existingValues.eggGroups : breeding?.eggGroups || [],
         speciesGroup: existingValues.speciesGroup || breeding?.speciesGroup || '',

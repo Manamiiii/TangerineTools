@@ -1,6 +1,6 @@
 # BWiki P4 显式覆盖检查报告
 
-生成时间：2026-07-20T09:55:23.632Z
+生成时间：2026-07-21T03:25:58.986Z
 
 执行模式：**已显式覆盖**
 
@@ -8,8 +8,8 @@
 
 | 预置 | 覆盖前 | 覆盖后 | 复用 id | 新增 id | 目标中不再包含的旧 id |
 |---|---:|---:|---:|---:|---:|
-| 精灵 | 496 | 592 | 467 | 125 | 29 |
-| 技能 | 487 | 553 | 487 | 66 | 0 |
+| 精灵 | 592 | 592 | 592 | 0 | 0 |
+| 技能 | 553 | 553 | 553 | 0 | 0 |
 
 ## 技能关系完整性
 
@@ -21,33 +21,13 @@
 
 精灵目标中不再包含的旧 id：
 
-- rock-creature-src-448
-- rock-creature-src-017
-- rock-creature-src-018
-- rock-creature-src-019
-- rock-creature-src-023
-- rock-creature-src-024
-- rock-creature-src-025
-- rock-creature-src-029
-- rock-creature-src-030
-- rock-creature-src-031
-- rock-creature-src-452
-- rock-creature-src-455
-- rock-creature-src-081
-- rock-creature-src-082
-- rock-creature-src-083
-- rock-creature-src-151
-- rock-creature-src-406
-- rock-creature-src-407
-- rock-creature-src-464
-- rock-creature-src-217
-- ……另有 9 条
+- （无）
 
 技能目标中不再包含的旧 id：
 
 - （无）
 
-> 用户已确认精灵旧 id 对应新版数据，差异主要来自括号名称变化，可以接受。静态 preset 覆盖不会直接操作 IndexedDB；现有浏览器的 merge-by-id 迁移不会删除这些旧行或 owned / stock 引用。
+> 静态 preset 覆盖不会直接操作 IndexedDB。历史上未进入新版预置的 29 个旧 id 仍保留在已有浏览器中，以兼容 owned / stock 引用；资料库、引用选择、性格推荐和统计视图会在对应新版行存在时隐藏这些旧概括行。
 
 ## 旧模板审计
 
@@ -60,11 +40,11 @@
 - 新安装会直接读取覆盖后的完整预置。
 - 已有浏览器会读取版本化迁移清单；字段为空、值无效，或当前值的 SHA-256 与旧官方值匹配时才更新为新版预置值。
 - 当前值不匹配任何旧官方指纹时视为用户自定义，精灵和技能字段都保持不变。
-- 迁移不会删除上述 29 个旧 id、用户新增行或 owned / stock 引用。
+- 迁移不会删除历史旧 id、用户新增行或 owned / stock 引用；重复显示由只读归并视图处理。
 
 | 迁移清单 | 涉及行数 | 涉及字段数 |
 |---|---:|---:|
-| 精灵 | 467 | 2510 |
+| 精灵 | 592 | 3015 |
 | 技能 | 487 | 1615 |
 
 迁移清单 preview：`scripts/data/bwiki/rockKingdomPresetMigration.preview.json`
@@ -73,8 +53,8 @@
 
 | 文件 | SHA-256 |
 |---|---|
-| `scripts/data/bwiki/rockKingdomRows.preview.json` | `6f0d73c9ff8dfc21ef56432ba50e956cb4f0f8bbd0bb9be1f379595dc3680e41` |
-| `scripts/data/bwiki/rockKingdomSkillRows.preview.json` | `46ec914f4f3718e6e89481ba70bd8ea3d6fd62e0a3626a6f495c2a378b48f2b4` |
+| `scripts/data/bwiki/rockKingdomRows.preview.json` | `57c5488d80687c99cbc85ab95f7a9c515d8971d822f71ce81e945e6abdb33a19` |
+| `scripts/data/bwiki/rockKingdomSkillRows.preview.json` | `a0f85adf42b8015eb3cf4702e198d3bac24d909dedba9a244a6fe68e8fa09889` |
 
 ## 安全边界
 
