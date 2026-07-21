@@ -5,6 +5,8 @@ import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { BarChart3 } from 'lucide-react'
 import { db } from '../db.js'
+import { visibleRockKingdomCreatureRows } from '../domain/rockKingdom.js'
+import { ROCK_KINGDOM_CREATURE_TABLE_ID } from '../presets/rockKingdom.js'
 import { stringifyCellValue } from '../utils.js'
 import { EmptyState } from './common.jsx'
 
@@ -81,21 +83,24 @@ export function StockTool({ scene }) {
   const numberFields = fields.filter((field) => field.type === 'number')
   const groupField = fields.find((field) => field.key === groupFieldKey) || groupableFields[0] || null
   const numberField = fields.find((field) => field.key === numberFieldKey) || null
+  const displayRows = sourceTable?.id === ROCK_KINGDOM_CREATURE_TABLE_ID
+    ? visibleRockKingdomCreatureRows(rows)
+    : rows
 
   const stats = useMemo(() => {
     const map = new Map()
-    const matchedRows = rows.filter((row) => passesNumberCondition(row, numberField, threshold))
+    const matchedRows = displayRows.filter((row) => passesNumberCondition(row, numberField, threshold))
     for (const row of matchedRows) {
       for (const key of rowGroupKeys(row, groupField)) map.set(key, (map.get(key) || 0) + 1)
     }
     return {
-      total: rows.length,
+      total: displayRows.length,
       matched: matchedRows.length,
       groups: Array.from(map.entries())
         .map(([label, count]) => ({ label, count }))
         .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label)),
     }
-  }, [rows, groupField, numberField, threshold])
+  }, [displayRows, groupField, numberField, threshold])
 
   return (
     <div className="table-view">

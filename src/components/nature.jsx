@@ -22,6 +22,7 @@ import {
   NATURE_DECISION_LABELS,
   STAT_LABELS,
 } from '../domain/nature.js'
+import { visibleRockKingdomCreatureRows } from '../domain/rockKingdom.js'
 import { TRAIT_TAG_OPTIONS } from '../presets/rockKingdom.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
 import { EmptyState, FormRow } from './common.jsx'
@@ -194,7 +195,8 @@ function RowImportPanel({ scene, onImport }) {
     )
   }
 
-  const summaries = rows.map((row) => ({ row, summary: extractRowSummary(row, fields) }))
+  const visibleRows = visibleRockKingdomCreatureRows(rows)
+  const summaries = visibleRows.map((row) => ({ row, summary: extractRowSummary(row, fields) }))
 
   function importRow(target) {
     if (!target) return
@@ -227,7 +229,7 @@ function RowImportPanel({ scene, onImport }) {
           onChange={(e) => {
             const nextRowId = e.target.value
             setRowId(nextRowId)
-            importRow(rows.find((r) => r.id === nextRowId))
+            importRow(visibleRows.find((r) => r.id === nextRowId))
           }}
         >
           <option value="">从资料库选择一行带入</option>

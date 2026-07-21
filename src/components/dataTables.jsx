@@ -30,7 +30,9 @@ import {
   buildFormComparisonSummary,
   findNumberField,
   getSameNumberRows,
+  visibleRockKingdomCreatureRows,
 } from '../domain/rockKingdom.js'
+import { ROCK_KINGDOM_CREATURE_TABLE_ID } from '../presets/rockKingdom.js'
 import {
   ConfirmDialog,
   EmptyState,
@@ -183,7 +185,10 @@ function TableView({ table, tables, sceneId, onSwitchTable }) {
 
   const sortedFields = [...fields].sort((a, b) => a.order - b.order)
 
-  const filteredRows = rows
+  const displayRows = table.id === ROCK_KINGDOM_CREATURE_TABLE_ID
+    ? visibleRockKingdomCreatureRows(rows)
+    : rows
+  const filteredRows = displayRows
     .filter((r) => rowMatchesSearch(r, sortedFields, search))
     .filter((r) => rowMatchesFilters(r, sortedFields, filters))
     .sort((a, b) => compareRowsBySort(a, b, sort, sortedFields))
@@ -279,7 +284,7 @@ function TableView({ table, tables, sceneId, onSwitchTable }) {
         <IconButton icon={Plus} label="新增行" variant="primary" onClick={() => setRowForm('new')} />
       </div>
 
-      {rows.length === 0 ? (
+      {displayRows.length === 0 ? (
         <EmptyState
           title="还没有数据"
           description="点击“新增行”添加第一条数据。"
@@ -350,7 +355,7 @@ function TableView({ table, tables, sceneId, onSwitchTable }) {
         <RowDetailModal
           row={rowDetail}
           fields={sortedFields}
-          rows={rows}
+          rows={displayRows}
           onClose={() => setRowDetail(null)}
           onOpenReference={setReferenceDetail}
           onEdit={() => {
@@ -438,10 +443,12 @@ function defaultValueForType(type) {
 }
 
 function RowFormModal({ table, fields, row, onClose }) {
-  const editableFields = fields.filter((f) => isEditableFieldType(f.type))
+  const allEditableFields = fields.filter((f) => isEditableFieldType(f.type))
+  const hasTraitField = allEditableFields.some((field) => field.key === 'traitName')
+  const editableFields = allEditableFields.filter((field) => !hasTraitField || field.key !== 'traitDesc')
   const [values, setValues] = useState(() => {
     const init = {}
-    editableFields.forEach((f) => {
+    allEditableFields.forEach((f) => {
       init[f.key] = row?.values?.[f.key] ?? defaultValueForType(f.type)
     })
     return init
@@ -481,7 +488,25 @@ function RowFormModal({ table, fields, row, onClose }) {
       }
     >
       <form id="row-form" onSubmit={handleSubmit} className="stack-form row-form">
-        {editableFields.map((field) => (
+        {editableFields.map((field) => field.key === 'traitName' ? (
+          <FormRow key={field.id} label="特性">
+            <div className="trait-field-input">
+              <input
+                className="input"
+                value={values.traitName || ''}
+                onChange={(event) => setFieldValue('traitName', event.target.value)}
+                placeholder="特性名称"
+              />
+              <textarea
+                className="input textarea"
+                rows={4}
+                value={values.traitDesc || ''}
+                onChange={(event) => setFieldValue('traitDesc', event.target.value)}
+                placeholder="特性描述"
+              />
+            </div>
+          </FormRow>
+        ) : (
           <FormRow key={field.id} label={field.name}>
             <FieldInput
               field={field}
@@ -501,7 +526,9 @@ function RowFormModal({ table, fields, row, onClose }) {
 
 function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete, onOpenReference, title = '详情' }) {
   const sorted = [...fields].sort((a, b) => a.order - b.order)
-  const detailFields = sorted.filter((field) => field.key !== 'traitIcon')
+  const hasTraitField = sorted.some((field) => field.key === 'traitName')
+  const detailFields = sorted.filter((field) =>
+    field.key !== 'traitIcon' && (!hasTraitField || field.key !== 'traitDesc'))
   const numberField = findNumberField(fields)
   const sameNumberRows = numberField ? getSameNumberRows(row, rows, fields) : []
   const comparisonRows = buildFormComparisonRows(sameNumberRows, fields)

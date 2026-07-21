@@ -21,6 +21,8 @@ import {
 } from 'lucide-react'
 import { FIELD_TYPES, isOptionFieldType, isReferenceFieldType, STATS_DIMENSIONS } from '../constants.js'
 import { createField, db, deleteField, reorderFields, updateField } from '../db.js'
+import { visibleRockKingdomCreatureRows } from '../domain/rockKingdom.js'
+import { ROCK_KINGDOM_CREATURE_TABLE_ID } from '../presets/rockKingdom.js'
 import { generateId, getStatsValues, resolveStatsMapping, stringifyCellValue } from '../utils.js'
 import {
   ClampText,
@@ -367,6 +369,12 @@ function referenceRowLabel(fields, row) {
   return stringifyCellValue(row.values?.[labelField.key], labelField) || row.id
 }
 
+function selectableReferenceRows(field, rows) {
+  return field.referenceTableId === ROCK_KINGDOM_CREATURE_TABLE_ID
+    ? visibleRockKingdomCreatureRows(rows)
+    : rows
+}
+
 function ReferenceCellView({ field, value, onOpenReference }) {
   const { fields, rows } = useReferenceContext(field.referenceTableId)
   if (!value) return <span className="cell-empty">—</span>
@@ -392,7 +400,7 @@ function ReferenceListCellView({ field, value, onOpenReference }) {
   const { fields, rows } = useReferenceContext(field.referenceTableId)
   const ids = Array.isArray(value) ? value : value ? [value] : []
   if (ids.length === 0) return <span className="cell-empty">—</span>
-  const visibleIds = field.__detailMode ? ids : ids.slice(0, 6)
+  const visibleIds = field.__detailMode ? ids : ids.slice(0, 3)
   return (
     <span className="reference-list">
       {visibleIds.map((id) => {
@@ -421,6 +429,7 @@ function ReferenceListCellView({ field, value, onOpenReference }) {
 
 function ReferenceFieldInput({ field, value, onChange }) {
   const { fields, rows } = useReferenceContext(field.referenceTableId)
+  const selectableRows = selectableReferenceRows(field, rows)
   if (!field.referenceTableId) {
     return (
       <input
@@ -434,7 +443,7 @@ function ReferenceFieldInput({ field, value, onChange }) {
   return (
     <select className="select" value={value || ''} onChange={(e) => onChange(e.target.value)}>
       <option value="">未选择</option>
-      {rows.map((r) => (
+      {selectableRows.map((r) => (
         <option key={r.id} value={r.id}>
           {referenceRowLabel(fields, r)}
         </option>
@@ -445,6 +454,7 @@ function ReferenceFieldInput({ field, value, onChange }) {
 
 function ReferenceListFieldInput({ field, value, onChange }) {
   const { fields, rows } = useReferenceContext(field.referenceTableId)
+  const selectableRows = selectableReferenceRows(field, rows)
   const selected = Array.isArray(value) ? value : value ? [value] : []
   if (!field.referenceTableId) {
     return (
@@ -461,7 +471,7 @@ function ReferenceListFieldInput({ field, value, onChange }) {
   }
   return (
     <div className="reference-list-input">
-      {rows.map((row) => {
+      {selectableRows.map((row) => {
         const checked = selected.includes(row.id)
         return (
           <button
@@ -510,7 +520,7 @@ function TraitCellView({ row, mode }) {
       {icon && <img src={icon} alt="" className="trait-cell-icon" />}
       <span className="trait-cell-text">
         <strong>{name || '未命名特性'}</strong>
-        {mode === 'detail' && desc && <small>{desc}</small>}
+        {desc && <small>{desc}</small>}
       </span>
     </span>
   )

@@ -21,7 +21,7 @@
     "preview:bwiki": "node scripts/preview-bwiki-rock-kingdom-preset.mjs",
     "check:bwiki:preset": "node scripts/apply-bwiki-rock-kingdom-preset.mjs",
     "apply:bwiki:preset": "node scripts/apply-bwiki-rock-kingdom-preset.mjs --write",
-    "test:preset-migration": "node --test scripts/tests/preset-migration.test.mjs"
+    "test:preset-migration": "node --test scripts/tests/preset-migration.test.mjs scripts/tests/rock-kingdom-catalog.test.mjs"
   },
   "dependencies": {
     "dexie": "^4.4.4",

@@ -1231,8 +1231,10 @@ img {
 
 .cell-tag-group {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 4px;
+  max-width: 280px;
+  overflow: hidden;
 }
 
 .bool-true {
@@ -1355,6 +1357,7 @@ img {
   text-align: left;
   max-width: 240px;
   white-space: nowrap;
+  vertical-align: middle;
 }
 
 .data-grid thead th {
@@ -1401,6 +1404,7 @@ img {
 
 .data-grid-row {
   cursor: pointer;
+  height: 72px;
 }
 
 .data-grid-row:hover td {
@@ -3270,6 +3274,8 @@ img {
   align-items: center;
   gap: 8px;
   min-width: 0;
+  width: 280px;
+  max-width: 280px;
 }
 
 .trait-cell-icon {
@@ -3300,15 +3306,37 @@ img {
   font-size: 12px;
   line-height: 1.45;
   white-space: normal;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .trait-cell-detail {
   align-items: flex-start;
+  width: auto;
+  max-width: none;
 }
 
 .trait-cell-detail .trait-cell-icon {
   width: 36px;
   height: 36px;
+}
+
+.trait-cell-detail .trait-cell-text small {
+  display: block;
+  overflow: visible;
+}
+
+.trait-field-input {
+  display: grid;
+  gap: 8px;
+}
+
+.data-grid td .reference-list {
+  flex-wrap: nowrap;
+  max-width: 320px;
+  overflow: hidden;
 }
 
 .evolution-chain-view {
