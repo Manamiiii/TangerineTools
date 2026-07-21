@@ -25,12 +25,34 @@ import {
 } from '../domain/rockKingdom.js'
 import { TRAIT_TAG_OPTIONS } from '../presets/rockKingdom.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
-import { EmptyState, FormRow } from './common.jsx'
-import { FieldInput } from './catalog.jsx'
+import { EmptyState, FormRow, OptionTag } from './common.jsx'
 
 const EMPTY_STATS = Object.fromEntries(STATS_DIMENSIONS.map((d) => [d.key, '']))
-const TRAIT_TAG_FIELD = { type: 'multiselect', options: TRAIT_TAG_OPTIONS }
 const TRAIT_TAG_LABELS = Object.fromEntries(TRAIT_TAG_OPTIONS.map((o) => [o.value, o.label]))
+
+function TraitTagInput({ value, onChange }) {
+  const selected = Array.isArray(value) ? value : []
+  return (
+    <div className="multiselect-input">
+      {TRAIT_TAG_OPTIONS.map((option) => {
+        const active = selected.includes(option.value)
+        return (
+          <button
+            type="button"
+            key={option.value}
+            className={`multiselect-chip ${active ? 'selected' : ''}`}
+            aria-pressed={active}
+            onClick={() => onChange(active
+              ? selected.filter((item) => item !== option.value)
+              : [...selected, option.value])}
+          >
+            <OptionTag option={option} />
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
 export function NatureTool({ scene }) {
   const [draftInput, setDraftInput] = useState({
@@ -108,8 +130,7 @@ export function NatureTool({ scene }) {
         </div>
 
         <FormRow label="特性标签" hint="标签会影响强化/弱化方向的推荐权重">
-          <FieldInput
-            field={TRAIT_TAG_FIELD}
+          <TraitTagInput
             value={draftInput.traitTags}
             onChange={(tags) => setDraftInput((prev) => ({ ...prev, traitTags: tags }))}
           />
