@@ -59,8 +59,7 @@ npm run lint
 | `npm run build` | 生成生产构建 |
 | `npm run preview` | 本地预览生产构建产物 |
 | `npm run lint` | 使用 oxlint 做静态检查 |
-| `npm run check:nature` | 重建版本化的性格推荐校准报告 |
-| `npm run audit:rocom` | 根据结构化人工结论重建外部定位核对报告 |
+| `npm run check:nature` | 在 `artifacts/nature/` 生成本地性格推荐校准报告 |
 | `npm run sync:bwiki:staging` | 刷新 BWiki 精灵、技能、蛋和果实 staging |
 | `npm run sync:bwiki:details` | 刷新 BWiki 精灵详情 staging |
 | `npm run sync:breeding` | 刷新蛋组和繁育谱系 staging |
@@ -78,7 +77,6 @@ npm run lint
 │   ├── README.md                         # 文档用途与更新方式索引
 │   ├── data-sources/                     # 数据源总览、BWiki 管线与字段血缘
 │   ├── nature/                           # 性格规则、核对模板和人工确认台账
-│   ├── generated/                        # 脚本生成并随版本审阅的报告
 │   ├── system-capabilities.md            # 已实现能力和明确非目标
 │   └── data-sync.md                      # IndexedDB、导入和预置迁移语义
 ├── public/presets/
@@ -89,8 +87,7 @@ npm run lint
 │   ├── bwiki/                            # BWiki 同步、preview、发布及版本化快照
 │   ├── data/                             # 生成器使用的人工结构化输入
 │   ├── tests/                            # node:test 纯逻辑与 fake-indexeddb 集成测试
-│   ├── check-nature-recommendations.mjs  # 性格校准报告生成器
-│   └── generate-rocom-position-audit-plan.mjs # 外部定位报告生成器
+│   └── check-nature-recommendations.mjs  # 本地性格校准报告生成器
 ├── src/
 │   ├── components/
 │   │   ├── dataTables.jsx                # 资料库工具编排
@@ -172,13 +169,12 @@ git diff --check
 ## 维护文档
 
 - [`AGENTS.md`](AGENTS.md)：长期有效的 Codex/agent 开发边界、必读文件与测试命令。
-- [`docs/README.md`](docs/README.md)：`docs/` 文件用途索引，说明哪些是长期维护文档、哪些是生成报告。
+- [`docs/README.md`](docs/README.md)：`docs/` 长期维护文档的用途与更新方式索引。
 - [`docs/system-capabilities.md`](docs/system-capabilities.md)：当前已实现能力与明确排除范围。
 - [`docs/data-sync.md`](docs/data-sync.md)：数据模型、导入/导出、预置资料同步与迁移语义。
 - [`docs/data-sources/README.md`](docs/data-sources/README.md)：数据来源分级，以及 BWiki 管线和字段血缘文档入口。
 - [`docs/nature/README.md`](docs/nature/README.md)：性格规则、单只核对模板、确认结果和迭代台账入口。
-- [`docs/generated/README.md`](docs/generated/README.md)：版本化生成报告及对应输入、生成命令。
-- [`scripts/data/README.md`](scripts/data/README.md)：性格校准样例和 RoCom 外部核对结论等结构化人工输入。
+- [`scripts/data/README.md`](scripts/data/README.md)：性格校准样例等结构化人工输入。
 
 ## 部署
 

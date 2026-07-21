@@ -1,6 +1,6 @@
 # 性格推荐文档
 
-本目录只保存需要人工维护的规则说明、模板和确认台账。运行脚本生成的大型报告统一放在 [`../generated/`](../generated/)。
+本目录只保存需要人工维护的规则说明、模板和确认台账。`npm run check:nature` 生成的校验报告位于 Git 忽略的 `artifacts/nature/calibration-report.md`。
 
 | 文件 | 职责 | 更新时机 |
 |---|---|---|

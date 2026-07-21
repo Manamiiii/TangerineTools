@@ -12,7 +12,6 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "check:nature": "node scripts/check-nature-recommendations.mjs",
-    "audit:rocom": "node scripts/generate-rocom-position-audit-plan.mjs",
     "sync:breeding": "node scripts/bwiki/sync-breeding.mjs",
     "sync:bwiki:staging": "node scripts/bwiki/sync-staging.mjs",
     "sync:bwiki:details": "node scripts/bwiki/sync-details.mjs",

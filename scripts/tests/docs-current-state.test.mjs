@@ -23,7 +23,7 @@ async function markdownFiles(directory) {
   for (const entry of entries) {
     const fullPath = path.join(directory, entry.name)
     if (entry.isDirectory()) {
-      if (entry.name !== 'generated') files.push(...await markdownFiles(fullPath))
+      files.push(...await markdownFiles(fullPath))
     } else if (entry.name.endsWith('.md')) {
       files.push(fullPath)
     }
