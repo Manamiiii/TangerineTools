@@ -1,6 +1,6 @@
 {
   "source": "bwiki-preview",
-  "generatedAt": "2026-07-20T08:38:22.862Z",
+  "generatedAt": "2026-07-21T03:24:04.543Z",
   "inputs": {
     "creatures": "scripts/data/bwiki/creatures.staging.json",
     "skills": "scripts/data/bwiki/skills.staging.json",
@@ -8993,8 +8993,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E5%90%B9%E6%95%A3",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-0345b3b68430"
       }
     },
     {
@@ -9031,8 +9031,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%80%A5%E4%B8%AD%E7%94%9F%E6%99%BA",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-47c7c54ae97a"
       }
     },
     {
@@ -9110,8 +9110,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E5%8F%8B%E8%B0%8A%E6%BB%A1%E6%BA%A2",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-0704b006b9c1"
       }
     },
     {
@@ -9163,8 +9163,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E7%BC%93%E4%B8%80%E7%BC%93",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-2e93b7c29db0"
       }
     },
     {
@@ -11574,8 +11574,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E5%85%BB%E5%88%86%E5%9B%9E%E6%B5%81",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-da3e5bff9e06"
       }
     },
     {
@@ -11604,8 +11604,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E7%94%9C%E8%9C%9C%E9%99%B7%E9%98%B1",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-8768427d315c"
       }
     },
     {
@@ -11639,8 +11639,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%92%92%E8%8A%B1",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-0e48cf4279ac"
       }
     },
     {
@@ -11684,8 +11684,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E4%B8%B0%E6%94%B6",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-fd4ab606cd29"
       }
     },
     {
@@ -11732,8 +11732,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%A1%A5%E8%A7%89",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-e320ed19c7f0"
       }
     },
     {
@@ -13910,8 +13910,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%8A%B1%E7%81%AB",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-0b8360d04a9f"
       }
     },
     {
@@ -13938,8 +13938,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%9A%96%E6%B0%94",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-0f96dd20bc8f"
       }
     },
     {
@@ -13969,8 +13969,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E7%84%9A%E8%BA%AB",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-fd147e99ca2c"
       }
     },
     {
@@ -14008,8 +14008,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E9%87%8E%E7%81%AB",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-7e022e83de9b"
       }
     },
     {
@@ -16130,8 +16130,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E5%8F%A0%E6%B5%AA",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-5db041ca67ee"
       }
     },
     {
@@ -16180,8 +16180,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%B2%89%E6%BA%BA",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-7bcc2eab9787"
       }
     },
     {
@@ -17655,8 +17655,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E7%82%B9%E4%BA%AE",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-dc2da24c57f8"
       }
     },
     {
@@ -17694,8 +17694,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E9%80%8F%E9%95%9C%E5%AE%9E%E9%AA%8C",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-c353d25c51d4"
       }
     },
     {
@@ -19049,8 +19049,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E5%85%AD%E8%87%AA%E7%94%B1%E5%BA%A6",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-d04ecc8c896d"
       }
     },
     {
@@ -19085,8 +19085,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%92%B8%E6%B1%BD%E8%BF%9B%E8%A1%8C%E6%9B%B2",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-d657df99c9ff"
       }
     },
     {
@@ -19114,8 +19114,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%BD%AE%E7%8F%AD",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-6f8bf37188c3"
       }
     },
     {
@@ -19143,8 +19143,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E9%94%81%E8%8A%AF",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-793f6471cbe1"
       }
     },
     {
@@ -19177,8 +19177,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E9%93%81%E8%92%BA%E8%97%9C",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-d1b6d43bb062"
       }
     },
     {
@@ -19344,8 +19344,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%BF%87%E5%B1%B1%E8%BD%A6",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-eb19cfa844ae"
       }
     },
     {
@@ -19377,8 +19377,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E7%BB%9E%E8%BD%AE",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-633ac0919428"
       }
     },
     {
@@ -21830,8 +21830,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%89%AC%E5%B0%98",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-adf36cdc8b49"
       }
     },
     {
@@ -21871,8 +21871,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%B2%99%E7%9F%B3%E9%98%B5",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-cc88c528e0c3"
       }
     },
     {
@@ -23926,8 +23926,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E5%86%B7%E5%87%9D",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-0f0429d168bf"
       }
     },
     {
@@ -23967,8 +23967,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E5%AF%92%E6%BD%AE",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-a5c7f5af8d0e"
       }
     },
     {
@@ -23999,8 +23999,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E5%86%B0%E8%A3%82",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-2422bbab87a1"
       }
     },
     {
@@ -24030,8 +24030,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E9%9B%AA%E5%8E%9F%E7%8B%A9%E7%8C%8E",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-38e8de53e58f"
       }
     },
     {
@@ -24070,8 +24070,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%89%93%E5%96%B7%E5%9A%8F",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-9b4f5c48ec70"
       }
     },
     {
@@ -25223,8 +25223,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E9%BE%99%E5%AE%88%E6%9C%9B",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-e82c5a179535"
       }
     },
     {
@@ -26920,8 +26920,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%83%8A%E9%9B%B7",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-61a6d7324355"
       }
     },
     {
@@ -26957,8 +26957,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E9%80%9A%E7%94%B5",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-b30e3f20f396"
       }
     },
     {
@@ -28748,8 +28748,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%AF%92%E8%AA%93",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-fa2af22163f9"
       }
     },
     {
@@ -28790,8 +28790,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%BA%B6%E8%A7%A3",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-854e15b9053e"
       }
     },
     {
@@ -28821,8 +28821,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%BF%87%E6%95%8F%E5%8E%9F",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-e7431641bc9a"
       }
     },
     {
@@ -28869,8 +28869,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E9%87%8D%E9%87%91%E5%B1%9E%E7%B2%89%E5%B0%98",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-859cb8577a28"
       }
     },
     {
@@ -28907,8 +28907,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%AF%92%E8%82%BD",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-f27004754a13"
       }
     },
     {
@@ -30579,8 +30579,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%8C%AF%E7%BF%85",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-3aa6912bf755"
       }
     },
     {
@@ -30618,8 +30618,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%8B%9F%E5%AF%84%E7%94%9F",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-8800219a2bac"
       }
     },
     {
@@ -32752,8 +32752,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E9%A9%AC%E6%AD%A5",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-da375b86948f"
       }
     },
     {
@@ -32791,8 +32791,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E9%A9%B1%E8%B5%B6",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-9d96f6219773"
       }
     },
     {
@@ -33580,8 +33580,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E7%96%BE%E9%A3%8E%E6%B6%A1%E8%BD%AE",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-cb7f7c0e2bb4"
       }
     },
     {
@@ -34821,8 +34821,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%BF%9C%E8%A1%8C",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-67c7b0e66125"
       }
     },
     {
@@ -34859,8 +34859,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%AF%95%E9%A3%9E",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-3d2d2cf7870d"
       }
     },
     {
@@ -34919,8 +34919,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%B6%85%E5%A3%B0%E6%B3%A2",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-30cc8449004c"
       }
     },
     {
@@ -34954,8 +34954,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E9%A3%9E%E7%AE%AD",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-5f6098795911"
       }
     },
     {
@@ -36605,8 +36605,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%8B%86%E7%A4%BC%E7%89%A9",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-1f607538b54d"
       }
     },
     {
@@ -36636,8 +36636,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E5%A7%94%E5%B1%88",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-92dd392d05ba"
       }
     },
     {
@@ -36678,8 +36678,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E5%8F%AF%E7%88%B1",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-e6c58a2c0e43"
       }
     },
     {
@@ -36709,8 +36709,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%BD%AC%E5%9C%88%E5%9C%88",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-126279cb2da0"
       }
     },
     {
@@ -36741,8 +36741,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%B9%A6%E8%B7%B6",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-4410ed1e5373"
       }
     },
     {
@@ -36811,8 +36811,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%80%8D%E8%B5%96",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-c8c127be3a11"
       }
     },
     {
@@ -36835,8 +36835,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E5%81%9A%E5%A5%BD%E4%BA%8B",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-a413118c56a8"
       }
     },
     {
@@ -38532,8 +38532,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E9%AD%94%E9%95%9C",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-00be4d8ec976"
       }
     },
     {
@@ -38625,8 +38625,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E5%90%83%E7%8B%AC%E9%A3%9F",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-38f28fd82420"
       }
     },
     {
@@ -40755,8 +40755,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E9%99%90%E6%97%B6%E7%89%B9%E6%83%A0",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-a5597b201b4c"
       }
     },
     {
@@ -40787,8 +40787,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E7%BA%BA%E7%BA%B1",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-f57732b1ee07"
       }
     },
     {
@@ -40822,8 +40822,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%A1%80%E5%A5%91",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-d864452b76e8"
       }
     },
     {
@@ -40854,8 +40854,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E5%9B%B0%E5%85%BD",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-bf3039c0e60e"
       }
     },
     {
@@ -40898,8 +40898,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E4%B8%8B%E6%B3%A8",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-a972515400ff"
       }
     },
     {
@@ -42525,8 +42525,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%AE%B8%E6%84%BF%E6%B1%A0",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-23563191f87a"
       }
     },
     {
@@ -42554,8 +42554,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E6%98%9F%E7%97%95",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-5749e54519d1"
       }
     },
     {
@@ -42617,8 +42617,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E5%A4%A9%E4%BD%93%E5%90%B8%E7%A7%AF",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-182c213c2bc5"
       }
     },
     {
@@ -42652,8 +42652,8 @@
         "source": "bwiki-skill-query",
         "sourceUrl": "https://wiki.biligame.com/rocom/%E6%8A%80%E8%83%BD%E6%9F%A5%E8%AF%A2",
         "detailUrl": "https://wiki.biligame.com/rocom/%E8%96%84%E7%BA%B1%E7%8E%AF",
-        "idStrategy": "new",
-        "previousId": ""
+        "idStrategy": "name",
+        "previousId": "rock-skill-bwiki-cf1867851ab4"
       }
     }
   ]

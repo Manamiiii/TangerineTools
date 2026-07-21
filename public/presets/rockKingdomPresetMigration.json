@@ -1,17 +1,3642 @@
 {
   "source": "bwiki-preset-migration",
-  "version": "bwiki-2026-07-20-6f0d73c946ec914f",
-  "generatedAt": "2026-07-20T09:55:23.632Z",
+  "version": "bwiki-2026-07-21-57c5488da0f85adf",
+  "generatedAt": "2026-07-21T03:25:58.986Z",
   "target": {
     "creatureRows": 592,
     "skillRows": 553,
-    "creaturePreviewSha256": "6f0d73c9ff8dfc21ef56432ba50e956cb4f0f8bbd0bb9be1f379595dc3680e41",
-    "skillPreviewSha256": "46ec914f4f3718e6e89481ba70bd8ea3d6fd62e0a3626a6f495c2a378b48f2b4"
+    "creaturePreviewSha256": "57c5488d80687c99cbc85ab95f7a9c515d8971d822f71ce81e945e6abdb33a19",
+    "skillPreviewSha256": "a0f85adf42b8015eb3cf4702e198d3bac24d909dedba9a244a6fe68e8fa09889"
   },
   "creatures": {
-    "rowCount": 467,
-    "fieldCount": 2510,
+    "rowCount": 592,
+    "fieldCount": 3015,
     "rows": [
+      {
+        "id": "rock-creature-bwiki-018569e36ec5",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-024a11a62b3c",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-0428495116a0",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-0590eeaf1de7",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-05cbc6efcbd5",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-06de4530a045",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-0da43dd45be6",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-0ec636ea6d29",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-0ef168186437",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-1222f8112a99",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-160b4e1b2217",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-160c55fe2dfd",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-16bad47b68d8",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-177a8af1c279",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-17d205f205af",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-1c523daac469",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-1ded386ad277",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-1e91b202ead9",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-1edf57f4d44e",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-22c5bb0a7246",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-272d271cfc36",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-2e7f42de9ffa",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-3382b80aee56",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-351cd585b64c",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-3524382bd258",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-35640a657332",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-35ea1fc47290",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-362d1dcbc84c",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-373abce2b5e5",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-37e9e6d81a33",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-38258de0c3ef",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-3918ea12f411",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-397d55675ef5",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-3c338423ea2c",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-3fc21b40590c",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-4051f38c618f",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-412274db18b2",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-42dd2222ede0",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-438112eb1a66",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-4fbab58b5631",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-51dbef10cb70",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-5207332f075e",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-54aa36d68355",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-5573980b6f34",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-57360990ec56",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-59478c4122d1",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-5db50e56b49c",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-5eaf357bf52c",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-63c96d833ebf",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-6428eba5773a",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-658b5618db3b",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-6901a52b22e8",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-6a628228a425",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-6f599cbfb4ea",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-7023282bddac",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-726f75f93dfd",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-73bc337cb100",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-752807f3a8b1",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-753d7726c827",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-755f0be992dd",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-7694d8d4d365",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-7a932082a180",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-7cc5841c7946",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-7cf22f7eb65b",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-7e7fccab22dc",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-836ff913b5bd",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-86e3db74c471",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-879f28cfa0d4",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-87b246c6698a",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-8925bcfeaf83",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-8af36cfaf632",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-8b07c64c24dd",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-8c0a72345c93",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-8d998c0a14d8",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-946dabb0c296",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-951142913acd",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-95a0fdc4aff2",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-96044450fb29",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-97a18e24ad62",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-99ed8ddb7fc5",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-9a5b376fb805",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-9ab657c3a5f5",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-9e205d79234f",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-9e29c92571e1",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-a17c19ad4aed",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-a18f6ca488b1",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-a9ef6a58771b",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-ad9d45c9053a",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-aecb348a0459",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-aef4b3565565",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-b0eb2b52a00f",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-b212d81edaef",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-b44ab058ef4a",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-b7c1550c108b",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-b7e049f21a0d",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-bde230d40211",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-bf820721eb70",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-c212f582c552",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-c332f70d4fad",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-c4d9725d943a",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-c8e38d62cef5",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-c8eff43cd094",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-cd4bb4eff8fa",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-d1ec4b9b5529",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-d1f31328f4d3",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-d2a849c963f0",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-d6e32a0b0cae",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-d84d80cff897",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-daa8e62d5a34",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-e251f4e3e4df",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-e42fb387ba15",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-e4c7904c7a66",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-e5edf9fad227",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-e7acdd3351cd",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-eafae0e17493",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-edf7620c19d6",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-f1eb31e3f8a3",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-f4b757003dc1",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-f57ed6c70130",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-f9344957b33b",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-fa579d93c643",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-fae4f0b735b7",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-faf508abdbd8",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-fb2471c4fa4c",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rock-creature-bwiki-fcb42a4498f3",
+        "fields": [
+          {
+            "key": "eggGroups",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "speciesGroup",
+            "acceptedHashes": [
+              "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+            ]
+          },
+          {
+            "key": "traitTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          }
+        ]
+      },
       {
         "id": "rock-creature-src-001",
         "fields": [
@@ -13640,6 +17265,12 @@
             ]
           },
           {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
             "key": "spd",
             "acceptedHashes": [
               "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
@@ -13782,6 +17413,12 @@
           },
           {
             "key": "skillRefs",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
             ]
@@ -13934,6 +17571,12 @@
             ]
           },
           {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
             "key": "spd",
             "acceptedHashes": [
               "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
@@ -14069,6 +17712,12 @@
             ]
           },
           {
+            "key": "skillTags",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
             "key": "spd",
             "acceptedHashes": [
               "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
@@ -14141,6 +17790,12 @@
           },
           {
             "key": "skillRefs",
+            "acceptedHashes": [
+              "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            ]
+          },
+          {
+            "key": "skillTags",
             "acceptedHashes": [
               "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
             ]
