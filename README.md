@@ -69,6 +69,7 @@ npm run lint
 ├── .github/workflows/pages.yml           # GitHub Pages 构建与部署
 ├── docs/
 │   ├── README.md                         # 文档用途与更新方式索引
+│   ├── data-sources/                     # 数据源总览、BWiki 管线与字段血缘
 │   ├── system-capabilities.md            # 已实现能力和明确非目标
 │   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
 │   ├── session-start-prompt.md           # 当前分支交接与代码地图
@@ -78,13 +79,9 @@ npm run lint
 │   ├── rockKingdomSkillRows.json         # 运行时技能预置
 │   └── rockKingdomPresetMigration.json   # 已有浏览器安全升级所需的官方值指纹
 ├── scripts/
-│   ├── data/bwiki/                       # 可审计的 BWiki staging 与 preview
+│   ├── bwiki/                            # BWiki 同步、preview、发布及版本化快照
 │   ├── data/natureCalibrationSamples.json # 性格校准样例
-│   ├── lib/rock-kingdom-tags.mjs         # Node 侧共享标签规则转发
 │   ├── tests/                            # node:test 纯逻辑与 fake-indexeddb 集成测试
-│   ├── sync-bwiki-*.mjs                  # BWiki 抓取 / staging 同步
-│   ├── preview-bwiki-*.mjs               # staging 转 preview
-│   ├── apply-bwiki-*.mjs                 # dry-run 校验与显式正式发布
 │   └── check-nature-recommendations.mjs  # 性格校准报告生成器
 ├── src/
 │   ├── components/
@@ -170,6 +167,7 @@ git diff --check
 - [`docs/README.md`](docs/README.md)：`docs/` 文件用途索引，说明哪些是长期维护文档、哪些是生成报告。
 - [`docs/system-capabilities.md`](docs/system-capabilities.md)：当前已实现能力与明确排除范围。
 - [`docs/data-sync.md`](docs/data-sync.md)：数据模型、导入/导出、预置资料同步与迁移语义。
+- [`docs/data-sources/README.md`](docs/data-sources/README.md)：数据来源分级，以及 BWiki 管线和字段血缘文档入口。
 - [`docs/session-start-prompt.md`](docs/session-start-prompt.md)：下一轮 session 启动提示、代码地图和阶段重点。
 - [`docs/nature-recommendation-redesign.md`](docs/nature-recommendation-redesign.md)：性格推荐规则设计草案，下一轮规则调参从这里继续。
 - [`docs/rocom-position-audit-plan.md`](docs/rocom-position-audit-plan.md)：洛克王国世界外部定位核对计划和批次台账。

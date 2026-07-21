@@ -13,12 +13,12 @@
     "preview": "vite preview",
     "check:nature": "node scripts/check-nature-recommendations.mjs",
     "audit:rocom": "node scripts/generate-rocom-position-audit-plan.mjs",
-    "sync:breeding": "node scripts/sync-bwiki-breeding-preset.mjs",
-    "sync:bwiki:staging": "node scripts/sync-bwiki-rock-kingdom-staging.mjs",
-    "sync:bwiki:details": "node scripts/sync-bwiki-creature-detail-staging.mjs",
-    "preview:bwiki": "node scripts/preview-bwiki-rock-kingdom-preset.mjs",
-    "check:bwiki:preset": "node scripts/apply-bwiki-rock-kingdom-preset.mjs",
-    "apply:bwiki:preset": "node scripts/apply-bwiki-rock-kingdom-preset.mjs --write",
+    "sync:breeding": "node scripts/bwiki/sync-breeding.mjs",
+    "sync:bwiki:staging": "node scripts/bwiki/sync-staging.mjs",
+    "sync:bwiki:details": "node scripts/bwiki/sync-details.mjs",
+    "preview:bwiki": "node scripts/bwiki/build-preview.mjs",
+    "check:bwiki:preset": "node scripts/bwiki/apply-preset.mjs",
+    "apply:bwiki:preset": "node scripts/bwiki/apply-preset.mjs --write",
     "test": "node --test scripts/tests/*.test.mjs"
   },
   "dependencies": {
