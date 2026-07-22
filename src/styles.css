@@ -520,7 +520,56 @@ img {
   width: 14px;
   height: 14px;
   border-radius: 3px;
-  object-fit: cover;
+  object-fit: contain;
+}
+
+.option-icon {
+  width: 26px;
+  height: 26px;
+  display: inline-grid;
+  place-items: center;
+  vertical-align: middle;
+}
+
+.option-icon-image {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.option-icon-symbol {
+  font-size: 23px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.option-icon-symbol.male,
+.option-icon-symbol.female {
+  transform: rotate(-8deg);
+  transform-origin: center;
+}
+
+.option-icon-symbol.colorful-off {
+  color: #94a3b8;
+  font-size: 20px;
+}
+
+.colorful-marker {
+  position: relative;
+  width: 21px;
+  height: 21px;
+  transform: rotate(45deg);
+  border-radius: 4px 8px 4px 8px;
+  background: conic-gradient(from 20deg, #38bdf8, #8b5cf6, #ec4899, #fb7185, #facc15, #34d399, #38bdf8);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.55), 0 1px 4px rgba(99, 102, 241, 0.28);
+}
+
+.colorful-marker::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.88);
 }
 
 /* ---------------------------------------------------------------------------
@@ -1202,18 +1251,58 @@ img {
   background: #eff6ff;
 }
 
-.reference-creature {
+.reference-inline {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+}
+
+.reference-inline-button {
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.reference-inline-button:hover {
+  color: var(--primary);
+}
+
+.reference-summary {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   min-width: 0;
 }
 
-.reference-creature img {
-  width: 30px;
-  height: 30px;
+.reference-summary img {
+  width: 36px;
+  height: 36px;
   object-fit: contain;
   flex: 0 0 auto;
+}
+
+.parenthetical-text {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.parenthetical-text > span,
+.parenthetical-text > small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.parenthetical-text > small {
+  color: var(--text-muted);
+  font-size: 11px;
 }
 
 .reference-picker {
@@ -1288,6 +1377,31 @@ img {
   max-width: 300px;
   max-height: 50px;
   overflow: hidden;
+}
+
+.cell-tag-group.is-stacked,
+.reference-list.is-stacked {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+.cell-tag-group.lines-3,
+.reference-list.lines-3,
+.data-grid td .reference-list.lines-3 {
+  position: relative;
+  max-height: 59px;
+}
+
+.lines-3:has(.cell-extra) {
+  padding-right: 36px;
+}
+
+.lines-3 > .cell-extra {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
 }
 
 .bool-true {
@@ -1475,6 +1589,15 @@ img {
   white-space: nowrap;
   box-shadow: -8px 0 14px -14px rgba(15, 23, 42, 0.75);
   z-index: 1;
+}
+
+.data-grid [data-display-compact="true"] {
+  width: var(--field-table-width);
+  min-width: var(--field-table-width);
+  max-width: var(--field-table-width);
+  padding-left: 7px;
+  padding-right: 7px;
+  white-space: normal;
 }
 
 .data-grid-actions {
@@ -3277,10 +3400,10 @@ img {
 .breeding-creature-row { min-width: 0; display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 16px; background: linear-gradient(180deg, #fff, #fff7ed); white-space: nowrap; overflow: hidden; }
 .breeding-creature-row.compact { background: #fff; }
 .breeding-creature-row img { width: 48px; height: 48px; object-fit: contain; flex: 0 0 auto; }
-.breeding-sex-symbol { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 999px; font-size: 19px; line-height: 1; font-weight: 900; flex: 0 0 auto; }
-.breeding-sex-symbol.male { color: #2563eb; background: #dbeafe; }
-.breeding-sex-symbol.female { color: #e11d48; background: #ffe4e6; }
-.breeding-sex-symbol.offspring { color: #ea580c; background: #ffedd5; }
+.breeding-sex-symbol { width: 24px; height: 24px; display: grid; place-items: center; font-size: 21px; line-height: 1; font-weight: 900; flex: 0 0 auto; transform: rotate(-8deg); }
+.breeding-sex-symbol.male { color: #2563eb; }
+.breeding-sex-symbol.female { color: #e11d48; }
+.breeding-sex-symbol.offspring { color: #ea580c; transform: none; }
 .breeding-creature-text { min-width: 0; display: inline-flex; align-items: baseline; gap: 8px; overflow: hidden; }
 .breeding-creature-text strong, .breeding-creature-text em, .breeding-creature-text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .breeding-creature-text strong { font-size: 14px; }
@@ -3301,16 +3424,16 @@ img {
   --surface-subtle: #fff7ed;
 }
 
-.trait-cell {
+.summary-cell {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
   width: 100%;
-  max-width: 300px;
+  max-width: 238px;
 }
 
-.trait-cell-icon {
+.summary-cell-icon {
   width: 26px;
   height: 26px;
   object-fit: contain;
@@ -3320,20 +3443,20 @@ img {
   border: 1px solid #fed7aa;
 }
 
-.trait-cell-text {
+.summary-cell-text {
   display: inline-flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
 }
 
-.trait-cell-text strong {
+.summary-cell-text strong {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.trait-cell-text small {
+.summary-cell-text small {
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.45;
@@ -3344,79 +3467,20 @@ img {
   overflow: hidden;
 }
 
-.trait-cell-detail {
+.summary-cell-detail {
   align-items: flex-start;
   width: auto;
   max-width: none;
 }
 
-.trait-cell-detail .trait-cell-icon {
+.summary-cell-detail .summary-cell-icon {
   width: 36px;
   height: 36px;
 }
 
-.trait-cell-detail .trait-cell-text small {
+.summary-cell-detail .summary-cell-text small {
   display: block;
   overflow: visible;
-}
-
-.data-grid [data-field-key="traitName"] {
-  min-width: 280px;
-  max-width: 300px;
-  white-space: normal;
-}
-
-.data-grid [data-field-key="element"],
-.data-grid [data-field-key="traitTags"],
-.data-grid [data-field-key="skillTags"],
-.data-grid [data-field-key="skillRefs"] {
-  min-width: 220px;
-  white-space: normal;
-}
-
-.rock-status-icon {
-  width: 26px;
-  height: 26px;
-  display: inline-grid;
-  place-items: center;
-  flex: 0 0 auto;
-  vertical-align: middle;
-}
-
-.status-image {
-  object-fit: contain;
-}
-
-.gender-icon {
-  border-radius: 999px;
-  font-size: 21px;
-  line-height: 1;
-  font-weight: 900;
-}
-
-.gender-icon.male {
-  color: #2563eb;
-  background: #dbeafe;
-}
-
-.gender-icon.female {
-  color: #e11d48;
-  background: #ffe4e6;
-}
-
-.colorful-icon {
-  border-radius: 999px;
-  color: #fff;
-  background: conic-gradient(#ef4444, #f59e0b, #22c55e, #38bdf8, #8b5cf6, #ec4899, #ef4444);
-  font-size: 18px;
-  font-weight: 900;
-  text-shadow: 0 1px 2px rgba(15, 23, 42, 0.28);
-}
-
-.colorful-icon.disabled {
-  color: #94a3b8;
-  background: #e2e8f0;
-  text-shadow: none;
 }
 
 .trait-field-input {

@@ -22,10 +22,7 @@ import {
 import { FIELD_TYPES, isOptionFieldType, isReferenceFieldType, STATS_DIMENSIONS } from '../constants.js'
 import { createField, db, deleteField, reorderFields, updateField } from '../db.js'
 import {
-  creatureReferenceImage,
-  creatureReferenceLabel,
   isRockKingdomCreatureReference,
-  rockKingdomStatus,
   selectableReferenceRows,
 } from '../domain/rockKingdomPresentation.js'
 import { generateId, getStatsValues, resolveStatsMapping, stringifyCellValue } from '../utils.js'
@@ -394,19 +391,44 @@ function ReferenceLookupProvider({ fields, children }) {
   )
 }
 
-function referenceRowLabel(fields, row) {
+function referenceRowLabel(fields, row, field) {
   if (!row) return ''
+  const configuredKeys = field?.display?.referenceLabelFields
+  if (Array.isArray(configuredKeys) && configuredKeys.length > 0) {
+    const parts = configuredKeys
+      .map((key) => {
+        const referenceField = fields.find((item) => item.key === key)
+        return referenceField
+          ? stringifyCellValue(row.values?.[key], referenceField)
+          : row.values?.[key]
+      })
+      .filter(Boolean)
+    if (parts.length > 0) return parts.join(field.display.referenceLabelSeparator || ' · ')
+  }
   const labelField = fields.find((f) => f.type === 'text') || fields[0]
   if (!labelField) return row.id
   return stringifyCellValue(row.values?.[labelField.key], labelField) || row.id
 }
 
-function ReferenceLabel({ field, row, label }) {
-  const image = creatureReferenceImage(field, row)
+function ParentheticalText({ value }) {
+  const text = String(value || '')
+  const index = text.search(/[（(]/)
+  if (index <= 0) return <span>{text}</span>
   return (
-    <span className={image ? 'reference-creature' : ''}>
+    <span className="parenthetical-text" title={text}>
+      <span>{text.slice(0, index)}</span>
+      <small>{text.slice(index)}</small>
+    </span>
+  )
+}
+
+function ReferenceLabel({ field, row, label }) {
+  const imageKey = field.display?.referenceImageField
+  const image = imageKey ? row?.values?.[imageKey] || '' : ''
+  return (
+    <span className={image ? 'reference-summary' : ''}>
       {image && <img src={image} alt="" />}
-      <span>{label}</span>
+      {field.display?.breakParentheses ? <ParentheticalText value={label} /> : <span>{label}</span>}
     </span>
   )
 }
@@ -415,12 +437,14 @@ function ReferenceCellContent({ field, value, onOpenReference, referenceContext 
   const { fields, rows } = referenceContext
   if (!value) return <span className="cell-empty">—</span>
   const row = rows.find((r) => r.id === value)
-  const label = row ? referenceRowLabel(fields, row) : value
-  if (!row || !onOpenReference) return <span className="reference-tag"><ReferenceLabel field={field} row={row} label={label} /></span>
+  const label = row ? referenceRowLabel(fields, row, field) : value
+  const plain = field.display?.plainReference
+  const className = plain ? 'reference-inline' : 'reference-tag'
+  if (!row || !onOpenReference) return <span className={className}><ReferenceLabel field={field} row={row} label={label} /></span>
   return (
     <button
       type="button"
-      className="reference-tag reference-tag-button"
+      className={`${className} ${plain ? 'reference-inline-button' : 'reference-tag-button'}`}
       onClick={(e) => {
         e.stopPropagation()
         onOpenReference({ field, row, fields, rows })
@@ -452,29 +476,33 @@ function ReferenceListCellContent({ field, value, onOpenReference, referenceCont
   const { fields, rows } = referenceContext
   const ids = Array.isArray(value) ? value : value ? [value] : []
   if (ids.length === 0) return <span className="cell-empty">—</span>
-  const visibleIds = field.__detailMode ? ids : ids.slice(0, 6)
+  const limit = Math.max(Number(field.display?.tableMaxItems) || 6, 2)
+  const visibleLimit = ids.length > limit ? limit - 1 : limit
+  const visibleIds = field.__detailMode ? ids : ids.slice(0, visibleLimit)
+  const plain = field.display?.plainReference
+  const itemClass = plain ? 'reference-inline' : 'reference-tag'
   return (
-    <span className="reference-list">
+    <span className={`reference-list ${field.display?.stack ? 'is-stacked' : ''} ${field.display?.tableLines === 3 ? 'lines-3' : ''}`}>
       {visibleIds.map((id) => {
         const row = rows.find((r) => r.id === id)
-        const label = row ? referenceRowLabel(fields, row) : id
-        if (!row || !onOpenReference) return <span key={id} className="reference-tag">{label}</span>
+        const label = row ? referenceRowLabel(fields, row, field) : id
+        if (!row || !onOpenReference) return <span key={id} className={itemClass}><ReferenceLabel field={field} row={row} label={label} /></span>
         return (
           <button
             key={id}
             type="button"
-            className="reference-tag reference-tag-button"
+            className={`${itemClass} ${plain ? 'reference-inline-button' : 'reference-tag-button'}`}
             onClick={(e) => {
               e.stopPropagation()
               onOpenReference({ field, row, fields, rows })
             }}
             title="查看引用资料"
           >
-            {label}
+            <ReferenceLabel field={field} row={row} label={label} />
           </button>
         )
       })}
-      {ids.length > visibleIds.length && <span className="reference-tag">+{ids.length - visibleIds.length}</span>}
+      {ids.length > visibleIds.length && <span className="reference-tag cell-extra">+{ids.length - visibleIds.length}</span>}
     </span>
   )
 }
@@ -486,9 +514,7 @@ function ReferenceFieldInput({ field, value, onChange }) {
   const normalizedKeyword = keyword.trim().toLowerCase()
   const filteredRows = normalizedKeyword
     ? selectableRows.filter((row) => {
-      const label = isRockKingdomCreatureReference(field)
-        ? creatureReferenceLabel(row)
-        : referenceRowLabel(fields, row)
+      const label = referenceRowLabel(fields, row, field)
       return label.toLowerCase().includes(normalizedKeyword)
     })
     : selectableRows
@@ -505,7 +531,7 @@ function ReferenceFieldInput({ field, value, onChange }) {
   const selectedRow = selectableRows.find((row) => row.id === value)
   return (
     <div className="reference-picker">
-      {isRockKingdomCreatureReference(field) && (
+      {(field.display?.searchableReference || isRockKingdomCreatureReference(field)) && (
         <input
           className="input reference-picker-search"
           type="search"
@@ -517,13 +543,11 @@ function ReferenceFieldInput({ field, value, onChange }) {
       <select className="select" value={value || ''} onChange={(e) => onChange(e.target.value)}>
         <option value="">未选择</option>
         {selectedRow && normalizedKeyword && !filteredRows.some((row) => row.id === selectedRow.id) && (
-          <option value={selectedRow.id}>{creatureReferenceLabel(selectedRow)}</option>
+          <option value={selectedRow.id}>{referenceRowLabel(fields, selectedRow, field)}</option>
         )}
         {filteredRows.map((r) => (
           <option key={r.id} value={r.id}>
-            {isRockKingdomCreatureReference(field)
-              ? creatureReferenceLabel(r)
-              : referenceRowLabel(fields, r)}
+            {referenceRowLabel(fields, r, field)}
           </option>
         ))}
       </select>
@@ -575,7 +599,7 @@ function ReferenceListFieldInput({ field, value, onChange }) {
             className={`reference-list-option ${checked ? 'selected' : ''}`}
             onClick={() => toggle(row.id)}
           >
-            {referenceRowLabel(fields, row)}
+            {referenceRowLabel(fields, row, field)}
           </button>
         )
       })}
@@ -605,16 +629,16 @@ function EvolutionChainView({ value }) {
   )
 }
 
-function TraitCellView({ row, mode }) {
-  const name = row.values?.traitName
-  const icon = row.values?.traitIcon
-  const desc = row.values?.traitDesc
+function SummaryCellView({ field, row, mode }) {
+  const name = row.values?.[field.key]
+  const icon = row.values?.[field.display?.imageField]
+  const desc = row.values?.[field.display?.descriptionField]
   if (!name && !icon) return <span className="cell-empty">—</span>
   return (
-    <span className={`trait-cell ${mode === 'detail' ? 'trait-cell-detail' : ''}`} title={desc || name || ''}>
-      {icon && <img src={icon} alt="" className="trait-cell-icon" />}
-      <span className="trait-cell-text">
-        <strong>{name || '未命名特性'}</strong>
+    <span className={`summary-cell ${mode === 'detail' ? 'summary-cell-detail' : ''}`} title={desc || name || ''}>
+      {icon && <img src={icon} alt="" className="summary-cell-icon" />}
+      <span className="summary-cell-text">
+        <strong>{name || '未命名'}</strong>
         {desc && <small>{desc}</small>}
       </span>
     </span>
@@ -622,13 +646,8 @@ function TraitCellView({ row, mode }) {
 }
 
 export function CellView({ field, row, allFields, mode = 'table', onOpenReference }) {
-  if (field.key === 'traitName') return <TraitCellView row={row} mode={mode} />
-  if (field.key === 'evolutionLine') return <EvolutionChainView value={row.values?.[field.key]} />
-
-  const status = rockKingdomStatus(field.key, row.values?.[field.key])
-  if (status?.kind === 'gender') return <span className={`rock-status-icon gender-icon ${status.variant}`} title={status.label}>{status.symbol}</span>
-  if (status?.kind === 'image') return <img className="rock-status-icon status-image" src={status.image} alt={status.label} title={status.label} />
-  if (status?.kind === 'colorful') return <span className={`rock-status-icon colorful-icon ${status.enabled ? '' : 'disabled'}`} title={status.label}>{status.symbol}</span>
+  if (field.display?.kind === 'summary') return <SummaryCellView field={field} row={row} mode={mode} />
+  if (field.display?.kind === 'chain') return <EvolutionChainView value={row.values?.[field.key]} />
 
   if (field.type === 'stats') {
     const stats = getStatsValues(allFields, field.statsMap, row.values, field.statsDimensions)
@@ -645,6 +664,7 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
         <ClampText text={value} lines={2} />
       )
     case 'text':
+      if (field.display?.breakParentheses) return <ParentheticalText value={value || '—'} />
       return mode === 'detail' ? <span>{value || '—'}</span> : <Ellipsis text={value} />
     case 'number':
       return <span className="cell-number">{value == null || value === '' ? '—' : value}</span>
@@ -657,7 +677,7 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
     case 'select': {
       const opt = field.options?.find((o) => o.value === value)
       return opt ? (
-        <OptionTag option={opt} size={mode === 'detail' ? 'md' : 'sm'} />
+        <OptionTag option={opt} size={mode === 'detail' ? 'md' : 'sm'} iconOnly={field.display?.mode === 'icon'} />
       ) : (
         <span className="cell-empty">—</span>
       )
@@ -665,15 +685,17 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
     case 'multiselect': {
       const values = Array.isArray(value) ? value : []
       if (values.length === 0) return <span className="cell-empty">—</span>
-      const shown = mode === 'detail' ? values : values.slice(0, 6)
+      const limit = Math.max(Number(field.display?.tableMaxItems) || 6, 2)
+      const visibleLimit = values.length > limit ? limit - 1 : limit
+      const shown = mode === 'detail' ? values : values.slice(0, visibleLimit)
       const extra = values.length - shown.length
       return (
-        <span className="cell-tag-group">
+        <span className={`cell-tag-group ${field.display?.stack ? 'is-stacked' : ''} ${field.display?.tableLines === 3 ? 'lines-3' : ''}`}>
           {shown.map((v) => {
             const opt = field.options?.find((o) => o.value === v)
             return opt ? <OptionTag key={v} option={opt} size={mode === 'detail' ? 'md' : 'sm'} /> : null
           })}
-          {extra > 0 && <span className="option-tag option-tag-sm">+{extra}</span>}
+          {extra > 0 && <span className="option-tag option-tag-sm cell-extra">+{extra}</span>}
         </span>
       )
     }
@@ -940,6 +962,15 @@ export function ColumnMenu({ onSort, onInsertLeft, onInsertRight, onOpenFilter, 
 // 数据表格
 // ---------------------------------------------------------------------------
 
+export function fieldDisplayProps(field) {
+  const width = Number(field.display?.tableWidth)
+  return {
+    'data-field-key': field.key,
+    'data-display-compact': field.display?.compact ? 'true' : undefined,
+    style: Number.isFinite(width) && width > 0 ? { '--field-table-width': `${width}px` } : undefined,
+  }
+}
+
 export function DataGrid({
   fields,
   rows,
@@ -967,7 +998,7 @@ export function DataGrid({
             {visibleFields.map((field) => {
               const fullIndex = fields.findIndex((f) => f.id === field.id)
               return (
-                <th key={field.id} data-field-key={field.key}>
+                <th key={field.id} {...fieldDisplayProps(field)}>
                   <div className="th-content">
                     <span className="th-label">
                       {field.name}
@@ -994,7 +1025,7 @@ export function DataGrid({
           {rows.map((row) => (
             <tr key={row.id} className="data-grid-row" onClick={() => onRowClick(row)}>
               {visibleFields.map((field) => (
-                <td key={field.id} data-field-key={field.key}>
+                <td key={field.id} {...fieldDisplayProps(field)}>
                   <CellView
                     field={field}
                     row={row}

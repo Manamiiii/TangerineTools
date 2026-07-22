@@ -183,8 +183,24 @@ export function ClampText({ text, lines = 2 }) {
 // 选项标签（单选 / 多选）
 // ---------------------------------------------------------------------------
 
-export function OptionTag({ option, size = 'sm' }) {
+export function OptionTag({ option, size = 'sm', iconOnly = false }) {
   if (!option) return null
+  if (iconOnly) {
+    const content = option.image ? (
+      <img src={option.image} alt="" className="option-icon-image" />
+    ) : option.variant === 'colorful' ? (
+      <span className="colorful-marker" aria-hidden="true" />
+    ) : (
+      <span className={`option-icon-symbol ${option.variant || ''}`} style={option.color ? { color: option.color } : undefined}>
+        {option.symbol || option.label}
+      </span>
+    )
+    return (
+      <span className={`option-icon option-icon-${size} ${option.variant || ''}`} title={option.label} aria-label={option.label}>
+        {content}
+      </span>
+    )
+  }
   const style = option.color
     ? {
         background: `${option.color}1f`,

@@ -9,51 +9,52 @@
 export const OWNED_TABLE_NAME = '收集记录'
 
 const ELEMENT_BLOODLINE_OPTIONS = [
-  ['normal', '普通', '#94a3b8'],
-  ['grass', '草', '#22c55e'],
-  ['fire', '火', '#f97316'],
-  ['water', '水', '#38bdf8'],
-  ['light', '光', '#facc15'],
-  ['earth', '地', '#a16207'],
-  ['ice', '冰', '#67e8f9'],
-  ['dragon', '龙', '#d946ef'],
-  ['electric', '电', '#eab308'],
-  ['poison', '毒', '#a855f7'],
-  ['bug', '虫', '#84cc16'],
-  ['fighting', '武', '#b91c1c'],
-  ['flying', '翼', '#60a5fa'],
-  ['cute', '萌', '#f472b6'],
-  ['ghost', '幽', '#334155'],
-  ['dark', '恶', '#6b21a8'],
-  ['mech', '机械', '#64748b'],
-  ['illusion', '幻', '#7c3aed'],
+  ['normal', '普通', '#94a3b8', 'https://patchwiki.biligame.com/images/rocom/7/70/hbx2mxrruwfztv52jg3tr37k046f6s2.png'],
+  ['grass', '草', '#22c55e', 'https://patchwiki.biligame.com/images/rocom/0/0d/llnoomkqgu36hu32l2tuv0w5ipms3c0.png'],
+  ['fire', '火', '#f97316', 'https://patchwiki.biligame.com/images/rocom/2/23/lj1n3mhejnunwt72zbli4t1cudgn7cr.png'],
+  ['water', '水', '#38bdf8', 'https://patchwiki.biligame.com/images/rocom/7/7e/7na8o1c7golnwva318qaxj7lpvx0suo.png'],
+  ['light', '光', '#facc15', 'https://patchwiki.biligame.com/images/rocom/7/78/rw5icdmlh4o88qsudgoq0bp8djraqbs.png'],
+  ['earth', '地', '#a16207', 'https://patchwiki.biligame.com/images/rocom/5/56/fllk6eu2fd4zg30cg9bjd9kk1zoe94c.png'],
+  ['ice', '冰', '#67e8f9', 'https://patchwiki.biligame.com/images/rocom/8/8f/7cfepdaflqrw8s86jl00atdagm7kn3f.png'],
+  ['dragon', '龙', '#d946ef', 'https://patchwiki.biligame.com/images/rocom/f/f0/hm4s0mqgx43yz7i4i827afcp19d74kt.png'],
+  ['electric', '电', '#eab308', 'https://patchwiki.biligame.com/images/rocom/5/5e/9784dxg7yca2u0tt6t3q03qleoas0md.png'],
+  ['poison', '毒', '#a855f7', 'https://patchwiki.biligame.com/images/rocom/3/3a/sqab2pzbqw8gzl2l911m2vlqhbl8wd9.png'],
+  ['bug', '虫', '#84cc16', 'https://patchwiki.biligame.com/images/rocom/0/0e/hoowui3thcownn9hea6jlh6vniydvyh.png'],
+  ['fighting', '武', '#b91c1c', 'https://patchwiki.biligame.com/images/rocom/9/9e/sklaczw3udn14lphtbnzd9ebilbx2id.png'],
+  ['flying', '翼', '#60a5fa', 'https://patchwiki.biligame.com/images/rocom/d/d7/cs1dep064vo1xf6r7w047bevif364bx.png'],
+  ['cute', '萌', '#f472b6', 'https://patchwiki.biligame.com/images/rocom/d/db/rixb4l1amt9bzhbkmqplyhymuetv960.png'],
+  ['ghost', '幽', '#334155', 'https://patchwiki.biligame.com/images/rocom/8/83/dsiwmmjsdkgqhyw1df178sgj217i06h.png'],
+  ['dark', '恶', '#6b21a8', 'https://patchwiki.biligame.com/images/rocom/0/03/41xl13ng57602b3126o7ua1bn2zyla2.png'],
+  ['mech', '机械', '#64748b', 'https://patchwiki.biligame.com/images/rocom/c/c3/kd7wllpd0gux5gqok5mxmi5anxf6g7w.png'],
+  ['illusion', '幻', '#7c3aed', 'https://patchwiki.biligame.com/images/rocom/1/13/snldgaapo2rab0xep9kj4sg98iopj59.png'],
 ]
 
 // 血脉：保留首领/污染/奇异，并补充洛克王国 18 系作为血脉分类。
 export const OWNED_BLOODLINE_OPTIONS = [
-  { value: 'leader', label: '首领', color: '#dc2626' },
-  { value: 'polluted', label: '污染', color: '#7c3aed' },
-  { value: 'strange', label: '奇异', color: '#0891b2' },
-  ...ELEMENT_BLOODLINE_OPTIONS.map(([value, label, color]) => ({
+  { value: 'leader', label: '首领', color: '#dc2626', image: 'https://patchwiki.biligame.com/images/rocom/3/39/0ksfgap83zcnbelx8d1zlbnkrojv143.png' },
+  { value: 'polluted', label: '污染', color: '#7c3aed', image: 'https://patchwiki.biligame.com/images/rocom/c/c2/orxazzd4k3s6drwes83s1fi077r3xb5.png' },
+  { value: 'strange', label: '奇异', color: '#0891b2', image: 'https://patchwiki.biligame.com/images/rocom/a/ad/1rxbfaw5tohdexgb0mnmwvtlm2mjllz.png' },
+  ...ELEMENT_BLOODLINE_OPTIONS.map(([value, label, color, image]) => ({
     value: `element-${value}`,
     label: `${label}系`,
     color,
+    image,
   })),
 ]
 
 export const OWNED_SHINY_OPTIONS = [
-  { value: 'no', label: '非异色个体', color: '#64748b' },
-  { value: 'yes', label: '异色个体', color: '#db2777' },
+  { value: 'no', label: '非异色个体', color: '#64748b', image: 'https://patchwiki.biligame.com/images/rocom/4/4f/20dseynhfc393c6jys1rnwhwwf94xvv.png' },
+  { value: 'yes', label: '异色个体', color: '#db2777', image: 'https://patchwiki.biligame.com/images/rocom/2/2e/buxc6y4s0r7d8ix03zzkahnk4h8urtv.png' },
 ]
 
 export const OWNED_COLORFUL_OPTIONS = [
-  { value: 'no', label: '非炫彩', color: '#64748b' },
-  { value: 'yes', label: '炫彩', color: '#db2777' },
+  { value: 'no', label: '非炫彩', color: '#94a3b8', symbol: '◇', variant: 'colorful-off' },
+  { value: 'yes', label: '炫彩', color: '#db2777', symbol: '◆', variant: 'colorful' },
 ]
 
 export const OWNED_GENDER_OPTIONS = [
-  { value: 'male', label: '公', color: '#2563eb' },
-  { value: 'female', label: '母', color: '#db2777' },
+  { value: 'male', label: '公', color: '#2563eb', symbol: '♂', variant: 'male' },
+  { value: 'female', label: '母', color: '#e11d48', symbol: '♀', variant: 'female' },
 ]
 
 export const OWNED_SPECIALTY_OPTIONS = [
@@ -120,13 +121,13 @@ export const OWNED_NATURE_OPTIONS = [
 // ref 字段的 refTableKind/refTableName 由 ensureOwnedTable 在运行时补齐，
 // 因为它需要绑定到当前场景里的普通资料表（例如洛克王国的"精灵图鉴"）。
 export const ROCK_KINGDOM_COLLECTION_FIELDS = [
-  { key: 'ref', name: '精灵', type: 'reference' },
-  { key: 'nature', name: '性格', type: 'select', options: OWNED_NATURE_OPTIONS },
-  { key: 'bloodline', name: '血脉', type: 'select', options: OWNED_BLOODLINE_OPTIONS },
-  { key: 'shiny', name: '个体异色', type: 'select', options: OWNED_SHINY_OPTIONS },
-  { key: 'colorful', name: '是否炫彩', type: 'select', options: OWNED_COLORFUL_OPTIONS },
+  { key: 'ref', name: '精灵', type: 'reference', display: { referenceImageField: 'image', referenceLabelFields: ['name'], searchableReference: true, plainReference: true, breakParentheses: true, compact: true, tableWidth: 154 } },
+  { key: 'nature', name: '性格', type: 'select', options: OWNED_NATURE_OPTIONS, display: { compact: true, tableWidth: 136 } },
+  { key: 'bloodline', name: '血脉', type: 'select', options: OWNED_BLOODLINE_OPTIONS, display: { compact: true, tableWidth: 104 } },
+  { key: 'shiny', name: '个体异色', type: 'select', options: OWNED_SHINY_OPTIONS, display: { mode: 'icon', compact: true, tableWidth: 68 } },
+  { key: 'colorful', name: '是否炫彩', type: 'select', options: OWNED_COLORFUL_OPTIONS, display: { mode: 'icon', compact: true, tableWidth: 68 } },
   { key: 'specialty', name: '特长', type: 'select', options: OWNED_SPECIALTY_OPTIONS },
-  { key: 'gender', name: '性别', type: 'select', options: OWNED_GENDER_OPTIONS },
+  { key: 'gender', name: '性别', type: 'select', options: OWNED_GENDER_OPTIONS, display: { mode: 'icon', compact: true, tableWidth: 56 } },
   { key: 'note', name: '备注', type: 'longtext' },
 ]
 

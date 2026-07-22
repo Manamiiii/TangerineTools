@@ -168,12 +168,12 @@ function makeField(partial, order, tableId = TABLE_ID, idPrefix = 'field-rock') 
 }
 
 const fields = [
-  makeField({ key: 'image', name: '精灵图', type: 'image' }, 0),
-  makeField({ key: 'name', name: '名称', type: 'text' }, 1),
-  makeField({ key: 'no', name: '编号', type: 'text' }, 2),
-  makeField({ key: 'element', name: '系别', type: 'multiselect', options: ELEMENT_OPTIONS }, 3),
-  makeField({ key: 'form', name: '形态', type: 'text' }, 4),
-  makeField({ key: 'bst', name: '种族值', type: 'number' }, 5),
+  makeField({ key: 'image', name: '精灵图', type: 'image', display: { compact: true, tableWidth: 74 } }, 0),
+  makeField({ key: 'name', name: '名称', type: 'text', display: { breakParentheses: true, compact: true, tableWidth: 132 } }, 1),
+  makeField({ key: 'no', name: '编号', type: 'text', display: { compact: true, tableWidth: 72 } }, 2),
+  makeField({ key: 'element', name: '系别', type: 'multiselect', options: ELEMENT_OPTIONS, display: { stack: true, tableMaxItems: 2, compact: true, tableWidth: 78 } }, 3),
+  makeField({ key: 'form', name: '形态', type: 'text', display: { compact: true, tableWidth: 92 } }, 4),
+  makeField({ key: 'bst', name: '种族值', type: 'number', display: { compact: true, tableWidth: 76 } }, 5),
   makeField(
     {
       key: 'stats',
@@ -189,16 +189,17 @@ const fields = [
         { key: 'mdef', label: '魔防', fieldKey: 'mdef' },
         { key: 'spd', label: '速度', fieldKey: 'spd' },
       ],
+      display: { compact: true, tableWidth: 126 },
     },
     6,
   ),
-  makeField({ key: 'traitName', name: '特性', type: 'text' }, 7),
+  makeField({ key: 'traitName', name: '特性', type: 'text', display: { kind: 'summary', imageField: 'traitIcon', descriptionField: 'traitDesc', compact: true, tableWidth: 238 } }, 7),
   makeField(
-    { key: 'traitTags', name: '特性标签', type: 'multiselect', options: TRAIT_TAG_OPTIONS },
+    { key: 'traitTags', name: '特性标签', type: 'multiselect', options: TRAIT_TAG_OPTIONS, display: { tableLines: 3, tableMaxItems: 6, compact: true, tableWidth: 172 } },
     8,
   ),
-  makeField({ key: 'skillTags', name: '技能标签', type: 'multiselect', options: SKILL_TAG_OPTIONS }, 9),
-  makeField({ key: 'skillRefs', name: '可用技能', type: 'references', referenceTableId: SKILL_TABLE_ID }, 10),
+  makeField({ key: 'skillTags', name: '技能标签', type: 'multiselect', options: SKILL_TAG_OPTIONS, display: { tableLines: 3, tableMaxItems: 6, compact: true, tableWidth: 172 } }, 9),
+  makeField({ key: 'skillRefs', name: '可用技能', type: 'references', referenceTableId: SKILL_TABLE_ID, display: { referenceLabelFields: ['name'], tableLines: 3, tableMaxItems: 6, compact: true, tableWidth: 196 } }, 10),
   makeField({ key: 'eggGroups', name: '蛋组', type: 'multiselect', options: BILI_EGG_GROUP_NAMES.map((name, index) => ({
     value: name,
     label: name,
@@ -214,25 +215,25 @@ const fields = [
   makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 19),
   makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 20),
   makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 21),
-  makeField({ key: 'evolutionLine', name: '进化链', type: 'longtext', hidden: true }, 22),
+  makeField({ key: 'evolutionLine', name: '进化链', type: 'longtext', hidden: true, display: { kind: 'chain' } }, 22),
 ]
 
 const skillFields = [
-  makeField({ key: 'image', name: '技能图标', type: 'image' }, 0, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'name', name: '技能名称', type: 'text' }, 1, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'element', name: '系别', type: 'select', options: ELEMENT_OPTIONS }, 2, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'category', name: '类型', type: 'select', options: SKILL_CATEGORY_OPTIONS }, 3, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'power', name: '威力', type: 'number' }, 4, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'cost', name: '能耗', type: 'number' }, 5, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'priority', name: '先制/速度', type: 'text' }, 6, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'image', name: '技能图标', type: 'image', display: { compact: true, tableWidth: 80 } }, 0, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'name', name: '技能名称', type: 'text', display: { breakParentheses: true, compact: true, tableWidth: 132 } }, 1, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'element', name: '系别', type: 'select', options: ELEMENT_OPTIONS, display: { compact: true, tableWidth: 78 } }, 2, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'category', name: '类型', type: 'select', options: SKILL_CATEGORY_OPTIONS, display: { compact: true, tableWidth: 88 } }, 3, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'power', name: '威力', type: 'number', display: { compact: true, tableWidth: 66 } }, 4, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'cost', name: '能耗', type: 'number', display: { compact: true, tableWidth: 66 } }, 5, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'priority', name: '先制/速度', type: 'text', display: { compact: true, tableWidth: 82 } }, 6, SKILL_TABLE_ID, 'field-rock-skill'),
   makeField(
-    { key: 'effectTags', name: '效果标签', type: 'multiselect', options: SKILL_EFFECT_TAG_OPTIONS },
+    { key: 'effectTags', name: '效果标签', type: 'multiselect', options: SKILL_EFFECT_TAG_OPTIONS, display: { tableLines: 3, tableMaxItems: 6, compact: true, tableWidth: 172 } },
     7,
     SKILL_TABLE_ID,
     'field-rock-skill',
   ),
-  makeField({ key: 'effect', name: '效果', type: 'longtext' }, 8, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'learnerRefs', name: '可学精灵', type: 'references', referenceTableId: TABLE_ID }, 9, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'effect', name: '效果', type: 'longtext', display: { compact: true, tableWidth: 236 } }, 8, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'learnerRefs', name: '可学精灵', type: 'references', referenceTableId: TABLE_ID, display: { referenceLabelFields: ['name'], breakParentheses: true, tableLines: 3, tableMaxItems: 6, compact: true, tableWidth: 196 } }, 9, SKILL_TABLE_ID, 'field-rock-skill'),
 ]
 
 export const ROCK_KINGDOM_PRESET = {

@@ -37,13 +37,15 @@ export function deriveFieldKey(name, existingKeys = []) {
 
 export function normalizeOption(opt) {
   if (typeof opt === 'string') {
-    return { value: opt, label: opt, color: '', image: '' }
+    return { value: opt, label: opt, color: '', image: '', symbol: '', variant: '' }
   }
   return {
     value: opt.value ?? opt.label ?? '',
     label: opt.label ?? opt.value ?? '',
     color: opt.color || '',
     image: opt.image || '',
+    symbol: opt.symbol || '',
+    variant: opt.variant || '',
   }
 }
 
@@ -97,6 +99,7 @@ export function normalizeField(field) {
     statsDimensions: Array.isArray(field.statsDimensions) ? field.statsDimensions : [],
     statsStyle: field.statsStyle === 'radar' ? 'radar' : 'bars',
     referenceTableId: field.referenceTableId || null,
+    display: field.display && typeof field.display === 'object' ? { ...field.display } : {},
     createdAt: field.createdAt || nowIso(),
     updatedAt: field.updatedAt || nowIso(),
   }

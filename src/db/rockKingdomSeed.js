@@ -27,7 +27,10 @@ export async function ensureSeeded() {
   }
   const migrationKey = 'rockKingdomRuntimeMigrationVersion'
   const migrated = await db.meta.get(migrationKey)
-  if (migrated?.value === ROCK_KINGDOM_ROWS_VERSION) return
+  if (migrated?.value === ROCK_KINGDOM_ROWS_VERSION) {
+    await migrateRockKingdomFieldLayout()
+    return
+  }
   // 版本变化或导入后才执行完整迁移，避免每次启动重复扫描全部精灵与技能行。
   // 各迁移仍保持幂等，并尊重用户删除的表以及非空自定义字段。
   await migrateRockKingdomStructure()
@@ -192,20 +195,19 @@ async function migrateRockKingdomFieldOptions() {
 
 async function migrateRockKingdomFieldLayout() {
   const migrationKey = 'rockKingdomFieldLayoutVersion'
-  const targetVersion = 'catalog-layout-2026-07-21-v2'
+  const targetVersion = 'catalog-layout-2026-07-22-v4'
   const migrated = await db.meta.get(migrationKey)
   if (migrated?.value === targetVersion) return
-  const tableId = ROCK_KINGDOM_PRESET.tables[0].id
-  const presetFields = ROCK_KINGDOM_PRESET.fields.filter((field) => field.tableId === tableId)
-  const existingFields = await db.catalogFields.where('tableId').equals(tableId).toArray()
-  const presetByKey = new Map(presetFields.map((field) => [field.key, field]))
+  const presetById = new Map(ROCK_KINGDOM_PRESET.fields.map((field) => [field.id, field]))
+  const existingFields = await db.catalogFields.bulkGet([...presetById.keys()])
   const now = nowIso()
-  const updates = existingFields.flatMap((field) => {
-    const preset = presetByKey.get(field.key)
+  const updates = existingFields.filter(Boolean).flatMap((field) => {
+    const preset = presetById.get(field.id)
     if (!preset) return []
     const patch = {}
     if (field.order !== preset.order) patch.order = preset.order
-    if (['shiny', 'speciesGroup', 'traitIcon', 'traitDesc'].includes(field.key) && !field.hidden) patch.hidden = true
+    if (JSON.stringify(field.display || {}) !== JSON.stringify(preset.display || {})) patch.display = preset.display || {}
+    if (field.tableId === ROCK_KINGDOM_PRESET.tables[0].id && ['shiny', 'speciesGroup', 'traitIcon', 'traitDesc'].includes(field.key) && !field.hidden) patch.hidden = true
     return Object.keys(patch).length > 0 ? [{ id: field.id, patch: { ...patch, updatedAt: now } }] : []
   })
   await db.transaction('rw', db.catalogFields, db.meta, async () => {

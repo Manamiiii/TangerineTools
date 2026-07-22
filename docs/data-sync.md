@@ -28,11 +28,13 @@ db.version(1).stores({
 |---|---|---|---|
 | `scenes` | `id` | `order` | 场景：`name` / `type` / `tools[]` / `order` / `createdAt` / `updatedAt` |
 | `catalogTables` | `id` | `sceneId`, `order` | 资料表：`sceneId` / `name` / `order` / 时间戳 / 可选的 `kind`（非索引属性；`'owned'` 表示收集记录表，缺省表示普通资料库表；导入兼容 `kind: 'stock'` 记录，但统计视图不读取该类固定表） |
-| `catalogFields` | `id` | `tableId`, `order` | 字段：`tableId` / `key` / `name` / `type` / `order` / `hidden` / 类型相关配置（`options` / `statsMap` / `statsDimensions` / `statsStyle` / `referenceTableId` 等） |
+| `catalogFields` | `id` | `tableId`, `order` | 字段：`tableId` / `key` / `name` / `type` / `order` / `hidden` / 类型相关配置（`options` / `statsMap` / `statsDimensions` / `statsStyle` / `referenceTableId` / `display` 等） |
 | `catalogRows` | `id` | `tableId` | 行：`tableId` / `values`（以字段 `key` 为键的对象） / 时间戳 |
 | `meta` | `key` | — | 内部标记，如播种标记 `seededRockKingdom` |
 
 字段的 `key` 由 `deriveFieldKey`（`src/utils.js`）从字段名派生，并保证在同一资料表内唯一；行数据 `values` 用字段 `key`（而非字段 `id`）作为属性名存取。普通新建场景不会预置业务字段；资料库字段和收集记录字段都由用户在字段管理里创建。洛克王国作为应用自带预置场景，会在自己的资料库表与收集记录表里补齐官方/场景专属字段。
+
+`display` 是非索引展示配置，不改变字段值结构或 Dexie schema。通用表格按该配置处理列宽、括号换行、多行标签与溢出数量、摘要字段组合、引用行的标签/图片，以及单选项的图标模式。预置场景只声明展示元数据；`CellView` 不按场景字段名选择渲染分支。
 
 ### `catalogTables.kind` 与收集记录 / 统计视图
 

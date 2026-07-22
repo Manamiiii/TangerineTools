@@ -3,8 +3,8 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db, ensureOwnedTable } from '../db.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
 import { buildOwnedCreatures, EGG_GROUP_SOURCE_URL, recommendBreedingBatches } from '../domain/breeding.js'
-import { EmptyState } from './common.jsx'
-import { OWNED_NATURE_OPTIONS } from '../domain/owned.js'
+import { EmptyState, OptionTag } from './common.jsx'
+import { OWNED_COLORFUL_OPTIONS, OWNED_NATURE_OPTIONS } from '../domain/owned.js'
 
 export function BreedingTool({ scene }) {
   useEffect(() => {
@@ -70,7 +70,7 @@ function BreedingCreature({ gender, item, compact = false }) {
       <strong>{item.name}</strong><em>{natureLabel(item.nature)}</em><small>{trait}</small>
     </span>
     {item.shiny && <img className="breeding-status-image" src="https://patchwiki.biligame.com/images/rocom/2/2e/buxc6y4s0r7d8ix03zzkahnk4h8urtv.png" alt="异色" title="异色" />}
-    {item.colorful && <span className="rock-status-icon colorful-icon" title="炫彩">✦</span>}
+    {item.colorful && <OptionTag option={OWNED_COLORFUL_OPTIONS.find((option) => option.value === 'yes')} iconOnly />}
   </div>
 }
 

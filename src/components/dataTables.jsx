@@ -447,8 +447,11 @@ function defaultValueForType(type) {
 
 function RowFormModal({ table, fields, row, onClose }) {
   const allEditableFields = fields.filter((f) => isEditableFieldType(f.type))
-  const hasTraitField = allEditableFields.some((field) => field.key === 'traitName')
-  const editableFields = allEditableFields.filter((field) => !hasTraitField || field.key !== 'traitDesc')
+  const summaryDescriptionKeys = new Set(allEditableFields
+    .filter((field) => field.display?.kind === 'summary')
+    .map((field) => field.display.descriptionField)
+    .filter(Boolean))
+  const editableFields = allEditableFields.filter((field) => !summaryDescriptionKeys.has(field.key))
   const [values, setValues] = useState(() => {
     const init = {}
     allEditableFields.forEach((f) => {
@@ -491,22 +494,23 @@ function RowFormModal({ table, fields, row, onClose }) {
       }
     >
       <form id="row-form" onSubmit={handleSubmit} className="stack-form row-form">
-        {editableFields.map((field) => field.key === 'traitName' ? (
-          <FormRow key={field.id} label="特性">
+        {editableFields.map((field) => field.display?.kind === 'summary' ? (
+          <FormRow key={field.id} label={field.name}>
             <div className="trait-field-input">
-              <input
-                className="input"
-                value={values.traitName || ''}
-                onChange={(event) => setFieldValue('traitName', event.target.value)}
-                placeholder="特性名称"
+              <FieldInput
+                field={field}
+                value={values[field.key]}
+                onChange={(value) => setFieldValue(field.key, value)}
               />
-              <textarea
-                className="input textarea"
-                rows={4}
-                value={values.traitDesc || ''}
-                onChange={(event) => setFieldValue('traitDesc', event.target.value)}
-                placeholder="特性描述"
-              />
+              {field.display.descriptionField && (
+                <textarea
+                  className="input textarea"
+                  rows={4}
+                  value={values[field.display.descriptionField] || ''}
+                  onChange={(event) => setFieldValue(field.display.descriptionField, event.target.value)}
+                  placeholder={`${field.name}描述`}
+                />
+              )}
             </div>
           </FormRow>
         ) : (
@@ -529,9 +533,11 @@ function RowFormModal({ table, fields, row, onClose }) {
 
 function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete, onOpenReference, title = '详情' }) {
   const sorted = [...fields].sort((a, b) => a.order - b.order)
-  const hasTraitField = sorted.some((field) => field.key === 'traitName')
-  const detailFields = sorted.filter((field) =>
-    field.key !== 'traitIcon' && (!hasTraitField || field.key !== 'traitDesc'))
+  const summarySupplementKeys = new Set(sorted
+    .filter((field) => field.display?.kind === 'summary')
+    .flatMap((field) => [field.display.imageField, field.display.descriptionField])
+    .filter(Boolean))
+  const detailFields = sorted.filter((field) => !summarySupplementKeys.has(field.key))
   const numberField = findNumberField(fields)
   const sameNumberRows = numberField ? getSameNumberRows(row, rows, fields) : []
   const comparisonRows = buildFormComparisonRows(sameNumberRows, fields)

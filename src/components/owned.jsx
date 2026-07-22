@@ -11,7 +11,7 @@ import { Pencil, Plus, Search, Settings2, Trash2 } from 'lucide-react'
 import { createRow, db, deleteRow, ensureOwnedTable, updateRow } from '../db.js'
 import { matchesOwnedSearch } from '../domain/owned.js'
 import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal } from './common.jsx'
-import { CellView, FieldInput, FieldManagerModal } from './catalog.jsx'
+import { CellView, FieldInput, FieldManagerModal, fieldDisplayProps } from './catalog.jsx'
 
 export function OwnedTool({ scene }) {
   useEffect(() => {
@@ -217,7 +217,7 @@ function OwnedGrid({ fields, rows, onEditRow, onDeleteRow }) {
         <thead>
           <tr>
             {fields.map((field) => (
-              <th key={field.id} data-field-key={field.key}>{field.name}</th>
+              <th key={field.id} {...fieldDisplayProps(field)}>{field.name}</th>
             ))}
             <th className="th-actions">操作</th>
           </tr>
@@ -226,7 +226,7 @@ function OwnedGrid({ fields, rows, onEditRow, onDeleteRow }) {
           {rows.map((row) => (
             <tr key={row.id} className="data-grid-row">
               {fields.map((field) => (
-                <td key={field.id} data-field-key={field.key}>
+                <td key={field.id} {...fieldDisplayProps(field)}>
                   <CellView field={field} row={row} allFields={fields} mode="table" />
                 </td>
               ))}

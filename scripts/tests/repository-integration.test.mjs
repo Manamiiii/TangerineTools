@@ -69,6 +69,9 @@ test('owned table creation is idempotent and only presets Rock Kingdom fields', 
   assert.equal(rockOwned.collectionMode, 'multiple')
   assert.deepEqual(rockFields.map((field) => field.key), ROCK_KINGDOM_COLLECTION_FIELDS.map((field) => field.key))
   assert.equal(rockFields.find((field) => field.key === 'ref')?.referenceTableId, ROCK_KINGDOM_PRESET.tables[0].id)
+  assert.equal(rockFields.find((field) => field.key === 'ref')?.display?.plainReference, true)
+  assert.equal(rockFields.find((field) => field.key === 'gender')?.options?.[0]?.symbol, '♂')
+  assert.equal(rockFields.find((field) => field.key === 'shiny')?.display?.mode, 'icon')
 
   await ensureOwnedTable(ROCK_KINGDOM_PRESET.scene.id)
   assert.equal(await db.catalogFields.where('tableId').equals(rockOwned.id).count(), rockFields.length)

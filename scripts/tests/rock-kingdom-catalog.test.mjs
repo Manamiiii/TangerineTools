@@ -8,7 +8,7 @@ import {
   relatedRockKingdomBossRows,
   visibleRockKingdomCreatureRows,
 } from '../../src/domain/rockKingdom.js'
-import { mergeFieldOptions } from '../../src/utils.js'
+import { mergeFieldOptions, normalizeField } from '../../src/utils.js'
 
 function row(id, no, name, form) {
   return { id, values: { no, name, form } }
@@ -50,6 +50,21 @@ test('updates only untouched legacy option icons', () => {
   )
   const customized = [{ value: 'light', label: '光', color: '#facc15', image: 'https://user.example/light.png' }]
   assert.deepEqual(mergeFieldOptions(customized, preset, defaults), customized)
+})
+
+test('preserves generic field presentation and icon metadata', () => {
+  const field = normalizeField({
+    id: 'field-status',
+    tableId: 'table-status',
+    key: 'status',
+    type: 'select',
+    display: { mode: 'icon', tableWidth: 68 },
+    options: [{ value: 'yes', label: '启用', symbol: '◆', variant: 'colorful' }],
+  })
+
+  assert.deepEqual(field.display, { mode: 'icon', tableWidth: 68 })
+  assert.equal(field.options[0].symbol, '◆')
+  assert.equal(field.options[0].variant, 'colorful')
 })
 
 test('sorts creature forms by number, stage, final form, then boss form', () => {
