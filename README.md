@@ -76,7 +76,8 @@ npm run lint
 ├── docs/
 │   ├── data-sources/
 │   │   ├── bwiki-pipeline.md             # BWiki 来源、快照与显式发布流程
-│   │   └── bwiki-field-mapping.md        # 字段血缘、稳定 id 与验收门槛
+│   │   ├── bwiki-field-mapping.md        # 字段血缘、稳定 id 与验收门槛
+│   │   └── research-sources.md            # B站、小红书等外部研究证据口径
 │   ├── nature/
 │   │   ├── rules.md                      # 性格推荐当前规则
 │   │   ├── single-creature-template.md   # 单只精灵核对模板
@@ -156,6 +157,7 @@ git diff --check
 - `rockKingdomSkillRows.json` 包含 553 条技能资料。
 - 精灵通过 `skillRefs` 多引用关联技能；技能通过 `learnerRefs` 多引用反向关联可学精灵。
 - 精灵与技能图片使用经审计的 BWiki / patchwiki URL，UI 图标使用可信静态资源。
+- B站和小红书作为玩法、定位、机制演示与养成经验的外部研究源；研究结论必须保留链接和版本信息，不直接覆盖正式预置字段。
 
 预置资料通过版本化基线正式值指纹做三方合并：仅更新空值、无效值或匹配基线正式值的字段，保留用户自定义非空值、用户新增资料、收集记录和统计视图记录。
 
@@ -183,6 +185,7 @@ git diff --check
 - [`docs/data-sync.md`](docs/data-sync.md)：数据模型、导入/导出、预置资料同步与迁移语义。
 - [`docs/data-sources/bwiki-pipeline.md`](docs/data-sources/bwiki-pipeline.md)：BWiki 页面、版本化快照、刷新顺序和发布边界。
 - [`docs/data-sources/bwiki-field-mapping.md`](docs/data-sources/bwiki-field-mapping.md)：staging 到正式预置的字段血缘、稳定 id 和验收门槛。
+- [`docs/data-sources/research-sources.md`](docs/data-sources/research-sources.md)：B站、小红书等玩家资料的用途、证据记录方式和采用边界。
 - [`docs/nature/rules.md`](docs/nature/rules.md)：性格推荐规则、输入输出和校准约束。
 - [`docs/nature/single-creature-template.md`](docs/nature/single-creature-template.md)：单只精灵定位与性格核对格式。
 - [`docs/nature/confirmed-results.md`](docs/nature/confirmed-results.md)：用户确认过的单只结果，用作规则回归基线。

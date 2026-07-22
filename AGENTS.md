@@ -27,6 +27,7 @@ Before making code changes, read the docs that match the task scope:
 - Read `docs/data-sync.md` before touching Dexie data, import/export behavior, preset seeding, or migration logic.
 - Read `docs/data-sources/bwiki-pipeline.md` before changing BWiki collection, staging, preview, or publishing workflows.
 - Read `docs/data-sources/bwiki-field-mapping.md` before changing BWiki field transforms, stable ids, validation thresholds, or formal preset contents.
+- Read `docs/data-sources/research-sources.md` before using B站、小红书 or other player-created materials for positioning, mechanics, builds, or recommendation audits.
 - Read `docs/nature/rules.md` before changing nature recommendation rules or UI.
 - Read `docs/nature/single-creature-template.md` before writing single-creature nature audit results.
 - Read `docs/nature/open-issues.md` before deciding whether a single-creature finding should become a rule change.
@@ -46,6 +47,7 @@ Also check the latest commit, PR description, and review comments when continuin
 - Nature recommendation reads 洛克王国「精灵基础资料」 and follows `skillRefs` to 「技能资料」. Do not reintroduce duplicated skill long-text fields on creature rows.
 - Do not use old web-game 洛克王国 sources as positioning evidence for 洛克王国世界 audits unless the user explicitly asks for historical comparison.
 - External sources are used to understand positioning, mechanics, and player evaluation. Do not directly copy external recommended natures as this tool's final recommendation logic.
+- Treat B站、小红书 and other player platforms as external research sources, not formal preset inputs. Record links, authors, dates, relevant video timestamps or image pages, and separate observable facts from creator opinions. Do not bypass authentication, CAPTCHA, access controls, or anti-automation measures.
 - Prefer rule-level improvements over one-off per-creature special cases. Pause and confirm with the user when a finding would change broad thresholds or role rules.
 
 ## Environment and commands
