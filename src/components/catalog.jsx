@@ -35,6 +35,7 @@ import {
   Modal,
   OptionTag,
   Popover,
+  SearchableSelect,
   StatsChart,
   useDragReorder,
 } from './common.jsx'
@@ -185,6 +186,12 @@ function FieldRow({ field, allFields, sceneTables }) {
       {field.type === 'stats' && (
         <div className="field-row-section">
           <StatsMappingEditor field={field} allFields={allFields} />
+        </div>
+      )}
+
+      {field.type === 'summary' && (
+        <div className="field-row-section">
+          <SummaryMappingEditor field={field} allFields={allFields} />
         </div>
       )}
 
@@ -378,6 +385,35 @@ function useReferenceContext(tableId) {
   return result || { fields: [], rows: [] }
 }
 
+function SummaryMappingEditor({ field, allFields }) {
+  const imageFields = allFields.filter((item) => item.id !== field.id && item.type === 'image')
+  const descriptionFields = allFields.filter((item) =>
+    item.id !== field.id && ['text', 'longtext'].includes(item.type))
+
+  function updateDisplay(patch) {
+    updateField(field.id, { display: { ...field.display, kind: 'summary', ...patch } })
+  }
+
+  return (
+    <div className="summary-mapping-editor">
+      <label>
+        <span>摘要图片</span>
+        <select className="select" value={field.display?.imageField || ''} onChange={(event) => updateDisplay({ imageField: event.target.value })}>
+          <option value="">不关联图片</option>
+          {imageFields.map((item) => <option key={item.id} value={item.key}>{item.name}</option>)}
+        </select>
+      </label>
+      <label>
+        <span>摘要描述</span>
+        <select className="select" value={field.display?.descriptionField || ''} onChange={(event) => updateDisplay({ descriptionField: event.target.value })}>
+          <option value="">不关联描述</option>
+          {descriptionFields.map((item) => <option key={item.id} value={item.key}>{item.name}</option>)}
+        </select>
+      </label>
+    </div>
+  )
+}
+
 const ReferenceLookupContext = createContext(null)
 
 function ReferenceLookupProvider({ fields, children }) {
@@ -526,14 +562,6 @@ function ReferenceListCellContent({ field, value, onOpenReference, referenceCont
 function ReferenceFieldInput({ field, value, onChange }) {
   const { fields, rows } = useReferenceContext(field.referenceTableId)
   const selectableRows = selectableReferenceRows(field, rows)
-  const [keyword, setKeyword] = useState('')
-  const normalizedKeyword = keyword.trim().toLowerCase()
-  const filteredRows = normalizedKeyword
-    ? selectableRows.filter((row) => {
-      const label = referenceRowLabel(fields, row, field)
-      return label.toLowerCase().includes(normalizedKeyword)
-    })
-    : selectableRows
   if (!field.referenceTableId) {
     return (
       <input
@@ -544,63 +572,33 @@ function ReferenceFieldInput({ field, value, onChange }) {
       />
     )
   }
-  const selectedRow = selectableRows.find((row) => row.id === value)
+  const searchable = field.display?.searchableReference || isRockKingdomCreatureReference(field)
+  const options = selectableRows.map((row) => {
+    const label = referenceRowLabel(fields, row, field)
+    const rowText = Object.values(row.values || {}).filter((item) => typeof item !== 'object').join(' ')
+    return { value: row.id, label, searchText: `${label} ${rowText}` }
+  })
+  if (searchable) {
+    return (
+      <SearchableSelect
+        value={value || ''}
+        onChange={onChange}
+        options={options}
+        placeholder="搜索并选择精灵"
+        searchPlaceholder="输入编号、名称或形态"
+        emptyText="没有匹配的精灵"
+      />
+    )
+  }
   return (
-    <div className="reference-picker">
-      {(field.display?.searchableReference || isRockKingdomCreatureReference(field)) && (
-        <input
-          className="input reference-picker-search"
-          type="search"
-          value={keyword}
-          onChange={(event) => setKeyword(event.target.value)}
-          placeholder="按编号、名称或形态搜索精灵…"
-        />
-      )}
-
-      {field.type === 'summary' && (
-        <div className="field-row-section">
-          <SummaryMappingEditor field={field} allFields={allFields} />
-        </div>
-      )}
       <select className="select" value={value || ''} onChange={(e) => onChange(e.target.value)}>
         <option value="">未选择</option>
-        {selectedRow && normalizedKeyword && !filteredRows.some((row) => row.id === selectedRow.id) && (
-          <option value={selectedRow.id}>{referenceRowLabel(fields, selectedRow, field)}</option>
-        )}
-        {filteredRows.map((r) => (
-          <option key={r.id} value={r.id}>
-            {referenceRowLabel(fields, r, field)}
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
           </option>
         ))}
       </select>
-    </div>
-  )
-}
-
-function SummaryMappingEditor({ field, allFields }) {
-  const imageFields = allFields.filter((item) => item.id !== field.id && item.type === 'image')
-  const descriptionFields = allFields.filter((item) =>
-    item.id !== field.id && ['text', 'longtext'].includes(item.type))
-  function updateDisplay(patch) {
-    updateField(field.id, { display: { ...field.display, kind: 'summary', ...patch } })
-  }
-  return (
-    <div className="summary-mapping-editor">
-      <label>
-        <span>摘要图片</span>
-        <select className="select" value={field.display?.imageField || ''} onChange={(event) => updateDisplay({ imageField: event.target.value })}>
-          <option value="">不关联图片</option>
-          {imageFields.map((item) => <option key={item.id} value={item.key}>{item.name}</option>)}
-        </select>
-      </label>
-      <label>
-        <span>摘要描述</span>
-        <select className="select" value={field.display?.descriptionField || ''} onChange={(event) => updateDisplay({ descriptionField: event.target.value })}>
-          <option value="">不关联描述</option>
-          {descriptionFields.map((item) => <option key={item.id} value={item.key}>{item.name}</option>)}
-        </select>
-      </label>
-    </div>
   )
 }
 

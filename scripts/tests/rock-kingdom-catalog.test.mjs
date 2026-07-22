@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import { evaluateNatureProfiles } from '../../src/domain/nature.js'
 import { buildBossFormAnalysis } from '../../src/domain/natureRowAdapter.js'
+import { buildOwnedNatureIndex } from '../../src/domain/owned.js'
 import { ROCK_KINGDOM_PRESET } from '../../src/presets/rockKingdom.js'
 import {
   compareRockKingdomCreatureRows,
@@ -15,6 +16,26 @@ import { mergeFieldOptions, normalizeField } from '../../src/utils.js'
 function row(id, no, name, form) {
   return { id, values: { no, name, form } }
 }
+
+test('matches acquired status by creature and exact nature', () => {
+  const index = buildOwnedNatureIndex([
+    {
+      referenceKeys: ['ref'],
+      natureKey: 'nature',
+      rows: [
+        { values: { ref: 'creature-a', nature: 'clever' } },
+        { values: { ref: 'creature-a', nature: 'clever' } },
+        { values: { ref: 'creature-a', nature: 'timid' } },
+        { values: { ref: 'creature-b', nature: 'clever' } },
+        { values: { ref: 'creature-a', nature: '' } },
+      ],
+    },
+  ])
+
+  assert.deepEqual(index.get('creature-a'), { clever: 2, timid: 1 })
+  assert.deepEqual(index.get('creature-b'), { clever: 1 })
+  assert.equal(index.get('creature-a').brave, undefined)
+})
 
 test('hides a superseded official row only when its replacement exists', () => {
   const legacy = row('rock-creature-src-017', 'NO.012', '板板壳（本来的样子）', '本来的样子')

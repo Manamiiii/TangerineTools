@@ -142,3 +142,24 @@ export function matchesOwnedSearch(row, keyword) {
     .join('\n')
   return haystack.includes(kw)
 }
+
+// 按“精灵引用 + 具体性格值”统计收集数量，供性格候选逐项匹配。
+// sources 支持多个收集表及不同字段 key，不依赖洛克王国的固定表结构。
+export function buildOwnedNatureIndex(sources = []) {
+  const index = new Map()
+  for (const source of sources) {
+    const referenceKeys = Array.isArray(source.referenceKeys) ? source.referenceKeys : []
+    for (const row of source.rows || []) {
+      const natureValue = String(row.values?.[source.natureKey] || '').trim()
+      if (!natureValue) continue
+      for (const referenceKey of referenceKeys) {
+        const referenceValue = row.values?.[referenceKey]
+        if (!referenceValue) continue
+        const counts = index.get(referenceValue) || {}
+        counts[natureValue] = (counts[natureValue] || 0) + 1
+        index.set(referenceValue, counts)
+      }
+    }
+  }
+  return index
+}

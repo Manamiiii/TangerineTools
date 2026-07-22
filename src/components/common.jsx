@@ -1,8 +1,8 @@
 // 通用控件：弹窗、确认框、按钮、颜色选择器、标签、
 // 指标视图、分页、弹出菜单、拖拽排序等。所有工具型页面共用。
 
-import { useEffect, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, GripVertical, X } from 'lucide-react'
+import { useEffect, useId, useRef, useState } from 'react'
+import { Check, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, GripVertical, Search, X } from 'lucide-react'
 import { COLOR_PALETTE, PAGE_SIZE_OPTIONS, STATS_SCALE_MAX } from '../constants.js'
 import { clamp } from '../utils.js'
 
@@ -110,6 +110,100 @@ export function FormRow({ label, children, hint }) {
       {children}
       {hint && <span className="form-row-hint">{hint}</span>}
     </label>
+  )
+}
+
+export function SearchableSelect({
+  value,
+  onChange,
+  options = [],
+  placeholder = '请选择',
+  searchPlaceholder = '输入关键字筛选…',
+  emptyText = '没有匹配项',
+  allowClear = true,
+  clearLabel = '清除选择',
+  className = '',
+}) {
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const rootRef = useRef(null)
+  const listboxId = useId()
+  const selected = options.find((option) => option.value === value)
+  const normalizedQuery = query.trim().toLowerCase()
+  const filtered = normalizedQuery
+    ? options.filter((option) => String(option.searchText || option.label || '').toLowerCase().includes(normalizedQuery))
+    : options
+
+  useEffect(() => {
+    function handlePointerDown(event) {
+      if (!rootRef.current?.contains(event.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handlePointerDown)
+    return () => document.removeEventListener('mousedown', handlePointerDown)
+  }, [])
+
+  function openPicker() {
+    setQuery('')
+    setOpen(true)
+  }
+
+  function choose(nextValue) {
+    onChange(nextValue)
+    setQuery('')
+    setOpen(false)
+  }
+
+  return (
+    <div ref={rootRef} className={`searchable-select ${open ? 'open' : ''} ${className}`}>
+      <div className="searchable-select-control" onClick={() => !open && openPicker()}>
+        <Search size={15} />
+        <input
+          role="combobox"
+          aria-expanded={open}
+          aria-controls={listboxId}
+          value={open ? query : selected?.label || ''}
+          placeholder={open ? searchPlaceholder : placeholder}
+          onFocus={() => {
+            if (!open) openPicker()
+          }}
+          onChange={(event) => {
+            setQuery(event.target.value)
+            setOpen(true)
+          }}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') setOpen(false)
+            if (event.key === 'Enter' && filtered.length === 1) {
+              event.preventDefault()
+              choose(filtered[0].value)
+            }
+          }}
+        />
+        <ChevronDown size={15} className="searchable-select-chevron" />
+      </div>
+      {open && (
+        <div id={listboxId} className="searchable-select-options" role="listbox">
+          {allowClear && value && (
+            <button type="button" className="searchable-select-option clear" onClick={() => choose('')}>
+              {clearLabel}
+            </button>
+          )}
+          {filtered.map((option) => (
+            <button
+              type="button"
+              role="option"
+              aria-selected={option.value === value}
+              className={`searchable-select-option ${option.value === value ? 'selected' : ''}`}
+              key={option.value}
+              onClick={() => choose(option.value)}
+            >
+              <span className="searchable-select-option-content">{option.content || option.label}</span>
+              {option.value === value && <Check size={15} />}
+            </button>
+          ))}
+          {filtered.length === 0 && <span className="searchable-select-empty">{emptyText}</span>}
+        </div>
+      )}
+    </div>
   )
 }
 
