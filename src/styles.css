@@ -650,6 +650,7 @@ img {
 }
 
 .stats-bar-track {
+  position: relative;
   height: 12px;
   overflow: hidden;
   border-radius: 999px;
@@ -661,10 +662,28 @@ img {
 }
 
 .stats-bar-fill {
+  position: relative;
+  z-index: 1;
   display: block;
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, #38bdf8, #2563eb);
+}
+
+.stats-bar-reference-min,
+.stats-bar-reference-max {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(15, 23, 42, .22);
+  pointer-events: none;
+}
+
+.stats-bar-reference-max {
+  width: 2px;
+  background: rgba(124, 58, 237, .7);
 }
 
 .stats-bar-value {
@@ -1443,6 +1462,19 @@ img {
   background: var(--primary-soft);
   border-color: var(--primary);
   color: var(--primary);
+}
+
+/* 可点击选项本身已经是边界容器，内部标签只负责图标、颜色和文字。 */
+.multiselect-chip .option-tag,
+.single-select-chip .option-tag,
+.reference-list-option .option-tag {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
 }
 
 .boolean-input {
@@ -3117,34 +3149,20 @@ img {
 }
 
 .nature-tool .multiselect-chip {
-  padding: 0;
-  border: none;
-  background: transparent;
+  padding: 4px 10px;
 }
 
 .nature-tool .multiselect-chip:not(.selected) .option-tag {
-  border-color: #cbd5e1 !important;
-  background: #f1f5f9 !important;
   color: #94a3b8 !important;
   opacity: 0.68;
   filter: grayscale(0.8);
 }
 
 .nature-tool .multiselect-chip.selected .option-tag {
-  border-width: 2px;
-  border-color: var(--primary);
-  background: color-mix(in srgb, currentColor 14%, #ffffff);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.16);
   font-weight: 700;
 }
 
-.nature-tool .option-tag {
-  padding: 6px 14px;
-  border-width: 2px;
-  font-size: 13px;
-  background: var(--surface);
-  box-shadow: none;
-}
+.nature-tool .multiselect-chip .option-tag { font-size: 13px; }
 
 .nature-import-empty {
   padding: 10px 12px;
@@ -3677,17 +3695,20 @@ img {
 .nature-form-head > img { width: 42px; height: 42px; object-fit: contain; }
 .nature-form-head > span, .nature-form-trait-inline > span { display: grid; gap: 2px; min-width: 0; }
 .nature-form-head small, .nature-form-trait-inline small { color: var(--text-muted); line-height: 1.45; }
+.nature-form-elements { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.nature-form-elements .option-tag { min-height: 20px; padding: 1px 6px; font-size: 10px; }
 .nature-form-trait-inline { padding-top: 7px; border-top: 1px dashed var(--border); }
 .nature-form-trait-inline > img { width: 26px; height: 26px; object-fit: contain; }
+.nature-unique-skills { display: block; margin: 5px 0; color: #7c3aed; font-size: 11px; line-height: 1.5; }
 
-.nature-candidate-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: stretch; gap: 6px; }
+.nature-candidate-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(110px, auto); align-items: center; gap: 6px; }
 .nature-candidate {
   display: grid;
   grid-template-columns: 58px 54px minmax(130px, 1fr) 82px 38px;
   align-items: center;
   gap: 7px;
-  min-height: 42px;
-  padding-block: 7px;
+  min-height: 38px;
+  padding-block: 5px;
 }
 .nature-candidate-tag, .nature-candidate-name, .nature-candidate-role, .nature-candidate-owned, .nature-candidate-score { align-self: center; }
 .nature-candidate-tag { grid-column: 1; grid-row: 1; justify-self: start; }
@@ -3695,17 +3716,24 @@ img {
 .nature-candidate-role { grid-column: 3; grid-row: 1; text-align: left; }
 .nature-candidate-owned { grid-column: 4; grid-row: 1; justify-self: start; min-width: 78px; }
 .nature-candidate-score { grid-column: 5; grid-row: 1; justify-self: end; min-width: 34px; text-align: right; }
-.nature-candidate-forms { grid-column: 3 / 6; grid-row: 2; color: #7c3aed; font-size: 10px; line-height: 1.4; text-align: left; overflow-wrap: anywhere; }
-.nature-quick-add { display: inline-flex; align-items: center; justify-content: center; gap: 3px; min-width: 58px; padding: 0 7px; border: 1px solid #bbf7d0; border-radius: var(--radius); background: #f0fdf4; color: #15803d; font-size: 11px; font-weight: 700; cursor: pointer; }
+.nature-candidate-actions { display: flex; align-items: center; justify-content: flex-end; gap: 5px; min-width: 0; }
+.nature-candidate-forms { min-width: 0; color: #7c3aed; font-size: 10px; line-height: 1.35; text-align: right; overflow-wrap: anywhere; }
+.nature-quick-add { display: inline-flex; align-items: center; justify-content: center; gap: 2px; flex: 0 0 auto; min-height: 24px; padding: 0 5px; border: 1px solid #bbf7d0; border-radius: var(--radius); background: #f0fdf4; color: #15803d; font-size: 10px; font-weight: 700; cursor: pointer; }
 .nature-quick-add:hover { border-color: #22c55e; background: #dcfce7; }
 
 .nature-fixed-evidence { display: grid; gap: 8px; padding: 10px; border: 1px solid #ddd6fe; border-radius: var(--radius-lg); background: #faf8ff; }
 .nature-fixed-evidence-title { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .nature-fixed-evidence-title strong { color: #5b21b6; font-size: 12px; }
 .nature-fixed-evidence-title span { color: #8b5cf6; font-size: 10px; }
+.nature-form-evidence { color: var(--text-muted); font-size: 11px; }
+.nature-form-evidence > summary { cursor: pointer; font-weight: 700; color: #6d28d9; }
+.nature-form-evidence > div { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 6px; margin-top: 7px; }
+.nature-form-evidence > div > span { display: grid; gap: 2px; padding: 7px 8px; border: 1px solid #e9d5ff; border-radius: 8px; background: #fff; }
+.nature-form-evidence small { line-height: 1.45; }
 .nature-text-emphasis { color: #7c3aed; font-weight: 800; }
 .nature-explain-list.warning .nature-text-emphasis { color: #b91c1c; }
 .nature-result-reason, .nature-explain-list li { white-space: normal; overflow-wrap: anywhere; }
+.nature-result-reason > span { display: block; margin-bottom: 3px; }
 
 .nature-pve-overview { display: grid; gap: 10px; padding: 13px; border: 1px solid #fed7aa; border-radius: var(--radius-lg); background: linear-gradient(135deg, #fffaf5, #fff); }
 .nature-pve-overview-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
@@ -3729,7 +3757,8 @@ img {
   .nature-stat-ranks { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .nature-population-grid { grid-template-columns: 1fr; }
   .nature-candidate-row { grid-template-columns: minmax(0, 1fr); }
-  .nature-quick-add { min-height: 32px; }
+  .nature-candidate-actions { justify-content: flex-start; padding: 0 4px 4px; }
+  .nature-candidate-forms { text-align: left; }
   .nature-candidate { grid-template-columns: 55px minmax(52px, auto) minmax(0, 1fr) 78px 38px; grid-template-areas: none; }
   .nature-candidate-tag, .nature-candidate-name, .nature-candidate-role, .nature-candidate-owned, .nature-candidate-score { grid-area: auto; }
   .nature-candidate-tag { grid-column: 1; grid-row: 1; }
@@ -3737,5 +3766,4 @@ img {
   .nature-candidate-role { grid-column: 3; grid-row: 1; }
   .nature-candidate-owned { grid-column: 4; grid-row: 1; }
   .nature-candidate-score { grid-column: 5; grid-row: 1; }
-  .nature-candidate-forms { grid-column: 3 / 6; grid-row: 2; }
 }

@@ -372,18 +372,24 @@ export function StatsRadarChart({ stats, size = 'sm' }) {
   )
 }
 
-export function StatsBarsChart({ stats, size = 'sm' }) {
-  const maxValue = Math.max(STATS_SCALE_MAX, ...stats.map((s) => Number(s.value) || 0))
+export function StatsBarsChart({ stats, size = 'sm', referenceRanges = [] }) {
+  const rangesByKey = new Map(referenceRanges.map((range) => [range.key, range]))
+  const maxValue = STATS_SCALE_MAX
   return (
     <div className={`stats-bars stats-bars-${size}`}>
       {stats.map((s) => {
         const value = Number(s.value) || 0
         const width = `${clamp((value / maxValue) * 100, 0, 100)}%`
+        const range = rangesByKey.get(s.key)
+        const minPosition = range ? `${clamp((Number(range.min) / maxValue) * 100, 0, 100)}%` : null
+        const maxPosition = range ? `${clamp((Number(range.max) / maxValue) * 100, 0, 100)}%` : null
         return (
-          <div key={s.key} className="stats-bar-row" title={`${s.label}：${value}`}>
+          <div key={s.key} className="stats-bar-row" title={`${s.label}：${value}${range ? `；全体范围 ${range.min}–${range.max}` : ''}`}>
             <span className="stats-bar-label">{s.label}</span>
             <span className="stats-bar-track" aria-hidden="true">
+              {range && <span className="stats-bar-reference-min" style={{ left: minPosition }} />}
               <span className="stats-bar-fill" style={{ width }} />
+              {range && <span className="stats-bar-reference-max" style={{ left: maxPosition }} />}
             </span>
             <span className="stats-bar-value">{value}</span>
           </div>
@@ -393,9 +399,9 @@ export function StatsBarsChart({ stats, size = 'sm' }) {
   )
 }
 
-export function StatsChart({ stats, variant = 'bars', size = 'sm' }) {
+export function StatsChart({ stats, variant = 'bars', size = 'sm', referenceRanges = [] }) {
   if (variant === 'radar') return <StatsRadarChart stats={stats} size={size} />
-  return <StatsBarsChart stats={stats} size={size} />
+  return <StatsBarsChart stats={stats} size={size} referenceRanges={referenceRanges} />
 }
 
 // ---------------------------------------------------------------------------

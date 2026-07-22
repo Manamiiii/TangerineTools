@@ -692,13 +692,31 @@ function SummaryCellView({ field, row, mode }) {
   )
 }
 
-export function CellView({ field, row, allFields, mode = 'table', onOpenReference }) {
+function statsReferenceRanges(rows, fields, statsField) {
+  const byKey = new Map((statsField.statsDimensions || []).map((dimension) => [dimension.key, []]))
+  for (const sourceRow of rows || []) {
+    for (const stat of getStatsValues(fields, statsField.statsMap, sourceRow.values, statsField.statsDimensions)) {
+      const value = Number(stat.value)
+      if (Number.isFinite(value) && value > 0) {
+        if (!byKey.has(stat.key)) byKey.set(stat.key, [])
+        byKey.get(stat.key).push(value)
+      }
+    }
+  }
+  return [...byKey].map(([key, values]) => ({
+    key,
+    min: values.length ? Math.min(...values) : 0,
+    max: values.length ? Math.max(...values) : 0,
+  }))
+}
+
+export function CellView({ field, row, allFields, mode = 'table', onOpenReference, referenceRows = [] }) {
   if (field.type === 'summary' || field.display?.kind === 'summary') return <SummaryCellView field={field} row={row} mode={mode} />
   if (field.display?.kind === 'chain') return <EvolutionChainView value={row.values?.[field.key]} />
 
   if (field.type === 'stats') {
     const stats = getStatsValues(allFields, field.statsMap, row.values, field.statsDimensions)
-    return <StatsChart stats={stats} variant={field.statsStyle || 'bars'} size={mode === 'detail' ? 'lg' : 'sm'} />
+    return <StatsChart stats={stats} variant={field.statsStyle || 'bars'} size={mode === 'detail' ? 'lg' : 'sm'} referenceRanges={statsReferenceRanges(referenceRows, allFields, field)} />
   }
 
   const value = row.values?.[field.key]
@@ -1045,6 +1063,7 @@ export function DataGrid({
   onEditRow,
   onDeleteRow,
   onOpenReference,
+  referenceRows = rows,
 }) {
   const visibleFields = fields.filter((f) => !f.hidden)
 
@@ -1091,6 +1110,7 @@ export function DataGrid({
                     allFields={allFields}
                     mode="table"
                     onOpenReference={onOpenReference}
+                    referenceRows={referenceRows}
                   />
                 </td>
               ))}

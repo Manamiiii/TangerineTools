@@ -298,6 +298,7 @@ function TableView({ table, tables, sceneId, onSwitchTable }) {
           <DataGrid
             fields={sortedFields}
             rows={pageRows}
+            referenceRows={displayRows}
             allFields={sortedFields}
             sort={sort}
             onSortChange={handleSortChange}
@@ -527,7 +528,7 @@ function RowFormModal({ table, fields, row, onClose }) {
 // 行详情页（弹窗形式，展示包括隐藏字段在内的全部字段）
 // ---------------------------------------------------------------------------
 
-function RowDetailModal({ row, fields, onClose, onEdit, onDelete, onOpenReference, title = '详情' }) {
+function RowDetailModal({ row, fields, rows = [], onClose, onEdit, onDelete, onOpenReference, title = '详情' }) {
   const sorted = [...fields].sort((a, b) => a.order - b.order)
   const summarySupplementKeys = new Set(sorted
     .filter((field) => field.type === 'summary' || field.display?.kind === 'summary')
@@ -572,6 +573,7 @@ function RowDetailModal({ row, fields, onClose, onEdit, onDelete, onOpenReferenc
                 allFields={sorted}
                 mode="detail"
                 onOpenReference={onOpenReference}
+                referenceRows={rows}
               />
             </div>
           </div>

@@ -131,7 +131,11 @@ export function buildFormAnalysis(target, formRows = [], fields = [], skillRows 
   const targetSkillRefs = normalizedSet(extractSkillRefsFromRow(target, fields))
   const skillById = new Map((skillRows || []).map((row) => [row.id, row.values?.name || row.id]))
   const elementField = findFieldByKeyOrName(fields || [], ['element'], ['系别'])
-  const targetElements = normalizedSet(target.values?.[elementField?.key]).map((value) => optionLabel(elementField, value))
+  const elementOption = (value) => {
+    const option = elementField?.options?.find((item) => item.value === value)
+    return option || { value, label: optionLabel(elementField, value) }
+  }
+  const targetElementValues = normalizedSet(target.values?.[elementField?.key])
   const forms = formRows.map((row) => {
     const stats = extractStatsFromRow(row, fields) || {}
     const statChanges = STATS_DIMENSIONS.flatMap(({ key, label }) => {
@@ -146,7 +150,8 @@ export function buildFormAnalysis(target, formRows = [], fields = [], skillRows 
       JSON.stringify(traitTags) !== JSON.stringify(targetTraitTags)
     const traitNameChanged = String(row.values?.traitName || '') !== String(target.values?.traitName || '')
     const summary = extractRowSummary(row, fields)
-    const elements = normalizedSet(row.values?.[elementField?.key]).map((value) => optionLabel(elementField, value))
+    const elementValues = normalizedSet(row.values?.[elementField?.key])
+    const elements = elementValues.map(elementOption)
     return {
       id: row.id,
       name: summary.name,
@@ -159,6 +164,7 @@ export function buildFormAnalysis(target, formRows = [], fields = [], skillRows 
       traitDesc: row.values?.traitDesc || '',
       traitTags,
       skillNames: skillRefs.map((id) => skillById.get(id) || id),
+      skillRefs,
       statChanges,
       traitChanged,
       traitFrom: target.values?.traitName || '无',
@@ -172,9 +178,18 @@ export function buildFormAnalysis(target, formRows = [], fields = [], skillRows 
         statChanges.length === 0 &&
         !traitChanged &&
         JSON.stringify(skillRefs) === JSON.stringify(targetSkillRefs) &&
-        JSON.stringify(elements) === JSON.stringify(targetElements),
+        JSON.stringify(elementValues) === JSON.stringify(targetElementValues),
     }
   })
+  const skillOccurrences = new Map()
+  for (const form of forms) {
+    for (const skillId of form.skillRefs) skillOccurrences.set(skillId, (skillOccurrences.get(skillId) || 0) + 1)
+  }
+  for (const form of forms) {
+    form.uniqueSkillNames = form.skillRefs
+      .filter((skillId) => skillOccurrences.get(skillId) === 1)
+      .map((skillId) => skillById.get(skillId) || skillId)
+  }
   const signatures = new Set(formRows.map((row) => formAnalysisSignature(row, fields)))
   return {
     targetName: extractRowSummary(target, fields).name,

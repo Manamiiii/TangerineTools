@@ -67,7 +67,9 @@ export const STATS_DIMENSIONS = [
 ]
 
 // 指标视图缩放使用的固定满值刻度，保证不同精灵之间的图形可比较。
-export const STATS_SCALE_MAX = 150
+// 六维图使用统一绝对刻度。当前正式资料的单项最高值为 290，向上取整到
+// 300 后，所有页面中相同数值始终得到相同长度，也为后续资料更新留出余量。
+export const STATS_SCALE_MAX = 300
 
 // 选项配色板。
 export const COLOR_PALETTE = [

@@ -128,6 +128,21 @@ export function visibleRockKingdomCreatureRows(rows = []) {
   })
 }
 
+// 性格页每个编号只提供一个普通入口；地区/外观变体与首领形态仍由同编号
+// 对比和综合分析完整纳入。优先选择没有括号变体名的最终形态，缺少时取
+// 排序最靠前的可培养形态。
+export function primaryRockKingdomNatureRows(rows = []) {
+  const groups = new Map()
+  for (const row of rows.filter(isRockKingdomNatureSelectableRow).sort(compareRockKingdomCreatureRows)) {
+    const no = String(row?.values?.no ?? '').trim() || row.id
+    if (!groups.has(no)) groups.set(no, [])
+    groups.get(no).push(row)
+  }
+  return [...groups.values()].map((group) =>
+    group.find((row) => !nameVariant(row?.values?.name)) || group[0],
+  )
+}
+
 // 同一进化链中的任一阶段都代表玩家已经拥有该物种。性格页用这张映射把
 // 非最终形态的收集记录归并到最终形态；缺少进化链资料时仍只匹配原行 id。
 export function buildEvolutionReferenceGroups(rows = []) {

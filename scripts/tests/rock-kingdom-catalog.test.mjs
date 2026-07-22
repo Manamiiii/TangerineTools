@@ -9,6 +9,7 @@ import {
   compareRockKingdomCreatureRows,
   buildEvolutionReferenceGroups,
   isRockKingdomNatureSelectableRow,
+  primaryRockKingdomNatureRows,
   relatedRockKingdomBossRows,
   visibleRockKingdomCreatureRows,
 } from '../../src/domain/rockKingdom.js'
@@ -127,12 +128,22 @@ test('sorts creature forms by number, stage, final form, then boss form', () => 
   ])
 })
 
-test('nature selector hides growth stages and bosses but keeps final variants', () => {
+test('nature selector classifies growth stages, bosses, and final variants', () => {
   assert.equal(isRockKingdomNatureSelectableRow(row('stage', 'NO.007', '火花', 'I阶')), false)
   assert.equal(isRockKingdomNatureSelectableRow(row('boss', 'NO.007', '烈火战神', '首领形态')), false)
   assert.equal(isRockKingdomNatureSelectableRow(row('final', 'NO.007', '火神', '最终形态')), true)
   assert.equal(isRockKingdomNatureSelectableRow(row('stage-variant', 'NO.011', '鸭吉吉（蓬松的样子）', 'Ⅰ阶')), false)
   assert.equal(isRockKingdomNatureSelectableRow(row('final-variant', 'NO.020', '岚鸟（春天的样子）', '最终形态')), true)
+})
+
+test('nature selector exposes one ordinary entry per number while preserving variants for analysis', () => {
+  const rows = [
+    row('base', 'NO.020', '岚鸟', '最终形态'),
+    row('spring', 'NO.020', '岚鸟（春天的样子）', '最终形态'),
+    row('boss', 'NO.020', '霜翼领主', '首领形态'),
+    row('other', 'NO.021', '另一只精灵（本来的样子）', '最终形态'),
+  ]
+  assert.deepEqual(primaryRockKingdomNatureRows(rows).map((item) => item.id), ['base', 'other'])
 })
 
 test('matches a final variant with its corresponding boss variant', () => {
@@ -177,6 +188,27 @@ test('form analysis explains differences and detects equivalent related forms', 
   assert.deepEqual(analysis.forms[0].statChanges.map((item) => [item.key, item.delta]), [['patk', 20]])
   assert.equal(analysis.forms[0].traitChanged, true)
   assert.equal(analysis.forms[0].addedSkillCount, 1)
+  assert.deepEqual(analysis.forms[0].uniqueSkillNames, [])
+})
+
+test('form analysis highlights skills owned by only one form', () => {
+  const fields = [
+    normalizeField({ id: 'stats', key: 'stats', type: 'stats', statsMap: { hp: 'hp', patk: 'patk', matk: 'matk', pdef: 'pdef', mdef: 'mdef', spd: 'spd' } }),
+    normalizeField({ id: 'name', key: 'name', type: 'text' }),
+    normalizeField({ id: 'skills', key: 'skillRefs', type: 'references' }),
+    ...['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd'].map((key) => normalizeField({ id: key, key, type: 'number' })),
+  ]
+  const baseValues = { hp: 100, patk: 100, matk: 80, pdef: 90, mdef: 90, spd: 100 }
+  const target = { id: 'base', values: { ...baseValues, name: '普通形态', skillRefs: ['shared', 'base-only'] } }
+  const boss = { id: 'boss', values: { ...baseValues, name: '首领形态', skillRefs: ['shared', 'boss-only'] } }
+  const skills = [
+    { id: 'shared', values: { name: '共有技能' } },
+    { id: 'base-only', values: { name: '普通独有' } },
+    { id: 'boss-only', values: { name: '首领独有' } },
+  ]
+  const analysis = buildFormAnalysis(target, [target, boss], fields, skills)
+  assert.deepEqual(analysis.forms[0].uniqueSkillNames, ['普通独有'])
+  assert.deepEqual(analysis.forms[1].uniqueSkillNames, ['首领独有'])
 })
 
 test('official preset includes collected egg and seed images', () => {
