@@ -72,13 +72,13 @@ test('sorts creature forms by number, stage, final form, then boss form', () => 
     row('boss', 'NO.007', '烈火战神', '首领形态'),
     row('final', 'NO.007', '火神', '最终形态'),
     row('stage-2', 'NO.007', '焰火', 'II阶'),
-    row('variant', 'NO.007', '火神（异色）', '异色的样子'),
+    row('variant', 'NO.007', '火神（异色）', '最终形态'),
     row('stage-1', 'NO.007', '火花', 'Ⅰ阶'),
     row('next', 'NO.008', '水蓝蓝', 'Ⅰ阶'),
   ]
 
   assert.deepEqual(rows.sort(compareRockKingdomCreatureRows).map((item) => item.id), [
-    'stage-1', 'stage-2', 'variant', 'final', 'boss', 'next',
+    'stage-1', 'stage-2', 'final', 'variant', 'boss', 'next',
   ])
 })
 
@@ -86,7 +86,8 @@ test('nature selector hides growth stages and bosses but keeps final variants', 
   assert.equal(isRockKingdomNatureSelectableRow(row('stage', 'NO.007', '火花', 'I阶')), false)
   assert.equal(isRockKingdomNatureSelectableRow(row('boss', 'NO.007', '烈火战神', '首领形态')), false)
   assert.equal(isRockKingdomNatureSelectableRow(row('final', 'NO.007', '火神', '最终形态')), true)
-  assert.equal(isRockKingdomNatureSelectableRow(row('variant', 'NO.011', '鸭吉吉（蓬松）', '蓬松的样子')), true)
+  assert.equal(isRockKingdomNatureSelectableRow(row('stage-variant', 'NO.011', '鸭吉吉（蓬松的样子）', 'Ⅰ阶')), false)
+  assert.equal(isRockKingdomNatureSelectableRow(row('final-variant', 'NO.020', '岚鸟（春天的样子）', '最终形态')), true)
 })
 
 test('matches a final variant with its corresponding boss variant', () => {
@@ -111,4 +112,12 @@ test('official preset classifies 烈火战神 as a boss form', () => {
   const rows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8'))
   const boss = rows.find((item) => item.values?.name === '烈火战神')
   assert.equal(boss?.values?.form, '首领形态')
+})
+
+test('official preset uses only canonical growth forms for named variants', () => {
+  const rows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8'))
+  const forms = new Set(rows.map((item) => item.values?.form))
+  assert.deepEqual([...forms].sort(), ['Ⅰ阶', 'Ⅱ阶', '最终形态', '首领形态'].sort())
+  assert.equal(rows.find((item) => item.values?.name === '冬羽雀（春天的样子）')?.values?.form, 'Ⅱ阶')
+  assert.equal(rows.find((item) => item.values?.name === '岚鸟（春天的样子）')?.values?.form, '最终形态')
 })

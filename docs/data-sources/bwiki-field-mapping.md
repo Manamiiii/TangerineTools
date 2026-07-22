@@ -22,7 +22,7 @@
 | `name` | 名称 | `creatures.rows[].name` | BWiki 名称作为目标名称；名称别名仅用于稳定 id 匹配 | 写入 preview；生成名称归一化差异表 |
 | `no` | 编号 | `creatures.rows[].no` | 保持 `NO.001` 格式；同编号多形态不合并 | 写入 preview |
 | `element` | 系别 | `creatures.rows[].elements` | 映射到现有 18 系选项；未知值进入报告，不自动新增选项 | 写入 preview |
-| `form` | 形态 | `formCategoryLabel`、`isMainForm`、`stageLabel`、名称差异 | BWiki 形态分类只作辅助；已匹配行保留本地精确 form，新增行再按名称括号、阶段、分类依次推导 | 写入候选并报告来源策略，不静默泛化覆盖 |
+| `form` | 形态 | `formCategoryLabel`、`stageLabel` | 首领分类映射为 `首领形态`；一阶、二阶、三阶依次映射为 `Ⅰ阶`、`Ⅱ阶`、`最终形态`。名称括号只描述外观变体，不参与形态派生 | 写入候选并报告来源策略；缺少同步阶段时只接受已有的规范形态值 |
 | `bst` / `hp` / `patk` / `matk` / `pdef` / `mdef` / `spd` | 种族值 / 六维 | `creatures.rows[]` 数值字段 | 直接数值映射；空值或非数字进入报告 | 写入 preview |
 | `shiny` | 异色形态 | `shinyLabel` | 只映射为当前 `yes` / `no` / `unknown` 选项；无法确认时保留 unknown | 写入 preview |
 | `traitName` | 特性 | `creatures.rows[].traitName`；详情 `trait.name` 校验 | 筛选页与详情页不一致时进入冲突报告，不自动择一 | 生成冲突清单 |

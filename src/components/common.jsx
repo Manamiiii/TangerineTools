@@ -188,8 +188,6 @@ export function OptionTag({ option, size = 'sm', iconOnly = false }) {
   if (iconOnly) {
     const content = option.image ? (
       <img src={option.image} alt="" className="option-icon-image" />
-    ) : option.variant === 'colorful' ? (
-      <span className="colorful-marker" aria-hidden="true" />
     ) : (
       <span className={`option-icon-symbol ${option.variant || ''}`} style={option.color ? { color: option.color } : undefined}>
         {option.symbol || option.label}

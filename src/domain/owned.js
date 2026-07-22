@@ -48,8 +48,8 @@ export const OWNED_SHINY_OPTIONS = [
 ]
 
 export const OWNED_COLORFUL_OPTIONS = [
-  { value: 'no', label: '非炫彩', color: '#94a3b8', symbol: '◇', variant: 'colorful-off' },
-  { value: 'yes', label: '炫彩', color: '#db2777', symbol: '◆', variant: 'colorful' },
+  { value: 'no', label: '非炫彩', color: '#94a3b8' },
+  { value: 'yes', label: '炫彩', color: '#db2777', image: '/icons/rock-kingdom-colorful.png', variant: 'colorful' },
 ]
 
 export const OWNED_GENDER_OPTIONS = [
@@ -124,8 +124,8 @@ export const ROCK_KINGDOM_COLLECTION_FIELDS = [
   { key: 'ref', name: '精灵', type: 'reference', display: { referenceImageField: 'image', referenceLabelFields: ['name'], searchableReference: true, plainReference: true, breakParentheses: true, compact: true, tableWidth: 154 } },
   { key: 'nature', name: '性格', type: 'select', options: OWNED_NATURE_OPTIONS, display: { compact: true, tableWidth: 136 } },
   { key: 'bloodline', name: '血脉', type: 'select', options: OWNED_BLOODLINE_OPTIONS, display: { compact: true, tableWidth: 104 } },
-  { key: 'shiny', name: '个体异色', type: 'select', options: OWNED_SHINY_OPTIONS, display: { mode: 'icon', compact: true, tableWidth: 68 } },
-  { key: 'colorful', name: '是否炫彩', type: 'select', options: OWNED_COLORFUL_OPTIONS, display: { mode: 'icon', compact: true, tableWidth: 68 } },
+  { key: 'shiny', name: '个体异色', type: 'select', options: OWNED_SHINY_OPTIONS, display: { mode: 'icon', hiddenOptionValues: ['no'], compact: true, tableWidth: 68 } },
+  { key: 'colorful', name: '是否炫彩', type: 'select', options: OWNED_COLORFUL_OPTIONS, display: { mode: 'icon', hiddenOptionValues: ['no'], compact: true, tableWidth: 68 } },
   { key: 'specialty', name: '特长', type: 'select', options: OWNED_SPECIALTY_OPTIONS },
   { key: 'gender', name: '性别', type: 'select', options: OWNED_GENDER_OPTIONS, display: { mode: 'icon', compact: true, tableWidth: 56 } },
   { key: 'note', name: '备注', type: 'longtext' },

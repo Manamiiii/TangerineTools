@@ -545,31 +545,7 @@ img {
 
 .option-icon-symbol.male,
 .option-icon-symbol.female {
-  transform: rotate(-8deg);
-  transform-origin: center;
-}
-
-.option-icon-symbol.colorful-off {
-  color: #94a3b8;
-  font-size: 20px;
-}
-
-.colorful-marker {
-  position: relative;
-  width: 21px;
-  height: 21px;
-  transform: rotate(45deg);
-  border-radius: 4px 8px 4px 8px;
-  background: conic-gradient(from 20deg, #38bdf8, #8b5cf6, #ec4899, #fb7185, #facc15, #34d399, #38bdf8);
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.55), 0 1px 4px rgba(99, 102, 241, 0.28);
-}
-
-.colorful-marker::after {
-  content: '';
-  position: absolute;
-  inset: 6px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.88);
+  transform: none;
 }
 
 /* ---------------------------------------------------------------------------
@@ -1288,9 +1264,12 @@ img {
 .parenthetical-text {
   display: inline-flex;
   flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
   line-height: 1.35;
+  text-align: left;
   white-space: normal;
 }
 
@@ -1302,7 +1281,7 @@ img {
 
 .parenthetical-text > small {
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: inherit;
 }
 
 .reference-picker {
@@ -1386,18 +1365,18 @@ img {
   align-items: flex-start;
 }
 
-.cell-tag-group.lines-3,
-.reference-list.lines-3,
-.data-grid td .reference-list.lines-3 {
+.cell-tag-group.lines-limited,
+.reference-list.lines-limited,
+.data-grid td .reference-list.lines-limited {
   position: relative;
-  max-height: 59px;
+  max-height: var(--table-lines-height);
 }
 
-.lines-3:has(.cell-extra) {
+.lines-limited:has(.cell-extra) {
   padding-right: 36px;
 }
 
-.lines-3 > .cell-extra {
+.lines-limited > .cell-extra {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -3400,7 +3379,7 @@ img {
 .breeding-creature-row { min-width: 0; display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 16px; background: linear-gradient(180deg, #fff, #fff7ed); white-space: nowrap; overflow: hidden; }
 .breeding-creature-row.compact { background: #fff; }
 .breeding-creature-row img { width: 48px; height: 48px; object-fit: contain; flex: 0 0 auto; }
-.breeding-sex-symbol { width: 24px; height: 24px; display: grid; place-items: center; font-size: 21px; line-height: 1; font-weight: 900; flex: 0 0 auto; transform: rotate(-8deg); }
+.breeding-sex-symbol { width: 24px; height: 24px; display: grid; place-items: center; font-size: 21px; line-height: 1; font-weight: 900; flex: 0 0 auto; }
 .breeding-sex-symbol.male { color: #2563eb; }
 .breeding-sex-symbol.female { color: #e11d48; }
 .breeding-sex-symbol.offspring { color: #ea580c; transform: none; }

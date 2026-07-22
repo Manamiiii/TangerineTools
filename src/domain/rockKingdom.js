@@ -38,6 +38,8 @@ export function compareRockKingdomCreatureRows(a, b) {
   if (bucketDiff !== 0) return bucketDiff
   const stageDiff = aFormKey[1] - bFormKey[1]
   if (stageDiff !== 0) return stageDiff
+  const variantDiff = Number(Boolean(nameVariant(a?.values?.name))) - Number(Boolean(nameVariant(b?.values?.name)))
+  if (variantDiff !== 0) return variantDiff
   return naturalCompare(a?.values?.name, b?.values?.name) || naturalCompare(a?.id, b?.id)
 }
 

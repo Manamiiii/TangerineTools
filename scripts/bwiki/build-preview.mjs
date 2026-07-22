@@ -116,15 +116,15 @@ function deriveForm(creature, existingValues) {
   if (creature.formCategoryLabel === '首领形态') {
     return { value: '首领形态', strategy: 'category-boss' }
   }
-  if (existingValues.form) return { value: existingValues.form, strategy: 'existing' }
-  const nameForm = String(creature.name ?? '').match(/（([^）]+)）/)?.[1] ?? ''
-  if (nameForm) return { value: nameForm, strategy: 'name' }
   const stageForm = new Map([
     ['一阶', 'Ⅰ阶'],
     ['二阶', 'Ⅱ阶'],
     ['三阶', '最终形态'],
   ]).get(creature.stageLabel)
   if (stageForm) return { value: stageForm, strategy: 'stage' }
+  if (['Ⅰ阶', 'Ⅱ阶', '最终形态', '首领形态'].includes(existingValues.form)) {
+    return { value: existingValues.form, strategy: 'existing-canonical' }
+  }
   return { value: creature.formCategoryLabel || '', strategy: creature.formCategoryLabel ? 'category' : 'empty' }
 }
 

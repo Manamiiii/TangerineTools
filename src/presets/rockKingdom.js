@@ -11,7 +11,7 @@ const SCENE_ID = 'scene-rock-kingdom'
 export const ROCK_KINGDOM_CREATURE_TABLE_ID = 'table-rock-kingdom-elf-basic'
 const TABLE_ID = ROCK_KINGDOM_CREATURE_TABLE_ID
 const SKILL_TABLE_ID = 'table-rock-kingdom-skills'
-export const ROCK_KINGDOM_ROWS_VERSION = 'bwiki-2026-07-21-317c72d4cfee170d'
+export const ROCK_KINGDOM_ROWS_VERSION = 'bwiki-2026-07-22-1cd1b6cc8ccc66fa'
 
 // 系别图标使用 BWiki 精灵筛选页公开的无文字 patchwiki 小图标。
 // 覆盖当前全部 18 系；用户仍可在字段编辑中按需增删或替换自定义图标。
@@ -169,7 +169,7 @@ function makeField(partial, order, tableId = TABLE_ID, idPrefix = 'field-rock') 
 
 const fields = [
   makeField({ key: 'image', name: '精灵图', type: 'image', display: { compact: true, tableWidth: 74 } }, 0),
-  makeField({ key: 'name', name: '名称', type: 'text', display: { breakParentheses: true, compact: true, tableWidth: 132 } }, 1),
+  makeField({ key: 'name', name: '名称', type: 'text', display: { breakParentheses: true, compact: true, tableWidth: 116 } }, 1),
   makeField({ key: 'no', name: '编号', type: 'text', display: { compact: true, tableWidth: 72 } }, 2),
   makeField({ key: 'element', name: '系别', type: 'multiselect', options: ELEMENT_OPTIONS, display: { stack: true, tableMaxItems: 2, compact: true, tableWidth: 78 } }, 3),
   makeField({ key: 'form', name: '形态', type: 'text', display: { compact: true, tableWidth: 92 } }, 4),
@@ -189,17 +189,17 @@ const fields = [
         { key: 'mdef', label: '魔防', fieldKey: 'mdef' },
         { key: 'spd', label: '速度', fieldKey: 'spd' },
       ],
-      display: { compact: true, tableWidth: 126 },
+      display: { compact: true, tableWidth: 166 },
     },
     6,
   ),
   makeField({ key: 'traitName', name: '特性', type: 'text', display: { kind: 'summary', imageField: 'traitIcon', descriptionField: 'traitDesc', compact: true, tableWidth: 238 } }, 7),
   makeField(
-    { key: 'traitTags', name: '特性标签', type: 'multiselect', options: TRAIT_TAG_OPTIONS, display: { tableLines: 3, tableMaxItems: 6, compact: true, tableWidth: 172 } },
+    { key: 'traitTags', name: '特性标签', type: 'multiselect', options: TRAIT_TAG_OPTIONS, display: { tableLines: 5, tableMaxItems: 10, compact: true, tableWidth: 172 } },
     8,
   ),
-  makeField({ key: 'skillTags', name: '技能标签', type: 'multiselect', options: SKILL_TAG_OPTIONS, display: { tableLines: 3, tableMaxItems: 6, compact: true, tableWidth: 172 } }, 9),
-  makeField({ key: 'skillRefs', name: '可用技能', type: 'references', referenceTableId: SKILL_TABLE_ID, display: { referenceLabelFields: ['name'], tableLines: 3, tableMaxItems: 6, compact: true, tableWidth: 196 } }, 10),
+  makeField({ key: 'skillTags', name: '技能标签', type: 'multiselect', options: SKILL_TAG_OPTIONS, display: { tableLines: 5, tableMaxItems: 10, compact: true, tableWidth: 172 } }, 9),
+  makeField({ key: 'skillRefs', name: '可用技能', type: 'references', referenceTableId: SKILL_TABLE_ID, display: { referenceLabelFields: ['name'], tableLines: 5, tableMaxItems: 10, compact: true, tableWidth: 196 } }, 10),
   makeField({ key: 'eggGroups', name: '蛋组', type: 'multiselect', options: BILI_EGG_GROUP_NAMES.map((name, index) => ({
     value: name,
     label: name,

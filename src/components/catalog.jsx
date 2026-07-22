@@ -481,8 +481,10 @@ function ReferenceListCellContent({ field, value, onOpenReference, referenceCont
   const visibleIds = field.__detailMode ? ids : ids.slice(0, visibleLimit)
   const plain = field.display?.plainReference
   const itemClass = plain ? 'reference-inline' : 'reference-tag'
+  const tableLines = Number(field.display?.tableLines) || 0
+  const lineStyle = tableLines > 0 ? { '--table-lines-height': `${tableLines * 23 - 4}px` } : undefined
   return (
-    <span className={`reference-list ${field.display?.stack ? 'is-stacked' : ''} ${field.display?.tableLines === 3 ? 'lines-3' : ''}`}>
+    <span className={`reference-list ${field.display?.stack ? 'is-stacked' : ''} ${tableLines > 0 ? 'lines-limited' : ''}`} style={lineStyle}>
       {visibleIds.map((id) => {
         const row = rows.find((r) => r.id === id)
         const label = row ? referenceRowLabel(fields, row, field) : id
@@ -676,6 +678,7 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
       )
     case 'select': {
       const opt = field.options?.find((o) => o.value === value)
+      if (mode === 'table' && field.display?.mode === 'icon' && field.display?.hiddenOptionValues?.includes(value)) return null
       return opt ? (
         <OptionTag option={opt} size={mode === 'detail' ? 'md' : 'sm'} iconOnly={field.display?.mode === 'icon'} />
       ) : (
@@ -689,8 +692,10 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
       const visibleLimit = values.length > limit ? limit - 1 : limit
       const shown = mode === 'detail' ? values : values.slice(0, visibleLimit)
       const extra = values.length - shown.length
+      const tableLines = Number(field.display?.tableLines) || 0
+      const lineStyle = tableLines > 0 ? { '--table-lines-height': `${tableLines * 23 - 4}px` } : undefined
       return (
-        <span className={`cell-tag-group ${field.display?.stack ? 'is-stacked' : ''} ${field.display?.tableLines === 3 ? 'lines-3' : ''}`}>
+        <span className={`cell-tag-group ${field.display?.stack ? 'is-stacked' : ''} ${tableLines > 0 ? 'lines-limited' : ''}`} style={lineStyle}>
           {shown.map((v) => {
             const opt = field.options?.find((o) => o.value === v)
             return opt ? <OptionTag key={v} option={opt} size={mode === 'detail' ? 'md' : 'sm'} /> : null
