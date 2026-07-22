@@ -105,6 +105,20 @@ async function handleTypeChange(field, nextType) {
     patch.statsStyle = field.statsStyle || 'bars'
   }
   if (!isReferenceFieldType(nextType)) patch.referenceTableId = null
+  if (nextType === 'summary') {
+    patch.display = {
+      ...field.display,
+      kind: 'summary',
+      imageField: field.display?.imageField || '',
+      descriptionField: field.display?.descriptionField || '',
+    }
+  } else if (field.display?.kind === 'summary') {
+    const display = { ...field.display }
+    delete display.kind
+    delete display.imageField
+    delete display.descriptionField
+    patch.display = display
+  }
   await updateField(field.id, patch)
 }
 
@@ -542,6 +556,12 @@ function ReferenceFieldInput({ field, value, onChange }) {
           placeholder="按编号、名称或形态搜索精灵…"
         />
       )}
+
+      {field.type === 'summary' && (
+        <div className="field-row-section">
+          <SummaryMappingEditor field={field} allFields={allFields} />
+        </div>
+      )}
       <select className="select" value={value || ''} onChange={(e) => onChange(e.target.value)}>
         <option value="">未选择</option>
         {selectedRow && normalizedKeyword && !filteredRows.some((row) => row.id === selectedRow.id) && (
@@ -553,6 +573,33 @@ function ReferenceFieldInput({ field, value, onChange }) {
           </option>
         ))}
       </select>
+    </div>
+  )
+}
+
+function SummaryMappingEditor({ field, allFields }) {
+  const imageFields = allFields.filter((item) => item.id !== field.id && item.type === 'image')
+  const descriptionFields = allFields.filter((item) =>
+    item.id !== field.id && ['text', 'longtext'].includes(item.type))
+  function updateDisplay(patch) {
+    updateField(field.id, { display: { ...field.display, kind: 'summary', ...patch } })
+  }
+  return (
+    <div className="summary-mapping-editor">
+      <label>
+        <span>摘要图片</span>
+        <select className="select" value={field.display?.imageField || ''} onChange={(event) => updateDisplay({ imageField: event.target.value })}>
+          <option value="">不关联图片</option>
+          {imageFields.map((item) => <option key={item.id} value={item.key}>{item.name}</option>)}
+        </select>
+      </label>
+      <label>
+        <span>摘要描述</span>
+        <select className="select" value={field.display?.descriptionField || ''} onChange={(event) => updateDisplay({ descriptionField: event.target.value })}>
+          <option value="">不关联描述</option>
+          {descriptionFields.map((item) => <option key={item.id} value={item.key}>{item.name}</option>)}
+        </select>
+      </label>
     </div>
   )
 }
@@ -648,7 +695,7 @@ function SummaryCellView({ field, row, mode }) {
 }
 
 export function CellView({ field, row, allFields, mode = 'table', onOpenReference }) {
-  if (field.display?.kind === 'summary') return <SummaryCellView field={field} row={row} mode={mode} />
+  if (field.type === 'summary' || field.display?.kind === 'summary') return <SummaryCellView field={field} row={row} mode={mode} />
   if (field.display?.kind === 'chain') return <EvolutionChainView value={row.values?.[field.key]} />
 
   if (field.type === 'stats') {
@@ -772,14 +819,22 @@ export function FieldInput({ field, value, onChange }) {
         </div>
       )
     case 'select':
+      if ((field.options || []).length <= 5) {
+        return (
+          <div className="single-select-input">
+            <button type="button" className={`single-select-chip ${!value ? 'selected' : ''}`} onClick={() => onChange('')}>未选择</button>
+            {(field.options || []).map((option) => (
+              <button type="button" key={option.value} className={`single-select-chip ${value === option.value ? 'selected' : ''}`} onClick={() => onChange(option.value)}>
+                <OptionTag option={option} />
+              </button>
+            ))}
+          </div>
+        )
+      }
       return (
         <select className="select" value={value || ''} onChange={(e) => onChange(e.target.value)}>
           <option value="">未选择</option>
-          {(field.options || []).map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
+          {(field.options || []).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
       )
     case 'multiselect': {
@@ -832,6 +887,7 @@ export function FieldInput({ field, value, onChange }) {
       return <ReferenceFieldInput field={field} value={value} onChange={onChange} />
     case 'references':
       return <ReferenceListFieldInput field={field} value={value} onChange={onChange} />
+    case 'summary':
     case 'text':
     default:
       return <input className="input" value={value || ''} onChange={(e) => onChange(e.target.value)} />

@@ -21,6 +21,7 @@ db.version(1).stores({
 
 - `reference`：单条资料引用，值为目标行 id。
 - `references`：多条资料引用，值为目标行 id 数组；当前用于精灵 `skillRefs` 与技能 `learnerRefs`。该字段类型仍存储在 `catalogRows.values` 中，不需要新增 IndexedDB 表或索引。
+- `summary`：图文摘要，当前字段值仍是主文字；图片和描述通过 `display.imageField` / `display.descriptionField` 关联同一行的其他字段，不引入新的存储结构。
 
 ### 表结构
 

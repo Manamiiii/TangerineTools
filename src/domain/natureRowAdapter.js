@@ -1,6 +1,7 @@
 // 将通用资料表行转换为性格推荐输入；不依赖 React 或 Dexie。
 
 import { findFieldByKeyOrName, getStatsValues, optionLabel } from '../utils.js'
+import { STATS_DIMENSIONS } from '../constants.js'
 import { findNumberField } from './rockKingdom.js'
 
 // ---------------------------------------------------------------------------
@@ -109,6 +110,60 @@ function uniqueSkillInfo(rows, fields, skillRows, includeAllTraitText = false) {
   return skillInfo
 }
 
+function normalizedSet(value) {
+  return [...new Set(Array.isArray(value) ? value : value ? [value] : [])].sort()
+}
+
+function bossAnalysisSignature(row, fields) {
+  return JSON.stringify({
+    stats: extractStatsFromRow(row, fields),
+    traitName: row.values?.traitName || '',
+    traitDesc: row.values?.traitDesc || '',
+    traitTags: normalizedSet(extractTraitTagsFromRow(row, fields)),
+    skillRefs: normalizedSet(extractSkillRefsFromRow(row, fields)),
+  })
+}
+
+export function buildBossFormAnalysis(target, bossRows = [], fields = []) {
+  const targetStats = extractStatsFromRow(target, fields) || {}
+  const targetTraitTags = normalizedSet(extractTraitTagsFromRow(target, fields))
+  const targetSkillRefs = normalizedSet(extractSkillRefsFromRow(target, fields))
+  const forms = bossRows.map((row) => {
+    const stats = extractStatsFromRow(row, fields) || {}
+    const statChanges = STATS_DIMENSIONS.flatMap(({ key, label }) => {
+      const delta = Number(stats[key] || 0) - Number(targetStats[key] || 0)
+      return delta === 0 ? [] : [{ key, label, from: Number(targetStats[key] || 0), to: Number(stats[key] || 0), delta }]
+    })
+    const traitTags = normalizedSet(extractTraitTagsFromRow(row, fields))
+    const skillRefs = normalizedSet(extractSkillRefsFromRow(row, fields))
+    const traitChanged =
+      String(row.values?.traitName || '') !== String(target.values?.traitName || '') ||
+      String(row.values?.traitDesc || '') !== String(target.values?.traitDesc || '') ||
+      JSON.stringify(traitTags) !== JSON.stringify(targetTraitTags)
+    const traitNameChanged = String(row.values?.traitName || '') !== String(target.values?.traitName || '')
+    return {
+      id: row.id,
+      name: extractRowSummary(row, fields).name,
+      statChanges,
+      traitChanged,
+      traitFrom: target.values?.traitName || '无',
+      traitTo: row.values?.traitName || '无',
+      traitChangeText: traitNameChanged
+        ? `${target.values?.traitName || '无'} → ${row.values?.traitName || '无'}`
+        : '名称相同，效果描述或标签发生变化',
+      addedSkillCount: skillRefs.filter((id) => !targetSkillRefs.includes(id)).length,
+      removedSkillCount: targetSkillRefs.filter((id) => !skillRefs.includes(id)).length,
+      sameAsTarget: statChanges.length === 0 && !traitChanged && JSON.stringify(skillRefs) === JSON.stringify(targetSkillRefs),
+    }
+  })
+  const signatures = new Set(bossRows.map((row) => bossAnalysisSignature(row, fields)))
+  return {
+    targetName: extractRowSummary(target, fields).name,
+    forms,
+    allBossFormsEquivalent: bossRows.length > 1 && signatures.size === 1,
+  }
+}
+
 export function buildNatureAnalysisInput(target, bossRows = [], fields = [], skillRows = []) {
   if (!target) return null
   const relatedRows = [target, ...(bossRows || [])]
@@ -124,5 +179,6 @@ export function buildNatureAnalysisInput(target, bossRows = [], fields = [], ski
       traitTags: extractTraitTagsFromRow(row, fields),
       skillInfo: uniqueSkillInfo([row], fields, skillRows, true),
     })),
+    bossAnalysis: buildBossFormAnalysis(target, bossRows, fields),
   }
 }

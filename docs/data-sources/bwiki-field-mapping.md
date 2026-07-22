@@ -34,7 +34,7 @@
 | `eggGroups` | 蛋组 | `sync:breeding` 版本化快照 | 精灵筛选页 `data-param8` 是归属赛季而不是蛋组；稳定匹配行保留非空值，空值或新行按安全名称匹配从孵蛋快照补齐 | 写入 preview 候选并报告来源 |
 | `speciesGroup` | 繁育谱系 | 当前孵蛋快照 / 名称归并 | 保持文本字段；由蛋组快照和同谱系规则生成 | 写入 preview 候选 |
 | `evolutionLine` | 进化链 | 详情 `evolution[]` | 写为可读长文本；结构化需求必须复用现有字段能力或单独获得 Dexie schema 变更授权 | 写入 preview 长文本 |
-| `eggImage` / `fruitImage` | 精灵蛋 / 精灵果实图片 | `creatures.rows[].eggImage` / `fruitImage` | 作为精灵行图片字段候选；不新增独立资料表 | 字段已存在则写入，否则先报告字段新增需求 |
+| `eggImage` / `fruitImage` | 精灵蛋 / 精灵果实图片 | `creatures.rows[].eggImage` / `fruitImage` | 作为精灵行图片字段；不新增独立资料表。界面将 `fruitImage` 紧凑标记为「种子」 | 写入正式精灵资料；源页面缺图时保留空值 |
 | `previewMeta.seasonLabel` | 归属赛季（审计元数据） | `creatures.rows[].seasonLabel` / 筛选页 `data-param8` | 只留在 preview 审计元数据，不映射到运行时精灵字段 | 不进入正式 preset 行 values |
 
 ## 技能资料字段映射

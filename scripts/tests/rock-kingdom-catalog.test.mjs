@@ -2,6 +2,8 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import { evaluateNatureProfiles } from '../../src/domain/nature.js'
+import { buildBossFormAnalysis } from '../../src/domain/natureRowAdapter.js'
+import { ROCK_KINGDOM_PRESET } from '../../src/presets/rockKingdom.js'
 import {
   compareRockKingdomCreatureRows,
   isRockKingdomNatureSelectableRow,
@@ -67,6 +69,16 @@ test('preserves generic field presentation and icon metadata', () => {
   assert.equal(field.options[0].variant, 'colorful')
 })
 
+test('exposes trait as a configurable summary and keeps breeding images beside it', () => {
+  const creatureFields = ROCK_KINGDOM_PRESET.fields
+    .filter((field) => field.tableId === ROCK_KINGDOM_PRESET.tables[0].id)
+    .sort((a, b) => a.order - b.order)
+  const traitIndex = creatureFields.findIndex((field) => field.key === 'traitName')
+  assert.equal(creatureFields[traitIndex].type, 'summary')
+  assert.equal(creatureFields[traitIndex].display.imageField, 'traitIcon')
+  assert.deepEqual(creatureFields.slice(traitIndex + 1, traitIndex + 3).map((field) => field.key), ['fruitImage', 'eggImage'])
+})
+
 test('sorts creature forms by number, stage, final form, then boss form', () => {
   const rows = [
     row('boss', 'NO.007', '烈火战神', '首领形态'),
@@ -112,6 +124,32 @@ test('official preset classifies 烈火战神 as a boss form', () => {
   const rows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8'))
   const boss = rows.find((item) => item.values?.name === '烈火战神')
   assert.equal(boss?.values?.form, '首领形态')
+})
+
+test('boss analysis explains form differences and detects equivalent boss forms', () => {
+  const fields = [
+    normalizeField({ id: 'stats', key: 'stats', type: 'stats', statsMap: { hp: 'hp', patk: 'patk', matk: 'matk', pdef: 'pdef', mdef: 'mdef', spd: 'spd' } }),
+    normalizeField({ id: 'name', key: 'name', type: 'text' }),
+    normalizeField({ id: 'no', key: 'no', type: 'text' }),
+    normalizeField({ id: 'form', key: 'form', type: 'text' }),
+    normalizeField({ id: 'tags', key: 'traitTags', type: 'multiselect' }),
+    normalizeField({ id: 'skills', key: 'skillRefs', type: 'references' }),
+    ...['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd'].map((key) => normalizeField({ id: key, key, type: 'number' })),
+  ]
+  const target = { id: 'final', values: { name: '测试精灵', hp: 100, patk: 100, matk: 80, pdef: 90, mdef: 90, spd: 100, traitName: '特性甲', traitTags: ['attack'], skillRefs: ['a'] } }
+  const bossA = { id: 'boss-a', values: { ...target.values, name: '首领甲', patk: 120, traitName: '特性乙', skillRefs: ['a', 'b'] } }
+  const bossB = { id: 'boss-b', values: { ...bossA.values, name: '首领乙' } }
+  const analysis = buildBossFormAnalysis(target, [bossA, bossB], fields)
+  assert.equal(analysis.allBossFormsEquivalent, true)
+  assert.deepEqual(analysis.forms[0].statChanges.map((item) => [item.key, item.delta]), [['patk', 20]])
+  assert.equal(analysis.forms[0].traitChanged, true)
+  assert.equal(analysis.forms[0].addedSkillCount, 1)
+})
+
+test('official preset includes collected egg and seed images', () => {
+  const rows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8'))
+  assert.equal(rows.filter((item) => item.values?.eggImage).length, 121)
+  assert.equal(rows.filter((item) => item.values?.fruitImage).length, 118)
 })
 
 test('official preset uses only canonical growth forms for named variants', () => {

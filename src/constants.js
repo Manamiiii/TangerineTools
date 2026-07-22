@@ -27,6 +27,7 @@ export const SCENE_TOOLS = [
 // 字段类型：资料表列的数据类型。
 export const FIELD_TYPES = [
   { value: 'text', label: '短文本' },
+  { value: 'summary', label: '图文摘要' },
   { value: 'longtext', label: '长文本' },
   { value: 'number', label: '数字' },
   { value: 'image', label: '图片' },

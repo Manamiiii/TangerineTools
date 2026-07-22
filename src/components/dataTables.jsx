@@ -448,7 +448,7 @@ function defaultValueForType(type) {
 function RowFormModal({ table, fields, row, onClose }) {
   const allEditableFields = fields.filter((f) => isEditableFieldType(f.type))
   const summaryDescriptionKeys = new Set(allEditableFields
-    .filter((field) => field.display?.kind === 'summary')
+    .filter((field) => field.type === 'summary' || field.display?.kind === 'summary')
     .map((field) => field.display.descriptionField)
     .filter(Boolean))
   const editableFields = allEditableFields.filter((field) => !summaryDescriptionKeys.has(field.key))
@@ -494,7 +494,7 @@ function RowFormModal({ table, fields, row, onClose }) {
       }
     >
       <form id="row-form" onSubmit={handleSubmit} className="stack-form row-form">
-        {editableFields.map((field) => field.display?.kind === 'summary' ? (
+        {editableFields.map((field) => field.type === 'summary' || field.display?.kind === 'summary' ? (
           <FormRow key={field.id} label={field.name}>
             <div className="trait-field-input">
               <FieldInput
@@ -534,7 +534,7 @@ function RowFormModal({ table, fields, row, onClose }) {
 function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete, onOpenReference, title = '详情' }) {
   const sorted = [...fields].sort((a, b) => a.order - b.order)
   const summarySupplementKeys = new Set(sorted
-    .filter((field) => field.display?.kind === 'summary')
+    .filter((field) => field.type === 'summary' || field.display?.kind === 'summary')
     .flatMap((field) => [field.display.imageField, field.display.descriptionField])
     .filter(Boolean))
   const detailFields = sorted.filter((field) => !summarySupplementKeys.has(field.key))
