@@ -2,11 +2,12 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import { evaluateNatureProfiles } from '../../src/domain/nature.js'
-import { buildBossFormAnalysis } from '../../src/domain/natureRowAdapter.js'
+import { buildFormAnalysis } from '../../src/domain/natureRowAdapter.js'
 import { buildOwnedNatureIndex } from '../../src/domain/owned.js'
 import { ROCK_KINGDOM_PRESET } from '../../src/presets/rockKingdom.js'
 import {
   compareRockKingdomCreatureRows,
+  buildEvolutionReferenceGroups,
   isRockKingdomNatureSelectableRow,
   relatedRockKingdomBossRows,
   visibleRockKingdomCreatureRows,
@@ -35,6 +36,17 @@ test('matches acquired status by creature and exact nature', () => {
   assert.deepEqual(index.get('creature-a'), { clever: 2, timid: 1 })
   assert.deepEqual(index.get('creature-b'), { clever: 1 })
   assert.equal(index.get('creature-a').brave, undefined)
+})
+
+test('counts a collected growth stage as acquired for its full evolution line', () => {
+  const stage = { id: 'stage', values: { evolutionLine: '火花 → 焰火 → 火神' } }
+  const final = { id: 'final', values: { evolutionLine: '火花 → 焰火 → 火神' } }
+  const index = buildOwnedNatureIndex([{
+    referenceKeys: ['ref'],
+    natureKey: 'nature',
+    rows: [{ values: { ref: stage.id, nature: 'adamant' } }],
+  }], buildEvolutionReferenceGroups([stage, final]))
+  assert.equal(index.get(final.id).adamant, 1)
 })
 
 test('hides a superseded official row only when its replacement exists', () => {
@@ -138,7 +150,7 @@ test('combined nature evaluation records boss-form participation', () => {
   ])
   assert.equal(results.length, 30)
   assert.ok(results.every((item) => item.analysisFormCount === 2))
-  assert.ok(results[0].reasons.some((reason) => reason.includes('关联首领形态')))
+  assert.ok(results[0].reasons.some((reason) => reason.includes('同编号形态')))
 })
 
 test('official preset classifies 烈火战神 as a boss form', () => {
@@ -147,7 +159,7 @@ test('official preset classifies 烈火战神 as a boss form', () => {
   assert.equal(boss?.values?.form, '首领形态')
 })
 
-test('boss analysis explains form differences and detects equivalent boss forms', () => {
+test('form analysis explains differences and detects equivalent related forms', () => {
   const fields = [
     normalizeField({ id: 'stats', key: 'stats', type: 'stats', statsMap: { hp: 'hp', patk: 'patk', matk: 'matk', pdef: 'pdef', mdef: 'mdef', spd: 'spd' } }),
     normalizeField({ id: 'name', key: 'name', type: 'text' }),
@@ -160,8 +172,8 @@ test('boss analysis explains form differences and detects equivalent boss forms'
   const target = { id: 'final', values: { name: '测试精灵', hp: 100, patk: 100, matk: 80, pdef: 90, mdef: 90, spd: 100, traitName: '特性甲', traitTags: ['attack'], skillRefs: ['a'] } }
   const bossA = { id: 'boss-a', values: { ...target.values, name: '首领甲', patk: 120, traitName: '特性乙', skillRefs: ['a', 'b'] } }
   const bossB = { id: 'boss-b', values: { ...bossA.values, name: '首领乙' } }
-  const analysis = buildBossFormAnalysis(target, [bossA, bossB], fields)
-  assert.equal(analysis.allBossFormsEquivalent, true)
+  const analysis = buildFormAnalysis(target, [bossA, bossB], fields)
+  assert.equal(analysis.allFormsEquivalent, true)
   assert.deepEqual(analysis.forms[0].statChanges.map((item) => [item.key, item.delta]), [['patk', 20]])
   assert.equal(analysis.forms[0].traitChanged, true)
   assert.equal(analysis.forms[0].addedSkillCount, 1)

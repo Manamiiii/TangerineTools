@@ -145,7 +145,7 @@ export function matchesOwnedSearch(row, keyword) {
 
 // 按“精灵引用 + 具体性格值”统计收集数量，供性格候选逐项匹配。
 // sources 支持多个收集表及不同字段 key，不依赖洛克王国的固定表结构。
-export function buildOwnedNatureIndex(sources = []) {
+export function buildOwnedNatureIndex(sources = [], equivalentReferenceIds = new Map()) {
   const index = new Map()
   for (const source of sources) {
     const referenceKeys = Array.isArray(source.referenceKeys) ? source.referenceKeys : []
@@ -155,9 +155,12 @@ export function buildOwnedNatureIndex(sources = []) {
       for (const referenceKey of referenceKeys) {
         const referenceValue = row.values?.[referenceKey]
         if (!referenceValue) continue
-        const counts = index.get(referenceValue) || {}
-        counts[natureValue] = (counts[natureValue] || 0) + 1
-        index.set(referenceValue, counts)
+        const equivalentIds = equivalentReferenceIds.get(referenceValue) || [referenceValue]
+        for (const equivalentId of equivalentIds) {
+          const counts = index.get(equivalentId) || {}
+          counts[natureValue] = (counts[natureValue] || 0) + 1
+          index.set(equivalentId, counts)
+        }
       }
     }
   }

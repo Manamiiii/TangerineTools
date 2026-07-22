@@ -128,6 +128,23 @@ export function visibleRockKingdomCreatureRows(rows = []) {
   })
 }
 
+// 同一进化链中的任一阶段都代表玩家已经拥有该物种。性格页用这张映射把
+// 非最终形态的收集记录归并到最终形态；缺少进化链资料时仍只匹配原行 id。
+export function buildEvolutionReferenceGroups(rows = []) {
+  const groups = new Map()
+  for (const row of rows) {
+    const line = String(row?.values?.evolutionLine || '').trim()
+    if (!line) continue
+    const ids = groups.get(line) || []
+    ids.push(row.id)
+    groups.set(line, ids)
+  }
+  return new Map(rows.map((row) => {
+    const line = String(row?.values?.evolutionLine || '').trim()
+    return [row.id, line && groups.get(line)?.length ? groups.get(line) : [row.id]]
+  }))
+}
+
 // 对比表格关心的数值维度：字段 key -> 展示名称，按种族值 + 六维顺序排列。
 export const COMPARISON_NUMBER_DIMENSIONS = [
   { key: 'bst', label: '种族值' },

@@ -66,6 +66,23 @@ test('an offline preset failure remains retryable', async () => {
   assert.equal(await db.catalogRows.where('tableId').equals('table-rock-kingdom-elf-basic').count(), creatures.length)
 })
 
+test('startup removes only retired breeding demo rows from collection data', async () => {
+  await resetDatabase()
+  globalThis.fetch = async (url) => presetResponse(url)
+  await ensureSeeded()
+  const ownedTableId = 'table-owned-scene-rock-kingdom'
+  const now = new Date().toISOString()
+  await db.catalogRows.bulkPut([
+    { id: 'owned-rock-breeding-demo-1', tableId: ownedTableId, values: { note: '旧演示' }, createdAt: now, updatedAt: now },
+    { id: 'owned-user-kept', tableId: ownedTableId, values: { note: '用户记录' }, createdAt: now, updatedAt: now },
+  ])
+
+  await ensureSeeded()
+
+  assert.equal(await db.catalogRows.get('owned-rock-breeding-demo-1'), undefined)
+  assert.equal((await db.catalogRows.get('owned-user-kept')).values.note, '用户记录')
+})
+
 test.after(async () => {
   await db.delete()
 })

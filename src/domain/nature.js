@@ -1393,15 +1393,18 @@ export function evaluateNatureProfiles(baseStats = {}, traitTags = [], skillInfo
     const worst = all.reduce((current, candidate) =>
       decisionRank[candidate.decision] > decisionRank[current.decision] ? candidate : current,
     )
-    const bossWarnings = matches.flatMap((candidate) => candidate.warnings || [])
-      .filter((warning) => !(item.warnings || []).includes(warning))
-      .filter((warning, index, list) => list.indexOf(warning) === index)
+    const formWarnings = matches.flatMap((candidate, index) => (candidate.warnings || []).map((warning) => ({
+      warning,
+      label: extraProfiles[index]?.label || extraProfiles[index]?.name || `形态 ${index + 2}`,
+    })))
+      .filter(({ warning }) => !(item.warnings || []).includes(warning))
+      .filter(({ warning }, index, list) => list.findIndex((entry) => entry.warning === warning) === index)
       .slice(0, 3)
-      .map((warning) => `首领形态：${warning}`)
+      .map(({ warning, label }) => `${label}：${warning}`)
     const roleLabels = all.flatMap((candidate) => String(candidate.roleLabel || '').split(' / '))
       .filter(Boolean)
       .filter((label, index, list) => list.indexOf(label) === index)
-      .slice(0, 3)
+      .slice(0, 2)
     return {
       ...item,
       score: Math.round((all.reduce((sum, candidate) => sum + candidate.score, 0) / all.length) * 10) / 10,
@@ -1411,10 +1414,19 @@ export function evaluateNatureProfiles(baseStats = {}, traitTags = [], skillInfo
       roleLabel: roleLabels.join(' / '),
       reasons: [
         ...(item.reasons || []),
-        `已同时核对最终形态与 ${extraProfiles.length} 个关联首领形态的属性、特性和技能变化`,
+        `已同时核对当前形态与 ${extraProfiles.length} 个同编号形态的属性、特性和技能变化`,
       ],
-      warnings: [...(item.warnings || []), ...bossWarnings],
+      warnings: [...(item.warnings || []), ...formWarnings],
       analysisFormCount: 1 + extraProfiles.length,
+      formDecisions: [
+        { id: preference.primaryProfileId || 'primary', label: preference.primaryProfileLabel || '当前形态', decision: item.decision, score: item.score },
+        ...matches.map((candidate, index) => ({
+          id: extraProfiles[index]?.id || `profile-${index}`,
+          label: extraProfiles[index]?.label || extraProfiles[index]?.name || `形态 ${index + 2}`,
+          decision: candidate.decision,
+          score: candidate.score,
+        })),
+      ],
     }
   })
   return [...applyDominance(merged)].sort((a, b) =>

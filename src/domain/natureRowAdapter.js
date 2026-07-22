@@ -114,9 +114,10 @@ function normalizedSet(value) {
   return [...new Set(Array.isArray(value) ? value : value ? [value] : [])].sort()
 }
 
-function bossAnalysisSignature(row, fields) {
+function formAnalysisSignature(row, fields) {
   return JSON.stringify({
     stats: extractStatsFromRow(row, fields),
+    elements: normalizedSet(row.values?.element),
     traitName: row.values?.traitName || '',
     traitDesc: row.values?.traitDesc || '',
     traitTags: normalizedSet(extractTraitTagsFromRow(row, fields)),
@@ -124,11 +125,14 @@ function bossAnalysisSignature(row, fields) {
   })
 }
 
-export function buildBossFormAnalysis(target, bossRows = [], fields = []) {
+export function buildFormAnalysis(target, formRows = [], fields = [], skillRows = []) {
   const targetStats = extractStatsFromRow(target, fields) || {}
   const targetTraitTags = normalizedSet(extractTraitTagsFromRow(target, fields))
   const targetSkillRefs = normalizedSet(extractSkillRefsFromRow(target, fields))
-  const forms = bossRows.map((row) => {
+  const skillById = new Map((skillRows || []).map((row) => [row.id, row.values?.name || row.id]))
+  const elementField = findFieldByKeyOrName(fields || [], ['element'], ['系别'])
+  const targetElements = normalizedSet(target.values?.[elementField?.key]).map((value) => optionLabel(elementField, value))
+  const forms = formRows.map((row) => {
     const stats = extractStatsFromRow(row, fields) || {}
     const statChanges = STATS_DIMENSIONS.flatMap(({ key, label }) => {
       const delta = Number(stats[key] || 0) - Number(targetStats[key] || 0)
@@ -141,9 +145,20 @@ export function buildBossFormAnalysis(target, bossRows = [], fields = []) {
       String(row.values?.traitDesc || '') !== String(target.values?.traitDesc || '') ||
       JSON.stringify(traitTags) !== JSON.stringify(targetTraitTags)
     const traitNameChanged = String(row.values?.traitName || '') !== String(target.values?.traitName || '')
+    const summary = extractRowSummary(row, fields)
+    const elements = normalizedSet(row.values?.[elementField?.key]).map((value) => optionLabel(elementField, value))
     return {
       id: row.id,
-      name: extractRowSummary(row, fields).name,
+      name: summary.name,
+      form: summary.form,
+      image: row.values?.image || '',
+      elements,
+      stats,
+      traitIcon: row.values?.traitIcon || '',
+      traitName: row.values?.traitName || '无特性',
+      traitDesc: row.values?.traitDesc || '',
+      traitTags,
+      skillNames: skillRefs.map((id) => skillById.get(id) || id),
       statChanges,
       traitChanged,
       traitFrom: target.values?.traitName || '无',
@@ -153,32 +168,80 @@ export function buildBossFormAnalysis(target, bossRows = [], fields = []) {
         : '名称相同，效果描述或标签发生变化',
       addedSkillCount: skillRefs.filter((id) => !targetSkillRefs.includes(id)).length,
       removedSkillCount: targetSkillRefs.filter((id) => !skillRefs.includes(id)).length,
-      sameAsTarget: statChanges.length === 0 && !traitChanged && JSON.stringify(skillRefs) === JSON.stringify(targetSkillRefs),
+      sameAsTarget:
+        statChanges.length === 0 &&
+        !traitChanged &&
+        JSON.stringify(skillRefs) === JSON.stringify(targetSkillRefs) &&
+        JSON.stringify(elements) === JSON.stringify(targetElements),
     }
   })
-  const signatures = new Set(bossRows.map((row) => bossAnalysisSignature(row, fields)))
+  const signatures = new Set(formRows.map((row) => formAnalysisSignature(row, fields)))
   return {
     targetName: extractRowSummary(target, fields).name,
     forms,
-    allBossFormsEquivalent: bossRows.length > 1 && signatures.size === 1,
+    allFormsEquivalent: formRows.length > 1 && signatures.size === 1,
+    hasObviousDifferences: forms.some((form) => !form.sameAsTarget),
   }
 }
 
-export function buildNatureAnalysisInput(target, bossRows = [], fields = [], skillRows = []) {
+function percentile(sorted, fraction) {
+  if (!sorted.length) return 0
+  const index = Math.max(0, Math.min(sorted.length - 1, Math.round((sorted.length - 1) * fraction)))
+  return sorted[index]
+}
+
+export function buildPopulationStatSummary(rows = [], fields = [], target = null) {
+  const validRows = rows.filter((row) => {
+    const stats = extractStatsFromRow(row, fields)
+    return stats && STATS_DIMENSIONS.every((dimension) => Number(stats[dimension.key]) > 0)
+  })
+  const targetStats = target ? extractStatsFromRow(target, fields) || {} : {}
+  return {
+    count: validRows.length,
+    dimensions: STATS_DIMENSIONS.map((dimension) => {
+      const values = validRows.map((row) => Number(extractStatsFromRow(row, fields)?.[dimension.key]) || 0).sort((a, b) => a - b)
+      const value = Number(targetStats[dimension.key]) || 0
+      const atOrBelow = values.filter((item) => item <= value).length
+      return {
+        ...dimension,
+        value,
+        rank: values.length ? values.length - values.findIndex((item) => item >= value) : 0,
+        percentile: values.length ? Math.round((atOrBelow / values.length) * 100) : 0,
+        min: values[0] || 0,
+        p25: percentile(values, .25),
+        p50: percentile(values, .5),
+        p75: percentile(values, .75),
+        max: values.at(-1) || 0,
+      }
+    }),
+  }
+}
+
+export function buildNatureAnalysisInput(target, formRows = [], fields = [], skillRows = []) {
   if (!target) return null
-  const relatedRows = [target, ...(bossRows || [])]
+  const relatedRows = [target, ...(formRows || []).filter((row) => row.id !== target.id)]
   const summary = extractRowSummary(target, fields)
+  const profiles = relatedRows
+    .filter((row) => Object.values(extractStatsFromRow(row, fields) || {}).some((value) => Number(value) > 0))
+    .map((row) => {
+      const rowSummary = extractRowSummary(row, fields)
+      return {
+        id: row.id,
+        name: rowSummary.name,
+        form: rowSummary.form,
+        label: [rowSummary.name, rowSummary.form].filter(Boolean).join(' · '),
+        stats: extractStatsFromRow(row, fields),
+        traitTags: extractTraitTagsFromRow(row, fields),
+        skillInfo: uniqueSkillInfo([row], fields, skillRows, true),
+      }
+    })
   return {
     name: summary.name,
     stats: extractStatsFromRow(target, fields),
     traitTags: [...new Set(relatedRows.flatMap((row) => extractTraitTagsFromRow(row, fields)))],
-    skillInfo: uniqueSkillInfo(relatedRows, fields, skillRows, bossRows.length > 0),
-    analysisProfiles: (bossRows || []).map((row) => ({
-      name: extractRowSummary(row, fields).name,
-      stats: extractStatsFromRow(row, fields),
-      traitTags: extractTraitTagsFromRow(row, fields),
-      skillInfo: uniqueSkillInfo([row], fields, skillRows, true),
-    })),
-    bossAnalysis: buildBossFormAnalysis(target, bossRows, fields),
+    skillInfo: uniqueSkillInfo(relatedRows, fields, skillRows, formRows.length > 0),
+    analysisProfiles: profiles.filter((profile) => profile.id !== target.id),
+    formProfiles: profiles,
+    formAnalysis: buildFormAnalysis(target, relatedRows, fields, skillRows),
   }
 }

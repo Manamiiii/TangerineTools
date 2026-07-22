@@ -253,11 +253,11 @@ function OwnedGrid({ fields, rows, onEditRow, onDeleteRow }) {
 // 新增 / 编辑记录弹窗
 // ---------------------------------------------------------------------------
 
-function OwnedFormModal({ table, fields, row, rows, collectionMode, onClose }) {
+export function OwnedFormModal({ table, fields, row, rows, collectionMode, initialValues = {}, onClose, onSaved }) {
   const [values, setValues] = useState(() => {
     const init = {}
     fields.forEach((f) => {
-      init[f.key] = row?.values?.[f.key] ?? defaultValueForType(f.type)
+      init[f.key] = row?.values?.[f.key] ?? initialValues[f.key] ?? defaultValueForType(f.type)
     })
     return init
   })
@@ -299,6 +299,7 @@ function OwnedFormModal({ table, fields, row, rows, collectionMode, onClose }) {
       else await createRow(table.id, values)
     }
     setSaving(false)
+    onSaved?.()
     onClose()
   }
 

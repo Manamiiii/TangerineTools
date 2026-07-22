@@ -26,11 +26,7 @@ import {
   totalPages,
 } from '../utils.js'
 import {
-  buildFormComparisonRows,
-  buildFormComparisonSummary,
   compareRockKingdomCreatureRows,
-  findNumberField,
-  getSameNumberRows,
   visibleRockKingdomCreatureRows,
 } from '../domain/rockKingdom.js'
 import { ROCK_KINGDOM_CREATURE_TABLE_ID } from '../presets/rockKingdom.js'
@@ -531,17 +527,13 @@ function RowFormModal({ table, fields, row, onClose }) {
 // 行详情页（弹窗形式，展示包括隐藏字段在内的全部字段）
 // ---------------------------------------------------------------------------
 
-function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete, onOpenReference, title = '详情' }) {
+function RowDetailModal({ row, fields, onClose, onEdit, onDelete, onOpenReference, title = '详情' }) {
   const sorted = [...fields].sort((a, b) => a.order - b.order)
   const summarySupplementKeys = new Set(sorted
     .filter((field) => field.type === 'summary' || field.display?.kind === 'summary')
     .flatMap((field) => [field.display.imageField, field.display.descriptionField])
     .filter(Boolean))
   const detailFields = sorted.filter((field) => !summarySupplementKeys.has(field.key))
-  const numberField = findNumberField(fields)
-  const sameNumberRows = numberField ? getSameNumberRows(row, rows, fields) : []
-  const comparisonRows = buildFormComparisonRows(sameNumberRows, fields)
-  const comparisonSummary = buildFormComparisonSummary(comparisonRows)
 
   return (
     <Modal
@@ -585,69 +577,6 @@ function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete, onOpenRe
           </div>
         ))}
       </div>
-
-      {comparisonRows.length > 0 && (
-        <FormComparisonSection rows={comparisonRows} summary={comparisonSummary} />
-      )}
     </Modal>
-  )
-}
-
-const MARK_LABELS = { highest: '最高', lowest: '最低' }
-const FORM_COMPARISON_MAX = 150
-
-function FormComparisonSection({ rows, summary }) {
-  const dims = rows[0]?.stats || []
-  return (
-    <div className="form-comparison">
-      <div className="form-comparison-title">同编号形态对比</div>
-      {summary && <p className="form-comparison-summary">{summary}</p>}
-      <div className="form-comparison-scroll">
-        <table className="form-comparison-table">
-          <thead>
-            <tr>
-              <th>名称</th>
-              <th>形态</th>
-              {dims.map((dim) => (
-                <th key={dim.key}>
-                  {dim.label}
-                  {dim.mark === 'same' && <span className="form-comparison-same-badge">相同</span>}
-                </th>
-              ))}
-              <th>适合方向</th>
-              <th>主要差异</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.rowId}>
-                <td>{row.name}</td>
-                <td>{row.form}</td>
-                {row.stats.map((stat) => (
-                  <td key={stat.key} className={`form-comparison-cell mark-${stat.mark}`}>
-                    <span className="form-comparison-stat">
-                      <span className="form-comparison-stat-track" aria-hidden="true">
-                        <span
-                          className="form-comparison-stat-fill"
-                          style={{ width: `${Math.min((stat.value / FORM_COMPARISON_MAX) * 100, 100)}%` }}
-                        />
-                      </span>
-                      <span className="form-comparison-stat-value">{stat.value}</span>
-                      {MARK_LABELS[stat.mark] && (
-                        <span className="form-comparison-mark-badge">{MARK_LABELS[stat.mark]}</span>
-                      )}
-                    </span>
-                  </td>
-                ))}
-                <td className="form-comparison-direction">
-                  <span className="form-comparison-direction-tag">{row.direction}</span>
-                </td>
-                <td className="form-comparison-difference">{row.difference}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
   )
 }

@@ -1,7 +1,6 @@
 // 洛克王国预置骨架、版本化正式数据迁移与演示数据初始化。
 
 import { db } from './core.js'
-import { ensureOwnedTable } from './repository.js'
 import {
   ELEMENT_LEGACY_DEFAULTS,
   ROCK_KINGDOM_PRESET,
@@ -9,7 +8,6 @@ import {
   SKILL_CATEGORY_LEGACY_DEFAULTS,
   TRAIT_TAG_LEGACY_DEFAULTS,
 } from '../presets/rockKingdom.js'
-import { BREEDING_DEMO_OWNED } from '../domain/breedingData.js'
 import { mergeVersionedPresetValues } from '../domain/presetMigration.js'
 import { mergeFieldOptions, nowIso } from '../utils.js'
 
@@ -25,6 +23,7 @@ export async function ensureSeeded() {
     await seedRockKingdomStructure()
     await db.meta.put({ key: 'seededRockKingdom', value: true })
   }
+  await removeRetiredBreedingDemoOwnedRows()
   const migrationKey = 'rockKingdomRuntimeMigrationVersion'
   const migrated = await db.meta.get(migrationKey)
   if (migrated?.value === ROCK_KINGDOM_ROWS_VERSION) {
@@ -44,7 +43,6 @@ export async function ensureSeeded() {
   await migrateRockKingdomBreedingFieldLabels()
   const skillRowsReady = await migrateRockKingdomSkillRows(presetMigration)
   await migrateRockKingdomSceneTools()
-  await seedRockKingdomBreedingDemoOwnedRows()
   // 静态预置离线时保留未完成状态，下次启动继续尝试，不把空骨架误标成已迁移。
   if (creatureRowsReady && skillRowsReady) {
     await db.meta.put({ key: migrationKey, value: ROCK_KINGDOM_ROWS_VERSION })
@@ -347,44 +345,11 @@ async function migrateRockKingdomBreedingFieldLabels() {
   }
 }
 
-async function seedRockKingdomBreedingDemoOwnedRows() {
-  const scene = await db.scenes.get(ROCK_KINGDOM_PRESET.scene.id)
-  if (!scene) return
-  const demoMeta = await db.meta.get('seededRockKingdomBreedingDemoOwnedRows')
-  if (demoMeta?.value) return
-  const ownedTable = await ensureOwnedTable(ROCK_KINGDOM_PRESET.scene.id)
-  const existingOwnedRows = await db.catalogRows.where('tableId').equals(ownedTable.id).count()
-  if (existingOwnedRows > 0) {
-    await db.meta.put({ key: 'seededRockKingdomBreedingDemoOwnedRows', value: 'skipped-existing-owned' })
-    return
-  }
-  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
-  const creatureRows = await db.catalogRows.where('tableId').equals(creatureTableId).toArray()
-  const creatureByName = new Map(creatureRows.map((row) => [row.values?.name, row]))
-  const now = nowIso()
-  const rowsToPut = BREEDING_DEMO_OWNED.flatMap((demo, index) => {
-    const creature = creatureByName.get(demo.name)
-    if (!creature) return []
-    return [{
-      id: `owned-rock-breeding-demo-${index + 1}`,
-      tableId: ownedTable.id,
-      values: {
-        ref: creature.id,
-        nature: demo.nature,
-        bloodline: '',
-        shiny: demo.shiny,
-        colorful: demo.colorful,
-        specialty: '',
-        gender: demo.gender,
-        note: demo.note,
-      },
-      createdAt: now,
-      updatedAt: now,
-    }]
-  })
+async function removeRetiredBreedingDemoOwnedRows() {
+  const ids = Array.from({ length: 10 }, (_, index) => `owned-rock-breeding-demo-${index + 1}`)
   await db.transaction('rw', db.catalogRows, db.meta, async () => {
-    if (rowsToPut.length > 0) await db.catalogRows.bulkPut(rowsToPut)
-    await db.meta.put({ key: 'seededRockKingdomBreedingDemoOwnedRows', value: true })
+    await db.catalogRows.bulkDelete(ids)
+    await db.meta.delete('seededRockKingdomBreedingDemoOwnedRows')
   })
 }
 
