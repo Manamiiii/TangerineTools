@@ -2,9 +2,8 @@
 // 候选，并生成可解释的推荐 / 可保留 / 不推荐结论。不依赖 Dexie / React。
 
 import { STATS_DIMENSIONS } from '../constants.js'
-import { findFieldByKeyOrName, getStatsValues, optionLabel } from '../utils.js'
 import { OWNED_NATURE_OPTIONS } from './owned.js'
-import { findNumberField } from './rockKingdom.js'
+import { deriveSkillEffectTags } from './rockKingdomTags.js'
 
 const STAT_KEY_BY_CN = {
   生命: 'hp',
@@ -270,32 +269,6 @@ function skillItemText(item) {
     item.description,
     item.desc,
   ].filter(Boolean).join(' ')
-}
-
-function deriveSkillEffectTags(item) {
-  const explicit = Array.isArray(item.effectTags) ? item.effectTags : []
-  const tags = new Set(explicit)
-  const text = skillItemText(item)
-  if (/先手|优先|抢先|迅捷/.test(text)) tags.add('priority')
-  if (/迅捷/.test(text)) tags.add('swift')
-  if (/迅捷|速度[+-]|速度提升|速度降低|先手|高速/.test(text)) tags.add('speed')
-  if (/回复|恢复|治疗|吸血|生命/.test(text)) tags.add('healing')
-  if (/防御|护盾|减伤|承伤|抵抗|免疫/.test(text)) tags.add('damageReduction')
-  if (/回复\d*能量|获得\d*能量|能量回复|迸发/.test(text)) tags.add('energyGain')
-  if (/偷取.*能量|失去\d*能量|扣.*能量|能量减少/.test(text)) tags.add('energyDrain')
-  if (/能耗[+-]|费用[+-]|消耗[+-]|全技能能耗/.test(text)) tags.add('costChange')
-  if (/物攻\+|魔攻\+|双攻\+|物防\+|魔防\+|双防\+|威力\+|强化|提升|增加/.test(text)) tags.add('statBoost')
-  if (/继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(text)) tags.add('boostTransfer')
-  if (/物攻-|魔攻-|双攻-|物防-|魔防-|双防-|速度-|削弱|降低|减少/.test(text)) tags.add('statDebuff')
-  if (/中毒|剧毒|灼烧|烧伤|冻结|冰冻|睡眠|恐惧|麻痹|混乱|沉默|束缚|异常|控制/.test(text)) tags.add('control')
-  if (/应对攻击|反击|受到攻击后|承受.*后/.test(text)) tags.add('counterAttack')
-  if (/应对防御/.test(text)) tags.add('counterDefense')
-  if (/应对状态/.test(text)) tags.add('counterStatus')
-  if (/脱离|换入|换场|换下|返场|替换/.test(text)) tags.add('pivot')
-  if (/\d+\s*连击|连击/.test(text)) tags.add('multiHit')
-  if (/蓄力/.test(text)) tags.add('charge')
-  if (/天气|场地|雨|雪|沙暴|放晴/.test(text)) tags.add('fieldEffect')
-  return [...tags]
 }
 
 function countTagged(items, tag) {
@@ -1403,9 +1376,50 @@ export function evaluateAllNatures(baseStats = {}, traitTags = [], skillInfo = {
   })
 }
 
-// 兼容旧调用名：返回所有候选而非 top-N。
-export function calculateNatureScores(baseStats = {}, traitTags = [], skillInfo = {}) {
-  return evaluateAllNatures(baseStats, traitTags, skillInfo)
+export function evaluateNatureProfiles(baseStats = {}, traitTags = [], skillInfo = {}, profiles = [], preference = {}) {
+  const primary = evaluateAllNatures(baseStats, traitTags, skillInfo, preference)
+  const extraProfiles = (profiles || []).filter((profile) => profile?.stats)
+  if (extraProfiles.length === 0) return primary
+  const profileResults = extraProfiles.map((profile) =>
+    evaluateAllNatures(profile.stats, profile.traitTags || [], profile.skillInfo || {}, preference),
+  )
+  const decisionRank = { recommended: 0, keepable: 1, notRecommended: 2 }
+  const byCandidate = profileResults.map((items) =>
+    new Map(items.map((item) => [`${item.raise}-${item.lower}`, item])),
+  )
+  const merged = primary.map((item) => {
+    const matches = byCandidate.map((items) => items.get(`${item.raise}-${item.lower}`)).filter(Boolean)
+    const all = [item, ...matches]
+    const worst = all.reduce((current, candidate) =>
+      decisionRank[candidate.decision] > decisionRank[current.decision] ? candidate : current,
+    )
+    const bossWarnings = matches.flatMap((candidate) => candidate.warnings || [])
+      .filter((warning) => !(item.warnings || []).includes(warning))
+      .filter((warning, index, list) => list.indexOf(warning) === index)
+      .slice(0, 3)
+      .map((warning) => `首领形态：${warning}`)
+    const roleLabels = all.flatMap((candidate) => String(candidate.roleLabel || '').split(' / '))
+      .filter(Boolean)
+      .filter((label, index, list) => list.indexOf(label) === index)
+      .slice(0, 3)
+    return {
+      ...item,
+      score: Math.round((all.reduce((sum, candidate) => sum + candidate.score, 0) / all.length) * 10) / 10,
+      decision: worst.decision,
+      hardRisk: all.some((candidate) => candidate.hardRisk),
+      roleTags: [...new Set(all.flatMap((candidate) => candidate.roleTags || []))],
+      roleLabel: roleLabels.join(' / '),
+      reasons: [
+        ...(item.reasons || []),
+        `已同时核对最终形态与 ${extraProfiles.length} 个关联首领形态的属性、特性和技能变化`,
+      ],
+      warnings: [...(item.warnings || []), ...bossWarnings],
+      analysisFormCount: 1 + extraProfiles.length,
+    }
+  })
+  return [...applyDominance(merged)].sort((a, b) =>
+    decisionRank[a.decision] - decisionRank[b.decision] || b.score - a.score,
+  )
 }
 
 // 对原始六维应用性格加成：强化项 ×1.1、弱化项 ×0.9，四舍五入取整；
@@ -1426,95 +1440,4 @@ export function explainNatureRecommendation(nature) {
   if (nature.reasons?.length) segments.push(...nature.reasons)
   if (nature.warnings?.length) segments.push(`风险：${nature.warnings.join('；')}`)
   return `${segments.join('；')}。`
-}
-
-// ---------------------------------------------------------------------------
-// 从资料表行提取性格推荐所需信息（"从资料库带入"功能使用）。
-// 均按字段 key 优先、名称兜底定位目标字段，不假设固定的资料表结构。
-// ---------------------------------------------------------------------------
-
-// 提取行的六维数值：复用 stats 类型字段的 statsMap 定位各原始数值字段。
-// 资料表没有 stats 字段时返回 null，调用方应据此跳过六维带入。
-export function extractStatsFromRow(row, fields) {
-  const statsField = (fields || []).find((f) => f.type === 'stats')
-  if (!statsField) return null
-  return Object.fromEntries(
-    getStatsValues(fields, statsField.statsMap, row.values).map((s) => [s.key, s.value]),
-  )
-}
-
-// 提取行的特性标签（多选字段），字段缺失或值非数组时返回空数组。
-export function extractTraitTagsFromRow(row, fields) {
-  const field = findFieldByKeyOrName(fields || [], ['traitTags'], ['特性标签'])
-  if (!field) return []
-  const raw = row.values?.[field.key]
-  return Array.isArray(raw) ? raw : []
-}
-
-function normalizeSkillCellValue(value) {
-  if (value == null || value === '') return []
-  if (Array.isArray(value)) return value
-  if (typeof value === 'object') return [value]
-  return String(value)
-    .split(/\n|；|;/)
-    .map((item) => item.trim())
-    .filter(Boolean)
-}
-
-// 提取技能/招式线索。当前预置资料未必包含技能字段；未来 d.json 同步出技能后，
-// 只要字段 key/name 命中 skills/moves/技能/招式，即可进入规则引擎。
-export function extractSkillInfoFromRow(row, fields) {
-  const skillField = findFieldByKeyOrName(
-    fields || [],
-    ['skillRefs', 'skills', 'moves', 'skillList', 'moveList'],
-    ['技能', '招式', '技能列表', '招式列表'],
-  )
-  if (skillField) {
-    const skills = normalizeSkillCellValue(row.values?.[skillField.key])
-    if (skills.length > 0) return { skills }
-  }
-  const traitDescField = findFieldByKeyOrName(fields || [], ['traitDesc'], ['特性说明', '特性描述'])
-  return { skills: traitDescField ? normalizeSkillCellValue(row.values?.[traitDescField.key]) : [] }
-}
-
-export function extractSkillRefsFromRow(row, fields) {
-  const skillField = findFieldByKeyOrName(
-    fields || [],
-    ['skillRefs'],
-    ['可用技能', '技能引用', '技能列表'],
-  )
-  if (!skillField) return []
-  const raw = row.values?.[skillField.key]
-  return Array.isArray(raw) ? raw : raw ? [raw] : []
-}
-
-export function extractSkillInfoFromReferenceRows(skillRows = []) {
-  const skills = skillRows
-    .map((row) => row?.values || row)
-    .filter(Boolean)
-    .map((values) => ({
-      name: values.name,
-      category: values.category,
-      type: values.category,
-      power: values.power,
-      cost: values.cost,
-      priority: values.priority,
-      effectTags: Array.isArray(values.effectTags) ? values.effectTags : [],
-      effect: values.effect,
-      description: values.effect,
-    }))
-  return { skills }
-}
-
-// 提取行的名称/编号/形态摘要，用于行选择器里的展示文案。
-export function extractRowSummary(row, fields) {
-  const list = fields || []
-  const nameField = findFieldByKeyOrName(list, ['name'], ['名称'])
-  const numberField = findNumberField(list)
-  const formField = findFieldByKeyOrName(list, ['form'], ['形态'])
-  const name = nameField ? row.values?.[nameField.key] : ''
-  const no = numberField ? row.values?.[numberField.key] : ''
-  const formValue = formField ? row.values?.[formField.key] : null
-  const form = formField && formValue != null ? optionLabel(formField, formValue) : ''
-  return { name: name || '未命名', no: no || '', form }
 }

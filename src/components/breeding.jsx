@@ -3,8 +3,8 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db, ensureOwnedTable } from '../db.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
 import { buildOwnedCreatures, EGG_GROUP_SOURCE_URL, recommendBreedingBatches } from '../domain/breeding.js'
-import { EmptyState } from './common.jsx'
-import { OWNED_NATURE_OPTIONS } from '../domain/owned.js'
+import { EmptyState, OptionTag } from './common.jsx'
+import { OWNED_COLORFUL_OPTIONS, OWNED_NATURE_OPTIONS } from '../domain/owned.js'
 
 export function BreedingTool({ scene }) {
   useEffect(() => {
@@ -42,12 +42,12 @@ export function BreedingTool({ scene }) {
       <div className="breeding-pairs">{batch.pairs.map((pair) => <article className="breeding-pair breeding-pair-card" key={`${pair.father.id}-${pair.mother.id}`}>
         <div className="breeding-pair-head"><span>{pair.eggGroup}</span><span>{pair.canRecommendedNature ? '可孵推荐性格' : '异色优先配对'}</span></div>
         <div className="breeding-lineup">
-          <BreedingCreature symbol="♂" item={pair.father} />
+          <BreedingCreature gender="male" item={pair.father} />
           <div className="breeding-arrow">➜</div>
-          <BreedingCreature symbol="♀" item={pair.mother} />
+          <BreedingCreature gender="female" item={pair.mother} />
         </div>
         <div className="breeding-offspring-row">
-          <BreedingCreature symbol="↻" item={pair.mother} compact />
+          <BreedingCreature item={pair.mother} compact />
           <BreedingProbability pair={pair} />
         </div>
       </article>)}</div>
@@ -61,16 +61,16 @@ function natureLabel(value) {
   return NATURE_LABELS[value] || value || '未知性格'
 }
 
-function BreedingCreature({ symbol, item, compact = false }) {
+function BreedingCreature({ gender, item, compact = false }) {
   const trait = item.catalog.row.values?.traitName || '无特性'
   return <div className={`breeding-creature-row ${compact ? 'compact' : ''}`}>
     <img src={item.catalog.row.values?.image || ''} alt="" />
-    <span className="breeding-sex-symbol">{symbol}</span>
+    <span className={`breeding-sex-symbol ${gender || 'offspring'}`}>{gender === 'male' ? '♂' : gender === 'female' ? '♀' : '↻'}</span>
     <span className="breeding-creature-text" title={`${item.name} · ${natureLabel(item.nature)} · ${trait}`}>
       <strong>{item.name}</strong><em>{natureLabel(item.nature)}</em><small>{trait}</small>
     </span>
-    {item.shiny && <span className="breeding-mark shiny-mark">✦异</span>}
-    {item.colorful && <span className="breeding-mark colorful-mark">🌈炫</span>}
+    {item.shiny && <img className="breeding-status-image" src="https://patchwiki.biligame.com/images/rocom/2/2e/buxc6y4s0r7d8ix03zzkahnk4h8urtv.png" alt="异色" title="异色" />}
+    {item.colorful && <OptionTag option={OWNED_COLORFUL_OPTIONS.find((option) => option.value === 'yes')} iconOnly />}
   </div>
 }
 

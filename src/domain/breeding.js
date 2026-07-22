@@ -2,7 +2,8 @@
 // 数据来源口径：蛋组优先读取资料库 eggGroups 字段；繁育谱系优先读取 speciesGroup 字段，
 // 未填写时按连续编号/基础名做保守推断，避免改 Dexie schema 或写死个体数据。
 
-import { evaluateAllNatures, extractSkillInfoFromReferenceRows, extractSkillRefsFromRow, extractStatsFromRow, extractTraitTagsFromRow } from './nature.js'
+import { evaluateAllNatures } from './nature.js'
+import { extractSkillInfoFromReferenceRows, extractSkillRefsFromRow, extractStatsFromRow, extractTraitTagsFromRow } from './natureRowAdapter.js'
 import { BILI_EGG_GROUP_SOURCE_URL } from './breedingData.js'
 
 export const EGG_GROUP_SOURCE_URL = BILI_EGG_GROUP_SOURCE_URL

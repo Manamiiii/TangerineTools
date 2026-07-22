@@ -10,10 +10,12 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+artifacts/
 *.local
 
 # Codex credentials and local session state must never enter the repository.
 .codex/
+.codex-remote-attachments/
 
 # Editor directories and files
 .vscode/*

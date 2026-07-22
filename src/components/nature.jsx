@@ -5,39 +5,57 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { ArrowDownCircle, ArrowUpCircle, Sparkles } from 'lucide-react'
+import { ArrowDownCircle, ArrowUpCircle, CheckCircle2, Sparkles } from 'lucide-react'
 import { db } from '../db.js'
 import { STATS_DIMENSIONS } from '../constants.js'
 import {
-  evaluateAllNatures,
   analyzeStats,
+  evaluateNatureProfiles,
   explainNatureRecommendation,
-  extractSkillInfoFromReferenceRows,
-  extractSkillRefsFromRow,
-  extractSkillInfoFromRow,
-  extractRowSummary,
-  extractStatsFromRow,
-  extractTraitTagsFromRow,
   natureName,
   NATURE_DECISION_LABELS,
   STAT_LABELS,
 } from '../domain/nature.js'
+import { pveOverviewSummary, pveStarText } from '../domain/naturePve.js'
+import { buildNatureAnalysisInput, extractRowSummary } from '../domain/natureRowAdapter.js'
+import { buildOwnedNatureIndex } from '../domain/owned.js'
+import {
+  compareRockKingdomCreatureRows,
+  isRockKingdomNatureSelectableRow,
+  relatedRockKingdomBossRows,
+  visibleRockKingdomCreatureRows,
+} from '../domain/rockKingdom.js'
 import { TRAIT_TAG_OPTIONS } from '../presets/rockKingdom.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
-import { EmptyState, FormRow } from './common.jsx'
-import { FieldInput } from './catalog.jsx'
+import { EmptyState, FormRow, OptionTag, SearchableSelect } from './common.jsx'
 
 const EMPTY_STATS = Object.fromEntries(STATS_DIMENSIONS.map((d) => [d.key, '']))
-const TRAIT_TAG_FIELD = { type: 'multiselect', options: TRAIT_TAG_OPTIONS }
 const TRAIT_TAG_LABELS = Object.fromEntries(TRAIT_TAG_OPTIONS.map((o) => [o.value, o.label]))
 
+function TraitTagList({ value }) {
+  const selected = Array.isArray(value) ? value : []
+  const options = TRAIT_TAG_OPTIONS.filter((option) => selected.includes(option.value))
+  if (options.length === 0) return <span className="nature-empty-tags">所选精灵没有特性标签</span>
+  return (
+    <div className="nature-trait-tags">
+      {options.map((option) => <OptionTag key={option.value} option={option} />)}
+    </div>
+  )
+}
+
 export function NatureTool({ scene }) {
-  const [draftInput, setDraftInput] = useState({
+  const emptyInput = {
     name: '',
     stats: { ...EMPTY_STATS },
     traitTags: [],
     skillInfo: { skills: [] },
-  })
+    analysisProfiles: [],
+    sourceRowId: '',
+    sourceMeta: null,
+    ownedNatures: {},
+    bossAnalysis: null,
+  }
+  const [draftInput, setDraftInput] = useState(emptyInput)
   const [input, setInput] = useState(draftInput)
   const [selectedIndex, setSelectedIndex] = useState(0)
 
@@ -45,12 +63,25 @@ export function NatureTool({ scene }) {
     setDraftInput((prev) => ({ ...prev, stats: { ...prev.stats, [key]: value } }))
   }
 
-  function handleImport({ name, stats, traitTags, skillInfo }) {
+  function handleImport(payload) {
+    if (!payload) {
+      const next = { ...emptyInput, stats: { ...EMPTY_STATS }, skillInfo: { skills: [] } }
+      setDraftInput(next)
+      setInput(next)
+      setSelectedIndex(0)
+      return
+    }
+    const { name, stats, traitTags, skillInfo, analysisProfiles, sourceRowId, sourceMeta, ownedNatures, bossAnalysis } = payload
     const next = {
       name: name || '',
       stats: { ...EMPTY_STATS, ...stats },
       traitTags: traitTags || [],
       skillInfo: skillInfo || { skills: [] },
+      analysisProfiles: analysisProfiles || [],
+      sourceRowId: sourceRowId || '',
+      sourceMeta: sourceMeta || null,
+      ownedNatures: ownedNatures || {},
+      bossAnalysis: bossAnalysis || null,
     }
     setDraftInput(next)
     setInput(next)
@@ -63,8 +94,8 @@ export function NatureTool({ scene }) {
   )
   const hasAnyStat = STATS_DIMENSIONS.some((d) => numericStats[d.key] > 0)
   const candidates = useMemo(
-    () => evaluateAllNatures(numericStats, input.traitTags, input.skillInfo),
-    [numericStats, input.traitTags, input.skillInfo],
+    () => evaluateNatureProfiles(numericStats, input.traitTags, input.skillInfo, input.analysisProfiles),
+    [numericStats, input.traitTags, input.skillInfo, input.analysisProfiles],
   )
   // 输入变化后如果原选中下标越界（例如输入被清空、候选变少），回退到首选。
   useEffect(() => {
@@ -80,68 +111,29 @@ export function NatureTool({ scene }) {
     <div className="nature-tool">
       <RowImportPanel scene={scene} onImport={handleImport} />
 
-      <div className="nature-form">
-        <FormRow label="名称（可选）">
-          <input
-            className="input"
-            value={draftInput.name}
-            onChange={(e) => setDraftInput((prev) => ({ ...prev, name: e.target.value }))}
-            placeholder="用于标记这次推荐，例如精灵名称"
-          />
-        </FormRow>
-
-        <div className="nature-stats-grid">
-          {STATS_DIMENSIONS.map((d) => (
-            <label key={d.key} className="nature-stat-input">
-              <span>{d.label}</span>
-              <input
-                type="number"
-                className="input"
-                value={draftInput.stats[d.key]}
-                onChange={(e) => updateStat(d.key, e.target.value)}
-              />
-            </label>
-          ))}
-        </div>
-
-        <FormRow label="特性标签" hint="标签会影响强化/弱化方向的推荐权重">
-          <FieldInput
-            field={TRAIT_TAG_FIELD}
-            value={draftInput.traitTags}
-            onChange={(tags) => setDraftInput((prev) => ({ ...prev, traitTags: tags }))}
-          />
-        </FormRow>
-
-        <FormRow label="技能关联" hint="从精灵基础资料选择后，会通过「可用技能」引用读取技能资料参与分析">
-          <div className="nature-linked-skills">
-            已关联 {draftInput.skillInfo?.skills?.length || 0} 个技能
-          </div>
-        </FormRow>
-
-        <div className="nature-manual-actions">
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => {
-              setInput(draftInput)
-              setSelectedIndex(0)
-            }}
-          >
-            计算推荐
-          </button>
-          <span>手动输入不会实时计算，点击后刷新结果。</span>
-        </div>
-      </div>
+      {draftInput.sourceRowId ? (
+        <CreatureAnalysisOverview input={draftInput} />
+      ) : (
+        <ManualNatureInput
+          input={draftInput}
+          onNameChange={(name) => setDraftInput((prev) => ({ ...prev, name }))}
+          onStatChange={updateStat}
+          onCalculate={() => {
+            setInput(draftInput)
+            setSelectedIndex(0)
+          }}
+        />
+      )}
 
       {hasAnyStat ? (
         <>
           <NaturePveOverview candidates={candidates} />
-          <NaturePriorityRules />
           <div className="nature-workbench">
             <NatureCandidateList
               candidates={candidates}
               activeIndex={activeIndex}
               onSelect={setSelectedIndex}
+              ownedNatures={input.ownedNatures}
             />
             <NatureResult
               nature={nature}
@@ -153,11 +145,62 @@ export function NatureTool({ scene }) {
         </>
       ) : (
         <EmptyState
-          title="填写六维后查看推荐"
-          description="至少填写一项不为 0 的数值，即可查看性格推荐结果。"
+          title="选择精灵后查看推荐"
+          description="在上方输入框中搜索精灵；也可以展开手动输入六维。"
         />
       )}
     </div>
+  )
+}
+
+function CreatureAnalysisOverview({ input }) {
+  const meta = input.sourceMeta || {}
+  return (
+    <section className="nature-creature-overview">
+      <div className="nature-creature-identity">
+        {meta.image && <img src={meta.image} alt="" />}
+        <div>
+          <strong>{input.name || '未命名精灵'}</strong>
+          <span>{[meta.no, meta.form].filter(Boolean).join(' · ')}</span>
+          {meta.traitName && <small>特性：{meta.traitName}</small>}
+        </div>
+      </div>
+      <div className="nature-overview-stats">
+        {STATS_DIMENSIONS.map((dimension) => (
+          <span key={dimension.key}><small>{dimension.label}</small><strong>{input.stats[dimension.key] || 0}</strong></span>
+        ))}
+      </div>
+      <div className="nature-overview-evidence">
+        <div>
+          <small>特性标签</small>
+          <TraitTagList value={input.traitTags} />
+        </div>
+        <span className="nature-evidence-count">{input.skillInfo?.skills?.length || 0} 个技能参与分析</span>
+      </div>
+      <BossFormAnalysis analysis={input.bossAnalysis} />
+    </section>
+  )
+}
+
+function ManualNatureInput({ input, onNameChange, onStatChange, onCalculate }) {
+  return (
+    <details className="nature-manual-panel">
+      <summary>不选择精灵，手动输入六维</summary>
+      <div className="nature-manual-content">
+        <FormRow label="名称（可选）">
+          <input className="input" value={input.name} onChange={(event) => onNameChange(event.target.value)} placeholder="精灵名称" />
+        </FormRow>
+        <div className="nature-stats-grid">
+          {STATS_DIMENSIONS.map((dimension) => (
+            <label key={dimension.key} className="nature-stat-input">
+              <span>{dimension.label}</span>
+              <input type="number" className="input" value={input.stats[dimension.key]} onChange={(event) => onStatChange(dimension.key, event.target.value)} />
+            </label>
+          ))}
+        </div>
+        <button type="button" className="btn btn-primary" onClick={onCalculate}>计算推荐</button>
+      </div>
+    </details>
   )
 }
 
@@ -184,8 +227,29 @@ function RowImportPanel({ scene, onImport }) {
     () => db.catalogRows.where('tableId').equals(skillTableId).toArray(),
     [skillTableId],
   )
+  const ownedNatureIndex = useLiveQuery(async () => {
+    const ownedTables = await db.catalogTables
+      .where('sceneId')
+      .equals(scene.id)
+      .filter((table) => table.kind === 'owned')
+      .toArray()
+    const sources = []
+    for (const table of ownedTables) {
+      const ownedFields = await db.catalogFields.where('tableId').equals(table.id).toArray()
+      const refFields = ownedFields.filter((field) => field.type === 'reference' && field.referenceTableId === creatureTableId)
+      const natureField = ownedFields.find((field) => field.key === 'nature' || field.name === '性格')
+      if (refFields.length === 0 || !natureField) continue
+      const ownedRows = await db.catalogRows.where('tableId').equals(table.id).toArray()
+      sources.push({
+        rows: ownedRows,
+        referenceKeys: refFields.map((field) => field.key),
+        natureKey: natureField.key,
+      })
+    }
+    return buildOwnedNatureIndex(sources)
+  }, [scene.id, creatureTableId])
 
-  if (creatureTable === undefined || !fields || !rows || !skillRows) return null
+  if (creatureTable === undefined || !fields || !rows || !skillRows || !ownedNatureIndex) return null
   if (!creatureTable) {
     return (
       <div className="nature-import-panel nature-import-empty">
@@ -194,56 +258,96 @@ function RowImportPanel({ scene, onImport }) {
     )
   }
 
-  const summaries = rows.map((row) => ({ row, summary: extractRowSummary(row, fields) }))
+  const visibleRows = visibleRockKingdomCreatureRows(rows).sort(compareRockKingdomCreatureRows)
+  const selectableRows = visibleRows.filter(isRockKingdomNatureSelectableRow)
+  const summaries = selectableRows.map((row) => ({ row, summary: extractRowSummary(row, fields) }))
+  const options = summaries.map(({ row, summary }) => {
+    const label = [summary.no, summary.name, summary.form].filter(Boolean).join(' · ')
+    return {
+      value: row.id,
+      label,
+      searchText: label,
+      content: (
+        <span className="nature-creature-option">
+          {row.values?.image && <img src={row.values.image} alt="" />}
+          <span><strong>{summary.name}</strong><small>{[summary.no, summary.form].filter(Boolean).join(' · ')}</small></span>
+        </span>
+      ),
+    }
+  })
 
   function importRow(target) {
     if (!target) return
-    const summary = extractRowSummary(target, fields)
-    const stats = extractStatsFromRow(target, fields)
-    const traitTags = extractTraitTagsFromRow(target, fields)
-    const skillRefs = extractSkillRefsFromRow(target, fields)
-    const referencedSkillRows = skillRows.filter((row) => skillRefs.includes(row.id))
-    const skillInfo = referencedSkillRows.length > 0
-      ? extractSkillInfoFromReferenceRows(referencedSkillRows)
-      : extractSkillInfoFromRow(target, fields)
-    const traitDesc = target.values?.traitDesc || ''
-    const traitText = /继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(traitDesc)
-      ? traitDesc
-      : ''
+    const bossRows = relatedRockKingdomBossRows(target, visibleRows)
     onImport({
-      name: summary.name,
-      stats,
-      traitTags,
-      skillInfo: traitText ? { ...skillInfo, traitText } : skillInfo,
+      ...buildNatureAnalysisInput(target, bossRows, fields, skillRows),
+      sourceRowId: target.id,
+      sourceMeta: {
+        image: target.values?.image || '',
+        no: target.values?.no || '',
+        form: target.values?.form || '',
+        traitName: target.values?.traitName || '',
+      },
+      ownedNatures: ownedNatureIndex.get(target.id) || {},
     })
   }
 
   return (
     <div className="nature-import-panel">
-      <div className="nature-import-row">
-        <select
-          className="select"
-          value={rowId || ''}
-          onChange={(e) => {
-            const nextRowId = e.target.value
-            setRowId(nextRowId)
-            importRow(rows.find((r) => r.id === nextRowId))
-          }}
-        >
-          <option value="">从资料库选择一行带入</option>
-          {summaries.map(({ row, summary }) => (
-            <option key={row.id} value={row.id}>
-              {[summary.no, summary.name, summary.form].filter(Boolean).join(' · ')}
-            </option>
-          ))}
-        </select>
-      </div>
+      <SearchableSelect
+        className="nature-creature-picker"
+        value={rowId || ''}
+        options={options}
+        placeholder="搜索并选择精灵"
+        searchPlaceholder="输入编号、名称或形态"
+        emptyText="没有匹配的可培养形态"
+        onChange={(nextRowId) => {
+          setRowId(nextRowId || null)
+          if (!nextRowId) onImport(null)
+          else importRow(selectableRows.find((row) => row.id === nextRowId))
+        }}
+      />
     </div>
   )
 }
 
+function BossFormAnalysis({ analysis }) {
+  if (!analysis?.forms?.length) return null
+  return (
+    <details className="nature-boss-analysis">
+      <summary>
+        <strong>{analysis.forms.length} 个关联首领形态参与综合分析</strong>
+        {analysis.forms.length > 1 && (
+          <span className={analysis.allBossFormsEquivalent ? 'same' : 'different'}>
+            {analysis.allBossFormsEquivalent ? '分析项相同' : '存在差异'}
+          </span>
+        )}
+      </summary>
+      <div className="nature-boss-analysis-body">
+        <p>性格推荐对象是可培养的「{analysis.targetName}」；首领形态的变化作为同一性格的风险补充。</p>
+        <div className="nature-boss-forms">
+          {analysis.forms.map((form) => (
+            <div className="nature-boss-form" key={form.id}>
+              <strong>{form.name}</strong>
+              {form.sameAsTarget ? (
+                <span>六维、特性和技能与最终形态相同</span>
+              ) : (
+                <ul>
+                  {form.statChanges.length > 0 && <li>六维：{form.statChanges.map((item) => `${item.label} ${item.delta > 0 ? '+' : ''}${item.delta}`).join('、')}</li>}
+                  {form.traitChanged && <li>特性：{form.traitChangeText}</li>}
+                  {(form.addedSkillCount > 0 || form.removedSkillCount > 0) && <li>技能：新增 {form.addedSkillCount}，减少 {form.removedSkillCount}</li>}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </details>
+  )
+}
+
 // 候选清单：展示全部 30 个合法性格，先按「强化维度」分组，组内再展示推荐分档。
-function NatureCandidateList({ candidates, activeIndex, onSelect }) {
+function NatureCandidateList({ candidates, activeIndex, onSelect, ownedNatures = {} }) {
   if (!candidates || candidates.length === 0) return null
   const activeCandidate = candidates[activeIndex]
   const groups = groupByRaise(candidates)
@@ -277,6 +381,7 @@ function NatureCandidateList({ candidates, activeIndex, onSelect }) {
                           candidates={candidates}
                           activeCandidate={activeCandidate}
                           onSelect={onSelect}
+                          ownedCount={ownedNatures[c.id] || 0}
                         />
                       ))}
                     </ul>
@@ -303,7 +408,7 @@ function groupByRaise(items = []) {
     .filter((group) => group.items.length > 0)
 }
 
-function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSelect }) {
+function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSelect, ownedCount = 0 }) {
   const candidateIndex = candidates.indexOf(candidate)
   const isActive = candidate === activeCandidate
   return (
@@ -318,25 +423,16 @@ function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSel
         </span>
         <span className="nature-candidate-name">{natureName(candidate)}</span>
         <span className="nature-candidate-role">{natureModifierSummary(candidate)}</span>
+        <span className={`nature-candidate-owned ${ownedCount > 0 ? 'acquired' : 'missing'}`}>
+          {ownedCount > 0 && <CheckCircle2 size={13} />}
+          {ownedCount > 0 ? `已获得${ownedCount > 1 ? ` ×${ownedCount}` : ''}` : '未获得'}
+        </span>
         <span className="nature-candidate-score">{candidate.score.toFixed(1)}</span>
       </button>
     </li>
   )
 }
 
-
-function NaturePriorityRules() {
-  return (
-    <section className="nature-priority-rules" aria-label="推荐优先级规则">
-      <strong>推荐优先级</strong>
-      <ol>
-        <li>先按精灵定位与技能路线判断主攻 / 耐久 / 速度 / 辅助方向。</li>
-        <li>推荐优先强化主路线关键属性，避免弱化主输出、关键速度线或核心耐久。</li>
-        <li>可保留表示捕捉时可先留档；不推荐通常存在硬风险或被同强化方向更优性格支配。</li>
-      </ol>
-    </section>
-  )
-}
 
 function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
   if (!nature) return null
@@ -557,442 +653,6 @@ function NaturePveOverview({ candidates }) {
       </details>
     </section>
   )
-}
-
-const PVE_TIER_SCALE = [
-  { key: 'priority', label: '优先培养', level: 'priority' },
-  { key: 'suitable', label: '适合培养', level: 'good' },
-  { key: 'situational', label: '按需培养', level: 'situational' },
-  { key: 'watch', label: '可留观望', level: 'watch' },
-  { key: 'skip', label: '不建议投入', level: 'risk' },
-]
-
-function pveStarText(stars = 0) {
-  const filled = Math.max(0, Math.min(5, Number(stars) || 0))
-  return `${'★'.repeat(filled)}${'☆'.repeat(5 - filled)}`
-}
-
-function pveOverviewSummary(candidates = []) {
-  if (candidates.length === 0) return null
-  const recommended = candidates.filter((item) => item.decision === 'recommended')
-  const keepable = candidates.filter((item) => item.decision === 'keepable')
-  const pvePool = [...recommended, ...keepable]
-  const profile = pveSpeciesProfile(candidates)
-  const best = bestPveCandidate(pvePool, profile) || recommended[0] || keepable[0] || candidates[0]
-  const pairCandidates = pvePairedCandidates(pvePool, profile, best)
-  const primaryName = pveNatureSummary(best, pairCandidates) || '暂无推荐性格'
-  const primaryStat = pvePrimaryStatSummary(best, pairCandidates)
-  const alternatives = pveAlternativeSummary(best, pairCandidates)
-  const hasViableNature = pvePool.some((item) => item && !item.hardRisk)
-  const detail = profile.basis.length ? `依据：${profile.basis.join('；')}。` : ''
-  const tier = PVE_TIER_SCALE.find((item) => item.key === profile.tier) || PVE_TIER_SCALE.at(-1)
-  const tierIndex = PVE_TIER_SCALE.findIndex((item) => item.key === tier.key) + 1
-  const stars = Math.max(1, PVE_TIER_SCALE.length - tierIndex + 1)
-
-  if (!hasViableNature) {
-    return {
-      level: 'risk',
-      badge: profile.score >= 5 ? '需换性格' : '不建议投入',
-      verdict: profile.score >= 5
-        ? '精灵机制有 PVE 价值，但当前候选性格风险过高，建议另抓。'
-        : '当前未发现足够 PVE 机制或可用性格，先收藏不投入。',
-      capture: '无',
-      primaryStat: '无',
-      role: profile.label,
-      alternatives: '',
-      tags: profile.tags,
-      detail,
-      tierKey: profile.score >= 5 ? 'skip' : tier.key,
-      stars: 1,
-    }
-  }
-
-  if (profile.tier === 'priority') {
-    return {
-      level: 'priority',
-      badge: '优先培养',
-      verdict: `${profile.label}，资源投入优先级高；优先看${primaryName}。`,
-      capture: primaryName,
-      primaryStat,
-      role: profile.label,
-      alternatives,
-      tags: profile.tags,
-      detail,
-      tierKey: tier.key,
-      stars,
-    }
-  }
-
-  if (profile.tier === 'suitable') {
-    return {
-      level: 'good',
-      badge: '适合培养',
-      verdict: `${profile.label}，适合 PVE 投入；性格看${primaryName}。`,
-      capture: primaryName,
-      primaryStat,
-      role: profile.label,
-      alternatives,
-      tags: profile.tags,
-      detail,
-      tierKey: tier.key,
-      stars,
-    }
-  }
-
-  if (profile.tier === 'situational') {
-    return {
-      level: 'situational',
-      badge: '按需培养',
-      verdict: `${profile.label}，有对应副本/队伍需求再投入；当前可看${primaryName}。`,
-      capture: primaryName,
-      primaryStat,
-      role: profile.label,
-      alternatives,
-      tags: profile.tags,
-      detail,
-      tierKey: tier.key,
-      stars,
-    }
-  }
-
-  if (profile.tier === 'skip') {
-    return {
-      level: 'risk',
-      badge: '不建议投入',
-      verdict: '当前没有识别到足够 PVE 投入价值；捕捉可留不等于值得培养。',
-      capture: primaryName,
-      primaryStat,
-      role: profile.label,
-      alternatives,
-      tags: profile.tags,
-      detail,
-      tierKey: tier.key,
-      stars,
-    }
-  }
-
-  return {
-    level: 'watch',
-    badge: '可留观望',
-    verdict: `${profile.label}，捕捉可留不等于 PVE 优先；先收藏观望。`,
-    capture: primaryName,
-    primaryStat,
-    role: profile.label,
-    alternatives,
-    tags: profile.tags,
-    detail,
-    tierKey: tier.key,
-    stars,
-  }
-}
-
-function pvePairedCandidates(candidates = [], profile = null, best = null) {
-  const stats = profile?.pairedStats || []
-  if (stats.length === 0) return []
-  return stats
-    .map((stat) => bestPveCandidate(candidates.filter((candidate) => candidate.raise === stat), profile))
-    .filter((candidate) => candidate && candidate !== best)
-    .filter((candidate, index, list) => list.findIndex((item) => natureName(item) === natureName(candidate)) === index)
-}
-
-function pveNatureSummary(best, alternatives = []) {
-  const names = [best, ...alternatives].filter(Boolean).map(natureName)
-  return [...new Set(names)].join(' / ')
-}
-
-function pvePrimaryStatSummary(best, alternatives = []) {
-  const stats = [best, ...alternatives]
-    .filter(Boolean)
-    .map((candidate) => STAT_LABELS[candidate.raise])
-    .filter(Boolean)
-  return [...new Set(stats)].join(' / ') || '无'
-}
-
-function pveAlternativeSummary(best, alternatives = []) {
-  const bestName = best ? natureName(best) : ''
-  const names = alternatives
-    .map(natureName)
-    .filter((name) => name && name !== bestName)
-  return [...new Set(names)].join(' / ')
-}
-
-function bestPveCandidate(candidates = [], profile = null) {
-  const preferredStats = profile?.preferredStats || []
-  return [...candidates]
-    .filter((candidate) => candidate && !candidate.hardRisk)
-    .sort((a, b) => {
-      const preferredDiff = preferredStatRank(b, preferredStats) - preferredStatRank(a, preferredStats)
-      if (preferredDiff !== 0) return preferredDiff
-      return pveCandidateRank(b, profile) - pveCandidateRank(a, profile) || b.score - a.score
-    })[0] || null
-}
-
-function preferredStatRank(candidate, preferredStats = []) {
-  const index = preferredStats.indexOf(candidate?.raise)
-  return index < 0 ? 0 : preferredStats.length - index
-}
-
-function pveCandidateRank(candidate, profile = null) {
-  const breakdown = candidate.skillProfile?.breakdown || {}
-  const raisesAttack = ['patk', 'matk'].includes(candidate.raise)
-  const raisesSpeed = candidate.raise === 'spd'
-  const raisesBulk = ['hp', 'pdef', 'mdef'].includes(candidate.raise)
-  const hasOutputRole = candidate.roleTags?.some((role) =>
-    ['mixedAttacker', 'physicalAttacker', 'magicalAttacker'].includes(role),
-  )
-  const hasBulkRole = candidate.roleTags?.some((role) =>
-    ['bulky', 'support', 'physicalWall', 'magicalWall'].includes(role),
-  )
-  const hasSpeedRole = candidate.roleTags?.some((role) => role === 'fastAttacker')
-  const strongOutput =
-    Number(breakdown.attackAveragePower) >= 80 &&
-    Number(breakdown.attackCount) >= 8 &&
-    hasOutputRole
-  const riskySpeedBranch =
-    raisesSpeed &&
-    candidate.warnings.some((warning) => /双攻|弱化另一攻|削弱.*攻击|冲突/.test(warning))
-
-  let rank = candidate.score
-  if (raisesAttack && strongOutput && profile?.tier === 'priority') rank += 36
-  if (raisesAttack && strongOutput && profile?.tier !== 'priority') rank += 16
-  if (raisesBulk && hasBulkRole) rank += profile?.mechanism === 'tank' ? 36 : 24
-  if (raisesSpeed && hasSpeedRole) rank += profile?.mechanism === 'carry' ? 18 : 10
-  if (raisesSpeed && !hasSpeedRole) rank -= 28
-  if (riskySpeedBranch) rank -= 26
-  if (candidate.warnings.length > 0) rank -= Math.min(candidate.warnings.length * 4, 24)
-  return rank
-}
-
-function pveSpeciesProfile(candidates = []) {
-  const sample = candidates.find(Boolean) || {}
-  const skillProfile = sample.skillProfile || {}
-  const breakdown = skillProfile.breakdown || {}
-  const roleTags = sample.roleTags || []
-  const stats = baseStatsFromCandidate(sample)
-  const texts = skillProfile.texts || []
-  const joined = texts.join('；')
-  const hasRecommendedCore = candidates.some((item) =>
-    item.decision === 'recommended' &&
-    !item.hardRisk &&
-    ['patk', 'matk', 'spd'].includes(item.raise) &&
-    item.warnings.length === 0
-  )
-  const attackCount = Number(breakdown.attackCount) || 0
-  const attackShare = Number(breakdown.attackShare) || 0
-  const attackAveragePower = Number(breakdown.attackAveragePower) || 0
-  const physicalCount = Number(breakdown.physicalCount) || 0
-  const magicalCount = Number(breakdown.magicalCount) || 0
-  const physicalShare = Number(breakdown.physicalShare) || 0
-  const magicalShare = Number(breakdown.magicalShare) || 0
-  const physicalRouteScore = Number(breakdown.physicalRouteScore) || 0
-  const magicalRouteScore = Number(breakdown.magicalRouteScore) || 0
-  const strongAttackStat = Math.max(stats.patk || 0, stats.matk || 0)
-  const hasSingleOutputRole = roleTags.some((role) => ['physicalAttacker', 'magicalAttacker'].includes(role))
-  const hasFastRole = roleTags.includes('fastAttacker')
-  const hasBulkRole = roleTags.some((role) =>
-    ['bulky', 'support', 'physicalWall', 'magicalWall', 'energyCycle'].includes(role),
-  )
-  const dotPattern = /中毒|剧毒|灼烧|烧伤|寄生|星陨|持续伤害|灼烧.*层|中毒.*层|回合结束.*(?:中毒|灼烧|寄生|星陨|持续伤害|伤害)/
-  const dotCount = texts.filter((text) => dotPattern.test(text)).length
-  const dotShare = texts.length ? dotCount / texts.length : 0
-  const hasDot = dotCount >= 4 && (dotShare >= 0.18 || dotCount >= 8)
-  const hasPercentOrTrueDamage = /百分比|最大生命|生命值上限|真实伤害|真伤|固定伤害/.test(joined)
-  const hasLoop = Boolean(skillProfile.energy || /能耗-|能耗降低|回复\d*能量|获得\d*能量|自动回能|技能循环|连续释放/.test(joined))
-  const hasTeamUtility = Boolean(skillProfile.boostTransfer)
-  const hasSustain = Boolean(skillProfile.sustain || skillProfile.defense)
-  const hasControl = Boolean(skillProfile.control)
-  const hasAdvancedMechanism = hasDot || hasPercentOrTrueDamage || hasTeamUtility
-  const hasFocusedOutputRoute =
-    (
-      (stats.patk || 0) >= 120 &&
-      physicalCount >= 8 &&
-      physicalShare >= 0.65 &&
-      physicalRouteScore >= 12
-    ) ||
-    (
-      (stats.matk || 0) >= 120 &&
-      magicalCount >= 8 &&
-      magicalShare >= 0.65 &&
-      magicalRouteScore >= 12
-    )
-  const highOutputEvidence =
-    hasSingleOutputRole &&
-    strongAttackStat >= 115 &&
-    attackCount >= 4 &&
-    (attackAveragePower >= 75 || hasFocusedOutputRoute)
-  const fastCarryEvidence =
-    highOutputEvidence &&
-    hasFastRole &&
-    (stats.spd || 0) >= 110 &&
-    hasRecommendedCore &&
-    (attackShare >= 0.45 || attackAveragePower >= 90)
-  const carrySuitableEvidence =
-    highOutputEvidence &&
-    (hasFastRole || strongAttackStat >= 130 || attackAveragePower >= 90)
-  const mechanismScore =
-    (hasDot ? 2 : 0) +
-    (hasPercentOrTrueDamage ? 2 : 0) +
-    (hasLoop ? 1.5 : 0) +
-    (hasTeamUtility ? 2 : 0) +
-    (hasSustain ? 1 : 0) +
-    (hasControl ? 0.8 : 0)
-  const basis = [
-    highOutputEvidence && `输出线：主攻 ${strongAttackStat} / 攻击技能 ${attackCount} / 均威 ${formatNumber(attackAveragePower)}`,
-    hasDot && '存在 DOT/层数/回合结束触发线索',
-    hasPercentOrTrueDamage && '存在百分比或真伤线索',
-    hasLoop && '存在能量/能耗循环线索',
-    hasTeamUtility && '存在队伍增益或传递线索',
-    hasSustain && '存在续航/减伤/站场线索',
-    hasControl && '存在控制/异常线索',
-  ].filter(Boolean)
-  const tags = [
-    hasDot && 'DOT/层数',
-    hasPercentOrTrueDamage && '百分比/真伤',
-    hasTeamUtility && '队伍插件',
-    hasLoop && '能量循环',
-    hasSustain && '续航站场',
-    hasControl && !hasDot && '控制异常',
-  ].filter(Boolean).slice(0, 4)
-
-  if (fastCarryEvidence || (highOutputEvidence && hasRecommendedCore && mechanismScore < 2.5)) {
-    return {
-      tier: 'priority',
-      mechanism: 'carry',
-      label: hasFastRole ? '高速主 C / 清场输出' : '主 C 输出',
-      preferredStats: pvePreferredStats(skillProfile, stats, 'carry'),
-      pairedStats: pveCarryPairedStats(skillProfile, stats),
-      score: 8 + mechanismScore,
-      basis,
-      tags,
-    }
-  }
-
-  if (carrySuitableEvidence) {
-    return {
-      tier: 'suitable',
-      mechanism: 'carry',
-      label: hasFastRole ? '高速输出 / PVE 打手' : '输出打手 / PVE 补强',
-      preferredStats: pvePreferredStats(skillProfile, stats, 'carry'),
-      pairedStats: pveCarryPairedStats(skillProfile, stats),
-      score: 6 + mechanismScore,
-      basis,
-      tags: tags.filter((tag) => tag !== '续航站场' && tag !== '控制异常'),
-    }
-  }
-
-  if (hasPercentOrTrueDamage || hasTeamUtility || (hasDot && mechanismScore >= 3.5)) {
-    const label = hasDot
-      ? 'DOT 消耗位'
-      : hasPercentOrTrueDamage
-        ? '机制消耗位'
-        : '功能循环 / 队伍插件'
-    return {
-      tier: 'suitable',
-      mechanism: hasDot || hasPercentOrTrueDamage ? 'dot' : 'utility',
-      label,
-      preferredStats: pvePreferredStats(skillProfile, stats, hasDot || hasPercentOrTrueDamage ? 'dot' : 'utility'),
-      pairedStats: highOutputEvidence ? pveCarryPairedStats(skillProfile, stats) : [],
-      score: 6 + mechanismScore,
-      basis,
-      tags,
-    }
-  }
-
-  if (
-    (hasBulkRole && (hasSustain || mechanismScore >= 1.5)) ||
-    (hasLoop && hasControl) ||
-    (hasLoop && hasSustain)
-  ) {
-    const utilityLabel = hasAdvancedMechanism ? '功能循环 / 机制位' : '功能循环 / 对策位'
-    return {
-      tier: 'situational',
-      mechanism: hasLoop && (hasControl || hasSustain) ? 'utility' : 'tank',
-      label: hasLoop && (hasControl || hasSustain) ? utilityLabel : '站场功能 / 按需承伤位',
-      preferredStats: pvePreferredStats(skillProfile, stats, hasLoop && (hasControl || hasSustain) ? 'utility' : 'tank'),
-      pairedStats: highOutputEvidence ? pveCarryPairedStats(skillProfile, stats) : [],
-      score: 4 + mechanismScore,
-      basis,
-      tags,
-    }
-  }
-
-  if (highOutputEvidence || hasLoop || hasControl || hasSustain) {
-    return {
-      tier: 'watch',
-      mechanism: highOutputEvidence ? 'carry' : 'utility',
-      label: highOutputEvidence ? '输出补位' : '功能补位',
-      preferredStats: pvePreferredStats(skillProfile, stats, highOutputEvidence ? 'carry' : 'utility'),
-      pairedStats: highOutputEvidence ? pveCarryPairedStats(skillProfile, stats) : [],
-      score: 3 + mechanismScore,
-      basis,
-      tags,
-    }
-  }
-
-  return {
-    tier: 'skip',
-    mechanism: 'unknown',
-    label: 'PVE 机制不明确',
-    preferredStats: [],
-    score: mechanismScore,
-    basis,
-    tags,
-  }
-}
-
-function baseStatsFromCandidate(candidate = {}) {
-  return Object.fromEntries(STATS_DIMENSIONS.map((dimension) => {
-    const adjusted = Number(candidate.adjustedStats?.[dimension.key]) || 0
-    const delta = Number(candidate.deltas?.[dimension.key]) || 0
-    return [dimension.key, adjusted - delta]
-  }))
-}
-
-function pvePreferredStats(skillProfile = {}, stats = {}, mechanism = 'utility') {
-  const mode = skillProfile.attackMode
-  const attackStat = mode === 'physical' ? 'patk' : mode === 'magical' ? 'matk' : null
-  const speedFirst = (stats.spd || 0) >= 100 || skillProfile.speedRequired || skillProfile.control
-  if (mechanism === 'carry') {
-    return [
-      speedFirst && 'spd',
-      attackStat,
-      'hp',
-      'pdef',
-      'mdef',
-    ].filter(Boolean)
-  }
-  if (mechanism === 'dot') {
-    return [
-      speedFirst && 'spd',
-      'hp',
-      (stats.mdef || 0) >= (stats.pdef || 0) ? 'mdef' : 'pdef',
-      attackStat,
-    ].filter(Boolean)
-  }
-  if (mechanism === 'tank') {
-    return [
-      'hp',
-      (stats.pdef || 0) <= (stats.mdef || 0) ? 'pdef' : 'mdef',
-      (stats.pdef || 0) > (stats.mdef || 0) ? 'pdef' : 'mdef',
-    ]
-  }
-  return [
-    speedFirst && 'spd',
-    'hp',
-    attackStat,
-    'pdef',
-    'mdef',
-  ].filter(Boolean)
-}
-
-function pveCarryPairedStats(skillProfile = {}, stats = {}) {
-  const mode = skillProfile.attackMode
-  const attackStat = mode === 'physical' ? 'patk' : mode === 'magical' ? 'matk' : null
-  const speedUseful = (stats.spd || 0) >= 95 || skillProfile.speedRequired || skillProfile.control
-  return [
-    speedUseful && 'spd',
-    attackStat,
-  ].filter(Boolean)
 }
 
 function natureHighlights(nature) {

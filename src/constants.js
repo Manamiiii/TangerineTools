@@ -27,6 +27,7 @@ export const SCENE_TOOLS = [
 // 字段类型：资料表列的数据类型。
 export const FIELD_TYPES = [
   { value: 'text', label: '短文本' },
+  { value: 'summary', label: '图文摘要' },
   { value: 'longtext', label: '长文本' },
   { value: 'number', label: '数字' },
   { value: 'image', label: '图片' },
@@ -39,10 +40,6 @@ export const FIELD_TYPES = [
   { value: 'references', label: '多选引用资料' },
   { value: 'stats', label: '指标视图' },
 ]
-
-export function fieldTypeLabel(value) {
-  return FIELD_TYPES.find((t) => t.value === value)?.label || value
-}
 
 // 类型是否会在“新增/编辑行”表单里出现输入框。
 // stats 是由其它数值字段派生出的可视化视图，本身没有可编辑的值。

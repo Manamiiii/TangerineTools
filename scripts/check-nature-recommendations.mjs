@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-import { readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   NATURE_DECISION_LABELS,
   STAT_LABELS,
-  evaluateAllNatures,
+  evaluateNatureProfiles,
   analyzeSkillInfo,
   analyzeFormulaAssist,
   analyzeStats,
@@ -13,6 +13,7 @@ import {
   TRAIT_TAG_STAT_WEIGHTS,
   groupRejectedNatures,
 } from '../src/domain/nature.js'
+import { relatedRockKingdomBossRows } from '../src/domain/rockKingdom.js'
 import { TRAIT_TAG_OPTIONS, SKILL_EFFECT_TAG_OPTIONS } from '../src/presets/rockKingdom.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -20,7 +21,7 @@ const repoRoot = path.resolve(__dirname, '..')
 const rowsPath = path.join(repoRoot, 'public/presets/rockKingdomRows.json')
 const skillRowsPath = path.join(repoRoot, 'public/presets/rockKingdomSkillRows.json')
 const samplesPath = path.join(repoRoot, 'scripts/data/natureCalibrationSamples.json')
-const reportPath = path.join(repoRoot, 'docs/nature-calibration-report.md')
+const reportPath = path.join(repoRoot, 'artifacts/nature/calibration-report.md')
 
 const TRAIT_LABELS = Object.fromEntries(TRAIT_TAG_OPTIONS.map((option) => [option.value, option.label]))
 const EFFECT_LABELS = Object.fromEntries(SKILL_EFFECT_TAG_OPTIONS.map((option) => [option.value, option.label]))
@@ -110,8 +111,10 @@ function findSampleRows(rows, sample) {
   return matched.slice(0, 1)
 }
 
-function buildSkillInfo(row, skillById) {
-  const refs = Array.isArray(row.values?.skillRefs) ? row.values.skillRefs : []
+function buildSkillInfo(sourceRows, skillById, includeAllTraitText = false) {
+  const rows = Array.isArray(sourceRows) ? sourceRows : [sourceRows]
+  const refs = [...new Set(rows.flatMap((row) =>
+    Array.isArray(row.values?.skillRefs) ? row.values.skillRefs : []))]
   const skills = refs
     .map((id) => skillById.get(id)?.values)
     .filter(Boolean)
@@ -126,11 +129,20 @@ function buildSkillInfo(row, skillById) {
       effect: values.effect,
       description: values.effect,
     }))
-  const traitText = [row.values?.traitName, row.values?.traitDesc].filter(Boolean).join('：')
+  const traitText = rows.flatMap((row) => [row.values?.traitName, row.values?.traitDesc])
+    .filter(Boolean)
+    .join('：')
   return {
     skills,
-    traitText: /继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(traitText) ? traitText : '',
+    traitText: includeAllTraitText || /继承.*增益|增益.*继承|传递.*增益|增益.*传递|下个入场.*继承|入场精灵继承|击鼓传花/.test(traitText)
+      ? traitText
+      : '',
   }
+}
+
+function rowStats(row) {
+  return Object.fromEntries(['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
+    .map((key) => [key, row.values?.[key]]))
 }
 
 
@@ -350,16 +362,17 @@ async function main() {
       continue
     }
     const row = matchedRows[0]
-    const skillInfo = buildSkillInfo(row, skillById)
-    const stats = {
-      hp: row.values?.hp,
-      patk: row.values?.patk,
-      matk: row.values?.matk,
-      pdef: row.values?.pdef,
-      mdef: row.values?.mdef,
-      spd: row.values?.spd,
-    }
-    const evaluations = evaluateAllNatures(stats, row.values?.traitTags || [], skillInfo)
+    const bossRows = relatedRockKingdomBossRows(row, rows)
+    const skillInfo = buildSkillInfo([row, ...bossRows], skillById, bossRows.length > 0)
+    const stats = rowStats(row)
+    const traitTags = [...new Set([row, ...bossRows].flatMap((item) => item.values?.traitTags || []))]
+    const profiles = bossRows.map((bossRow) => ({
+      name: bossRow.values?.name,
+      stats: rowStats(bossRow),
+      traitTags: bossRow.values?.traitTags || [],
+      skillInfo: buildSkillInfo(bossRow, skillById, true),
+    }))
+    const evaluations = evaluateNatureProfiles(stats, traitTags, skillInfo, profiles)
     sections.push(renderSample({ sample, row, skillInfo, evaluations }))
   }
 
@@ -367,9 +380,9 @@ async function main() {
   const report = `# 洛克王国性格推荐校准报告\n\n` +
     `生成时间：${now}\n\n` +
     `> 本报告由 \`npm run check:nature\` 生成，请不要手工编辑正文；需要调整样例或口径时优先修改脚本、样例数据或推荐规则后重新生成。\n\n` +
-    `本报告用于人工校准性格推荐规则。它只读取官方 \`d.json\` 同步出的预置精灵与技能资料，不引入阵容、属性克制或战斗模拟。\n\n` +
-    `> 样例口径：本轮跳过迪莫。迪莫只有单只、不涉及捕捉保留，并且特性会随战斗叠加攻防速，基础面板性格校准容易把特殊机制误当成通用规则。\n\n` +
-    `> 技能口径：技能摘要按官方预置可学技能池统计；血脉类/互斥技能若同一精灵只能选择一种，当前资料源没有可稳定识别的互斥分组字段，因此报告仅作为候选线索，不把全部技能视为可同时携带。后续若官方同步结果提供血脉标记，再按分组单独校准。\n\n` +
+    `本报告用于人工校准性格推荐规则。它只读取仓库中经 BWiki staging / preview 流程发布的正式预置精灵与技能资料，不引入阵容、属性克制或战斗模拟。\n\n` +
+    `> 样例范围：不包含迪莫。迪莫只有单只、不涉及捕捉保留，并且特性会随战斗叠加攻防速，基础面板校准容易把特殊机制误当成通用规则。\n\n` +
+    `> 技能口径：技能摘要按正式预置可学技能池统计；资料源没有可稳定识别的血脉类或互斥技能分组字段，因此报告只把技能池作为候选线索，不假设全部技能可以同时携带。\n\n` +
     `## 使用方式\n\n` +
     `1. 先看每个样例的“技能摘要”和“效果标签计数”是否符合直觉。\n` +
     `2. 再按“强化生命/物攻/魔攻/物防/魔防/速度”分组横向比较全部 30 个性格，优先找同一强化项里哪个弱化项被误判。\n` +
@@ -379,6 +392,7 @@ async function main() {
     (missing.length ? `> 未找到样例：${missing.join('、')}\n\n` : '') +
     sections.join('\n\n') + '\n'
 
+  await mkdir(path.dirname(output), { recursive: true })
   await writeFile(output, report, 'utf8')
   console.log(`wrote ${path.relative(repoRoot, output)}`)
   console.log(`samples: ${sections.length}, missing: ${missing.length}`)

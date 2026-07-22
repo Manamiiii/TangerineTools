@@ -1,18 +1,21 @@
 // 应用入口组件：基于 hash 的极简路由（首页场景列表 ↔ 场景工作台）、
 // 启动时的预置资料播种、全局 JSON 导出/导入（仅首页展示）。
 
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { ArrowLeft, Download, Upload } from 'lucide-react'
 import { db, ensureSeeded, exportAllData, importAllData } from './db.js'
 import { SCENE_TOOLS } from './constants.js'
 import { SceneList } from './components/scenes.jsx'
-import { CatalogTool } from './components/dataTables.jsx'
-import { NatureTool } from './components/nature.jsx'
-import { StockTool } from './components/stock.jsx'
-import { OwnedTool } from './components/owned.jsx'
-import { BreedingTool } from './components/breeding.jsx'
 import { ConfirmDialog, IconButton } from './components/common.jsx'
+import { ErrorBoundary } from './components/ErrorBoundary.jsx'
+
+const lazyTool = (loader, name) => lazy(() => loader().then((module) => ({ default: module[name] })))
+const CatalogTool = lazyTool(() => import('./components/dataTables.jsx'), 'CatalogTool')
+const NatureTool = lazyTool(() => import('./components/nature.jsx'), 'NatureTool')
+const StockTool = lazyTool(() => import('./components/stock.jsx'), 'StockTool')
+const OwnedTool = lazyTool(() => import('./components/owned.jsx'), 'OwnedTool')
+const BreedingTool = lazyTool(() => import('./components/breeding.jsx'), 'BreedingTool')
 
 // 工具 value -> 对应的工具组件。只有 constants.js 中标记 ready:true 的工具
 // 才会被场景工作台实际渲染、并出现在多工具切换器中。
@@ -46,15 +49,35 @@ function goToScene(id) {
 
 export default function App() {
   const [seeded, setSeeded] = useState(false)
+  const [bootError, setBootError] = useState('')
+  const [bootAttempt, setBootAttempt] = useState(0)
 
   useEffect(() => {
-    ensureSeeded().then(() => setSeeded(true))
-  }, [])
+    let active = true
+    setSeeded(false)
+    setBootError('')
+    ensureSeeded()
+      .then(() => { if (active) setSeeded(true) })
+      .catch((error) => { if (active) setBootError(error?.message || '本地数据初始化失败') })
+    return () => { active = false }
+  }, [bootAttempt])
 
   const hash = useHashRoute()
   const sceneId = hash.startsWith('scene/') ? hash.slice('scene/'.length) : null
   const scenes = useLiveQuery(() => db.scenes.orderBy('order').toArray(), [])
   const activeScene = (sceneId && scenes?.find((s) => s.id === sceneId)) || null
+
+  if (bootError) {
+    return (
+      <div className="app-loading app-boot-error" role="alert">
+        <strong>应用启动失败</strong>
+        <span>{bootError}</span>
+        <button type="button" className="btn btn-primary" onClick={() => setBootAttempt((value) => value + 1)}>
+          重新尝试
+        </button>
+      </div>
+    )
+  }
 
   if (!seeded || !scenes) {
     return <div className="app-loading">加载中…</div>
@@ -119,7 +142,11 @@ function SceneWorkbench({ scene }) {
           ))}
         </div>
       )}
-      <ToolComponent scene={scene} />
+      <ErrorBoundary key={current.value} title={`${current.label}加载失败`}>
+        <Suspense fallback={<div className="empty-state">正在加载工具…</div>}>
+          <ToolComponent scene={scene} />
+        </Suspense>
+      </ErrorBoundary>
     </div>
   )
 }

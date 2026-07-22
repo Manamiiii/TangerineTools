@@ -1,51 +1,62 @@
-// 统计视图工具的领域逻辑：旧版固定字段定义、状态选项、统计纯函数。
-// 统计视图复用资料库的 catalogFields/catalogRows 存储，字段类型仍是标准的
-// text/number/select/longtext，因此可以直接复用 FieldInput/CellView 渲染，
-// 不需要为统计视图单独实现一套字段/单元格组件。
+// 统计视图的纯聚合逻辑。组件只负责选择数据源和渲染，便于独立回归分组语义。
 
-export const STOCK_TABLE_NAME = '统计视图'
+import { stringifyCellValue } from '../utils.js'
 
-export const STOCK_STATUS_OPTIONS = [
-  { value: 'todo', label: '未开始', color: '#64748b' },
-  { value: 'inProgress', label: '培养中', color: '#d97706' },
-  { value: 'done', label: '已完成', color: '#059669' },
-]
+const CATEGORICAL_FIELD_TYPES = new Set(['select', 'multiselect', 'boolean', 'reference', 'references', 'date'])
+const LOW_VALUE_DEFAULT_TYPES = new Set(['stats', 'image', 'url', 'longtext'])
 
-// 统计视图资料表的固定字段，顺序即表格列顺序。key 为手动指定的稳定标识符
-// （与预置资料的做法一致），不经过 deriveFieldKey 生成。
-export const STOCK_FIXED_FIELDS = [
-  { key: 'name', name: '名称', type: 'text' },
-  { key: 'level', name: '等级', type: 'number' },
-  { key: 'category', name: '分类', type: 'text' },
-  { key: 'status', name: '状态', type: 'select', options: STOCK_STATUS_OPTIONS },
-  { key: 'note', name: '备注', type: 'longtext' },
-]
-
-// 按分类分组计数，分类为空时归入"未分类"，按数量从高到低排序。
-export function groupByCategory(rows) {
-  const counts = new Map()
-  for (const row of rows) {
-    const raw = row.values?.category
-    const label = raw && String(raw).trim() ? String(raw).trim() : '未分类'
-    counts.set(label, (counts.get(label) || 0) + 1)
-  }
-  return Array.from(counts.entries())
-    .map(([category, count]) => ({ category, count }))
-    .sort((a, b) => b.count - a.count)
+export function defaultStockGroupField(fields = []) {
+  return fields.find((field) => CATEGORICAL_FIELD_TYPES.has(field.type))
+    || fields.find((field) => !LOW_VALUE_DEFAULT_TYPES.has(field.type))
+    || fields.find((field) => field.type !== 'stats')
+    || null
 }
 
-// 数值型统计视图：等级达到（大于等于）threshold 的记录数量。
-export function countByLevelAtLeast(rows, threshold) {
-  const min = Number(threshold) || 0
-  return rows.filter((row) => Number(row.values?.level) >= min).length
+export function stockOptionLabel(field, value) {
+  if (field?.type === 'select') return field.options?.find((option) => option.value === value)?.label || value
+  if (field?.type === 'multiselect') {
+    const values = Array.isArray(value) ? value : []
+    return values
+      .map((item) => field.options?.find((option) => option.value === item)?.label || item)
+      .filter(Boolean)
+      .join(' / ')
+  }
+  return stringifyCellValue(value, field)
 }
 
-// 状态型统计：按三个固定状态值分别计数。
-export function countByStatus(rows) {
-  const counts = Object.fromEntries(STOCK_STATUS_OPTIONS.map((o) => [o.value, 0]))
-  for (const row of rows) {
-    const value = row.values?.status
-    if (Object.prototype.hasOwnProperty.call(counts, value)) counts[value] += 1
+export function stockRowGroupKeys(row, field) {
+  if (!field) return ['全部记录']
+  const raw = row.values?.[field.key]
+  if (field.type === 'multiselect') {
+    const values = Array.isArray(raw) ? raw : []
+    return values.length
+      ? values.map((item) => field.options?.find((option) => option.value === item)?.label || item)
+      : ['未填写']
   }
-  return STOCK_STATUS_OPTIONS.map((o) => ({ ...o, count: counts[o.value] }))
+  const label = stockOptionLabel(field, raw)
+  return label ? [label] : ['未填写']
+}
+
+export function buildStockSummary(rows = [], groupField = null, numberField = null, threshold = '') {
+  const groups = new Map()
+  const matchedRows = rows.filter((row) => {
+    if (!numberField || threshold === '') return true
+    const raw = row.values?.[numberField.key]
+    if (raw == null || raw === '') return false
+    const value = Number(raw)
+    const minimum = Number(threshold)
+    return Number.isFinite(value) && Number.isFinite(minimum) && value >= minimum
+  })
+
+  for (const row of matchedRows) {
+    for (const key of stockRowGroupKeys(row, groupField)) groups.set(key, (groups.get(key) || 0) + 1)
+  }
+
+  return {
+    total: rows.length,
+    matched: matchedRows.length,
+    groups: Array.from(groups.entries())
+      .map(([label, count]) => ({ label, count }))
+      .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label)),
+  }
 }

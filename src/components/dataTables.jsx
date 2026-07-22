@@ -28,9 +28,12 @@ import {
 import {
   buildFormComparisonRows,
   buildFormComparisonSummary,
+  compareRockKingdomCreatureRows,
   findNumberField,
   getSameNumberRows,
+  visibleRockKingdomCreatureRows,
 } from '../domain/rockKingdom.js'
+import { ROCK_KINGDOM_CREATURE_TABLE_ID } from '../presets/rockKingdom.js'
 import {
   ConfirmDialog,
   EmptyState,
@@ -183,10 +186,15 @@ function TableView({ table, tables, sceneId, onSwitchTable }) {
 
   const sortedFields = [...fields].sort((a, b) => a.order - b.order)
 
-  const filteredRows = rows
+  const displayRows = table.id === ROCK_KINGDOM_CREATURE_TABLE_ID
+    ? visibleRockKingdomCreatureRows(rows)
+    : rows
+  const filteredRows = displayRows
     .filter((r) => rowMatchesSearch(r, sortedFields, search))
     .filter((r) => rowMatchesFilters(r, sortedFields, filters))
-    .sort((a, b) => compareRowsBySort(a, b, sort, sortedFields))
+    .sort((a, b) => table.id === ROCK_KINGDOM_CREATURE_TABLE_ID && !sort
+      ? compareRockKingdomCreatureRows(a, b)
+      : compareRowsBySort(a, b, sort, sortedFields))
 
   const pageCount = totalPages(filteredRows.length, pageSize)
   const pageRows = paginate(filteredRows, page, pageSize)
@@ -279,7 +287,7 @@ function TableView({ table, tables, sceneId, onSwitchTable }) {
         <IconButton icon={Plus} label="新增行" variant="primary" onClick={() => setRowForm('new')} />
       </div>
 
-      {rows.length === 0 ? (
+      {displayRows.length === 0 ? (
         <EmptyState
           title="还没有数据"
           description="点击“新增行”添加第一条数据。"
@@ -350,7 +358,7 @@ function TableView({ table, tables, sceneId, onSwitchTable }) {
         <RowDetailModal
           row={rowDetail}
           fields={sortedFields}
-          rows={rows}
+          rows={displayRows}
           onClose={() => setRowDetail(null)}
           onOpenReference={setReferenceDetail}
           onEdit={() => {
@@ -438,10 +446,15 @@ function defaultValueForType(type) {
 }
 
 function RowFormModal({ table, fields, row, onClose }) {
-  const editableFields = fields.filter((f) => isEditableFieldType(f.type))
+  const allEditableFields = fields.filter((f) => isEditableFieldType(f.type))
+  const summaryDescriptionKeys = new Set(allEditableFields
+    .filter((field) => field.type === 'summary' || field.display?.kind === 'summary')
+    .map((field) => field.display.descriptionField)
+    .filter(Boolean))
+  const editableFields = allEditableFields.filter((field) => !summaryDescriptionKeys.has(field.key))
   const [values, setValues] = useState(() => {
     const init = {}
-    editableFields.forEach((f) => {
+    allEditableFields.forEach((f) => {
       init[f.key] = row?.values?.[f.key] ?? defaultValueForType(f.type)
     })
     return init
@@ -481,7 +494,26 @@ function RowFormModal({ table, fields, row, onClose }) {
       }
     >
       <form id="row-form" onSubmit={handleSubmit} className="stack-form row-form">
-        {editableFields.map((field) => (
+        {editableFields.map((field) => field.type === 'summary' || field.display?.kind === 'summary' ? (
+          <FormRow key={field.id} label={field.name}>
+            <div className="trait-field-input">
+              <FieldInput
+                field={field}
+                value={values[field.key]}
+                onChange={(value) => setFieldValue(field.key, value)}
+              />
+              {field.display.descriptionField && (
+                <textarea
+                  className="input textarea"
+                  rows={4}
+                  value={values[field.display.descriptionField] || ''}
+                  onChange={(event) => setFieldValue(field.display.descriptionField, event.target.value)}
+                  placeholder={`${field.name}描述`}
+                />
+              )}
+            </div>
+          </FormRow>
+        ) : (
           <FormRow key={field.id} label={field.name}>
             <FieldInput
               field={field}
@@ -501,7 +533,11 @@ function RowFormModal({ table, fields, row, onClose }) {
 
 function RowDetailModal({ row, fields, rows, onClose, onEdit, onDelete, onOpenReference, title = '详情' }) {
   const sorted = [...fields].sort((a, b) => a.order - b.order)
-  const detailFields = sorted.filter((field) => field.key !== 'traitIcon')
+  const summarySupplementKeys = new Set(sorted
+    .filter((field) => field.type === 'summary' || field.display?.kind === 'summary')
+    .flatMap((field) => [field.display.imageField, field.display.descriptionField])
+    .filter(Boolean))
+  const detailFields = sorted.filter((field) => !summarySupplementKeys.has(field.key))
   const numberField = findNumberField(fields)
   const sameNumberRows = numberField ? getSameNumberRows(row, rows, fields) : []
   const comparisonRows = buildFormComparisonRows(sameNumberRows, fields)

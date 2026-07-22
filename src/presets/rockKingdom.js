@@ -8,44 +8,47 @@ import { BILI_EGG_GROUP_NAMES } from '../domain/breedingData.js'
 const SEED_TIME = '2026-01-01T00:00:00.000Z'
 
 const SCENE_ID = 'scene-rock-kingdom'
-const TABLE_ID = 'table-rock-kingdom-elf-basic'
+export const ROCK_KINGDOM_CREATURE_TABLE_ID = 'table-rock-kingdom-elf-basic'
+const TABLE_ID = ROCK_KINGDOM_CREATURE_TABLE_ID
 const SKILL_TABLE_ID = 'table-rock-kingdom-skills'
-export const ROCK_KINGDOM_ROWS_VERSION = 'official-d-json-2026-06-08'
+export const ROCK_KINGDOM_ROWS_VERSION = 'bwiki-2026-07-22-1cd1b6cc8ccc66fa'
 
-// 系别图标：使用洛克王国官方图鉴的公开静态资源地址，URL 中的文件名直接是
-// 系别的中文名（经 encodeURIComponent 编码），例如 普通系 -> 普通.png。
-// 覆盖洛克王国官方公开的全部 18 系，与官方 d.json 展开的预置行数据保持一致，
-// 用户仍可在字段编辑中按需增删。
+// 系别图标使用 BWiki 精灵筛选页公开的无文字 patchwiki 小图标。
+// 覆盖当前全部 18 系；用户仍可在字段编辑中按需增删或替换自定义图标。
 const ELEMENT_SYSTEM_LIST = [
-  { value: 'normal', cn: '普通', color: '#94a3b8' },
-  { value: 'grass', cn: '草', color: '#22c55e' },
-  { value: 'fire', cn: '火', color: '#f97316' },
-  { value: 'water', cn: '水', color: '#38bdf8' },
-  { value: 'light', cn: '光', color: '#facc15' },
-  { value: 'earth', cn: '地', color: '#a16207' },
-  { value: 'ice', cn: '冰', color: '#67e8f9' },
-  { value: 'dragon', cn: '龙', color: '#d946ef' },
-  { value: 'electric', cn: '电', color: '#eab308' },
-  { value: 'poison', cn: '毒', color: '#a855f7' },
-  { value: 'bug', cn: '虫', color: '#84cc16' },
-  { value: 'fighting', cn: '武', color: '#b91c1c' },
-  { value: 'flying', cn: '翼', color: '#60a5fa' },
-  { value: 'cute', cn: '萌', color: '#f472b6' },
-  { value: 'ghost', cn: '幽', color: '#334155' },
-  { value: 'dark', cn: '恶', color: '#6b21a8' },
-  { value: 'mech', cn: '机械', color: '#64748b' },
-  { value: 'illusion', cn: '幻', color: '#7c3aed' },
+  { value: 'normal', cn: '普通', color: '#94a3b8', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/6/69/nc77midbqeafn7i2snh5a5h16ctdi0o.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E6%99%AE%E9%80%9A.png' },
+  { value: 'grass', cn: '草', color: '#22c55e', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/1/12/b8bsilucec9a98rsmqkmxt06c4mnnix.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E8%8D%89.png' },
+  { value: 'fire', cn: '火', color: '#f97316', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/a/ab/8wvxz3p479e2b702afdqyzhx9340qgx.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E7%81%AB.png' },
+  { value: 'water', cn: '水', color: '#38bdf8', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/d/d1/csqsyhq1k488329455xdlzdcybv6zjh.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E6%B0%B4.png' },
+  { value: 'light', cn: '光', color: '#facc15', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/d/de/pxfi7cg0j94c45uxf4itigu90wis7jr.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E5%85%89.png' },
+  { value: 'earth', cn: '地', color: '#a16207', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/3/32/0w5pybmkd8qm306doqx8kh5onl1o8cq.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E5%9C%B0.png' },
+  { value: 'ice', cn: '冰', color: '#67e8f9', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/9/9b/oxnxxud1xhopw87c7mnawxijz8r1hns.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E5%86%B0.png' },
+  { value: 'dragon', cn: '龙', color: '#d946ef', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/6/65/kgcg0hvl19o7up0ug8f42bbvhi71dke.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E9%BE%99.png' },
+  { value: 'electric', cn: '电', color: '#eab308', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/0/02/iqzkamzcra945jsw5z6o8h9p30fv7db.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E7%94%B5.png' },
+  { value: 'poison', cn: '毒', color: '#a855f7', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/5/53/jnd3vijasgthdz2ukggyfpisd464r2v.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E6%AF%92.png' },
+  { value: 'bug', cn: '虫', color: '#84cc16', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/c/cb/q3mlwj270f67spwr934hpqx7hj62bm3.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E8%99%AB.png' },
+  { value: 'fighting', cn: '武', color: '#b91c1c', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/5/52/q9hbq9nrnhjt7t86hy7sftv3e2e5fvx.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E6%AD%A6.png' },
+  { value: 'flying', cn: '翼', color: '#60a5fa', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/2/2b/p7wdw88ziupp84s1mr8t9t602psswzz.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E7%BF%BC.png' },
+  { value: 'cute', cn: '萌', color: '#f472b6', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/5/5f/80jhk99eosjv1ld26wp7ljtmif27lfv.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E8%90%8C.png' },
+  { value: 'ghost', cn: '幽', color: '#334155', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/e/e7/ttqdi3zlz72g5dgmc8qg9ko4aorwllw.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E5%B9%BD.png' },
+  { value: 'dark', cn: '恶', color: '#6b21a8', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/3/3b/hrdmz7n0qt3bnmir9fdn7977fvleec0.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E6%81%B6.png' },
+  { value: 'mech', cn: '机械', color: '#64748b', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/a/ad/fw81a2pvdickbcnq5rt17m6066cchcf.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E6%9C%BA%E6%A2%B0.png' },
+  { value: 'illusion', cn: '幻', color: '#7c3aed', icon: 'https://patchwiki.biligame.com/images/rocom/thumb/6/64/89miqle961qdw2tt56hb78bps6f34ci.png/22px-%E5%9B%BE%E6%A0%87_%E5%AE%A0%E7%89%A9_%E5%B1%9E%E6%80%A7_%E5%B9%BB.png' },
 ]
 
-const ELEMENT_OPTIONS = ELEMENT_SYSTEM_LIST.map(({ value, cn, color }) => ({
+const ELEMENT_OPTIONS = ELEMENT_SYSTEM_LIST.map(({ value, cn, color, icon }) => ({
   value,
   label: cn,
   color,
-  image: `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/${encodeURIComponent(cn)}.png`,
+  image: icon,
 }))
 
 export const ELEMENT_LEGACY_DEFAULTS = Object.fromEntries(
-  ELEMENT_SYSTEM_LIST.map(({ value, cn, color }) => [value, { label: `${cn}系`, color }]),
+  ELEMENT_SYSTEM_LIST.map(({ value, cn, color }) => [value, {
+    labels: [cn, `${cn}系`],
+    color,
+    images: ['', `https://static.gamecenter.qq.com/xgame/roco-kingdom/compendium/a/e/${encodeURIComponent(cn)}.png`],
+  }]),
 )
 
 // 异色的选项化表达：以 select 而非 boolean 存储，可以在表格里直接以彩色标签
@@ -165,12 +168,12 @@ function makeField(partial, order, tableId = TABLE_ID, idPrefix = 'field-rock') 
 }
 
 const fields = [
-  makeField({ key: 'image', name: '精灵图', type: 'image' }, 0),
-  makeField({ key: 'name', name: '名称', type: 'text' }, 1),
-  makeField({ key: 'no', name: '编号', type: 'text' }, 2),
-  makeField({ key: 'element', name: '系别', type: 'multiselect', options: ELEMENT_OPTIONS }, 3),
-  makeField({ key: 'form', name: '形态', type: 'text' }, 4),
-  makeField({ key: 'bst', name: '种族值', type: 'number' }, 5),
+  makeField({ key: 'image', name: '精灵图', type: 'image', display: { compact: true, tableWidth: 74 } }, 0),
+  makeField({ key: 'name', name: '名称', type: 'text', display: { breakParentheses: true, compact: true, tableWidth: 116 } }, 1),
+  makeField({ key: 'no', name: '编号', type: 'text', display: { compact: true, tableWidth: 72 } }, 2),
+  makeField({ key: 'element', name: '系别', type: 'multiselect', options: ELEMENT_OPTIONS, display: { stack: true, tableMaxItems: 2, compact: true, tableWidth: 78 } }, 3),
+  makeField({ key: 'form', name: '形态', type: 'text', display: { compact: true, tableWidth: 92 } }, 4),
+  makeField({ key: 'bst', name: '种族值', type: 'number', display: { compact: true, tableWidth: 76 } }, 5),
   makeField(
     {
       key: 'stats',
@@ -186,50 +189,53 @@ const fields = [
         { key: 'mdef', label: '魔防', fieldKey: 'mdef' },
         { key: 'spd', label: '速度', fieldKey: 'spd' },
       ],
+      display: { compact: true, tableWidth: 166 },
     },
     6,
   ),
-  makeField({ key: 'shiny', name: '异色形态', type: 'select', options: SHINY_OPTIONS }, 7),
-  makeField({ key: 'traitName', name: '特性', type: 'text' }, 8),
+  makeField({ key: 'traitName', name: '特性', type: 'summary', display: { kind: 'summary', imageField: 'traitIcon', descriptionField: 'traitDesc', compact: true, tableWidth: 220 } }, 7),
+  makeField({ key: 'fruitImage', name: '种子', type: 'image', display: { compact: true, tableWidth: 66 } }, 8),
+  makeField({ key: 'eggImage', name: '精灵蛋', type: 'image', display: { compact: true, tableWidth: 66 } }, 9),
   makeField(
-    { key: 'traitTags', name: '特性标签', type: 'multiselect', options: TRAIT_TAG_OPTIONS },
-    9,
+    { key: 'traitTags', name: '特性标签', type: 'multiselect', options: TRAIT_TAG_OPTIONS, display: { tableLines: 5, tableMaxItems: 10, compact: true, tableWidth: 172 } },
+    10,
   ),
-  makeField({ key: 'traitIcon', name: '特性图标', type: 'image', hidden: true }, 10),
-  makeField({ key: 'traitDesc', name: '特性描述', type: 'longtext' }, 11),
-  makeField({ key: 'skillTags', name: '技能标签', type: 'multiselect', options: SKILL_TAG_OPTIONS }, 12),
-  makeField({ key: 'skillRefs', name: '可用技能', type: 'references', referenceTableId: SKILL_TABLE_ID }, 13),
-  makeField({ key: 'hp', name: '生命', type: 'number', hidden: true }, 14),
-  makeField({ key: 'patk', name: '物攻', type: 'number', hidden: true }, 15),
-  makeField({ key: 'matk', name: '魔攻', type: 'number', hidden: true }, 16),
-  makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 17),
-  makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 18),
-  makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 19),
+  makeField({ key: 'skillTags', name: '技能标签', type: 'multiselect', options: SKILL_TAG_OPTIONS, display: { tableLines: 5, tableMaxItems: 10, compact: true, tableWidth: 172 } }, 11),
+  makeField({ key: 'skillRefs', name: '可用技能', type: 'references', referenceTableId: SKILL_TABLE_ID, display: { referenceLabelFields: ['name'], tableLines: 5, tableMaxItems: 10, compact: true, tableWidth: 196 } }, 12),
   makeField({ key: 'eggGroups', name: '蛋组', type: 'multiselect', options: BILI_EGG_GROUP_NAMES.map((name, index) => ({
     value: name,
     label: name,
     color: ['#64748b', '#f97316', '#8b5cf6', '#64748b', '#d946ef', '#38bdf8', '#14b8a6', '#22c55e', '#a16207', '#f472b6', '#84cc16', '#06b6d4', '#475569', '#0ea5e9', '#ef4444'][index] || '#64748b',
-  })) }, 20),
-  makeField({ key: 'speciesGroup', name: '繁育谱系', type: 'text' }, 21),
-  makeField({ key: 'evolutionLine', name: '进化链', type: 'longtext', hidden: true }, 22),
+  })) }, 13),
+  makeField({ key: 'speciesGroup', name: '繁育谱系', type: 'text', hidden: true }, 14),
+  makeField({ key: 'shiny', name: '异色形态', type: 'select', options: SHINY_OPTIONS, hidden: true }, 15),
+  makeField({ key: 'traitIcon', name: '特性图标', type: 'image', hidden: true }, 16),
+  makeField({ key: 'traitDesc', name: '特性描述', type: 'longtext', hidden: true }, 17),
+  makeField({ key: 'hp', name: '生命', type: 'number', hidden: true }, 18),
+  makeField({ key: 'patk', name: '物攻', type: 'number', hidden: true }, 19),
+  makeField({ key: 'matk', name: '魔攻', type: 'number', hidden: true }, 20),
+  makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 21),
+  makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 22),
+  makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 23),
+  makeField({ key: 'evolutionLine', name: '进化链', type: 'longtext', hidden: true, display: { kind: 'chain' } }, 24),
 ]
 
 const skillFields = [
-  makeField({ key: 'image', name: '技能图标', type: 'image' }, 0, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'name', name: '技能名称', type: 'text' }, 1, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'element', name: '系别', type: 'select', options: ELEMENT_OPTIONS }, 2, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'category', name: '类型', type: 'select', options: SKILL_CATEGORY_OPTIONS }, 3, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'power', name: '威力', type: 'number' }, 4, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'cost', name: '能耗', type: 'number' }, 5, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'priority', name: '先制/速度', type: 'text' }, 6, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'image', name: '技能图标', type: 'image', display: { compact: true, tableWidth: 80 } }, 0, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'name', name: '技能名称', type: 'text', display: { breakParentheses: true, compact: true, tableWidth: 132 } }, 1, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'element', name: '系别', type: 'select', options: ELEMENT_OPTIONS, display: { compact: true, tableWidth: 78 } }, 2, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'category', name: '类型', type: 'select', options: SKILL_CATEGORY_OPTIONS, display: { compact: true, tableWidth: 88 } }, 3, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'power', name: '威力', type: 'number', display: { compact: true, tableWidth: 66 } }, 4, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'cost', name: '能耗', type: 'number', display: { compact: true, tableWidth: 66 } }, 5, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'priority', name: '先制/速度', type: 'text', display: { compact: true, tableWidth: 82 } }, 6, SKILL_TABLE_ID, 'field-rock-skill'),
   makeField(
-    { key: 'effectTags', name: '效果标签', type: 'multiselect', options: SKILL_EFFECT_TAG_OPTIONS },
+    { key: 'effectTags', name: '效果标签', type: 'multiselect', options: SKILL_EFFECT_TAG_OPTIONS, display: { tableLines: 3, tableMaxItems: 6, compact: true, tableWidth: 172 } },
     7,
     SKILL_TABLE_ID,
     'field-rock-skill',
   ),
-  makeField({ key: 'effect', name: '效果', type: 'longtext' }, 8, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'learnerRefs', name: '可学精灵', type: 'references', referenceTableId: TABLE_ID }, 9, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'effect', name: '效果', type: 'longtext', display: { compact: true, tableWidth: 236 } }, 8, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'learnerRefs', name: '可学精灵', type: 'references', referenceTableId: TABLE_ID, display: { referenceLabelFields: ['name'], breakParentheses: true, tableLines: 3, tableMaxItems: 6, compact: true, tableWidth: 196 } }, 9, SKILL_TABLE_ID, 'field-rock-skill'),
 ]
 
 export const ROCK_KINGDOM_PRESET = {
