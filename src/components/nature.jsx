@@ -563,14 +563,19 @@ function groupByRaise(items = []) {
     .filter((group) => group.items.length > 0)
 }
 
+function formatNatureScore(value) {
+  const fixed = Number(value).toFixed(1)
+  return fixed.startsWith('-') ? `−${fixed.slice(1)}` : fixed
+}
+
 function natureScoreSummary(candidate) {
   const scores = (candidate.formDecisions || [])
     .map((form) => Number(form.score))
     .filter(Number.isFinite)
-  if (scores.length === 0) return candidate.score.toFixed(1)
+  if (scores.length === 0) return formatNatureScore(candidate.score)
   const min = Math.min(...scores)
   const max = Math.max(...scores)
-  return min === max ? max.toFixed(1) : `${min.toFixed(1)}–${max.toFixed(1)}`
+  return min === max ? formatNatureScore(max) : `${formatNatureScore(min)} 至 ${formatNatureScore(max)}`
 }
 
 function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSelect, ownedCount = 0, onQuickAdd }) {
@@ -670,7 +675,7 @@ function NatureResult({ nature, baseStats, adjustedStats, populationStats }) {
               {formDecisions.map((form) => (
                 <span className={form.decision} key={form.id || form.label}>
                   <strong>{form.label}</strong>
-                  <em>{NATURE_DECISION_LABELS[form.decision]} · {form.score.toFixed(1)}</em>
+                  <em>{NATURE_DECISION_LABELS[form.decision]} · {formatNatureScore(form.score)}</em>
                 </span>
               ))}
             </span>

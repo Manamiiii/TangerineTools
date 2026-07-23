@@ -48,6 +48,17 @@ export function isRockKingdomNatureSelectableRow(row) {
   return form !== '首领形态' && stageNumber(form) == null
 }
 
+function evolutionLineEndsWithRow(row) {
+  const line = row?.values?.evolutionLine
+  const members = (Array.isArray(line) ? line : String(line ?? '').split(/→|->/))
+    .map((item) => String(item).trim().replace(/^（|）$/g, ''))
+    .filter(Boolean)
+  if (members.length === 0) return false
+  const rowName = String(row?.values?.name ?? '').replace(/（[^）]+）/g, '').trim()
+  const lastName = members.at(-1).replace(/（[^）]+）/g, '').trim()
+  return Boolean(rowName && lastName === rowName)
+}
+
 export function relatedRockKingdomBossRows(target, rows = []) {
   if (!target) return []
   const targetNo = String(target.values?.no ?? '').trim()
@@ -133,14 +144,26 @@ export function visibleRockKingdomCreatureRows(rows = []) {
 // 排序最靠前的可培养形态。
 export function primaryRockKingdomNatureRows(rows = []) {
   const groups = new Map()
-  for (const row of rows.filter(isRockKingdomNatureSelectableRow).sort(compareRockKingdomCreatureRows)) {
+  for (const row of [...rows].sort(compareRockKingdomCreatureRows)) {
     const no = String(row?.values?.no ?? '').trim() || row.id
     if (!groups.has(no)) groups.set(no, [])
     groups.get(no).push(row)
   }
-  return [...groups.values()].map((group) =>
-    group.find((row) => !nameVariant(row?.values?.name)) || group[0],
-  )
+  return [...groups.values()].map((group) => {
+    const explicitCandidates = group.filter(isRockKingdomNatureSelectableRow)
+    if (explicitCandidates.length > 0) {
+      return explicitCandidates.find((row) => !nameVariant(row?.values?.name)) || explicitCandidates[0]
+    }
+    const ordinaryStages = group.filter((row) =>
+      row.values?.form !== '首领形态' && stageNumber(row.values?.form) != null)
+    if (ordinaryStages.length === 0) return null
+    const latestStage = Math.max(...ordinaryStages.map((row) => stageNumber(row.values?.form)))
+    const latestRows = ordinaryStages.filter((row) => stageNumber(row.values?.form) === latestStage)
+    const onlyBossesFollow = group.some((row) => row.values?.form === '首领形态')
+    if (!onlyBossesFollow && !latestRows.some(evolutionLineEndsWithRow)) return null
+    return latestRows.find((row) => !nameVariant(row?.values?.name)) ||
+      [...latestRows].sort((a, b) => naturalCompare(a.id, b.id))[0]
+  }).filter(Boolean)
 }
 
 // 同一进化链中的任一阶段都代表玩家已经拥有该物种。性格页用这张映射把

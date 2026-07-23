@@ -3244,7 +3244,7 @@ img {
   position: absolute;
   z-index: 2;
   top: 50%;
-  right: 45px;
+  right: 110px;
   transform: translateY(-50%);
 }
 
@@ -3749,7 +3749,7 @@ img {
 .nature-candidate-row { position: relative; display: block; }
 .nature-candidate {
   display: grid;
-  grid-template-columns: 58px 54px minmax(130px, 1fr) 82px 78px;
+  grid-template-columns: 58px 54px minmax(130px, 1fr) 82px 96px;
   align-items: center;
   gap: 7px;
   min-height: 38px;
@@ -3760,7 +3760,7 @@ img {
 .nature-candidate-name { grid-column: 2; grid-row: 1; text-align: left; }
 .nature-candidate-role { grid-column: 3; grid-row: 1; text-align: left; }
 .nature-candidate-owned { grid-column: 4; grid-row: 1; justify-self: start; min-width: 78px; }
-.nature-candidate-score { grid-column: 5; grid-row: 1; justify-self: end; min-width: 74px; text-align: right; }
+.nature-candidate-score { grid-column: 5; grid-row: 1; justify-self: end; min-width: 92px; text-align: right; }
 
 .nature-result-summary { display: grid; gap: 8px; padding: 10px; border: 1px solid #e2e8f0; border-radius: var(--radius); background: #f8fafc; }
 .nature-result-summary > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: start; gap: 8px; }
@@ -3813,7 +3813,7 @@ img {
   .nature-creature-overview { grid-template-columns: 1fr; }
   .nature-stat-ranks { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .nature-population-grid { grid-template-columns: 1fr; }
-  .nature-candidate { grid-template-columns: 55px minmax(52px, auto) minmax(0, 1fr) 78px 78px; grid-template-areas: none; }
+  .nature-candidate { grid-template-columns: 55px minmax(52px, auto) minmax(0, 1fr) 78px 96px; grid-template-areas: none; }
   .nature-candidate-tag, .nature-candidate-name, .nature-candidate-role, .nature-candidate-owned, .nature-candidate-score { grid-area: auto; }
   .nature-candidate-tag { grid-column: 1; grid-row: 1; }
   .nature-candidate-name { grid-column: 2; grid-row: 1; }

@@ -146,12 +146,19 @@ test('nature selector exposes one ordinary entry per number while preserving var
   assert.deepEqual(primaryRockKingdomNatureRows(rows).map((item) => item.id), ['base', 'other'])
 })
 
-test('nature selector does not expose growth-only numbers', () => {
+test('nature selector exposes the last ordinary stage when only boss forms follow', () => {
   const rows = [
-    row('dimo', 'NO.001', '迪莫', 'Ⅰ阶'),
-    row('dimo-boss', 'NO.001', '圣光迪莫', '首领形态'),
+    row('duck', 'NO.011', '鸭吉吉（蓬松的样子）', 'Ⅰ阶'),
+    row('duck-boss', 'NO.011', '鸭吉吉国王（蓬松的样子）', '首领形态'),
   ]
-  assert.deepEqual(primaryRockKingdomNatureRows(rows), [])
+  assert.deepEqual(primaryRockKingdomNatureRows(rows).map((item) => item.id), ['duck'])
+})
+
+test('nature selector exposes a growth-labeled row at the end of its evolution line', () => {
+  const terminal = row('terminal', 'NO.099', '测试终点', 'Ⅱ阶')
+  terminal.values.evolutionLine = '测试起点 → 测试终点'
+  assert.deepEqual(primaryRockKingdomNatureRows([terminal]).map((item) => item.id), ['terminal'])
+  assert.deepEqual(primaryRockKingdomNatureRows([row('incomplete', 'NO.100', '测试起点', 'Ⅰ阶')]), [])
 })
 
 test('population stat summary exposes one fixed global scale across all dimensions', () => {
@@ -255,6 +262,12 @@ test('official preset exposes Dimo as the only final-form selector entry for NO.
   const numberOne = rows.filter((item) => item.values?.no === 'NO.001')
   assert.deepEqual(primaryRockKingdomNatureRows(numberOne).map((item) => item.id), ['rock-creature-src-001'])
   assert.equal(numberOne.find((item) => item.id === 'rock-creature-src-001')?.values?.form, '最终形态')
+})
+
+test('official preset exposes the first ordinary Duck variant before its boss forms', () => {
+  const rows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8'))
+  const numberEleven = rows.filter((item) => item.values?.no === 'NO.011')
+  assert.deepEqual(primaryRockKingdomNatureRows(numberEleven).map((item) => item.id), ['rock-creature-src-011'])
 })
 
 test('form analysis explains differences and detects equivalent related forms', () => {
