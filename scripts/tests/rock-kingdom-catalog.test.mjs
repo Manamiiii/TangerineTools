@@ -146,12 +146,12 @@ test('nature selector exposes one ordinary entry per number while preserving var
   assert.deepEqual(primaryRockKingdomNatureRows(rows).map((item) => item.id), ['base', 'other'])
 })
 
-test('nature selector falls back to an ordinary growth form when a number has no final form', () => {
+test('nature selector does not expose growth-only numbers', () => {
   const rows = [
     row('dimo', 'NO.001', '迪莫', 'Ⅰ阶'),
     row('dimo-boss', 'NO.001', '圣光迪莫', '首领形态'),
   ]
-  assert.deepEqual(primaryRockKingdomNatureRows(rows).map((item) => item.id), ['dimo'])
+  assert.deepEqual(primaryRockKingdomNatureRows(rows), [])
 })
 
 test('population stat summary exposes one fixed global scale across all dimensions', () => {
@@ -188,6 +188,13 @@ test('official preset classifies 烈火战神 as a boss form', () => {
   const rows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8'))
   const boss = rows.find((item) => item.values?.name === '烈火战神')
   assert.equal(boss?.values?.form, '首领形态')
+})
+
+test('official preset exposes Dimo as the only final-form selector entry for NO.001', () => {
+  const rows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8'))
+  const numberOne = rows.filter((item) => item.values?.no === 'NO.001')
+  assert.deepEqual(primaryRockKingdomNatureRows(numberOne).map((item) => item.id), ['rock-creature-src-001'])
+  assert.equal(numberOne.find((item) => item.id === 'rock-creature-src-001')?.values?.form, '最终形态')
 })
 
 test('form analysis explains differences and detects equivalent related forms', () => {

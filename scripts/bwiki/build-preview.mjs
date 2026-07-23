@@ -25,6 +25,11 @@ const ELEMENT_MAP = new Map([
   ['冰', 'ice'], ['龙', 'dragon'], ['电', 'electric'], ['毒', 'poison'], ['虫', 'bug'], ['武', 'fighting'],
   ['翼', 'flying'], ['萌', 'cute'], ['幽', 'ghost'], ['恶', 'dark'], ['机械', 'mech'], ['幻', 'illusion'],
 ])
+
+const CREATURE_FORM_OVERRIDES = new Map([
+  ['NO.001|迪莫', '最终形态'],
+])
+
 function hashId(prefix, value) {
   return `${prefix}-${createHash('sha1').update(String(value)).digest('hex').slice(0, 12)}`
 }
@@ -113,6 +118,8 @@ function normalizeNumber(value) {
 }
 
 function deriveForm(creature, existingValues) {
+  const override = CREATURE_FORM_OVERRIDES.get(`${creature.no || ''}|${creature.name || ''}`)
+  if (override) return { value: override, strategy: 'verified-override' }
   if (creature.formCategoryLabel === '首领形态') {
     return { value: '首领形态', strategy: 'category-boss' }
   }

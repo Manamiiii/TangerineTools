@@ -566,6 +566,7 @@ function groupByRaise(items = []) {
 function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSelect, ownedCount = 0, onQuickAdd }) {
   const candidateIndex = candidates.indexOf(candidate)
   const isActive = candidate === activeCandidate
+  const canQuickAdd = candidate.decision !== 'notRecommended' && ownedCount === 0 && onQuickAdd
   return (
     <li className="nature-candidate-row">
       <button
@@ -578,18 +579,25 @@ function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSel
         </span>
         <span className="nature-candidate-name">{natureName(candidate)}</span>
         <span className="nature-candidate-role">{natureModifierSummary(candidate)}</span>
-        <span className={`nature-candidate-owned ${ownedCount > 0 ? 'acquired' : 'missing'}`}>
-          {ownedCount > 0 && <CheckCircle2 size={13} />}
-          {ownedCount > 0 ? `已获得${ownedCount > 1 ? ` ×${ownedCount}` : ''}` : '未获得'}
-        </span>
+        {ownedCount > 0 ? (
+          <span className="nature-candidate-owned acquired">
+            <CheckCircle2 size={13} />
+            已获得{ownedCount > 1 ? ` ×${ownedCount}` : ''}
+          </span>
+        ) : (
+          <span className="nature-candidate-owned empty" aria-hidden="true" />
+        )}
         <span className="nature-candidate-score">{candidate.score.toFixed(1)}</span>
       </button>
-      {candidate.decision !== 'notRecommended' && ownedCount === 0 && onQuickAdd && (
-        <div className="nature-candidate-actions">
-          <button type="button" className="nature-quick-add" onClick={() => onQuickAdd(candidate)} title="新增收集记录">
-            <Plus size={12} /> 记录
-          </button>
-        </div>
+      {canQuickAdd && (
+        <button
+          type="button"
+          className="nature-candidate-owned missing actionable nature-candidate-owned-overlay"
+          onClick={() => onQuickAdd(candidate)}
+          title="新增收集记录"
+        >
+          <Plus size={12} /> 未获得
+        </button>
       )}
     </li>
   )

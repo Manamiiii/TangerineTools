@@ -1,12 +1,12 @@
 {
   "source": "bwiki-preset-migration",
-  "version": "bwiki-2026-07-22-1cd1b6cc8ccc66fa",
-  "generatedAt": "2026-07-22T03:44:41.134Z",
+  "version": "bwiki-2026-07-23-974b804a529b61ff",
+  "generatedAt": "2026-07-23T06:29:18.246Z",
   "target": {
     "creatureRows": 592,
     "skillRows": 553,
-    "creaturePreviewSha256": "1cd1b6ccd2a28ed2f5c1b65f6dbf6f77326f094c29b8fef4cce90de8a990b5b9",
-    "skillPreviewSha256": "8ccc66fa541e524dd1f015c537ed8d17bb02cc5467be997dbc8cabb43c4a4280"
+    "creaturePreviewSha256": "974b804a94b7d907993c04c3d00fd25705b385ab1e5168e62a786ea65f5b16dc",
+    "skillPreviewSha256": "529b61ffb92dd5dd8ff67ebdf166662c861011c93a624570453683c40d07f095"
   },
   "creatures": {
     "rowCount": 592,
@@ -3853,7 +3853,8 @@
           {
             "key": "form",
             "acceptedHashes": [
-              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4"
+              "668391116e368c7a46f5c6fa41d784a5e226e30b3090bcaa9bc7f64f286cdfb4",
+              "9a7e3d0e8042fcdb520c91cc3b31c04a12273107d813813c6c492b4d298e8208"
             ]
           },
           {

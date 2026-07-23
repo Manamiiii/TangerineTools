@@ -3220,6 +3220,34 @@ img {
   font-weight: 600;
 }
 
+.nature-candidate-owned.actionable {
+  min-height: 24px;
+  padding: 0 6px;
+  border: 1px solid #bbf7d0;
+  border-radius: 999px;
+  background: #f0fdf4;
+  color: #15803d;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nature-candidate-owned.actionable:hover {
+  border-color: #22c55e;
+  background: #dcfce7;
+}
+
+.nature-candidate-owned.empty {
+  min-height: 1px;
+}
+
+.nature-candidate-owned-overlay {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: 45px;
+  transform: translateY(-50%);
+}
+
 .nature-result {
   gap: 12px;
 }
@@ -3718,7 +3746,7 @@ img {
 .nature-unique-skills { display: block; margin: 5px 0; color: #7c3aed; font-size: 11px; line-height: 1.5; }
 .nature-unique-skills + .nature-inline-disclosure { margin-top: 0; }
 
-.nature-candidate-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 6px; }
+.nature-candidate-row { position: relative; display: block; }
 .nature-candidate {
   display: grid;
   grid-template-columns: 58px 54px minmax(130px, 1fr) 82px 38px;
@@ -3733,10 +3761,6 @@ img {
 .nature-candidate-role { grid-column: 3; grid-row: 1; text-align: left; }
 .nature-candidate-owned { grid-column: 4; grid-row: 1; justify-self: start; min-width: 78px; }
 .nature-candidate-score { grid-column: 5; grid-row: 1; justify-self: end; min-width: 34px; text-align: right; }
-.nature-candidate-actions { display: flex; align-items: center; justify-content: flex-end; gap: 5px; min-width: 0; }
-.nature-candidate-forms { min-width: 0; color: #7c3aed; font-size: 10px; line-height: 1.35; text-align: right; overflow-wrap: anywhere; }
-.nature-quick-add { display: inline-flex; align-items: center; justify-content: center; gap: 2px; flex: 0 0 auto; min-height: 24px; padding: 0 5px; border: 1px solid #bbf7d0; border-radius: var(--radius); background: #f0fdf4; color: #15803d; font-size: 10px; font-weight: 700; cursor: pointer; }
-.nature-quick-add:hover { border-color: #22c55e; background: #dcfce7; }
 
 .nature-result-summary { display: grid; gap: 8px; padding: 10px; border: 1px solid #e2e8f0; border-radius: var(--radius); background: #f8fafc; }
 .nature-result-summary > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: start; gap: 8px; }
@@ -3781,9 +3805,6 @@ img {
   .nature-creature-overview { grid-template-columns: 1fr; }
   .nature-stat-ranks { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .nature-population-grid { grid-template-columns: 1fr; }
-  .nature-candidate-row { grid-template-columns: minmax(0, 1fr); }
-  .nature-candidate-actions { justify-content: flex-start; padding: 0 4px 4px; }
-  .nature-candidate-forms { text-align: left; }
   .nature-candidate { grid-template-columns: 55px minmax(52px, auto) minmax(0, 1fr) 78px 38px; grid-template-areas: none; }
   .nature-candidate-tag, .nature-candidate-name, .nature-candidate-role, .nature-candidate-owned, .nature-candidate-score { grid-area: auto; }
   .nature-candidate-tag { grid-column: 1; grid-row: 1; }

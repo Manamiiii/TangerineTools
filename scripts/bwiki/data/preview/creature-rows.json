@@ -1,6 +1,6 @@
 {
   "source": "bwiki-preview",
-  "generatedAt": "2026-07-22T03:44:35.202Z",
+  "generatedAt": "2026-07-23T06:29:08.529Z",
   "inputs": {
     "creatures": "scripts/bwiki/data/staging/creatures.json",
     "skills": "scripts/bwiki/data/staging/skills.json",
@@ -20,7 +20,7 @@
         "element": [
           "light"
         ],
-        "form": "Ⅰ阶",
+        "form": "最终形态",
         "bst": 582,
         "shiny": "no",
         "traitName": "最好的伙伴",
@@ -119,7 +119,7 @@
         "idStrategy": "no+name",
         "previousId": "rock-creature-src-001",
         "detailStaging": true,
-        "formStrategy": "stage",
+        "formStrategy": "verified-override",
         "formCategoryLabel": "原始形态",
         "isMainForm": true,
         "seasonLabel": "无",
