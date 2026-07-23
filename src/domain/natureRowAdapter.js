@@ -125,7 +125,7 @@ function formAnalysisSignature(row, fields) {
   })
 }
 
-export function buildFormAnalysis(target, formRows = [], fields = [], skillRows = []) {
+export function buildFormAnalysis(target, formRows = [], fields = [], skillRows = [], populationRows = []) {
   const targetStats = extractStatsFromRow(target, fields) || {}
   const targetTraitTags = normalizedSet(extractTraitTagsFromRow(target, fields))
   const targetSkillRefs = normalizedSet(extractSkillRefsFromRow(target, fields))
@@ -159,6 +159,7 @@ export function buildFormAnalysis(target, formRows = [], fields = [], skillRows 
       image: row.values?.image || '',
       elements,
       stats,
+      populationStats: buildPopulationStatSummary(populationRows, fields, row),
       traitIcon: row.values?.traitIcon || '',
       traitName: row.values?.traitName || '无特性',
       traitDesc: row.values?.traitDesc || '',
@@ -211,8 +212,14 @@ export function buildPopulationStatSummary(rows = [], fields = [], target = null
     return stats && STATS_DIMENSIONS.every((dimension) => Number(stats[dimension.key]) > 0)
   })
   const targetStats = target ? extractStatsFromRow(target, fields) || {} : {}
+  const allValues = validRows.flatMap((row) => {
+    const stats = extractStatsFromRow(row, fields) || {}
+    return STATS_DIMENSIONS.map((dimension) => Number(stats[dimension.key]) || 0).filter((value) => value > 0)
+  })
   return {
     count: validRows.length,
+    globalMin: allValues.length ? Math.min(...allValues) : 0,
+    globalMax: allValues.length ? Math.max(...allValues) : 0,
     dimensions: STATS_DIMENSIONS.map((dimension) => {
       const values = validRows.map((row) => Number(extractStatsFromRow(row, fields)?.[dimension.key]) || 0).sort((a, b) => a - b)
       const value = Number(targetStats[dimension.key]) || 0
@@ -232,7 +239,7 @@ export function buildPopulationStatSummary(rows = [], fields = [], target = null
   }
 }
 
-export function buildNatureAnalysisInput(target, formRows = [], fields = [], skillRows = []) {
+export function buildNatureAnalysisInput(target, formRows = [], fields = [], skillRows = [], populationRows = []) {
   if (!target) return null
   const relatedRows = [target, ...(formRows || []).filter((row) => row.id !== target.id)]
   const summary = extractRowSummary(target, fields)
@@ -257,6 +264,6 @@ export function buildNatureAnalysisInput(target, formRows = [], fields = [], ski
     skillInfo: uniqueSkillInfo(relatedRows, fields, skillRows, formRows.length > 0),
     analysisProfiles: profiles.filter((profile) => profile.id !== target.id),
     formProfiles: profiles,
-    formAnalysis: buildFormAnalysis(target, relatedRows, fields, skillRows),
+    formAnalysis: buildFormAnalysis(target, relatedRows, fields, skillRows, populationRows),
   }
 }

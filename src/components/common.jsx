@@ -372,26 +372,33 @@ export function StatsRadarChart({ stats, size = 'sm' }) {
   )
 }
 
-export function StatsBarsChart({ stats, size = 'sm', referenceRanges = [] }) {
-  const rangesByKey = new Map(referenceRanges.map((range) => [range.key, range]))
-  const maxValue = STATS_SCALE_MAX
+export function StatsBarsChart({ stats, size = 'sm', scaleMax = STATS_SCALE_MAX, referenceMin = null }) {
+  const maxValue = Math.max(Number(scaleMax) || STATS_SCALE_MAX, 1)
+  const minPosition = referenceMin > 0 ? `${clamp((Number(referenceMin) / maxValue) * 100, 0, 100)}%` : null
   return (
     <div className={`stats-bars stats-bars-${size}`}>
       {stats.map((s) => {
         const value = Number(s.value) || 0
         const width = `${clamp((value / maxValue) * 100, 0, 100)}%`
-        const range = rangesByKey.get(s.key)
-        const minPosition = range ? `${clamp((Number(range.min) / maxValue) * 100, 0, 100)}%` : null
-        const maxPosition = range ? `${clamp((Number(range.max) / maxValue) * 100, 0, 100)}%` : null
+        const tone = s.context?.delta > 0 ? 'higher' : s.context?.delta < 0 ? 'lower' : ''
         return (
-          <div key={s.key} className="stats-bar-row" title={`${s.label}：${value}${range ? `；全体范围 ${range.min}–${range.max}` : ''}`}>
+          <div key={s.key} className={`stats-bar-row ${s.context ? 'has-context' : ''} ${tone}`} title={`${s.label}：${value}；统一刻度 0–${maxValue}${referenceMin > 0 ? `，全资料最低有效值 ${referenceMin}` : ''}`}>
             <span className="stats-bar-label">{s.label}</span>
             <span className="stats-bar-track" aria-hidden="true">
-              {range && <span className="stats-bar-reference-min" style={{ left: minPosition }} />}
+              {minPosition && <span className="stats-bar-reference-min" style={{ left: minPosition }} />}
               <span className="stats-bar-fill" style={{ width }} />
-              {range && <span className="stats-bar-reference-max" style={{ left: maxPosition }} />}
+              <span className="stats-bar-reference-max" />
             </span>
-            <span className="stats-bar-value">{value}</span>
+            <span className="stats-bar-value">
+              <strong>{value}</strong>
+              {s.context && (
+                <small>
+                  P{s.context.percentile}
+                  {s.context.delta !== 0 && <em>{s.context.delta > 0 ? ` +${s.context.delta}` : ` ${s.context.delta}`}</em>}
+                  {s.context.percentileDelta !== 0 && <i>{s.context.percentileDelta > 0 ? ` ↑${s.context.percentileDelta}` : ` ↓${Math.abs(s.context.percentileDelta)}`}</i>}
+                </small>
+              )}
+            </span>
           </div>
         )
       })}
@@ -399,9 +406,9 @@ export function StatsBarsChart({ stats, size = 'sm', referenceRanges = [] }) {
   )
 }
 
-export function StatsChart({ stats, variant = 'bars', size = 'sm', referenceRanges = [] }) {
+export function StatsChart({ stats, variant = 'bars', size = 'sm', scaleMax = STATS_SCALE_MAX, referenceMin = null }) {
   if (variant === 'radar') return <StatsRadarChart stats={stats} size={size} />
-  return <StatsBarsChart stats={stats} size={size} referenceRanges={referenceRanges} />
+  return <StatsBarsChart stats={stats} size={size} scaleMax={scaleMax} referenceMin={referenceMin} />
 }
 
 // ---------------------------------------------------------------------------

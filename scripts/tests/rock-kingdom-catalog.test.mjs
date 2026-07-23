@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import { evaluateNatureProfiles } from '../../src/domain/nature.js'
-import { buildFormAnalysis } from '../../src/domain/natureRowAdapter.js'
+import { buildFormAnalysis, buildPopulationStatSummary } from '../../src/domain/natureRowAdapter.js'
 import { buildOwnedNatureIndex } from '../../src/domain/owned.js'
 import { ROCK_KINGDOM_PRESET } from '../../src/presets/rockKingdom.js'
 import {
@@ -144,6 +144,26 @@ test('nature selector exposes one ordinary entry per number while preserving var
     row('other', 'NO.021', '另一只精灵（本来的样子）', '最终形态'),
   ]
   assert.deepEqual(primaryRockKingdomNatureRows(rows).map((item) => item.id), ['base', 'other'])
+})
+
+test('nature selector falls back to an ordinary growth form when a number has no final form', () => {
+  const rows = [
+    row('dimo', 'NO.001', '迪莫', 'Ⅰ阶'),
+    row('dimo-boss', 'NO.001', '圣光迪莫', '首领形态'),
+  ]
+  assert.deepEqual(primaryRockKingdomNatureRows(rows).map((item) => item.id), ['dimo'])
+})
+
+test('population stat summary exposes one fixed global scale across all dimensions', () => {
+  const fields = [
+    normalizeField({ id: 'stats', key: 'stats', type: 'stats', statsMap: { hp: 'hp', patk: 'patk', matk: 'matk', pdef: 'pdef', mdef: 'mdef', spd: 'spd' } }),
+    ...['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd'].map((key) => normalizeField({ id: key, key, type: 'number' })),
+  ]
+  const low = { id: 'low', values: { hp: 5, patk: 10, matk: 20, pdef: 30, mdef: 40, spd: 50 } }
+  const high = { id: 'high', values: { hp: 100, patk: 120, matk: 140, pdef: 160, mdef: 180, spd: 290 } }
+  const summary = buildPopulationStatSummary([low, high], fields, low)
+  assert.equal(summary.globalMin, 5)
+  assert.equal(summary.globalMax, 290)
 })
 
 test('matches a final variant with its corresponding boss variant', () => {

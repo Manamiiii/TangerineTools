@@ -19,7 +19,7 @@ import {
   X,
   XCircle,
 } from 'lucide-react'
-import { FIELD_TYPES, isOptionFieldType, isReferenceFieldType, STATS_DIMENSIONS } from '../constants.js'
+import { FIELD_TYPES, isOptionFieldType, isReferenceFieldType, STATS_DIMENSIONS, STATS_SCALE_MAX } from '../constants.js'
 import { createField, db, deleteField, reorderFields, updateField } from '../db.js'
 import {
   isRockKingdomCreatureReference,
@@ -692,22 +692,18 @@ function SummaryCellView({ field, row, mode }) {
   )
 }
 
-function statsReferenceRanges(rows, fields, statsField) {
-  const byKey = new Map((statsField.statsDimensions || []).map((dimension) => [dimension.key, []]))
+function statsReferenceScale(rows, fields, statsField) {
+  const values = []
   for (const sourceRow of rows || []) {
     for (const stat of getStatsValues(fields, statsField.statsMap, sourceRow.values, statsField.statsDimensions)) {
       const value = Number(stat.value)
-      if (Number.isFinite(value) && value > 0) {
-        if (!byKey.has(stat.key)) byKey.set(stat.key, [])
-        byKey.get(stat.key).push(value)
-      }
+      if (Number.isFinite(value) && value > 0) values.push(value)
     }
   }
-  return [...byKey].map(([key, values]) => ({
-    key,
+  return {
     min: values.length ? Math.min(...values) : 0,
-    max: values.length ? Math.max(...values) : 0,
-  }))
+    max: values.length ? Math.max(...values) : STATS_SCALE_MAX,
+  }
 }
 
 export function CellView({ field, row, allFields, mode = 'table', onOpenReference, referenceRows = [] }) {
@@ -716,7 +712,8 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
 
   if (field.type === 'stats') {
     const stats = getStatsValues(allFields, field.statsMap, row.values, field.statsDimensions)
-    return <StatsChart stats={stats} variant={field.statsStyle || 'bars'} size={mode === 'detail' ? 'lg' : 'sm'} referenceRanges={statsReferenceRanges(referenceRows, allFields, field)} />
+    const scale = statsReferenceScale(referenceRows, allFields, field)
+    return <StatsChart stats={stats} variant={field.statsStyle || 'bars'} size={mode === 'detail' ? 'lg' : 'sm'} scaleMax={scale.max} referenceMin={scale.min} />
   }
 
   const value = row.values?.[field.key]

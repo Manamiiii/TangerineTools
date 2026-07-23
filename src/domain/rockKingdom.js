@@ -133,14 +133,19 @@ export function visibleRockKingdomCreatureRows(rows = []) {
 // 排序最靠前的可培养形态。
 export function primaryRockKingdomNatureRows(rows = []) {
   const groups = new Map()
-  for (const row of rows.filter(isRockKingdomNatureSelectableRow).sort(compareRockKingdomCreatureRows)) {
+  for (const row of [...rows].sort(compareRockKingdomCreatureRows)) {
     const no = String(row?.values?.no ?? '').trim() || row.id
     if (!groups.has(no)) groups.set(no, [])
     groups.get(no).push(row)
   }
-  return [...groups.values()].map((group) =>
-    group.find((row) => !nameVariant(row?.values?.name)) || group[0],
-  )
+  return [...groups.values()].flatMap((group) => {
+    const selectable = group.filter(isRockKingdomNatureSelectableRow)
+    const candidates = selectable.length > 0
+      ? selectable
+      : group.filter((row) => row?.values?.form !== '首领形态')
+    const primary = candidates.find((row) => !nameVariant(row?.values?.name)) || candidates[0]
+    return primary ? [primary] : []
+  })
 }
 
 // 同一进化链中的任一阶段都代表玩家已经拥有该物种。性格页用这张映射把
