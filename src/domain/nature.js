@@ -702,16 +702,33 @@ function isFunctionalBalancedMixedAttack(analysis = {}, roles = [], skillProfile
   return balancedSkillCounts && balancedStats && hasFunctionalRole
 }
 
-function hasClearSkillQualityGap(skillProfile = {}) {
+function hasDecisiveFormulaRoute(candidate, formulaAssist = {}) {
+  const ratio = Number(formulaAssist.outputRatio) || 0
+  if (candidate.lower === 'matk') return ratio >= 1.5
+  if (candidate.lower === 'patk') return ratio > 0 && ratio <= (1 / 1.5)
+  return false
+}
+
+function hasClearSkillQualityGap(skillProfile = {}, formulaAssist = {}) {
   const breakdown = skillProfile.breakdown || {}
   const physicalCount = Number(breakdown.physicalCount) || 0
   const magicalCount = Number(breakdown.magicalCount) || 0
   if (physicalCount === 0 || magicalCount === 0) return true
-  const averagePowerGap = Math.abs(
-    (Number(breakdown.physicalAveragePower) || 0) -
-    (Number(breakdown.magicalAveragePower) || 0),
+  const routeShare = Math.max(
+    Number(breakdown.physicalShare) || 0,
+    Number(breakdown.magicalShare) || 0,
   )
-  return averagePowerGap >= 18
+  const routeScoreGap = Math.abs(
+    (Number(breakdown.physicalRouteScore) || 0) -
+    (Number(breakdown.magicalRouteScore) || 0),
+  )
+  const formulaRatio = Number(formulaAssist.outputRatio) || 0
+  const decisiveFormulaGap = formulaRatio >= 1.5 || (formulaRatio > 0 && formulaRatio <= (1 / 1.5))
+  return (
+    routeShare >= 0.65 ||
+    Math.min(physicalCount, magicalCount) <= 3 ||
+    (routeScoreGap >= 8 && decisiveFormulaGap)
+  )
 }
 
 
@@ -752,7 +769,7 @@ function isSkillProvedSingleAttackRoute(candidate, roles = [], skillProfile = {}
   if (!roles.some((role) => role.key === 'mixedAttacker')) return false
   const breakdown = skillProfile.breakdown || {}
   const routeGap = Math.abs(Number(skillProfile.routeGap) || 0)
-  const formulaSupportsRoute = formulaRouteSupportsSingleAttack(candidate, formulaAssist)
+  const formulaSupportsRoute = hasDecisiveFormulaRoute(candidate, formulaAssist)
   if (skillProfile.attackMode === 'physical' && candidate.lower === 'matk') {
     return routeGap >= 4 && (formulaSupportsRoute || breakdown.physicalShare >= 0.65 || breakdown.magicalCount <= 3)
   }
@@ -897,7 +914,15 @@ export function evaluateNatureCandidate(
     reasons.push('技能效果标签偏魔法输出，强化魔攻更贴合技能组')
   }
   const functionalBalancedMixedAttack = isFunctionalBalancedMixedAttack(analysis, roles, skillProfile)
-  const clearSkillQualityGap = hasClearSkillQualityGap(skillProfile)
+  const clearSkillQualityGap = hasClearSkillQualityGap(skillProfile, formulaAssist)
+  const skillBreakdown = skillProfile.breakdown || {}
+  const symmetricMixedRoutes =
+    functionalBalancedMixedAttack &&
+    Math.abs(
+      (Number(skillBreakdown.physicalCount) || 0) -
+      (Number(skillBreakdown.magicalCount) || 0),
+    ) <= 3 &&
+    !clearSkillQualityGap
   const lowOutputFunctionalMixedAttack = isLowOutputFunctionalMixedAttack(analysis, roles, skillProfile)
   const balancedDefenseWall = hasBalancedDefenseWallFoundation(stats, analysis, traitTags)
   const oppositeDefense = candidate.raise === 'pdef' ? 'mdef' : candidate.raise === 'mdef' ? 'pdef' : ''
@@ -1063,6 +1088,14 @@ export function evaluateNatureCandidate(
 
   const topRoleKeys = new Set(roles.slice(0, 2).map((role) => role.key))
   const isMixedAttackTradeoff = ATTACK_STAT_KEYS.includes(candidate.lower) && roles.some((r) => r.key === 'mixedAttacker')
+  const symmetricMixedAttackSacrifice =
+    symmetricMixedRoutes &&
+    hasFunctionalMixedOutputFloor(stats, skillProfile) &&
+    ATTACK_STAT_KEYS.includes(candidate.lower)
+  if (symmetricMixedAttackSacrifice) {
+    score = Math.max(score, 25)
+    reasons.push('双攻面板与两类技能数量接近，且没有压倒性的单攻证据；牺牲任一攻击侧都保留对应玩法分支')
+  }
   const speedIsPrimaryCore =
     speedProfile.concern.level === 'high' &&
     (topRoleKeys.has('fastAttacker') ||
@@ -1070,7 +1103,7 @@ export function evaluateNatureCandidate(
       traitTags.includes('conditionalSpeedBoost') ||
       traitTags.includes('swiftSkill'))
   const hardRisk =
-    (lowerCore >= 3.8 && !skillPlausibleSingleAttackRoute && !isMixedAttackTradeoff &&
+    (lowerCore >= 3.8 && !skillPlausibleSingleAttackRoute && !isMixedAttackTradeoff && !symmetricMixedAttackSacrifice &&
       !(candidate.lower === 'spd' && speedProfile.concern.level === 'low')) ||
     (candidate.lower === 'spd' && speedIsPrimaryCore) ||
     (candidate.lower === 'hp' && roles.some((r) => ['bulky', 'support'].includes(r.key)) && lowerExpendable < 1)
@@ -1097,7 +1130,7 @@ export function evaluateNatureCandidate(
       skillPlausibleSingleAttackRoute ||
       formulaRouteSupportsSingleAttack(candidate, formulaAssist) ||
       lowersSkillOffRouteAttack ||
-      (functionalBalancedMixedAttack && !clearSkillQualityGap && lowersAttackSide)
+      (symmetricMixedRoutes && lowersAttackSide)
     if (lowersSafeAttackBranch) {
       decision = 'keepable'
       warnings.push('中速以下的功能/站场定位可保留低代价速度节奏分支，但不应与主攻或耐久强化同级首推')
@@ -1165,8 +1198,7 @@ export function evaluateNatureCandidate(
     reasons: reasons.length ? reasons : [`强化${raiseLabel}、弱化${lowerLabel}整体收益一般`],
     warnings,
     hardRisk,
-    functionalBalancedMixedAttack,
-    clearSkillQualityGap,
+    symmetricMixedAttackSacrifice,
   }, preference)
 }
 
@@ -1200,11 +1232,6 @@ function canKeepDominatedCandidate(item, best) {
     ATTACK_STAT_KEYS.includes(item.lower) &&
     item.formulaAssist?.routeHint === 'mixed' &&
     item.reasons.some((reason) => /功能站场型双攻接近，补强明显防御短板/.test(reason))
-  const balancedMixedSpeedSacrifice =
-    item.raise === 'spd' &&
-    ATTACK_STAT_KEYS.includes(item.lower) &&
-    item.functionalBalancedMixedAttack &&
-    !item.clearSkillQualityGap
   if (item.decision !== 'keepable' || item.hardRisk) return false
   if (
     DEFENSE_STAT_KEYS.includes(item.lower) &&
@@ -1212,7 +1239,7 @@ function canKeepDominatedCandidate(item, best) {
     ATTACK_STAT_KEYS.includes(best.lower) &&
     best.score - item.score >= 40
   ) return false
-  if (!functionalMixedAttackTradeoff && !functionalMixedAttackSacrifice && item.score < 45) return false
+  if (!functionalMixedAttackTradeoff && !functionalMixedAttackSacrifice && !item.symmetricMixedAttackSacrifice && item.score < 45) return false
   if (shouldHardDominateWithOffRouteAttack(item, best) && !functionalMixedAttackSacrifice) return false
   if (
     item.raise === 'spd' &&
@@ -1221,7 +1248,7 @@ function canKeepDominatedCandidate(item, best) {
   ) return false
   if (lowersCurrentShortDefense(item)) return false
   if (item.warnings.some((warning) => /低输出功能位不宜为了泛用强化牺牲双防/.test(warning))) return false
-  if (functionalMixedAttackTradeoff || functionalMixedAttackSacrifice || balancedMixedSpeedSacrifice) return true
+  if (functionalMixedAttackTradeoff || functionalMixedAttackSacrifice || item.symmetricMixedAttackSacrifice) return true
   const bestLowerIsSpeedForLowConcern =
     best.lower === 'spd' && best.speedProfile?.concern?.level === 'low'
   if (bestLowerIsSpeedForLowConcern && ATTACK_STAT_KEYS.includes(item.lower)) return false
@@ -1254,10 +1281,14 @@ function applyDominance(evaluations) {
       if (item.lineupKeep) continue
       if (item.score > best.score - 20) continue
       const hardDominatedByOffRouteAttack = shouldHardDominateWithOffRouteAttack(item, best)
+      const competingAttackSacrifices =
+        ATTACK_STAT_KEYS.includes(item.lower) &&
+        ATTACK_STAT_KEYS.includes(best.lower)
       if (
         item.reasons.some((reason) => /专项|速度 .*提升到/.test(reason)) &&
         !lowersCurrentShortDefense(item) &&
-        !hardDominatedByOffRouteAttack
+        !hardDominatedByOffRouteAttack &&
+        (!competingAttackSacrifices || item.symmetricMixedAttackSacrifice)
       ) continue
       if (item.score >= 25 && item.reasons.some((reason) => /公式辅助输出线偏.*单攻分支/.test(reason))) continue
       const target = byKey.get(dominanceKey(item))

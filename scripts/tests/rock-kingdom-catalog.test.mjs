@@ -269,7 +269,7 @@ test('balanced functional mixed attackers keep a supported short-defense branch 
   assert.equal(decisions['武斗酷猫'], 'notRecommended')
 })
 
-test('balanced mixed attackers keep both speed branches unless skill quality has a clear gap', () => {
+test('balanced mixed attackers keep both routes when skill counts remain close', () => {
   const rows = visibleRockKingdomCreatureRows(
     JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
   )
@@ -284,8 +284,23 @@ test('balanced mixed attackers keep both speed branches unless skill quality has
   }
   assert.equal(decisionFor('NO.023', '开朗'), 'keepable')
   assert.equal(decisionFor('NO.023', '胆小'), 'keepable')
-  assert.equal(decisionFor('NO.038', '开朗'), 'notRecommended')
+  assert.equal(decisionFor('NO.038', '开朗'), 'keepable')
   assert.equal(decisionFor('NO.038', '胆小'), 'keepable')
+  assert.equal(decisionFor('NO.038', '天真'), 'keepable')
+})
+
+test('a weaker attack sacrifice does not bypass same-raise dominance as a defense specialty', () => {
+  const rows = visibleRockKingdomCreatureRows(
+    JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
+  )
+  const skillRows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomSkillRows.json', import.meta.url), 'utf8'))
+  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const fields = ROCK_KINGDOM_PRESET.fields.filter((field) => field.tableId === creatureTableId)
+  const forms = rows.filter((item) => item.values?.no === 'NO.026')
+  const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
+  const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
+  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'keepable')
+  assert.equal(candidates.find((candidate) => candidate.name === '稳重')?.decision, 'notRecommended')
 })
 
 test('multi-form union does not add boss-only life branches that sacrifice a defense', () => {
