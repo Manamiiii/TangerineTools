@@ -303,6 +303,21 @@ test('balanced mixed attackers keep both routes when skill counts remain close',
   assert.equal(decisionFor('NO.038', '天真'), 'keepable')
 })
 
+test('close dual attacks keep both sacrifice directions despite a skill-count gap', () => {
+  const rows = visibleRockKingdomCreatureRows(
+    JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
+  )
+  const skillRows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomSkillRows.json', import.meta.url), 'utf8'))
+  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const fields = ROCK_KINGDOM_PRESET.fields.filter((field) => field.tableId === creatureTableId)
+  const forms = rows.filter((item) => item.values?.no === 'NO.051')
+  const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
+  const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
+  for (const name of ['固执', '平和', '开朗', '天真', '害羞']) {
+    assert.notEqual(candidates.find((candidate) => candidate.name === name)?.decision, 'notRecommended')
+  }
+})
+
 test('balanced mixed routes do not rescue low-value speed natures', () => {
   const rows = visibleRockKingdomCreatureRows(
     JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
