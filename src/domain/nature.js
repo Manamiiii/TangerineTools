@@ -675,6 +675,21 @@ function hasBalancedDefenseWallFoundation(stats = {}, analysis = {}, traitTags =
   return defenseGap <= 5 && hasDefenseTrait && hasBulkFoundation && nearWallLine
 }
 
+function isStandoutDefenseStat(key, analysis = {}) {
+  if (!['pdef', 'mdef'].includes(key)) return false
+  const value = Number(analysis.stats?.[key]) || 0
+  const oppositeKey = key === 'pdef' ? 'mdef' : 'pdef'
+  const oppositeValue = Number(analysis.stats?.[oppositeKey]) || 0
+  const p75 = Number(STAT_PERCENTILE_BANDS[key]?.p75) || 0
+  return (
+    analysis.topStats?.includes(key) &&
+    (
+      value >= p75 ||
+      (value >= p75 - 5 && value - oppositeValue >= 20)
+    )
+  )
+}
+
 
 function isSingleDefenseRaiseSoftCapped(candidate, roles = [], traitTags = [], analysis = null) {
   if (!['pdef', 'mdef'].includes(candidate.raise)) return false
@@ -1108,8 +1123,7 @@ export function evaluateNatureCandidate(
     (candidate.lower === 'hp' && roles.some((r) => ['bulky', 'support'].includes(r.key)) && lowerExpendable < 1)
   const lowersStandoutDefense =
     ['pdef', 'mdef'].includes(candidate.lower) &&
-    analysis.topStats.includes(candidate.lower) &&
-    analysis.stats[candidate.lower] >= STAT_PERCENTILE_BANDS[candidate.lower].p75 &&
+    isStandoutDefenseStat(candidate.lower, analysis) &&
     roles.some((role) => ['bulky', 'support', 'physicalWall', 'magicalWall'].includes(role.key))
   const hardRisk = baseHardRisk || lowersStandoutDefense
   const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, traitTags, analysis)
