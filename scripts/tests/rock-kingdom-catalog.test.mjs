@@ -373,6 +373,23 @@ test('durability stats do not trade against each other', () => {
   }
 })
 
+test('attack raises do not assume an unverified glass mixed-attacker exception', () => {
+  const rows = visibleRockKingdomCreatureRows(
+    JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
+  )
+  const skillRows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomSkillRows.json', import.meta.url), 'utf8'))
+  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const fields = ROCK_KINGDOM_PRESET.fields.filter((field) => field.tableId === creatureTableId)
+  for (const no of ['NO.065', 'NO.170']) {
+    const forms = rows.filter((item) => item.values?.no === no)
+    const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
+    const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
+    for (const name of ['大胆', '调皮', '专注', '偏执']) {
+      assert.equal(candidates.find((candidate) => candidate.name === name)?.decision, 'notRecommended')
+    }
+  }
+})
+
 test('a weaker attack sacrifice does not bypass same-raise dominance as a defense specialty', () => {
   const rows = visibleRockKingdomCreatureRows(
     JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),

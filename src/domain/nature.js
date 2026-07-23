@@ -682,7 +682,7 @@ function isStandoutDefenseStat(key, analysis = {}) {
   const oppositeValue = Number(analysis.stats?.[oppositeKey]) || 0
   const p75 = Number(STAT_PERCENTILE_BANDS[key]?.p75) || 0
   return (
-    analysis.topStats?.includes(key) &&
+    value >= oppositeValue &&
     (
       value >= p75 ||
       (value >= p75 - 5 && value - oppositeValue >= 20)
@@ -1128,7 +1128,15 @@ export function evaluateNatureCandidate(
   const tradesWithinDurability =
     DEFENSE_STAT_KEYS.includes(candidate.raise) &&
     DEFENSE_STAT_KEYS.includes(candidate.lower)
-  const hardRisk = baseHardRisk || lowersStandoutDefense || tradesWithinDurability
+  const attackTradesDefense =
+    ATTACK_STAT_KEYS.includes(candidate.raise) &&
+    ['pdef', 'mdef'].includes(candidate.lower)
+  const invalidAttackDefenseTrade = attackTradesDefense
+  const hardRisk =
+    baseHardRisk ||
+    lowersStandoutDefense ||
+    tradesWithinDurability ||
+    invalidAttackDefenseTrade
   const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, traitTags, analysis)
 
   if (lowersStandoutDefense) {
@@ -1138,6 +1146,10 @@ export function evaluateNatureCandidate(
   if (tradesWithinDurability) {
     score -= 24
     warnings.push('生命、物防和魔防共同构成耐久体系；强化其中一项不应以削弱另一项为代价')
+  }
+  if (invalidAttackDefenseTrade) {
+    score -= 18
+    warnings.push('尚无稳定实战证据支持纯双攻玻璃输出；强化攻击不以牺牲单防为代价')
   }
   if (hardRisk) score -= 8
   let decision = decisionFromScore(score, hardRisk)
@@ -1222,7 +1234,7 @@ export function evaluateNatureCandidate(
       ? '技能已证明可走单攻分支，当前组合不应直接判死，降级为可保留'
       : '技能略偏单攻分支，捕捉时可先保留等待玩法确认')
   }
-  if (tradesWithinDurability) {
+  if (tradesWithinDurability || invalidAttackDefenseTrade) {
     decision = 'notRecommended'
   }
 
