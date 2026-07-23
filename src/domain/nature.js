@@ -1125,12 +1125,19 @@ export function evaluateNatureCandidate(
     ['pdef', 'mdef'].includes(candidate.lower) &&
     isStandoutDefenseStat(candidate.lower, analysis) &&
     roles.some((role) => ['bulky', 'support', 'physicalWall', 'magicalWall'].includes(role.key))
-  const hardRisk = baseHardRisk || lowersStandoutDefense
+  const tradesWithinDurability =
+    DEFENSE_STAT_KEYS.includes(candidate.raise) &&
+    DEFENSE_STAT_KEYS.includes(candidate.lower)
+  const hardRisk = baseHardRisk || lowersStandoutDefense || tradesWithinDurability
   const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, traitTags, analysis)
 
   if (lowersStandoutDefense) {
     score -= 14
     warnings.push(`弱化${lowerLabel}会牺牲功能/站场路线最突出的耐久项，不作为常规保留分支`)
+  }
+  if (tradesWithinDurability) {
+    score -= 24
+    warnings.push('生命、物防和魔防共同构成耐久体系；强化其中一项不应以削弱另一项为代价')
   }
   if (hardRisk) score -= 8
   let decision = decisionFromScore(score, hardRisk)
@@ -1214,6 +1221,9 @@ export function evaluateNatureCandidate(
     warnings.push(skillProvedSingleAttackRoute
       ? '技能已证明可走单攻分支，当前组合不应直接判死，降级为可保留'
       : '技能略偏单攻分支，捕捉时可先保留等待玩法确认')
+  }
+  if (tradesWithinDurability) {
+    decision = 'notRecommended'
   }
 
   return applyNaturePreference({

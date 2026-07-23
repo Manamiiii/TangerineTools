@@ -362,6 +362,17 @@ test('functional forms protect a clearly stronger defense just below the upper q
   }
 })
 
+test('durability stats do not trade against each other', () => {
+  const candidates = evaluateAllNatures(
+    { hp: 120, patk: 85, matk: 85, pdef: 110, mdef: 110, spd: 80 },
+    ['defense'],
+    { skills: [] },
+  )
+  for (const name of ['忧郁', '粗心', '坦率', '懒散', '焦虑', '温顺']) {
+    assert.equal(candidates.find((candidate) => candidate.name === name)?.decision, 'notRecommended')
+  }
+})
+
 test('a weaker attack sacrifice does not bypass same-raise dominance as a defense specialty', () => {
   const rows = visibleRockKingdomCreatureRows(
     JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
