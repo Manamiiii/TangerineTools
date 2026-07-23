@@ -33,7 +33,7 @@ export function pairRockKingdomComparisonForms(forms = []) {
   const groups = new Map()
   for (const form of forms) {
     const variant = nameVariant(form?.name)
-    const key = variant || `row:${form?.id || form?.name || groups.size}`
+    const key = variant || 'base'
     if (!groups.has(key)) groups.set(key, { key, variant, ordinary: [], bosses: [] })
     const group = groups.get(key)
     if (form?.form === '首领形态') group.bosses.push(form)

@@ -198,6 +198,20 @@ test('pairs ordinary and boss comparison cards by their shared variant label', (
   ])
 })
 
+test('pairs an unlabelled ordinary form with its corresponding unlabelled boss form', () => {
+  const groups = pairRockKingdomComparisonForms([
+    { id: 'ordinary', name: '岚鸟', form: '最终形态' },
+    { id: 'boss', name: '霜翼领主', form: '首领形态' },
+  ])
+  assert.deepEqual(groups.map((group) => ({
+    variant: group.variant,
+    paired: group.paired,
+    ids: group.forms.map((form) => form.id),
+  })), [
+    { variant: '', paired: true, ids: ['ordinary', 'boss'] },
+  ])
+})
+
 test('combined nature evaluation uses the union of independently evaluated forms', () => {
   const stats = { hp: 100, patk: 120, matk: 50, pdef: 80, mdef: 80, spd: 100 }
   const bossStats = { hp: 110, patk: 50, matk: 150, pdef: 90, mdef: 85, spd: 120 }
@@ -287,6 +301,35 @@ test('balanced mixed attackers keep both routes when skill counts remain close',
   assert.equal(decisionFor('NO.038', '开朗'), 'keepable')
   assert.equal(decisionFor('NO.038', '胆小'), 'keepable')
   assert.equal(decisionFor('NO.038', '天真'), 'keepable')
+})
+
+test('balanced mixed routes do not rescue low-value speed natures', () => {
+  const rows = visibleRockKingdomCreatureRows(
+    JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
+  )
+  const skillRows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomSkillRows.json', import.meta.url), 'utf8'))
+  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const fields = ROCK_KINGDOM_PRESET.fields.filter((field) => field.tableId === creatureTableId)
+  const forms = rows.filter((item) => item.values?.no === 'NO.040')
+  const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
+  const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
+  assert.equal(candidates.find((candidate) => candidate.name === '开朗')?.decision, 'notRecommended')
+  assert.equal(candidates.find((candidate) => candidate.name === '胆小')?.decision, 'notRecommended')
+})
+
+test('functional forms do not sacrifice their standout defense', () => {
+  const rows = visibleRockKingdomCreatureRows(
+    JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
+  )
+  const skillRows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomSkillRows.json', import.meta.url), 'utf8'))
+  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const fields = ROCK_KINGDOM_PRESET.fields.filter((field) => field.tableId === creatureTableId)
+  const forms = rows.filter((item) => item.values?.no === 'NO.040')
+  const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
+  const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
+  for (const name of ['忧郁', '大胆', '专注', '温顺']) {
+    assert.equal(candidates.find((candidate) => candidate.name === name)?.decision, 'notRecommended')
+  }
 })
 
 test('a weaker attack sacrifice does not bypass same-raise dominance as a defense specialty', () => {

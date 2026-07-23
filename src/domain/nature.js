@@ -1091,6 +1091,7 @@ export function evaluateNatureCandidate(
   const symmetricMixedAttackSacrifice =
     symmetricMixedRoutes &&
     hasFunctionalMixedOutputFloor(stats, skillProfile) &&
+    !(candidate.raise === 'spd' && speedProfile.concern.level === 'low') &&
     ATTACK_STAT_KEYS.includes(candidate.lower)
   if (symmetricMixedAttackSacrifice) {
     score = Math.max(score, 25)
@@ -1102,13 +1103,23 @@ export function evaluateNatureCandidate(
       traitTags.includes('spdLean') ||
       traitTags.includes('conditionalSpeedBoost') ||
       traitTags.includes('swiftSkill'))
-  const hardRisk =
+  const baseHardRisk =
     (lowerCore >= 3.8 && !skillPlausibleSingleAttackRoute && !isMixedAttackTradeoff && !symmetricMixedAttackSacrifice &&
       !(candidate.lower === 'spd' && speedProfile.concern.level === 'low')) ||
     (candidate.lower === 'spd' && speedIsPrimaryCore) ||
     (candidate.lower === 'hp' && roles.some((r) => ['bulky', 'support'].includes(r.key)) && lowerExpendable < 1)
+  const lowersStandoutDefense =
+    ['pdef', 'mdef'].includes(candidate.lower) &&
+    analysis.topStats.includes(candidate.lower) &&
+    analysis.stats[candidate.lower] >= STAT_PERCENTILE_BANDS[candidate.lower].p75 &&
+    roles.some((role) => ['bulky', 'support', 'physicalWall', 'magicalWall'].includes(role.key))
+  const hardRisk = baseHardRisk || lowersStandoutDefense
   const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, traitTags, analysis)
 
+  if (lowersStandoutDefense) {
+    score -= 14
+    warnings.push(`弱化${lowerLabel}会牺牲功能/站场路线最突出的耐久项，不作为常规保留分支`)
+  }
   if (hardRisk) score -= 8
   let decision = decisionFromScore(score, hardRisk)
   if (singleDefenseSoftCap && decision === 'recommended') {
@@ -1126,12 +1137,16 @@ export function evaluateNatureCandidate(
     const lowersSkillOffRouteAttack =
       (skillProfile.attackMode === 'physical' && candidate.lower === 'matk') ||
       (skillProfile.attackMode === 'magical' && candidate.lower === 'patk')
-    const lowersSafeAttackBranch =
-      skillPlausibleSingleAttackRoute ||
-      formulaRouteSupportsSingleAttack(candidate, formulaAssist) ||
-      lowersSkillOffRouteAttack ||
-      (symmetricMixedRoutes && lowersAttackSide)
-    if (lowersSafeAttackBranch) {
+    const lowersSafeAttackBranch = speedProfile.concern.level === 'low'
+      ? skillProvedSingleAttackRoute || formulaRouteSupportsSingleAttack(candidate, formulaAssist)
+      : skillPlausibleSingleAttackRoute ||
+        formulaRouteSupportsSingleAttack(candidate, formulaAssist) ||
+        lowersSkillOffRouteAttack ||
+        (symmetricMixedRoutes && lowersAttackSide)
+    if (speedProfile.concern.level === 'low') {
+      decision = 'notRecommended'
+      warnings.push('基础速度未进入竞争圈且定位不依赖抢速；即使存在单攻分支，也不为加速牺牲攻击项')
+    } else if (lowersSafeAttackBranch) {
       decision = 'keepable'
       warnings.push('中速以下的功能/站场定位可保留低代价速度节奏分支，但不应与主攻或耐久强化同级首推')
     } else {
@@ -1177,7 +1192,12 @@ export function evaluateNatureCandidate(
       warnings.push('弱化另一攻主要服务单攻分支，但当前强化项不是主攻/速度，默认保留而非主推')
     }
   }
-  if (skillPlausibleSingleAttackRoute && decision === 'notRecommended' && score >= 35) {
+  if (
+    skillPlausibleSingleAttackRoute &&
+    decision === 'notRecommended' &&
+    score >= 35 &&
+    !(candidate.raise === 'spd' && speedProfile.concern.level === 'low')
+  ) {
     decision = 'keepable'
     warnings.push(skillProvedSingleAttackRoute
       ? '技能已证明可走单攻分支，当前组合不应直接判死，降级为可保留'
