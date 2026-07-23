@@ -563,6 +563,16 @@ function groupByRaise(items = []) {
     .filter((group) => group.items.length > 0)
 }
 
+function natureScoreSummary(candidate) {
+  const scores = (candidate.formDecisions || [])
+    .map((form) => Number(form.score))
+    .filter(Number.isFinite)
+  if (scores.length === 0) return candidate.score.toFixed(1)
+  const min = Math.min(...scores)
+  const max = Math.max(...scores)
+  return min === max ? max.toFixed(1) : `${min.toFixed(1)}–${max.toFixed(1)}`
+}
+
 function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSelect, ownedCount = 0, onQuickAdd }) {
   const candidateIndex = candidates.indexOf(candidate)
   const isActive = candidate === activeCandidate
@@ -587,7 +597,12 @@ function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSel
         ) : (
           <span className="nature-candidate-owned empty" aria-hidden="true" />
         )}
-        <span className="nature-candidate-score">{candidate.score.toFixed(1)}</span>
+        <span
+          className="nature-candidate-score"
+          title={(candidate.formDecisions || []).length > 1 ? '各形态评分范围' : '评分'}
+        >
+          {natureScoreSummary(candidate)}
+        </span>
       </button>
       {canQuickAdd && (
         <button
@@ -606,9 +621,7 @@ function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSel
 
 function NatureResult({ nature, baseStats, adjustedStats, populationStats }) {
   if (!nature) return null
-  const suitableForms = nature.decision === 'notRecommended'
-    ? []
-    : (nature.formDecisions || []).filter((form) => form.decision !== 'notRecommended')
+  const formDecisions = nature.formDecisions || []
   const coreReason = nature.decision === 'notRecommended'
     ? nature.warnings[0]
     : nature.reasons[0]
@@ -620,7 +633,7 @@ function NatureResult({ nature, baseStats, adjustedStats, populationStats }) {
         <div className="nature-result-title-wrap">
           <span className="nature-result-title">{natureName(nature)}</span>
           <span className="nature-result-subtitle">
-            {natureModifierSummary(nature)} · 评分 {nature.score.toFixed(1)}
+            {natureModifierSummary(nature)} · {formDecisions.length > 1 ? '形态评分' : '评分'} {natureScoreSummary(nature)}
           </span>
         </div>
         <span className={`nature-candidate-tag ${nature.decision}`}>
@@ -650,11 +663,16 @@ function NatureResult({ nature, baseStats, adjustedStats, populationStats }) {
           <small>核心判断</small>
           <p><EmphasizedText text={coreReason || '暂无额外判断'} /></p>
         </div>
-        {suitableForms.length > 0 && (
+        {formDecisions.length > 1 && (
           <div>
-            <small>适合形态</small>
-            <span className="nature-result-form-tags">
-              {suitableForms.map((form) => <strong key={form.id || form.label}>{form.label}</strong>)}
+            <small>形态判断</small>
+            <span className="nature-result-form-scores">
+              {formDecisions.map((form) => (
+                <span className={form.decision} key={form.id || form.label}>
+                  <strong>{form.label}</strong>
+                  <em>{NATURE_DECISION_LABELS[form.decision]} · {form.score.toFixed(1)}</em>
+                </span>
+              ))}
             </span>
           </div>
         )}

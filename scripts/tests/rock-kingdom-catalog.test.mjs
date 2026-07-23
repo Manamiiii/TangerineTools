@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
-import { evaluateNatureProfiles } from '../../src/domain/nature.js'
+import { evaluateAllNatures, evaluateNatureProfiles } from '../../src/domain/nature.js'
 import { buildFormAnalysis, buildNatureAnalysisInput, buildPopulationStatSummary } from '../../src/domain/natureRowAdapter.js'
 import { buildOwnedNatureIndex } from '../../src/domain/owned.js'
 import { ROCK_KINGDOM_PRESET } from '../../src/presets/rockKingdom.js'
@@ -222,6 +222,26 @@ test('nature analysis keeps each form trait and skill evidence independent', () 
   assert.deepEqual(input.skillInfo.skills.map((skill) => skill.name), ['物理技能'])
   assert.deepEqual(input.analysisProfiles[0].traitTags, ['matkLean'])
   assert.deepEqual(input.analysisProfiles[0].skillInfo.skills.map((skill) => skill.name), ['魔法技能'])
+})
+
+test('balanced functional mixed attackers keep a supported short-defense branch despite minor skill drift', () => {
+  const rows = visibleRockKingdomCreatureRows(
+    JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
+  )
+  const skillRows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomSkillRows.json', import.meta.url), 'utf8'))
+  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const fields = ROCK_KINGDOM_PRESET.fields.filter((field) => field.tableId === creatureTableId)
+  const decisions = Object.fromEntries(rows
+    .filter((item) => item.values?.no === 'NO.004')
+    .map((form) => {
+      const input = buildNatureAnalysisInput(form, [], fields, skillRows, rows)
+      const steady = evaluateAllNatures(input.stats, input.traitTags, input.skillInfo)
+        .find((candidate) => candidate.name === '稳重')
+      return [form.values.name, steady.decision]
+    }))
+  assert.equal(decisions['魔力猫'], 'keepable')
+  assert.equal(decisions['叶冕魔力猫'], 'keepable')
+  assert.equal(decisions['武斗酷猫'], 'notRecommended')
 })
 
 test('official preset classifies 烈火战神 as a boss form', () => {

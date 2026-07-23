@@ -887,6 +887,10 @@ export function evaluateNatureCandidate(
   const functionalBalancedMixedAttack = isFunctionalBalancedMixedAttack(analysis, roles, skillProfile)
   const lowOutputFunctionalMixedAttack = isLowOutputFunctionalMixedAttack(analysis, roles, skillProfile)
   const balancedDefenseWall = hasBalancedDefenseWallFoundation(stats, analysis, traitTags)
+  const oppositeDefense = candidate.raise === 'pdef' ? 'mdef' : candidate.raise === 'mdef' ? 'pdef' : ''
+  const raisesPronouncedDefenseShortfall =
+    oppositeDefense &&
+    stats[candidate.raise] <= stats[oppositeDefense] * 0.67
   if (balancedDefenseWall && ['hp', 'pdef', 'mdef'].includes(candidate.raise)) {
     reasons.push('生命与双防接近标准肉盾模板，强化耐久项可服务均衡双防站场')
   }
@@ -916,6 +920,15 @@ export function evaluateNatureCandidate(
   ) {
     score = Math.max(score, 32)
     reasons.push('功能站场型双攻接近，强化一攻并弱化另一攻可作为输出分支保留')
+  }
+  if (
+    functionalBalancedMixedAttack &&
+    formulaAssist?.routeHint === 'mixed' &&
+    raisesPronouncedDefenseShortfall &&
+    ATTACK_STAT_KEYS.includes(candidate.lower)
+  ) {
+    score = Math.max(score, 25)
+    reasons.push('功能站场型双攻接近，补强明显防御短板并牺牲一攻仍可作为低优先站场分支保留')
   }
   if (lowOutputFunctionalMixedAttack && ATTACK_STAT_KEYS.includes(candidate.raise)) {
     score -= 14
@@ -1168,9 +1181,13 @@ function canKeepDominatedCandidate(item, best) {
     item.reasons.some((reason) =>
       /功能站场型双攻接近|低输出功能位仍有双攻技能分支/.test(reason),
     )
+  const functionalMixedAttackSacrifice =
+    ATTACK_STAT_KEYS.includes(item.lower) &&
+    item.formulaAssist?.routeHint === 'mixed' &&
+    item.reasons.some((reason) => /功能站场型双攻接近，补强明显防御短板/.test(reason))
   if (item.decision !== 'keepable' || item.hardRisk) return false
-  if (!functionalMixedAttackTradeoff && item.score < 45) return false
-  if (shouldHardDominateWithOffRouteAttack(item, best)) return false
+  if (!functionalMixedAttackTradeoff && !functionalMixedAttackSacrifice && item.score < 45) return false
+  if (shouldHardDominateWithOffRouteAttack(item, best) && !functionalMixedAttackSacrifice) return false
   if (
     item.raise === 'spd' &&
     item.speedProfile?.concern?.level === 'low' &&
@@ -1178,7 +1195,7 @@ function canKeepDominatedCandidate(item, best) {
   ) return false
   if (lowersCurrentShortDefense(item)) return false
   if (item.warnings.some((warning) => /低输出功能位不宜为了泛用强化牺牲双防/.test(warning))) return false
-  if (functionalMixedAttackTradeoff) return true
+  if (functionalMixedAttackTradeoff || functionalMixedAttackSacrifice) return true
   const bestLowerIsSpeedForLowConcern =
     best.lower === 'spd' && best.speedProfile?.concern?.level === 'low'
   if (bestLowerIsSpeedForLowConcern && ATTACK_STAT_KEYS.includes(item.lower)) return false
