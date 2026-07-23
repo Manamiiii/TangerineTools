@@ -1390,33 +1390,19 @@ export function evaluateNatureProfiles(baseStats = {}, traitTags = [], skillInfo
   const merged = primary.map((item) => {
     const matches = byCandidate.map((items) => items.get(`${item.raise}-${item.lower}`)).filter(Boolean)
     const all = [item, ...matches]
-    const worst = all.reduce((current, candidate) =>
-      decisionRank[candidate.decision] > decisionRank[current.decision] ? candidate : current,
-    )
-    const formWarnings = matches.flatMap((candidate, index) => (candidate.warnings || []).map((warning) => ({
-      warning,
-      label: extraProfiles[index]?.label || extraProfiles[index]?.name || `形态 ${index + 2}`,
-    })))
-      .filter(({ warning }) => !(item.warnings || []).includes(warning))
-      .filter(({ warning }, index, list) => list.findIndex((entry) => entry.warning === warning) === index)
-      .slice(0, 3)
-      .map(({ warning, label }) => `${label}：${warning}`)
-    const roleLabels = all.flatMap((candidate) => String(candidate.roleLabel || '').split(' / '))
-      .filter(Boolean)
-      .filter((label, index, list) => list.indexOf(label) === index)
-      .slice(0, 2)
+    const best = all.reduce((current, candidate) => {
+      const currentRank = decisionRank[current.decision]
+      const candidateRank = decisionRank[candidate.decision]
+      if (candidateRank < currentRank) return candidate
+      if (candidateRank === currentRank && candidate.score > current.score) return candidate
+      return current
+    })
     return {
-      ...item,
-      score: Math.round((all.reduce((sum, candidate) => sum + candidate.score, 0) / all.length) * 10) / 10,
-      decision: worst.decision,
-      hardRisk: all.some((candidate) => candidate.hardRisk),
-      roleTags: [...new Set(all.flatMap((candidate) => candidate.roleTags || []))],
-      roleLabel: roleLabels.join(' / '),
+      ...best,
       reasons: [
-        ...(item.reasons || []),
-        `已同时核对当前形态与 ${extraProfiles.length} 个同编号形态的属性、特性和技能变化`,
+        ...(best.reasons || []),
+        `已分别核对 ${1 + extraProfiles.length} 个同编号形态；总体档位取各形态结果的并集`,
       ],
-      warnings: [...(item.warnings || []), ...formWarnings],
       analysisFormCount: 1 + extraProfiles.length,
       formDecisions: [
         { id: preference.primaryProfileId || 'primary', label: preference.primaryProfileLabel || '当前形态', decision: item.decision, score: item.score },
@@ -1429,7 +1415,7 @@ export function evaluateNatureProfiles(baseStats = {}, traitTags = [], skillInfo
       ],
     }
   })
-  return [...applyDominance(merged)].sort((a, b) =>
+  return merged.sort((a, b) =>
     decisionRank[a.decision] - decisionRank[b.decision] || b.score - a.score,
   )
 }

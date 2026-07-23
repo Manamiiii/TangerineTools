@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import { evaluateNatureProfiles } from '../../src/domain/nature.js'
-import { buildFormAnalysis, buildPopulationStatSummary } from '../../src/domain/natureRowAdapter.js'
+import { buildFormAnalysis, buildNatureAnalysisInput, buildPopulationStatSummary } from '../../src/domain/natureRowAdapter.js'
 import { buildOwnedNatureIndex } from '../../src/domain/owned.js'
 import { ROCK_KINGDOM_PRESET } from '../../src/presets/rockKingdom.js'
 import {
@@ -173,15 +173,55 @@ test('matches a final variant with its corresponding boss variant', () => {
   assert.deepEqual(relatedRockKingdomBossRows(target, [target, summerBoss, springBoss]), [springBoss])
 })
 
-test('combined nature evaluation records boss-form participation', () => {
+test('combined nature evaluation uses the union of independently evaluated forms', () => {
   const stats = { hp: 100, patk: 120, matk: 50, pdef: 80, mdef: 80, spd: 100 }
-  const bossStats = { hp: 110, patk: 150, matk: 70, pdef: 90, mdef: 85, spd: 120 }
+  const bossStats = { hp: 110, patk: 50, matk: 150, pdef: 90, mdef: 85, spd: 120 }
   const results = evaluateNatureProfiles(stats, ['patkLean'], { skills: [] }, [
-    { stats: bossStats, traitTags: ['patkLean', 'spdLean'], skillInfo: { skills: [] } },
+    { id: 'boss', label: '魔攻首领', stats: bossStats, traitTags: ['matkLean', 'spdLean'], skillInfo: { skills: [] } },
   ])
   assert.equal(results.length, 30)
   assert.ok(results.every((item) => item.analysisFormCount === 2))
-  assert.ok(results[0].reasons.some((reason) => reason.includes('同编号形态')))
+  assert.ok(results[0].reasons.some((reason) => reason.includes('结果的并集')))
+  const physicalNature = results.find((item) => item.raise === 'patk' && item.lower === 'matk')
+  const magicalNature = results.find((item) => item.raise === 'matk' && item.lower === 'patk')
+  assert.notEqual(physicalNature.decision, 'notRecommended')
+  assert.notEqual(magicalNature.decision, 'notRecommended')
+  assert.deepEqual(
+    physicalNature.formDecisions.filter((item) => item.decision !== 'notRecommended').map((item) => item.id),
+    ['primary'],
+  )
+  assert.deepEqual(
+    magicalNature.formDecisions.filter((item) => item.decision !== 'notRecommended').map((item) => item.id),
+    ['boss'],
+  )
+})
+
+test('nature analysis keeps each form trait and skill evidence independent', () => {
+  const fields = [
+    normalizeField({ id: 'stats', key: 'stats', type: 'stats', statsMap: { hp: 'hp', patk: 'patk', matk: 'matk', pdef: 'pdef', mdef: 'mdef', spd: 'spd' } }),
+    normalizeField({ id: 'name', key: 'name', type: 'text' }),
+    normalizeField({ id: 'form', key: 'form', type: 'text' }),
+    normalizeField({ id: 'tags', key: 'traitTags', type: 'multiselect' }),
+    normalizeField({ id: 'skills', key: 'skillRefs', type: 'references' }),
+    ...['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd'].map((key) => normalizeField({ id: key, key, type: 'number' })),
+  ]
+  const target = {
+    id: 'ordinary',
+    values: { name: '普通形态', hp: 100, patk: 120, matk: 50, pdef: 80, mdef: 80, spd: 100, traitTags: ['patkLean'], skillRefs: ['physical'] },
+  }
+  const boss = {
+    id: 'boss',
+    values: { name: '首领形态', hp: 100, patk: 50, matk: 120, pdef: 80, mdef: 80, spd: 100, traitTags: ['matkLean'], skillRefs: ['magical'] },
+  }
+  const skillRows = [
+    { id: 'physical', values: { name: '物理技能', category: '物理', power: 80 } },
+    { id: 'magical', values: { name: '魔法技能', category: '魔法', power: 80 } },
+  ]
+  const input = buildNatureAnalysisInput(target, [boss], fields, skillRows, [target, boss])
+  assert.deepEqual(input.traitTags, ['patkLean'])
+  assert.deepEqual(input.skillInfo.skills.map((skill) => skill.name), ['物理技能'])
+  assert.deepEqual(input.analysisProfiles[0].traitTags, ['matkLean'])
+  assert.deepEqual(input.analysisProfiles[0].skillInfo.skills.map((skill) => skill.name), ['魔法技能'])
 })
 
 test('official preset classifies 烈火战神 as a boss form', () => {

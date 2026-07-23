@@ -260,8 +260,8 @@ export function buildNatureAnalysisInput(target, formRows = [], fields = [], ski
   return {
     name: summary.name,
     stats: extractStatsFromRow(target, fields),
-    traitTags: [...new Set(relatedRows.flatMap((row) => extractTraitTagsFromRow(row, fields)))],
-    skillInfo: uniqueSkillInfo(relatedRows, fields, skillRows, formRows.length > 0),
+    traitTags: extractTraitTagsFromRow(target, fields),
+    skillInfo: uniqueSkillInfo([target], fields, skillRows, formRows.length > 0),
     analysisProfiles: profiles.filter((profile) => profile.id !== target.id),
     formProfiles: profiles,
     formAnalysis: buildFormAnalysis(target, relatedRows, fields, skillRows, populationRows),
