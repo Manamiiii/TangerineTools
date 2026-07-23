@@ -29,6 +29,23 @@ function nameVariant(name) {
   return String(name ?? '').match(/（([^）]+)）/)?.[1]?.trim() ?? ''
 }
 
+export function pairRockKingdomComparisonForms(forms = []) {
+  const groups = new Map()
+  for (const form of forms) {
+    const variant = nameVariant(form?.name)
+    const key = variant || `row:${form?.id || form?.name || groups.size}`
+    if (!groups.has(key)) groups.set(key, { key, variant, ordinary: [], bosses: [] })
+    const group = groups.get(key)
+    if (form?.form === '首领形态') group.bosses.push(form)
+    else group.ordinary.push(form)
+  }
+  return [...groups.values()].map((group) => ({
+    ...group,
+    forms: [...group.ordinary, ...group.bosses],
+    paired: group.ordinary.length === 1 && group.bosses.length === 1,
+  }))
+}
+
 export function compareRockKingdomCreatureRows(a, b) {
   const numberDiff = naturalCompare(a?.values?.no, b?.values?.no)
   if (numberDiff !== 0) return numberDiff
@@ -152,7 +169,8 @@ export function primaryRockKingdomNatureRows(rows = []) {
   return [...groups.values()].map((group) => {
     const explicitCandidates = group.filter(isRockKingdomNatureSelectableRow)
     if (explicitCandidates.length > 0) {
-      return explicitCandidates.find((row) => !nameVariant(row?.values?.name)) || explicitCandidates[0]
+      return explicitCandidates.find((row) => !nameVariant(row?.values?.name)) ||
+        [...explicitCandidates].sort((a, b) => naturalCompare(a.id, b.id))[0]
     }
     const ordinaryStages = group.filter((row) =>
       row.values?.form !== '首领形态' && stageNumber(row.values?.form) != null)

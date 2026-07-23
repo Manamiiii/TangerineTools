@@ -127,6 +127,7 @@ export function SearchableSelect({
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const rootRef = useRef(null)
+  const selectedOptionRef = useRef(null)
   const listboxId = useId()
   const selected = options.find((option) => option.value === value)
   const normalizedQuery = query.trim().toLowerCase()
@@ -141,6 +142,10 @@ export function SearchableSelect({
     document.addEventListener('mousedown', handlePointerDown)
     return () => document.removeEventListener('mousedown', handlePointerDown)
   }, [])
+
+  useEffect(() => {
+    if (open && !query) selectedOptionRef.current?.scrollIntoView({ block: 'nearest' })
+  }, [open, query, value])
 
   function openPicker() {
     setQuery('')
@@ -194,6 +199,7 @@ export function SearchableSelect({
               aria-selected={option.value === value}
               className={`searchable-select-option ${option.value === value ? 'selected' : ''}`}
               key={option.value}
+              ref={option.value === value ? selectedOptionRef : null}
               onClick={() => choose(option.value)}
             >
               <span className="searchable-select-option-content">{option.content || option.label}</span>

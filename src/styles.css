@@ -3597,6 +3597,10 @@ img {
 .nature-boss-analysis-body { display: grid; gap: 8px; padding-top: 9px; }
 .nature-boss-analysis p { margin: 0; line-height: 1.6; }
 .nature-boss-forms { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; }
+.nature-form-pairs { display: grid; gap: 10px; }
+.nature-form-pair { display: grid; gap: 5px; }
+.nature-form-pair-title { color: #9a3412; font-size: 11px; }
+.nature-form-pair > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .nature-boss-form { display: grid; gap: 4px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
 .nature-boss-form strong { color: var(--text); }
 .nature-boss-form ul { margin: 0; padding-left: 18px; line-height: 1.55; }
@@ -3605,6 +3609,7 @@ img {
   .nature-creature-overview { grid-template-columns: 1fr; }
   .nature-overview-stats { grid-template-columns: repeat(3, minmax(48px, 1fr)); }
   .nature-overview-evidence { align-items: flex-start; flex-direction: column; }
+  .nature-form-pair > div { grid-template-columns: 1fr; }
   .summary-mapping-editor { grid-template-columns: 1fr; }
 }
 

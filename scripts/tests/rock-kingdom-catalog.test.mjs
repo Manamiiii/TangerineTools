@@ -9,6 +9,7 @@ import {
   compareRockKingdomCreatureRows,
   buildEvolutionReferenceGroups,
   isRockKingdomNatureSelectableRow,
+  pairRockKingdomComparisonForms,
   primaryRockKingdomNatureRows,
   relatedRockKingdomBossRows,
   visibleRockKingdomCreatureRows,
@@ -180,6 +181,23 @@ test('matches a final variant with its corresponding boss variant', () => {
   assert.deepEqual(relatedRockKingdomBossRows(target, [target, summerBoss, springBoss]), [springBoss])
 })
 
+test('pairs ordinary and boss comparison cards by their shared variant label', () => {
+  const groups = pairRockKingdomComparisonForms([
+    { id: 'soft', name: '鸭吉吉（蓬松的样子）', form: '最终形态' },
+    { id: 'firm', name: '鸭吉吉（紧实的样子）', form: '最终形态' },
+    { id: 'soft-boss', name: '鸭吉吉国王（蓬松的样子）', form: '首领形态' },
+    { id: 'firm-boss', name: '鸭吉吉国王（紧实的样子）', form: '首领形态' },
+  ])
+  assert.deepEqual(groups.map((group) => ({
+    variant: group.variant,
+    paired: group.paired,
+    ids: group.forms.map((form) => form.id),
+  })), [
+    { variant: '蓬松的样子', paired: true, ids: ['soft', 'soft-boss'] },
+    { variant: '紧实的样子', paired: true, ids: ['firm', 'firm-boss'] },
+  ])
+})
+
 test('combined nature evaluation uses the union of independently evaluated forms', () => {
   const stats = { hp: 100, patk: 120, matk: 50, pdef: 80, mdef: 80, spd: 100 }
   const bossStats = { hp: 110, patk: 50, matk: 150, pdef: 90, mdef: 85, spd: 120 }
@@ -251,6 +269,39 @@ test('balanced functional mixed attackers keep a supported short-defense branch 
   assert.equal(decisions['武斗酷猫'], 'notRecommended')
 })
 
+test('balanced mixed attackers keep both speed branches unless skill quality has a clear gap', () => {
+  const rows = visibleRockKingdomCreatureRows(
+    JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
+  )
+  const skillRows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomSkillRows.json', import.meta.url), 'utf8'))
+  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const fields = ROCK_KINGDOM_PRESET.fields.filter((field) => field.tableId === creatureTableId)
+  const decisionFor = (no, nature) => {
+    const forms = rows.filter((item) => item.values?.no === no)
+    const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
+    return evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
+      .find((candidate) => candidate.name === nature)?.decision
+  }
+  assert.equal(decisionFor('NO.023', '开朗'), 'keepable')
+  assert.equal(decisionFor('NO.023', '胆小'), 'keepable')
+  assert.equal(decisionFor('NO.038', '开朗'), 'notRecommended')
+  assert.equal(decisionFor('NO.038', '胆小'), 'keepable')
+})
+
+test('multi-form union does not add boss-only life branches that sacrifice a defense', () => {
+  const rows = visibleRockKingdomCreatureRows(
+    JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
+  )
+  const skillRows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomSkillRows.json', import.meta.url), 'utf8'))
+  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const fields = ROCK_KINGDOM_PRESET.fields.filter((field) => field.tableId === creatureTableId)
+  const forms = rows.filter((item) => item.values?.no === 'NO.011')
+  const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
+  const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
+  assert.equal(candidates.find((candidate) => candidate.name === '忧郁')?.decision, 'notRecommended')
+  assert.equal(candidates.find((candidate) => candidate.name === '粗心')?.decision, 'notRecommended')
+})
+
 test('official preset classifies 烈火战神 as a boss form', () => {
   const rows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8'))
   const boss = rows.find((item) => item.values?.name === '烈火战神')
@@ -268,6 +319,14 @@ test('official preset exposes the first ordinary Duck variant before its boss fo
   const rows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8'))
   const numberEleven = rows.filter((item) => item.values?.no === 'NO.011')
   assert.deepEqual(primaryRockKingdomNatureRows(numberEleven).map((item) => item.id), ['rock-creature-src-011'])
+  assert.ok(numberEleven.filter((item) => item.values?.form !== '首领形态')
+    .every((item) => item.values?.form === '最终形态'))
+})
+
+test('official preset treats an ordinary row followed only by its boss as final form', () => {
+  const rows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8'))
+  const dingding = rows.find((item) => item.values?.name === '叮叮恶魔')
+  assert.equal(dingding?.values?.form, '最终形态')
 })
 
 test('form analysis explains differences and detects equivalent related forms', () => {

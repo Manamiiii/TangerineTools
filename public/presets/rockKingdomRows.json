@@ -1771,7 +1771,7 @@
       "element": [
         "normal"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 471,
       "shiny": "no",
       "traitName": "挺起胸脯",
@@ -1868,7 +1868,7 @@
       "element": [
         "normal"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 471,
       "shiny": "no",
       "traitName": "挺起胸脯",
@@ -1966,7 +1966,7 @@
       "element": [
         "normal"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 470,
       "shiny": "no",
       "traitName": "挺起胸脯",
@@ -2063,7 +2063,7 @@
       "element": [
         "normal"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 469,
       "shiny": "no",
       "traitName": "挺起胸脯",
@@ -2161,7 +2161,7 @@
       "element": [
         "normal"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 475,
       "shiny": "no",
       "traitName": "挺起胸脯",
@@ -2257,7 +2257,7 @@
       "element": [
         "normal"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 578,
       "shiny": "no",
       "traitName": "挺起胸脯",
@@ -6643,7 +6643,7 @@
         "flying",
         "dark"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 576,
       "shiny": "yes",
       "traitName": "渴求",
@@ -7420,7 +7420,7 @@
         "grass",
         "ghost"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 571,
       "shiny": "yes",
       "traitName": "小偷小摸",
@@ -8020,7 +8020,7 @@
         "light",
         "earth"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 583,
       "shiny": "no",
       "traitName": "偏振",
@@ -8123,7 +8123,7 @@
         "light",
         "earth"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 585,
       "shiny": "no",
       "traitName": "偏振",
@@ -8226,7 +8226,7 @@
         "light",
         "earth"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 583,
       "shiny": "no",
       "traitName": "偏振",
@@ -8329,7 +8329,7 @@
         "light",
         "earth"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 583,
       "shiny": "no",
       "traitName": "偏振",
@@ -8431,7 +8431,7 @@
         "light",
         "earth"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 583,
       "shiny": "no",
       "traitName": "偏振",
@@ -8534,7 +8534,7 @@
         "light",
         "earth"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 585,
       "shiny": "no",
       "traitName": "偏振",
@@ -10854,7 +10854,7 @@
       "element": [
         "fire"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 562,
       "shiny": "no",
       "traitName": "专注力",
@@ -11423,7 +11423,7 @@
       "element": [
         "poison"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 573,
       "shiny": "yes",
       "traitName": "复方汤剂",
@@ -12201,7 +12201,7 @@
       "element": [
         "ghost"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 618,
       "shiny": "no",
       "traitName": "做噩梦",
@@ -12299,7 +12299,7 @@
         "light",
         "ghost"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 632,
       "shiny": "no",
       "traitName": "做噩梦",
@@ -12396,7 +12396,7 @@
         "grass",
         "light"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 513,
       "shiny": "no",
       "traitName": "稀兽花宝",
@@ -14842,7 +14842,7 @@
         "grass",
         "cute"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 642,
       "shiny": "no",
       "traitName": "勇敢",
@@ -15047,7 +15047,7 @@
       "element": [
         "grass"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 607,
       "shiny": "yes",
       "traitName": "腐植循环",
@@ -16212,7 +16212,7 @@
       "element": [
         "cute"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 572,
       "shiny": "yes",
       "traitName": "无忧无虑",
@@ -16502,7 +16502,7 @@
       "element": [
         "electric"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 617,
       "shiny": "no",
       "traitName": "电流刺激",
@@ -16601,7 +16601,7 @@
         "light",
         "electric"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 617,
       "shiny": "no",
       "traitName": "电流刺激",
@@ -17778,7 +17778,7 @@
         "water",
         "flying"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 567,
       "shiny": "no",
       "traitName": "快锤",
@@ -17976,7 +17976,7 @@
         "grass",
         "illusion"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 629,
       "shiny": "no",
       "traitName": "木桶戏法",
@@ -18073,7 +18073,7 @@
       "element": [
         "earth"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 607,
       "shiny": "no",
       "traitName": "不移",
@@ -19939,7 +19939,7 @@
         "earth",
         "ghost"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 584,
       "shiny": "no",
       "traitName": "石天平",
@@ -20542,7 +20542,7 @@
       "element": [
         "light"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 595,
       "shiny": "yes",
       "traitName": "目空",
@@ -21589,7 +21589,7 @@
       "element": [
         "normal"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 615,
       "shiny": "no",
       "traitName": "预警",
@@ -21881,7 +21881,7 @@
         "poison",
         "ghost"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 616,
       "shiny": "no",
       "traitName": "下黑手",
@@ -22577,7 +22577,7 @@
       "element": [
         "dark"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 548,
       "shiny": "yes",
       "traitName": "悲悯",
@@ -22866,7 +22866,7 @@
         "ice",
         "electric"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 583,
       "shiny": "no",
       "traitName": "超负荷",
@@ -23357,7 +23357,7 @@
         "earth",
         "ice"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 579,
       "shiny": "yes",
       "traitName": "冻土",
@@ -24250,7 +24250,7 @@
       "element": [
         "mech"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 652,
       "hp": 103,
       "patk": 105,
@@ -25821,7 +25821,7 @@
       "element": [
         "normal"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 649,
       "shiny": "yes",
       "traitName": "衡量",
@@ -26018,7 +26018,7 @@
       "element": [
         "fighting"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 651,
       "shiny": "no",
       "traitName": "威慑",
@@ -27996,7 +27996,7 @@
       "element": [
         "flying"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 664,
       "shiny": "yes",
       "traitName": "逐魂鸟",
@@ -28194,7 +28194,7 @@
         "grass",
         "fighting"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 504,
       "shiny": "no",
       "traitName": "得寸进尺",
@@ -28393,7 +28393,7 @@
         "water",
         "fighting"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 600,
       "shiny": "no",
       "traitName": "身经百练",
@@ -28583,7 +28583,7 @@
       "element": [
         "water"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 549,
       "shiny": "no",
       "traitName": "泛音列",
@@ -29151,7 +29151,7 @@
         "earth",
         "fighting"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 543,
       "shiny": "no",
       "traitName": "腾挪",
@@ -29256,7 +29256,7 @@
         "earth",
         "fighting"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 522,
       "shiny": "no",
       "traitName": "腾挪",
@@ -29572,7 +29572,7 @@
         "earth",
         "fighting"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 489,
       "shiny": "no",
       "traitName": "保卫",
@@ -29676,7 +29676,7 @@
         "earth",
         "fighting"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 489,
       "shiny": "no",
       "traitName": "保卫",
@@ -29990,7 +29990,7 @@
         "earth",
         "fighting"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 547,
       "shiny": "no",
       "traitName": "好象坏象",
@@ -30096,7 +30096,7 @@
         "earth",
         "fighting"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 547,
       "shiny": "no",
       "traitName": "好象坏象",
@@ -30408,7 +30408,7 @@
         "earth",
         "fighting"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 508,
       "shiny": "no",
       "traitName": "渗透",
@@ -30513,7 +30513,7 @@
         "earth",
         "fighting"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 508,
       "shiny": "no",
       "traitName": "渗透",
@@ -30926,7 +30926,7 @@
       "element": [
         "earth"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 594,
       "shiny": "no",
       "traitName": "奔波命",
@@ -31828,7 +31828,7 @@
         "grass",
         "earth"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 788,
       "shiny": "no",
       "traitName": "铃兰晚钟",
@@ -32021,7 +32021,7 @@
       "element": [
         "dragon"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 651,
       "shiny": "no",
       "traitName": "嫉妒",
@@ -32311,7 +32311,7 @@
       "element": [
         "electric"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 583,
       "shiny": "yes",
       "traitName": "噼啪！",
@@ -32907,7 +32907,7 @@
         "mech",
         "illusion"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 782,
       "shiny": "no",
       "traitName": "虚假宝箱",
@@ -33113,7 +33113,7 @@
         "poison",
         "cute"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 574,
       "hp": 106,
       "patk": 87,
@@ -33314,7 +33314,7 @@
         "bug",
         "dark"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 696,
       "shiny": "no",
       "traitName": "振奋虫心",
@@ -33695,7 +33695,7 @@
       "element": [
         "water"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 644,
       "shiny": "no",
       "traitName": "吟游之弦",
@@ -33800,7 +33800,7 @@
         "water",
         "ghost"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 610,
       "shiny": "no",
       "traitName": "珊瑚骨",
@@ -33899,7 +33899,7 @@
         "water",
         "ghost"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 607,
       "shiny": "no",
       "traitName": "珊瑚骨",
@@ -33999,7 +33999,7 @@
         "water",
         "ghost"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 610,
       "shiny": "no",
       "traitName": "珊瑚骨",
@@ -34099,7 +34099,7 @@
         "water",
         "ghost"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 603,
       "shiny": "no",
       "traitName": "珊瑚骨",
@@ -34588,7 +34588,7 @@
         "dragon",
         "flying"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 513,
       "shiny": "no",
       "traitName": "暴食",
@@ -35170,7 +35170,7 @@
       "element": [
         "mech"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 568,
       "shiny": "no",
       "traitName": "向心力",
@@ -37198,7 +37198,7 @@
         "poison",
         "cute"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 609,
       "shiny": "no",
       "traitName": "耐活王",
@@ -37300,7 +37300,7 @@
         "poison",
         "cute"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 609,
       "shiny": "no",
       "traitName": "耐活王",
@@ -37805,7 +37805,7 @@
         "water",
         "electric"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 646,
       "shiny": "no",
       "traitName": "生物电",
@@ -38000,7 +38000,7 @@
         "water",
         "poison"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 580,
       "shiny": "no",
       "traitName": "扩散侵蚀",
@@ -39944,7 +39944,7 @@
         "flying",
         "mech"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 471,
       "shiny": "no",
       "traitName": "翼轴",
@@ -40797,7 +40797,7 @@
         "light",
         "earth"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 605,
       "shiny": "no",
       "traitName": "哨兵",
@@ -40891,7 +40891,7 @@
         "electric",
         "flying"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 618,
       "shiny": "no",
       "traitName": "连续负荷",
@@ -40992,7 +40992,7 @@
       "element": [
         "water"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 618,
       "shiny": "no",
       "traitName": "倾轧",
@@ -42038,7 +42038,7 @@
         "ghost",
         "dark"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 604,
       "shiny": "no",
       "traitName": "涂鸦",
@@ -42138,7 +42138,7 @@
         "cute",
         "ghost"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 604,
       "shiny": "no",
       "traitName": "绝对秩序",
@@ -42333,7 +42333,7 @@
       "element": [
         "bug"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 522,
       "shiny": "no",
       "traitName": "坚韧铠甲",
@@ -42530,7 +42530,7 @@
       "element": [
         "mech"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 868,
       "shiny": "no",
       "traitName": "正位宝剑",
@@ -42826,7 +42826,7 @@
         "earth",
         "flying"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 569,
       "shiny": "no",
       "traitName": "无差别过滤",
@@ -43112,7 +43112,7 @@
         "dragon",
         "ghost"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 552,
       "shiny": "no",
       "traitName": "不朽",
@@ -43302,7 +43302,7 @@
         "poison",
         "dark"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 495,
       "shiny": "no",
       "traitName": "侵蚀",
@@ -43776,7 +43776,7 @@
         "earth",
         "bug"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 565,
       "shiny": "no",
       "traitName": "扫拖一体",
@@ -43875,7 +43875,7 @@
         "earth",
         "bug"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 576,
       "shiny": "no",
       "traitName": "特殊清洁场景",
@@ -45430,7 +45430,7 @@
         "grass",
         "water"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 546,
       "shiny": "no",
       "traitName": "茶多酚",
@@ -45533,7 +45533,7 @@
         "water",
         "ice"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 562,
       "shiny": "no",
       "traitName": "吉利丁片",
@@ -45633,7 +45633,7 @@
         "fire",
         "water"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 564,
       "shiny": "no",
       "traitName": "美拉德反应",
@@ -46123,7 +46123,7 @@
         "water",
         "electric"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 626,
       "shiny": "yes",
       "traitName": "对流",
@@ -46219,7 +46219,7 @@
         "ice",
         "illusion"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 586,
       "shiny": "yes",
       "traitName": "月牙雪糕",
@@ -46416,7 +46416,7 @@
         "light",
         "dark"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 630,
       "shiny": "yes",
       "traitName": "血型吸引",
@@ -46614,7 +46614,7 @@
         "grass",
         "fire"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 579,
       "shiny": "yes",
       "traitName": "煤渣草",
@@ -47193,7 +47193,7 @@
         "electric",
         "illusion"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 618,
       "shiny": "yes",
       "traitName": "星地善良",
@@ -47658,7 +47658,7 @@
       "element": [
         "illusion"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 642,
       "shiny": "yes",
       "traitName": "双向光速",
@@ -47753,7 +47753,7 @@
         "ghost",
         "illusion"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 637,
       "shiny": "yes",
       "traitName": "陨落",
@@ -47941,7 +47941,7 @@
       "element": [
         "illusion"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 554,
       "shiny": "no",
       "traitName": "张弛有度",
@@ -48128,7 +48128,7 @@
       "element": [
         "fire"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 639,
       "shiny": "yes",
       "traitName": "天通地明",
@@ -49505,7 +49505,7 @@
       "element": [
         "ice"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 636,
       "shiny": "yes",
       "traitName": "大雪球",
@@ -49699,7 +49699,7 @@
         "fire",
         "dragon"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 624,
       "shiny": "yes",
       "traitName": "大火球",
@@ -49894,7 +49894,7 @@
         "normal",
         "mech"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 661,
       "shiny": "yes",
       "traitName": "换碟",
@@ -50093,7 +50093,7 @@
         "water",
         "cute"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 683,
       "shiny": "yes",
       "traitName": "拉拉队长",
@@ -50192,7 +50192,7 @@
         "water",
         "cute"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 683,
       "hp": 116,
       "patk": 155,
@@ -50680,7 +50680,7 @@
         "fire",
         "poison"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 485,
       "shiny": "yes",
       "traitName": "焰色反应",
@@ -50870,7 +50870,7 @@
       "element": [
         "ghost"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 642,
       "shiny": "yes",
       "traitName": "魔术帽",
@@ -51061,7 +51061,7 @@
         "light",
         "electric"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 690,
       "shiny": "yes",
       "traitName": "安可",
@@ -51251,7 +51251,7 @@
       "element": [
         "mech"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 640,
       "shiny": "yes",
       "traitName": "合拍",
@@ -51443,7 +51443,7 @@
       "element": [
         "illusion"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 636,
       "shiny": "yes",
       "traitName": "盲从",
@@ -51542,7 +51542,7 @@
       "element": [
         "fighting"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 614,
       "shiny": "no",
       "traitName": "留学生",
@@ -52237,7 +52237,7 @@
         "bug",
         "mech"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 628,
       "hp": 146,
       "patk": 57,
@@ -53843,7 +53843,7 @@
       "element": [
         "normal"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 525,
       "hp": 108,
       "patk": 32,
@@ -54034,7 +54034,7 @@
         "dragon",
         "cute"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 545,
       "hp": 90,
       "patk": 45,
@@ -55013,7 +55013,7 @@
         "flying",
         "illusion"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 572,
       "hp": 104,
       "patk": 32,
@@ -55197,7 +55197,7 @@
       "element": [
         "cute"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 559,
       "hp": 117,
       "patk": 51,
@@ -55391,7 +55391,7 @@
         "mech",
         "illusion"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 538,
       "hp": 85,
       "patk": 84,
@@ -55963,7 +55963,7 @@
       "element": [
         "mech"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 546,
       "hp": 128,
       "patk": 127,
@@ -56151,7 +56151,7 @@
         "mech",
         "illusion"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 596,
       "hp": 114,
       "patk": 50,
@@ -56620,7 +56620,7 @@
         "grass",
         "fire"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 580,
       "hp": 107,
       "patk": 93,
@@ -57093,7 +57093,7 @@
       "element": [
         "dark"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 460,
       "hp": 103,
       "patk": 107,
@@ -57284,7 +57284,7 @@
         "fire",
         "light"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 674,
       "hp": 111,
       "patk": 109,
@@ -57476,7 +57476,7 @@
         "grass",
         "ghost"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 578,
       "hp": 115,
       "patk": 43,
@@ -57669,7 +57669,7 @@
         "fighting",
         "cute"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 571,
       "hp": 116,
       "patk": 88,
@@ -57866,7 +57866,7 @@
         "normal",
         "poison"
       ],
-      "form": "Ⅱ阶",
+      "form": "最终形态",
       "bst": 558,
       "hp": 114,
       "patk": 77,
@@ -57964,7 +57964,7 @@
         "grass",
         "ice"
       ],
-      "form": "Ⅰ阶",
+      "form": "最终形态",
       "bst": 563,
       "hp": 116,
       "patk": 42,

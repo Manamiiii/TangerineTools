@@ -22,6 +22,7 @@ import {
   compareRockKingdomCreatureRows,
   buildEvolutionReferenceGroups,
   getSameNumberRows,
+  pairRockKingdomComparisonForms,
   primaryRockKingdomNatureRows,
   visibleRockKingdomCreatureRows,
 } from '../domain/rockKingdom.js'
@@ -435,9 +436,60 @@ function RowImportPanel({ scene, onImport }) {
   )
 }
 
+function FormComparisonCard({ form, baseline, populationStats }) {
+  return (
+    <div className="nature-boss-form">
+      <div className="nature-form-head">
+        {form.image && <img src={form.image} alt="" />}
+        <span>
+          <strong>{form.name}</strong>
+          <small>{form.form || '默认形态'}</small>
+          <span className="nature-form-elements">
+            {form.elements.length > 0 ? form.elements.map((element) => <OptionTag key={element.value} option={element} />) : '系别未知'}
+          </span>
+        </span>
+      </div>
+      <StatsChart
+        stats={STATS_DIMENSIONS.map((dimension) => {
+          const populationDimension = form.populationStats?.dimensions?.find((item) => item.key === dimension.key)
+          const baselineDimension = baseline.find((item) => item.key === dimension.key)
+          const change = form.statChanges.find((item) => item.key === dimension.key)
+          return {
+            ...dimension,
+            value: form.stats[dimension.key] || 0,
+            context: {
+              percentile: populationDimension?.percentile || 0,
+              delta: change?.delta || 0,
+              percentileDelta: (populationDimension?.percentile || 0) - (baselineDimension?.percentile || 0),
+            },
+          }
+        })}
+        variant="bars"
+        size="sm"
+        scaleMax={populationStats?.globalMax}
+        referenceMin={populationStats?.globalMin}
+      />
+      <div className="nature-form-trait-inline">
+        {form.traitIcon && <img src={form.traitIcon} alt="" />}
+        <span><strong>{form.traitName}</strong><small>{form.traitDesc || '暂无特性说明'}</small></span>
+      </div>
+      {form.uniqueSkillNames.length > 0 && (
+        <strong className="nature-unique-skills">本形态独有：{form.uniqueSkillNames.join('、')}</strong>
+      )}
+      <details className="nature-inline-disclosure">
+        <summary>技能组（{form.skillNames.length}）</summary>
+        <span>{form.skillNames.join('、') || '暂无技能资料'}</span>
+      </details>
+    </div>
+  )
+}
+
 function FormAnalysis({ analysis, populationStats }) {
   if (!analysis?.forms || analysis.forms.length < 2) return null
-  const baseline = analysis.forms[0]?.populationStats?.dimensions || []
+  const baselineForm = analysis.forms[0]
+  const baseline = baselineForm?.populationStats?.dimensions || []
+  const formGroups = pairRockKingdomComparisonForms(analysis.forms)
+  const hasPairedForms = formGroups.some((group) => group.paired)
   return (
     <details className="nature-boss-analysis">
       <summary>
@@ -447,53 +499,25 @@ function FormAnalysis({ analysis, populationStats }) {
         </span>
       </summary>
       <div className="nature-boss-analysis-body">
-        <p>推荐会同时核对这些形态；下方列出六维、系别、特性与技能组，默认收起以保持页面紧凑。</p>
-        <div className="nature-boss-forms">
-          {analysis.forms.map((form) => (
-            <div className="nature-boss-form" key={form.id}>
-              <div className="nature-form-head">
-                {form.image && <img src={form.image} alt="" />}
-                <span>
-                  <strong>{form.name}</strong>
-                  <small>{form.form || '默认形态'}</small>
-                  <span className="nature-form-elements">
-                    {form.elements.length > 0 ? form.elements.map((element) => <OptionTag key={element.value} option={element} />) : '系别未知'}
-                  </span>
-                </span>
-              </div>
-              <StatsChart
-                stats={STATS_DIMENSIONS.map((dimension) => {
-                  const populationDimension = form.populationStats?.dimensions?.find((item) => item.key === dimension.key)
-                  const baselineDimension = baseline.find((item) => item.key === dimension.key)
-                  const change = form.statChanges.find((item) => item.key === dimension.key)
-                  return {
-                    ...dimension,
-                    value: form.stats[dimension.key] || 0,
-                    context: {
-                      percentile: populationDimension?.percentile || 0,
-                      delta: change?.delta || 0,
-                      percentileDelta: (populationDimension?.percentile || 0) - (baselineDimension?.percentile || 0),
-                    },
-                  }
-                })}
-                variant="bars"
-                size="sm"
-                scaleMax={populationStats?.globalMax}
-                referenceMin={populationStats?.globalMin}
-              />
-              <div className="nature-form-trait-inline">
-                {form.traitIcon && <img src={form.traitIcon} alt="" />}
-                <span><strong>{form.traitName}</strong><small>{form.traitDesc || '暂无特性说明'}</small></span>
-              </div>
-              {form.uniqueSkillNames.length > 0 && (
-                <strong className="nature-unique-skills">本形态独有：{form.uniqueSkillNames.join('、')}</strong>
-              )}
-              <details className="nature-inline-disclosure">
-                <summary>技能组（{form.skillNames.length}）</summary>
-                <span>{form.skillNames.join('、') || '暂无技能资料'}</span>
-              </details>
-            </div>
-          ))}
+        <p>
+          推荐会同时核对这些形态；六维变化以“{baselineForm.name}”为基准。
+          {hasPairedForms ? '普通形态与对应首领形态按同一样子成对展示。' : '下方列出六维、系别、特性与技能组。'}
+        </p>
+        <div className={hasPairedForms ? 'nature-form-pairs' : 'nature-boss-forms'}>
+          {hasPairedForms
+            ? formGroups.map((group) => (
+              <section className={`nature-form-pair ${group.paired ? 'paired' : ''}`} key={group.key}>
+                {group.variant && <strong className="nature-form-pair-title">{group.variant}</strong>}
+                <div>
+                  {group.forms.map((form) => (
+                    <FormComparisonCard form={form} baseline={baseline} populationStats={populationStats} key={form.id} />
+                  ))}
+                </div>
+              </section>
+            ))
+            : analysis.forms.map((form) => (
+              <FormComparisonCard form={form} baseline={baseline} populationStats={populationStats} key={form.id} />
+            ))}
         </div>
       </div>
     </details>

@@ -26,16 +26,16 @@ const ELEMENT_MAP = new Map([
   ['翼', 'flying'], ['萌', 'cute'], ['幽', 'ghost'], ['恶', 'dark'], ['机械', 'mech'], ['幻', 'illusion'],
 ])
 
-const CREATURE_FORM_OVERRIDES = new Map([
-  ['NO.001|迪莫', '最终形态'],
-])
-
 function hashId(prefix, value) {
   return `${prefix}-${createHash('sha1').update(String(value)).digest('hex').slice(0, 12)}`
 }
 
 function normalizeName(value) {
   return String(value ?? '').replace(/\s+/g, '').trim()
+}
+
+function baseCreatureName(value) {
+  return normalizeName(value).replace(/（[^）]*）/g, '')
 }
 
 function readValue(row, key) {
@@ -117,11 +117,25 @@ function normalizeNumber(value) {
   return Number.isFinite(Number(value)) ? Number(value) : ''
 }
 
-function deriveForm(creature, existingValues) {
-  const override = CREATURE_FORM_OVERRIDES.get(`${creature.no || ''}|${creature.name || ''}`)
-  if (override) return { value: override, strategy: 'verified-override' }
+function deriveForm(creature, existingValues, detail, bossNames) {
   if (creature.formCategoryLabel === '首领形态') {
     return { value: '首领形态', strategy: 'category-boss' }
+  }
+  const evolution = Array.isArray(detail?.evolution) ? detail.evolution : []
+  const exactName = normalizeName(creature.name)
+  const creatureName = baseCreatureName(creature.name)
+  let evolutionIndex = evolution.findIndex((step) => normalizeName(step.linkName || step.name) === exactName)
+  if (evolutionIndex < 0) {
+    evolutionIndex = evolution.findIndex((step) => baseCreatureName(step.name || step.linkName) === creatureName)
+  }
+  if (evolutionIndex >= 0) {
+    const nextName = baseCreatureName(evolution[evolutionIndex + 1]?.name || evolution[evolutionIndex + 1]?.linkName)
+    if (evolutionIndex === evolution.length - 1) {
+      return { value: '最终形态', strategy: 'evolution-terminal' }
+    }
+    if (nextName && bossNames.has(nextName)) {
+      return { value: '最终形态', strategy: 'evolution-next-boss' }
+    }
   }
   const stageForm = new Map([
     ['一阶', 'Ⅰ阶'],
@@ -220,6 +234,12 @@ function countFieldChanges(previewRows, currentRows, fields) {
 
 function buildPreview({ creatures, skills, details, currentRows, currentSkills, breedingRows, syncedAt }) {
   const detailByCreature = new Map(details.map((row) => [stagedCreatureKey(row), row]))
+  const bossNames = new Set(
+    creatures
+      .filter((row) => row.formCategoryLabel === '首领形态')
+      .map((row) => baseCreatureName(row.name))
+      .filter(Boolean),
+  )
   const creatureIndexes = {
     creatureByExact: indexBy(currentRows, creatureMatchKey),
     creatureByName: indexBy(currentRows, (row) => normalizeName(readValue(row, 'name'))),
@@ -306,7 +326,7 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
     const detail = detailByCreature.get(stagedCreatureKey(creature))
     const breeding = findBreedingMatch(creature, breedingIndexes)
     const element = mapElements(creature.elements)
-    const form = deriveForm(creature, existingValues)
+    const form = deriveForm(creature, existingValues, detail, bossNames)
     if (element.unknown.length > 0) creatureIssues.unknownElements.push(`${creature.no} ${creature.name}：${element.unknown.join('、')}`)
 
     const statKeys = ['bst', 'hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
