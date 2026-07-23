@@ -1131,12 +1131,17 @@ export function evaluateNatureCandidate(
   const attackTradesDefense =
     ATTACK_STAT_KEYS.includes(candidate.raise) &&
     ['pdef', 'mdef'].includes(candidate.lower)
+  const speedTradesDefense =
+    candidate.raise === 'spd' &&
+    ['pdef', 'mdef'].includes(candidate.lower)
   const invalidAttackDefenseTrade = attackTradesDefense
+  const invalidSpeedDefenseTrade = speedTradesDefense
   const hardRisk =
     baseHardRisk ||
     lowersStandoutDefense ||
     tradesWithinDurability ||
-    invalidAttackDefenseTrade
+    invalidAttackDefenseTrade ||
+    invalidSpeedDefenseTrade
   const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, traitTags, analysis)
 
   if (lowersStandoutDefense) {
@@ -1150,6 +1155,10 @@ export function evaluateNatureCandidate(
   if (invalidAttackDefenseTrade) {
     score -= 18
     warnings.push('尚无稳定实战证据支持纯双攻玻璃输出；强化攻击不以牺牲单防为代价')
+  }
+  if (invalidSpeedDefenseTrade) {
+    score -= 18
+    warnings.push('强化速度应优先牺牲明确不用的攻击项；不以削弱物防或魔防换取速度')
   }
   if (hardRisk) score -= 8
   let decision = decisionFromScore(score, hardRisk)
@@ -1234,7 +1243,7 @@ export function evaluateNatureCandidate(
       ? '技能已证明可走单攻分支，当前组合不应直接判死，降级为可保留'
       : '技能略偏单攻分支，捕捉时可先保留等待玩法确认')
   }
-  if (tradesWithinDurability || invalidAttackDefenseTrade) {
+  if (tradesWithinDurability || invalidAttackDefenseTrade || invalidSpeedDefenseTrade) {
     decision = 'notRecommended'
   }
 
