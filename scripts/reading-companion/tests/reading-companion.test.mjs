@@ -47,6 +47,10 @@ import {
   createPersonalReadingPackage,
   personalCatalogEntry,
 } from '../../../src/features/reading-companion/domain/personalBooks.js'
+import {
+  analyzeReadingExcerpt,
+  normalizeModelCandidates,
+} from '../../../src/features/reading-companion/model/modelAdapter.js'
 
 const repoUrl = new URL('../../../', import.meta.url)
 const readingPackage = JSON.parse(
@@ -69,6 +73,8 @@ test('reading companion keeps feature code and maintenance files in dedicated di
     'src/features/reading-companion/domain/readingCompanion.js',
     'src/features/reading-companion/map/geocoding.js',
     'src/features/reading-companion/map/mapConfig.js',
+    'src/features/reading-companion/model/modelAdapter.js',
+    'src/features/reading-companion/ocr/localOcr.js',
     'src/features/reading-companion/preset.js',
     'scripts/reading-companion/build-preview.mjs',
     'docs/reading-companion/product-and-architecture.md',
@@ -580,6 +586,82 @@ test('reader-confirmed rivers and regions preserve safe GeoJSON geometry', () =>
     longitude: -90,
     geojson: line,
   })
+})
+
+test('runtime model analysis stays a reader-confirmed candidate adapter', async () => {
+  let request
+  const candidates = await analyzeReadingExcerpt({
+    endpoint: 'https://model.example/v1/chat/completions',
+    model: 'reader-test-model',
+    apiKey: 'test-key',
+    excerpt: '她从亚特兰大回到了塔拉。',
+    bookTitle: '测试书',
+    chapterLabel: '第 1 章',
+    fetchImpl: async (url, options) => {
+      request = { url, options }
+      return {
+        ok: true,
+        json: async () => ({
+          choices: [{
+            message: {
+              content: JSON.stringify({
+                candidates: [
+                  {
+                    name: '亚特兰大',
+                    kind: 'place',
+                    placeKind: 'real',
+                    confidence: 0.92,
+                    reason: '名称原样出现在段落中',
+                  },
+                  {
+                    name: '塔拉',
+                    kind: 'place',
+                    placeKind: 'unknown',
+                    confidence: 0.8,
+                  },
+                ],
+              }),
+            },
+          }],
+        }),
+      }
+    },
+  })
+
+  assert.equal(request.url, 'https://model.example/v1/chat/completions')
+  assert.equal(request.options.headers.Authorization, 'Bearer test-key')
+  const body = JSON.parse(request.options.body)
+  assert.equal(body.model, 'reader-test-model')
+  assert.match(body.messages[1].content, /亚特兰大/)
+  assert.equal(candidates.length, 2)
+  assert.equal(candidates[1].placeKind, OBSERVED_PLACE_KIND.UNKNOWN)
+  assert.equal(candidates[0].reason, '名称原样出现在段落中')
+})
+
+test('runtime model candidates are bounded and cannot create facts', () => {
+  const candidates = normalizeModelCandidates({
+    candidates: [
+      { name: '  某人  ', kind: 'person', confidence: 2, plot: 'future spoiler' },
+      { name: '某人', kind: 'person', confidence: 0.2 },
+      { name: '某地', kind: 'place', placeKind: 'not-a-kind', confidence: -1 },
+    ],
+    facts: [{ content: 'must not be returned' }],
+  })
+  assert.deepEqual(candidates, [
+    {
+      name: '某人',
+      kind: 'person',
+      confidence: 1,
+      reason: '',
+    },
+    {
+      name: '某地',
+      kind: 'place',
+      placeKind: OBSERVED_PLACE_KIND.UNKNOWN,
+      confidence: 0,
+      reason: '',
+    },
+  ])
 })
 
 test('on-demand entities unlock only after an exact reader-confirmed name match', () => {

@@ -10,6 +10,14 @@ const [creatures, skills, migration] = await Promise.all([
   readFile(new URL('public/presets/rockKingdomPresetMigration.json', repoUrl), 'utf8').then(JSON.parse),
 ])
 const { db, ensureSeeded, getReadingState, importAllData, saveReadingState } = await import('../../src/db.js')
+const {
+  deletePersonalReadingPackage,
+  loadPersonalReadingPackage,
+  savePersonalReadingPackage,
+} = await import('../../src/features/reading-companion/db/personalBooks.js')
+const {
+  createPersonalReadingPackage,
+} = await import('../../src/features/reading-companion/domain/personalBooks.js')
 
 function presetResponse(url, failCreatureRows = false) {
   const value = String(url)
@@ -67,6 +75,33 @@ test('reading progress uses namespaced meta records and merges updates', async (
   }])
   assert.equal(state.sceneId, sceneId)
   assert.equal(state.editionId, editionId)
+})
+
+test('deleting a personal reading package also removes its namespaced reading state', async () => {
+  await resetDatabase()
+  const pkg = createPersonalReadingPackage({
+    packageId: 'reader-package-personal-delete-test',
+    bookId: 'reader-book-personal-delete-test',
+    editionId: 'reader-edition-personal-delete-test',
+    title: '待删除个人书',
+    author: '测试作者',
+    chapterCount: 2,
+  })
+  await savePersonalReadingPackage(pkg)
+  await saveReadingState('scene-reader-a', pkg.edition.id, {
+    packageId: pkg.id,
+    currentChapterId: 'chapter-01',
+  })
+  await saveReadingState('scene-reader-b', pkg.edition.id, {
+    packageId: pkg.id,
+    currentChapterId: 'chapter-02',
+  })
+
+  await deletePersonalReadingPackage(pkg.id)
+
+  await assert.rejects(() => loadPersonalReadingPackage(pkg.id), /个人书籍/)
+  assert.equal(await getReadingState('scene-reader-a', pkg.edition.id), null)
+  assert.equal(await getReadingState('scene-reader-b', pkg.edition.id), null)
 })
 
 test('seed migration is versioned and preserves imported custom preset values', async () => {

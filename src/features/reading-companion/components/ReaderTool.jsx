@@ -4,26 +4,42 @@ import {
   AlertTriangle,
   ArrowLeft,
   BookOpen,
+  ClipboardPaste,
   Eye,
   EyeOff,
   Image,
+  Laptop,
   LibraryBig,
   Lock,
   MapPin,
   Plus,
   ScanSearch,
+  Settings2,
   ShieldCheck,
+  Sparkles,
   Trash2,
   Upload,
   UserRoundSearch,
   X,
 } from 'lucide-react'
 import { getReadingState, saveReadingState } from '../db/readingState.js'
-import { savePersonalReadingPackage } from '../db/personalBooks.js'
+import {
+  deletePersonalReadingPackage,
+  savePersonalReadingPackage,
+} from '../db/personalBooks.js'
 import { loadReadingPackage, loadReadingPackageCatalog } from '../data/readingPackages.js'
 import { ReadingGeoMap } from './ReadingGeoMap.jsx'
 import { generateId } from '../../../utils.js'
+import {
+  requestAppInstall,
+  subscribeInstallPrompt,
+} from '../../../pwaInstall.js'
 import { searchReadingPlaces } from '../map/geocoding.js'
+import { recognizeReadingImage } from '../ocr/localOcr.js'
+import {
+  READING_MODEL_STORAGE_KEYS,
+  analyzeReadingExcerpt,
+} from '../model/modelAdapter.js'
 import {
   createPersonalReadingPackage,
   personalCatalogEntry,
@@ -209,7 +225,49 @@ function PersonalBookCreator({ onCreate, onCancel }) {
   )
 }
 
-function ReadingLibrary({ catalog, onSelect, onCreate }) {
+function WindowsInstallCard() {
+  const isWindows = navigator.userAgent.includes('Windows')
+  const [installable, setInstallable] = useState(false)
+  const [status, setStatus] = useState('')
+  const standalone = window.matchMedia('(display-mode: standalone)').matches
+
+  useEffect(() => subscribeInstallPrompt(setInstallable), [])
+  if (!isWindows) return null
+
+  async function install() {
+    const choice = await requestAppInstall()
+    if (choice?.outcome === 'accepted') {
+      setStatus('安装已开始，完成后可从开始菜单或桌面打开。')
+    } else if (choice) {
+      setStatus('已取消安装；以后仍可从浏览器菜单安装。')
+    }
+  }
+
+  return (
+    <section className="reader-windows-install">
+      <Laptop size={22} />
+      <div>
+        <strong>{standalone ? '已作为 Windows 应用运行' : '安装到 Windows'}</strong>
+        <p>
+          {standalone
+            ? '当前是独立窗口；数据仍只保存在这个浏览器应用中。'
+            : '用 Edge 或 Chrome 安装后可从开始菜单启动，并继续使用本机书架、剪贴板和 OCR。'}
+        </p>
+        {!standalone && !installable && (
+          <small>如果按钮尚未出现，请使用浏览器地址栏或“应用”菜单中的“安装 TangerineTools”。</small>
+        )}
+        {status && <small>{status}</small>}
+      </div>
+      {!standalone && installable && (
+        <button type="button" className="btn btn-sm" onClick={install}>
+          <Laptop size={14} /> 安装应用
+        </button>
+      )}
+    </section>
+  )
+}
+
+function ReadingLibrary({ catalog, onSelect, onCreate, onDelete }) {
   const [creating, setCreating] = useState(false)
   return (
     <div className="reader-tool reader-library">
@@ -218,6 +276,7 @@ function ReadingLibrary({ catalog, onSelect, onCreate }) {
         <h2>选择一本书</h2>
         <p>每本书拥有独立的版本资料、阅读进度和已遇到名称。</p>
       </section>
+      <WindowsInstallCard />
       <section className="reader-library-panel">
         <div className="reader-library-heading">
           <div>
@@ -237,20 +296,31 @@ function ReadingLibrary({ catalog, onSelect, onCreate }) {
         {catalog.length > 0 ? (
           <div className="reader-book-grid">
             {catalog.map((entry) => (
-              <button
-                className="reader-book-card"
-                key={entry.id}
-                type="button"
-                onClick={() => onSelect(entry.id)}
-              >
-                <span className="reader-book-cover"><BookOpen size={26} /></span>
-                <span className="reader-book-copy">
-                  <strong>{entry.title}</strong>
-                  <small>{entry.editionLabel}</small>
-                  {entry.source === 'personal' && <em>个人书籍</em>}
-                  <b>开始阅读</b>
-                </span>
-              </button>
+              <article className="reader-book-card-shell" key={entry.id}>
+                <button
+                  className="reader-book-card"
+                  type="button"
+                  onClick={() => onSelect(entry.id)}
+                >
+                  <span className="reader-book-cover"><BookOpen size={26} /></span>
+                  <span className="reader-book-copy">
+                    <strong>{entry.title}</strong>
+                    <small>{entry.editionLabel}</small>
+                    {entry.source === 'personal' && <em>个人书籍</em>}
+                    <b>开始阅读</b>
+                  </span>
+                </button>
+                {entry.source === 'personal' && (
+                  <button
+                    type="button"
+                    className="reader-book-delete"
+                    onClick={() => onDelete(entry)}
+                    aria-label={`删除个人书籍“${entry.title}”`}
+                  >
+                    <Trash2 size={14} /> 删除
+                  </button>
+                )}
+              </article>
             ))}
           </div>
         ) : (
@@ -286,14 +356,167 @@ function ReadingLibrary({ catalog, onSelect, onCreate }) {
         <div className="reader-trial-boundary">
           <div>
             <strong>本次可以测试</strong>
-            <span>书架、章节进度、文本扫描、名称记录、地点解锁、本机保存</span>
+            <span>书架、章节进度、剪贴板、截图 OCR、名称识别、地点地图、本机保存</span>
           </div>
           <div>
             <strong>暂未开放</strong>
-            <span>截图 OCR、自由问答、人物关系理解、自动发现未知名称</span>
+            <span>自由剧情问答、自动人物关系、移动端原生分享、未审计事实自动入库</span>
           </div>
         </div>
       </section>
+    </div>
+  )
+}
+
+function ModelAnalysisPanel({
+  excerpt,
+  bookTitle,
+  currentChapter,
+  onConfirmCandidate,
+}) {
+  const [open, setOpen] = useState(false)
+  const [endpoint, setEndpoint] = useState(
+    () => window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.endpoint)
+      || 'https://api.openai.com/v1/chat/completions',
+  )
+  const [model, setModel] = useState(
+    () => window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.model) || '',
+  )
+  const [apiKey, setApiKey] = useState(
+    () => window.sessionStorage.getItem(READING_MODEL_STORAGE_KEYS.apiKey) || '',
+  )
+  const [requestState, setRequestState] = useState('idle')
+  const [message, setMessage] = useState('')
+  const [candidates, setCandidates] = useState([])
+
+  async function analyze() {
+    setRequestState('working')
+    setMessage('')
+    setCandidates([])
+    window.localStorage.setItem(READING_MODEL_STORAGE_KEYS.endpoint, endpoint.trim())
+    window.localStorage.setItem(READING_MODEL_STORAGE_KEYS.model, model.trim())
+    window.sessionStorage.setItem(READING_MODEL_STORAGE_KEYS.apiKey, apiKey.trim())
+    try {
+      const results = await analyzeReadingExcerpt({
+        endpoint,
+        model,
+        apiKey,
+        excerpt,
+        bookTitle,
+        chapterLabel: currentChapter?.label,
+      })
+      setCandidates(results)
+      setRequestState('done')
+      setMessage(
+        results.length > 0
+          ? '模型结果只是候选；请逐项核对原文后确认。'
+          : '模型没有返回符合约束的名称候选。',
+      )
+    } catch (error) {
+      setRequestState('error')
+      setMessage(error?.message || '模型识别失败')
+    }
+  }
+
+  async function confirm(candidate) {
+    try {
+      const saved = await onConfirmCandidate(candidate)
+      setCandidates((current) => current.filter((item) => item !== candidate))
+      setMessage(
+        saved
+          ? `已把“${candidate.name}”记在${currentChapter?.label || '当前章'}。`
+          : `“${candidate.name}”已经记录在当前章或更早章节。`,
+      )
+    } catch (error) {
+      setMessage(error?.message || '保存模型候选失败')
+    }
+  }
+
+  return (
+    <div className="reader-model-panel">
+      <div className="reader-model-heading">
+        <div>
+          <Sparkles size={19} />
+          <div>
+            <strong>模型识别 · 可选外部能力</strong>
+            <p>只发送当前段落，识别名称候选；不会自动写入资料库或生成剧情解释。</p>
+          </div>
+        </div>
+        <button type="button" className="btn btn-sm" onClick={() => setOpen((value) => !value)}>
+          <Settings2 size={14} /> {open ? '收起配置' : '配置模型'}
+        </button>
+      </div>
+      {open && (
+        <div className="reader-model-config">
+          <label>
+            <span>兼容接口地址</span>
+            <input
+              value={endpoint}
+              onChange={(event) => setEndpoint(event.target.value)}
+              placeholder="https://…/v1/chat/completions"
+            />
+          </label>
+          <label>
+            <span>模型名称</span>
+            <input
+              value={model}
+              onChange={(event) => setModel(event.target.value)}
+              placeholder="填写服务商提供的模型 id"
+            />
+          </label>
+          <label>
+            <span>API Key</span>
+            <input
+              type="password"
+              value={apiKey}
+              onChange={(event) => setApiKey(event.target.value)}
+              placeholder="只保存在当前浏览器会话"
+              autoComplete="off"
+            />
+          </label>
+          <p>
+            点击识别会把当前段落、书名和当前章节标签发送到该地址。Key 只存在
+            sessionStorage，关闭浏览器后失效；接口地址和模型名保存在本机。
+          </p>
+        </div>
+      )}
+      <button
+        type="button"
+        className="btn reader-model-run"
+        onClick={analyze}
+        disabled={!excerpt.trim() || requestState === 'working'}
+      >
+        <Sparkles size={15} />
+        {requestState === 'working' ? '正在识别当前段落…' : '用模型识别名称候选'}
+      </button>
+      {message && <p className="reader-model-message" role="status">{message}</p>}
+      {candidates.length > 0 && (
+        <div className="reader-model-candidates">
+          {candidates.map((candidate) => (
+            <div
+              className="reader-model-candidate"
+              key={`${candidate.kind}:${candidate.name}`}
+            >
+              <div>
+                <strong>{candidate.name}</strong>
+                <span>
+                  {OBSERVED_KIND_LABELS[candidate.kind]}
+                  {candidate.kind === OBSERVED_ENTITY_KIND.PLACE
+                    ? ` · ${OBSERVED_PLACE_KIND_LABELS[candidate.placeKind]}`
+                    : ''}
+                  {candidate.confidence !== null
+                    ? ` · 模型置信度 ${Math.round(candidate.confidence * 100)}%`
+                    : ''}
+                </span>
+                {candidate.reason && <p>{candidate.reason}</p>}
+              </div>
+              <button type="button" className="btn btn-sm" onClick={() => confirm(candidate)}>
+                <Plus size={13} /> 核对后确认
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -970,6 +1193,9 @@ export function ReaderTool({ scene }) {
   const [scanResults, setScanResults] = useState([])
   const [scanPerformed, setScanPerformed] = useState(false)
   const [scanStatus, setScanStatus] = useState('')
+  const [inputStatus, setInputStatus] = useState('')
+  const [ocrState, setOcrState] = useState('idle')
+  const [ocrProgress, setOcrProgress] = useState(0)
 
   useEffect(() => {
     let active = true
@@ -1111,6 +1337,15 @@ export function ReaderTool({ scene }) {
     selectBook(pkg.id)
   }
 
+  async function deletePersonalBook(entry) {
+    const confirmed = window.confirm(
+      `删除个人书籍“${entry.title}”？这会同时删除它在所有阅读场景中的进度、已遇到名称和个人地图位置，且无法撤销。`,
+    )
+    if (!confirmed) return
+    await deletePersonalReadingPackage(entry.id)
+    setCatalog((current) => (current || []).filter((item) => item.id !== entry.id))
+  }
+
   function returnToLibrary() {
     setSelectedPackageId('')
     setReadingPackage(null)
@@ -1127,6 +1362,26 @@ export function ReaderTool({ scene }) {
     setScanResults([])
     setScanPerformed(false)
     setScanStatus('')
+    setInputStatus('')
+  }
+
+  async function pasteFromClipboard() {
+    setInputStatus('')
+    if (!navigator.clipboard?.readText) {
+      setInputStatus('当前浏览器不支持直接读取剪贴板，请使用 Ctrl+V。')
+      return
+    }
+    try {
+      const text = await navigator.clipboard.readText()
+      if (!text.trim()) {
+        setInputStatus('剪贴板里没有文字。')
+        return
+      }
+      changeExcerpt(text)
+      setInputStatus('已从 Windows 剪贴板放入当前段落；文字不会自动保存。')
+    } catch {
+      setInputStatus('浏览器没有获得剪贴板权限，请点击文本框后使用 Ctrl+V。')
+    }
   }
 
   function scanExcerpt() {
@@ -1155,17 +1410,63 @@ export function ReaderTool({ scene }) {
     }
   }
 
+  async function confirmModelCandidate(candidate) {
+    const next = upsertObservedEntity(observedEntities, {
+      id: generateId('observed'),
+      name: candidate.name,
+      kind: candidate.kind,
+      placeKind: candidate.placeKind,
+      firstSeenChapterId: currentChapterId,
+    }, readingPackage.chapters)
+    if (next === observedEntities) return false
+    await changeObservedEntities(next)
+    return true
+  }
+
   function chooseImage(event) {
     const file = event.target.files?.[0]
     if (!file) return
     if (imageInput?.url) URL.revokeObjectURL(imageInput.url)
-    setImageInput({ name: file.name, url: URL.createObjectURL(file) })
+    setImageInput({ file, name: file.name, url: URL.createObjectURL(file) })
+    setOcrState('idle')
+    setOcrProgress(0)
+    setInputStatus('')
     event.target.value = ''
   }
 
   function clearImage() {
     if (imageInput?.url) URL.revokeObjectURL(imageInput.url)
     setImageInput(null)
+    setOcrState('idle')
+    setOcrProgress(0)
+  }
+
+  async function runLocalOcr() {
+    if (!imageInput?.file || ocrState === 'working') return
+    setOcrState('working')
+    setOcrProgress(0)
+    setInputStatus('正在本机初始化 OCR…')
+    try {
+      const text = await recognizeReadingImage(imageInput.file, (progress) => {
+        if (Number.isFinite(progress?.progress)) {
+          setOcrProgress(Math.round(progress.progress * 100))
+        }
+        if (progress?.status === 'recognizing text') {
+          setInputStatus('正在本机识别截图文字…')
+        }
+      })
+      if (!text) {
+        setOcrState('empty')
+        setInputStatus('OCR 没有识别出文字，可以换一张更清晰的截图。')
+        return
+      }
+      changeExcerpt(text)
+      setOcrState('done')
+      setInputStatus('OCR 文字已放入当前段落，请先核对再扫描或调用模型。')
+    } catch (error) {
+      setOcrState('error')
+      setInputStatus(`本机 OCR 失败：${error?.message || '无法初始化识别引擎'}`)
+    }
   }
 
   if (loadError) return <ReaderError message={loadError} />
@@ -1176,6 +1477,7 @@ export function ReaderTool({ scene }) {
         catalog={catalog}
         onSelect={selectBook}
         onCreate={createPersonalBook}
+        onDelete={deletePersonalBook}
       />
     )
   }
@@ -1256,11 +1558,15 @@ export function ReaderTool({ scene }) {
               <small>{excerpt.length} 字 · 当前不会上传或持久化这段文字</small>
             </label>
             <div className="reader-scan-actions">
+              <button type="button" className="btn" onClick={pasteFromClipboard}>
+                <ClipboardPaste size={15} /> 从剪贴板粘贴
+              </button>
               <button type="button" className="btn" onClick={scanExcerpt} disabled={!excerpt.trim()}>
                 <ScanSearch size={15} /> 本机扫描已知名称
               </button>
               <span>只查找段落中实际出现的资料包名称，不会显示候选清单。</span>
             </div>
+            {inputStatus && <p className="reader-input-status" role="status">{inputStatus}</p>}
             {scanPerformed && (
               <div className="reader-scan-results" role="status">
                 <div className="reader-scan-results-heading">
@@ -1298,7 +1604,7 @@ export function ReaderTool({ scene }) {
                 <Image size={20} />
                 <div>
                   <strong>也可以放入页面截图</strong>
-                  <span>截图只做本地预览；OCR 尚未接入。</span>
+                  <span>截图和 OCR 都在当前设备处理；识别文字不会自动保存。</span>
                 </div>
               </div>
               <label className="btn">
@@ -1312,6 +1618,17 @@ export function ReaderTool({ scene }) {
                 <img src={imageInput.url} alt="所选阅读页面预览" />
                 <div>
                   <span>{imageInput.name}</span>
+                  <button
+                    type="button"
+                    className="btn btn-sm"
+                    onClick={runLocalOcr}
+                    disabled={ocrState === 'working'}
+                  >
+                    <ScanSearch size={13} />
+                    {ocrState === 'working'
+                      ? `本机识别中 ${ocrProgress}%`
+                      : '提取截图文字'}
+                  </button>
                   <button type="button" className="icon-btn" onClick={clearImage} aria-label="移除截图">
                     <X size={15} />
                   </button>
@@ -1319,13 +1636,12 @@ export function ReaderTool({ scene }) {
               </div>
             )}
 
-            <div className="reader-analysis-placeholder">
-              <ShieldCheck size={22} />
-              <div>
-                <strong>模型识别 · 尚未接入</strong>
-                <p>当前精确扫描是确定性的本机能力；语义识别、上下文消歧和未知实体发现仍需要未来的模型适配器。</p>
-              </div>
-            </div>
+            <ModelAnalysisPanel
+              excerpt={excerpt}
+              bookTitle={readingPackage.book.title}
+              currentChapter={currentChapter}
+              onConfirmCandidate={confirmModelCandidate}
+            />
           </section>
 
           <ObservedEntitiesPanel

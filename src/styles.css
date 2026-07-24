@@ -3744,6 +3744,37 @@ img {
   gap: 12px;
 }
 
+.reader-windows-install {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 13px 15px;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius-lg);
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.reader-windows-install strong {
+  display: block;
+  color: #1e3a8a;
+  font-size: 12px;
+}
+
+.reader-windows-install p,
+.reader-windows-install small {
+  display: block;
+  margin: 3px 0 0;
+  color: #475569;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.reader-book-card-shell {
+  position: relative;
+}
+
 .reader-book-card {
   display: grid;
   grid-template-columns: 64px minmax(0, 1fr);
@@ -3754,12 +3785,32 @@ img {
   border-radius: var(--radius-lg);
   background: #fff;
   text-align: left;
+  width: 100%;
 }
 
 .reader-book-card:hover {
   border-color: #a78bfa;
   background: #faf5ff;
   box-shadow: 0 8px 24px rgb(76 29 149 / 8%);
+}
+
+.reader-book-delete {
+  position: absolute;
+  right: 9px;
+  bottom: 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: #9f1239;
+  font-size: 10px;
+}
+
+.reader-book-delete:hover {
+  background: #fff1f2;
 }
 
 .reader-book-cover {
@@ -4080,6 +4131,13 @@ img {
   font-size: 11px;
 }
 
+.reader-input-status {
+  margin: 8px 0 0;
+  color: #5b21b6;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
 .reader-scan-results {
   display: grid;
   gap: 8px;
@@ -4212,6 +4270,13 @@ img {
   font-size: 11px;
 }
 
+.reader-image-preview > div > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .reader-analysis-placeholder {
   display: flex;
   align-items: flex-start;
@@ -4228,6 +4293,105 @@ img {
   margin-bottom: 3px;
   color: var(--text);
   font-size: 12px;
+}
+
+.reader-model-panel {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid #ddd6fe;
+  border-radius: var(--radius-lg);
+  background: #faf9ff;
+}
+
+.reader-model-heading,
+.reader-model-heading > div,
+.reader-model-candidate {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.reader-model-heading > div {
+  justify-content: flex-start;
+  color: #7c3aed;
+}
+
+.reader-model-heading strong,
+.reader-model-candidate strong {
+  display: block;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.reader-model-heading p,
+.reader-model-config > p,
+.reader-model-message,
+.reader-model-candidate p {
+  margin: 3px 0 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.reader-model-config {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(150px, 0.7fr) minmax(150px, 0.8fr);
+  gap: 10px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.reader-model-config label {
+  display: grid;
+  gap: 5px;
+}
+
+.reader-model-config label span {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.reader-model-config input {
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+}
+
+.reader-model-config > p {
+  grid-column: 1 / -1;
+}
+
+.reader-model-run {
+  justify-self: start;
+}
+
+.reader-model-candidates {
+  display: grid;
+  gap: 8px;
+}
+
+.reader-model-candidate {
+  padding: 9px 10px;
+  border: 1px solid #ede9fe;
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.reader-model-candidate span {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 11px;
 }
 
 .reader-observed-intro {
@@ -5105,6 +5269,19 @@ img {
   .reader-trial-steps,
   .reader-trial-boundary {
     grid-template-columns: 1fr;
+  }
+
+  .reader-model-config {
+    grid-template-columns: 1fr;
+  }
+
+  .reader-windows-install {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .reader-windows-install .btn {
+    grid-column: 1 / -1;
+    justify-content: center;
   }
 
   .reader-hero h2 {

@@ -25,12 +25,15 @@
     "test": "node --test scripts/tests/*.test.mjs scripts/reading-companion/tests/*.test.mjs"
   },
   "dependencies": {
+    "@tesseract.js-data/chi_sim": "^1.0.0",
+    "@tesseract.js-data/eng": "^1.0.0",
     "dexie": "^4.4.4",
     "dexie-react-hooks": "^4.4.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.25.0",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.3",
