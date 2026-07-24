@@ -20,23 +20,24 @@ export function BreedingTool({ scene }) {
   const skillTableId = ROCK_KINGDOM_PRESET.tables[1].id
   const ownedTable = useLiveQuery(() => db.catalogTables.where('sceneId').equals(scene.id).filter((t) => t.kind === 'owned').first(), [scene.id])
   const ownedRows = useLiveQuery(() => ownedTable ? db.catalogRows.where('tableId').equals(ownedTable.id).toArray() : [], [ownedTable?.id])
+  const ownedFields = useLiveQuery(() => ownedTable ? db.catalogFields.where('tableId').equals(ownedTable.id).sortBy('order') : [], [ownedTable?.id])
   const catalogRows = useLiveQuery(() => db.catalogRows.where('tableId').equals(creatureTableId).toArray(), [creatureTableId])
   const catalogFields = useLiveQuery(() => db.catalogFields.where('tableId').equals(creatureTableId).sortBy('order'), [creatureTableId])
   const skillRows = useLiveQuery(() => db.catalogRows.where('tableId').equals(skillTableId).toArray(), [skillTableId])
-  const [selectedCreature, setSelectedCreature] = useState(null)
+  const [selectedOwnedCreature, setSelectedOwnedCreature] = useState(null)
   const [referenceDetail, setReferenceDetail] = useState(null)
 
   const creatures = useMemo(() => buildOwnedCreatures({ ownedRows, catalogRows, catalogFields, skillRows }), [ownedRows, catalogRows, catalogFields, skillRows])
   const pairs = useMemo(() => recommendBreedingPairs(creatures), [creatures])
   const missingEggGroups = creatures.filter((item) => item.catalog.eggGroups.length === 0).length
 
-  if (!ownedTable || !ownedRows || !catalogRows || !catalogFields || !skillRows) return null
+  if (!ownedTable || !ownedRows || !ownedFields || !catalogRows || !catalogFields || !skillRows) return null
 
   return <div className="breeding-tool">
     <div className="breeding-hero">
       <div>
         <h2>孵蛋推荐</h2>
-        <p>从异色收集记录中挑选 10 只精灵，组成 5 对不重复的同蛋组父母。</p>
+        <p>从收集记录中优先补齐异色与性别缺口，组成 5 对不重复的同蛋组父母。</p>
       </div>
       <span className="breeding-selection-count">{pairs.length * 2} / 10 只</span>
     </div>
@@ -63,7 +64,7 @@ export function BreedingTool({ scene }) {
       <section className="breeding-recommendation">
         <div className="breeding-section-title">
           <strong>推荐配对</strong>
-          <span>每只精灵只使用一次 · 点击父母查看详情</span>
+          <span>每条收集记录只使用一次 · 点击父母查看收集详情</span>
         </div>
         <div className="breeding-pairs">
           {pairs.map((pair, index) => (
@@ -73,9 +74,9 @@ export function BreedingTool({ scene }) {
                 <span>{pair.eggGroup} · {pair.priorityReason}</span>
               </div>
               <div className="breeding-lineup">
-                <BreedingCreature gender="male" item={pair.father} onOpen={() => setSelectedCreature(pair.father.catalog.row)} />
+                <BreedingCreature gender="male" item={pair.father} onOpen={() => setSelectedOwnedCreature(pair.father)} />
                 <span className="breeding-pair-mark" aria-label="配对">×</span>
-                <BreedingCreature gender="female" item={pair.mother} onOpen={() => setSelectedCreature(pair.mother.catalog.row)} />
+                <BreedingCreature gender="female" item={pair.mother} onOpen={() => setSelectedOwnedCreature(pair.mother)} />
               </div>
               <div className="breeding-offspring-row">
                 <BreedingOffspring pair={pair} />
@@ -87,13 +88,13 @@ export function BreedingTool({ scene }) {
       </section>
     )}
 
-    {selectedCreature && (
+    {selectedOwnedCreature && (
       <RowDetailModal
-        title={`${selectedCreature.values?.name || '精灵'} · 精灵详情`}
-        row={selectedCreature}
-        fields={catalogFields}
-        rows={catalogRows}
-        onClose={() => setSelectedCreature(null)}
+        title={`${selectedOwnedCreature.catalog.row.values?.name || '精灵'} · 收集记录详情`}
+        row={selectedOwnedCreature.owned}
+        fields={ownedFields}
+        rows={ownedRows}
+        onClose={() => setSelectedOwnedCreature(null)}
         onOpenReference={setReferenceDetail}
       />
     )}
@@ -129,7 +130,7 @@ function BreedingCreature({ gender, item, onOpen }) {
       type="button"
       className="breeding-creature-row"
       onClick={onOpen}
-      title={`查看 ${values.name || item.name} 详情`}
+      title={`查看 ${values.name || item.name} 的收集记录`}
     >
       <img className="breeding-creature-avatar" src={creatureImage(values, item.shiny)} alt="" />
       <span className="breeding-creature-text">

@@ -8,7 +8,10 @@ import { BILI_EGG_GROUP_SOURCE_URL } from './breedingData.js'
 
 export const EGG_GROUP_SOURCE_URL = BILI_EGG_GROUP_SOURCE_URL
 export const BREEDING_PRIORITY_RULES = [
+  '母方对应种类尚未拥有异色',
+  '母方对应种类只有异色母、尚缺异色公',
   '任一父母的性格命中对应精灵的推荐性格',
+  '异色父母数量更多',
   '炫彩父母数量更多',
   '收集记录顺序更靠前',
 ]
@@ -84,18 +87,49 @@ export function buildOwnedCreatures({ ownedRows = [], catalogRows = [], catalogF
   }).filter(Boolean)
 }
 
-function pairScore(pair) {
+function summarizeShinyOwnership(creatures) {
+  const result = new Map()
+  for (const item of creatures) {
+    const key = item.catalog.speciesKey
+    const summary = result.get(key) || { total: 0, male: 0, female: 0 }
+    if (item.shiny) {
+      summary.total += 1
+      if (item.gender === MALE) summary.male += 1
+      if (item.gender === FEMALE) summary.female += 1
+    }
+    result.set(key, summary)
+  }
+  return result
+}
+
+function targetPriority(mother, shinyOwnership) {
+  const summary = shinyOwnership.get(mother.catalog.speciesKey) || { total: 0, male: 0, female: 0 }
+  if (summary.total === 0) return { tier: 0, reason: '尚无异色优先' }
+  if (summary.female > 0 && summary.male === 0) return { tier: 1, reason: '仅有异色母优先' }
+  return { tier: 2, reason: '' }
+}
+
+function pairScore(pair, shinyOwnership) {
+  const target = targetPriority(pair.mother, shinyOwnership)
   const canRecommendedNature = [pair.father, pair.mother].some((item) =>
     item.catalog.recommendedNatures.includes(item.owned.values?.nature),
   )
+  const shinyParents = Number(pair.father.shiny) + Number(pair.mother.shiny)
   const colorfulParents = Number(pair.father.colorful) + Number(pair.mother.colorful)
-  return (canRecommendedNature ? 0 : 1) * 1000 - colorfulParents * 30
+  return target.tier * 100000
+    + (canRecommendedNature ? 0 : 1) * 1000
+    - shinyParents * 80
+    - colorfulParents * 30
 }
 
 export function recommendBreedingPairs(creatures, { pairCount = 5 } = {}) {
-  const shinyCreatures = creatures.filter((item) => item.shiny)
-  const males = shinyCreatures.filter((item) => item.gender === MALE && item.catalog.eggGroups.length)
-  const females = shinyCreatures.filter((item) => item.gender === FEMALE && item.catalog.eggGroups.length)
+  const shinyOwnership = summarizeShinyOwnership(creatures)
+  const males = creatures.filter((item) => item.shiny && item.gender === MALE && item.catalog.eggGroups.length)
+  const females = creatures.filter((item) => {
+    if (item.gender !== FEMALE || !item.catalog.eggGroups.length) return false
+    const ownedShiny = shinyOwnership.get(item.catalog.speciesKey)?.total ?? 0
+    return ownedShiny === 0 || item.shiny
+  })
   const pairs = []
   for (const mother of females) {
     for (const father of males) {
@@ -106,16 +140,17 @@ export function recommendBreedingPairs(creatures, { pairCount = 5 } = {}) {
         item.catalog.recommendedNatures.includes(item.owned.values?.nature),
       )
       const colorfulParents = Number(father.colorful) + Number(mother.colorful)
+      const target = targetPriority(mother, shinyOwnership)
       pairs.push({
         ...pair,
-        score: pairScore(pair),
+        score: pairScore(pair, shinyOwnership),
         targetSpecies: mother.catalog.speciesKey,
         canRecommendedNature,
-        priorityReason: canRecommendedNature
+        priorityReason: target.reason || (canRecommendedNature
           ? '推荐性格优先'
           : colorfulParents > 0
             ? `${colorfulParents} 只炫彩父母`
-            : '同蛋组异色配对',
+            : '同蛋组异色配对'),
       })
     }
   }
