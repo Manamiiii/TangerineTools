@@ -150,6 +150,8 @@
 
 资料源状态使用 `approved`、`candidate` 和 `rejected`。只有 `approved` 来源可以进入运行时资料包；候选和拒绝项只保留在 staging 与 preview 审计元数据中。
 
+实体与事实研究结果分别保存在 `entityCandidates` 和 `factCandidates`。每项都包含候选状态、结构化数据、引用来源、阻塞项和审阅备注。`candidate` 必须至少声明一个阻塞项；候选数组不会被发布管线隐式合并到正式 `entities` 或 `facts`，只有人工核对来源、指定译本别名和 `revealAt` 后，才可显式移入正式集合。preview 和检查报告会列出候选 id 与阻塞项，但运行时资料包不包含候选内容。
+
 管线枚举 staging 目录内的全部 JSON，不保存单一书籍硬编码。每份 staging 都声明唯一 `slug`、顺序、catalog 展示信息、版本、来源状态、实体和事实：
 
 - 首次发布的新书必须提供完整 `package`，包括作品、版本和稳定章节。
@@ -164,6 +166,9 @@
 - 使用者提供的微信读书版本和版权信息是已批准来源，只用于版本、译者、ISBN 和 1–63 章结构。
 - [Library of Congress · America Reads](https://www.loc.gov/exhibits/america-reads/1900-to-1949.html#obj019) 用于候选原作书目和作品历史范围，不用于中文译文章节定位。
 - [U.S. Census Bureau · Gazetteer Files](https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.2025.html) 用于候选现代行政区、GEOID 和代表坐标；不能证明作品年代的边界或交通状况。
+- [U.S. Census Bureau · Georgia Incorporated Places](https://tigerweb.geo.census.gov/tigerwebmain/Files/acs25/tigerweb_acs25_incplace_ga.html) 用于核对亚特兰大和琼斯伯勒的现代代表坐标。
+- [Atlanta History Center](https://www.atlantahistorycenter.com/blog/so-red-the-rose-the-gone-with-the-wind-that-never-was/) 用于区分真实的亚特兰大地点与虚构种植园，并防止给塔拉等虚构地点伪造精确坐标。
+- [New Georgia Encyclopedia · Gone With the Wind](https://www.georgiaencyclopedia.org/articles/arts-culture/gone-with-the-wind-novel/) 与 [Clayton County](https://www.georgiaencyclopedia.org/articles/counties-cities-neighborhoods/clayton-county/) 用于候选时代范围、地点名称和地区背景。包含剧情概述的页面仅供建库审阅，不能直接成为运行时安全内容。
 - [Library of Congress · General Maps](https://www.loc.gov/collections/general-maps/about-this-collection/rights-and-access/) 用于候选历史地图。每个地图条目必须单独检查 Rights Advisory 与署名要求。
 - [OpenStreetMap](https://www.openstreetmap.org/copyright) 是互动底图候选；采用时必须显示贡献者署名、遵守 ODbL，并单独满足瓦片或地理编码服务政策。
 
@@ -410,7 +415,7 @@ scanGeneratedContent
 
 ## 建设顺序
 
-1. 为《飘》的指定译本建立实体与事实 staging、预览报告和显式发布流程。
+1. 使用指定译本的最小章节证据审核《飘》staging 中的实体与事实候选，并显式发布首批安全内容。
 2. 接入地图底图，展示经过审计的真实、虚构、原型与模糊地点。
 3. 实现空间信息白名单和完整的双阶段展示门禁界面。
 4. 接入本地 OCR 与实体映射，保存用户确认的纠正结果。

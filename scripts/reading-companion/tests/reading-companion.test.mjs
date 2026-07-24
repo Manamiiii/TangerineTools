@@ -274,7 +274,13 @@ test('reading preview publishes only approved sources and keeps candidates pendi
   const [preview] = previews
   assert.deepEqual(validateReadingPackage(preview.package), [])
   assert.deepEqual(preview.previewMeta.approvedSourceIds, ['source-weread-edition-metadata'])
-  assert.equal(preview.previewMeta.pendingSourceIds.length, 4)
+  assert.equal(preview.previewMeta.pendingSourceIds.length, 9)
+  assert.equal(preview.previewMeta.candidateEntityIds.length, 4)
+  assert.equal(preview.previewMeta.candidateFactIds.length, 2)
+  assert.equal(preview.researchCandidates.entities.length, 4)
+  assert.equal(preview.researchCandidates.facts.length, 2)
+  assert.deepEqual(preview.package.entities, [])
+  assert.deepEqual(preview.package.facts, [])
   assert.deepEqual(
     preview.package.sources.map((source) => source.id),
     ['source-weread-edition-metadata'],
@@ -299,6 +305,8 @@ test('a new book can build its first preview from staging without pipeline code 
       kind: 'edition-metadata',
       label: '测试版本信息',
     }],
+    entityCandidates: [],
+    factCandidates: [],
     entities: [],
     facts: [],
     package: {
@@ -330,4 +338,64 @@ test('a new book can build its first preview from staging without pipeline code 
   assert.equal(preview.previewMeta.targetPath, 'public/presets/reading-companion/test-book-zh-test-edition.json')
   assert.equal(preview.catalogEntry.path, 'presets/reading-companion/test-book-zh-test-edition.json')
   assert.deepEqual(preview.package.sources.map((source) => source.id), ['source-test-edition'])
+})
+
+test('research candidates require provenance and blockers and never publish implicitly', () => {
+  const staging = {
+    schemaVersion: 1,
+    slug: 'candidate-safety-test',
+    order: 2,
+    packageId: readingPackage.id,
+    packageVersion: readingPackage.packageVersion,
+    catalogEntry: { title: '候选安全测试', editionLabel: '测试版本' },
+    sourceCandidates: [{
+      id: 'candidate-source',
+      status: 'candidate',
+      kind: 'research',
+      label: '候选来源',
+    }],
+    entityCandidates: [{
+      status: 'candidate',
+      entity: {
+        id: 'place-unreviewed',
+        name: '待审地点',
+        kind: 'place',
+        placeKind: 'real',
+      },
+      sourceIds: ['candidate-source'],
+      blockers: ['missing_edition_chapter_evidence'],
+    }],
+    factCandidates: [],
+    entities: [],
+    facts: [],
+    package: readingPackage,
+  }
+  const preview = buildReadingPreviewFromStaging(staging)
+  assert.deepEqual(preview.previewMeta.candidateEntityIds, ['place-unreviewed'])
+  assert.deepEqual(preview.package.entities, [])
+  assert.deepEqual(preview.package.sources, [])
+
+  staging.entityCandidates[0].blockers = []
+  assert.throws(
+    () => buildReadingPreviewFromStaging(staging),
+    /待审候选必须说明阻塞项/,
+  )
+
+  staging.entityCandidates[0].blockers = ['missing_edition_chapter_evidence']
+  staging.factCandidates = [{
+    status: 'candidate',
+    fact: {
+      id: 'fact-unreviewed',
+      kind: 'history',
+      content: '待审事实',
+      riskLevel: 'potential',
+      riskCategories: ['free_text_category'],
+    },
+    sourceIds: ['candidate-source'],
+    blockers: ['spoiler_boundary_requires_review'],
+  }]
+  assert.throws(
+    () => buildReadingPreviewFromStaging(staging),
+    /风险类别无效/,
+  )
 })

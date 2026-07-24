@@ -110,7 +110,7 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 
 - 运行时从 `public/presets/reading-companion/catalog.json` 读取版本化书籍目录，并对资料包 schema、稳定章节、事实风险和引用关系做校验。
 - 应用初始化会创建稳定 id 为 `scene-reading-companion` 的「经典文学阅读」场景，默认只启用 `reader`。播种标记防止用户删除后被自动重建，已有同 id 场景的名称、工具和其他自定义值不会被覆盖。
-- 内置《飘》长江文艺出版社 2018 年 5 月版（ISBN `9787570202188`）的版本元数据和连续 1–63 章稳定标识。资料包中的实体和事实集合只接受经过来源审计的内容，当前为空。
+- 内置《飘》长江文艺出版社 2018 年 5 月版（ISBN `9787570202188`）的版本元数据和连续 1–63 章稳定标识。资料包中的实体和事实集合只接受经过来源审计的内容，当前为空；staging 另有 4 个地点候选和 2 条事实候选，不会出现在运行时。
 - 用户手动选择当前已读章节；进度以 `readerState:{sceneId}:{editionId}` 命名空间保存在 Dexie `meta` 表中，不改变 schema v1。
 - 支持粘贴当前段落和选择页面截图。段落不持久化，截图只通过临时对象 URL 在本机预览；OCR、实体识别和模型调用尚未接入。
 - 地点实体必须声明类型、首次可揭示章节和已批准来源；坐标支持精确点或带半径的模糊区域，虚构地点不能伪造精确点。界面只按当前章节展示已揭示地点，并用确定性空间投影呈现审计坐标；外部地图底图尚未接入。
@@ -119,7 +119,7 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 - `npm run check:reader:packages` 校验资料目录及所有运行时资料包。
 - 阅读伴侣专用运行时代码位于 `src/features/reading-companion/`，研究、发布脚本及其领域测试位于 `scripts/reading-companion/`；公共目录只保留工具懒加载、Dexie 实例、播种编排和兼容导出等集成边界。
 - 项目样式仍按全局约定集中在 `src/styles.css`，阅读伴侣专用选择器统一使用 `reader-` 前缀，避免引入第二套样式入口。
-- 研究资料位于 `scripts/reading-companion/data/staging/`；管线自动发现全部 staging，逐书生成版本化 preview，并派生统一运行时 catalog。新书 staging 携带完整 `package`，已有书可用 `basePackagePath` 复用正式包，不需要修改脚本。`check:reader:preset` 输出 dry-run 报告，`apply:reader:preset` 仅在显式确认环境变量存在时写入正式资料包。只有 `approved` 来源进入运行时包，`candidate` 与 `rejected` 来源保留在审计数据中。
+- 研究资料位于 `scripts/reading-companion/data/staging/`；管线自动发现全部 staging，逐书生成版本化 preview，并派生统一运行时 catalog。新书 staging 携带完整 `package`，已有书可用 `basePackagePath` 复用正式包，不需要修改脚本。`check:reader:preset` 输出 dry-run 报告，`apply:reader:preset` 仅在显式确认环境变量存在时写入正式资料包。只有 `approved` 来源进入运行时包；资料源、实体和事实候选均保留在审计数据中，候选必须记录引用来源与阻塞项，且不会被隐式发布。
 - Codex 或其他模型在开发期间生成的研究结果属于建库候选，不是运行时模型能力；测试夹具也不是正式资料。只有仓库内可重复执行的代码、校验、发布流程和已批准资料包属于当前系统能力。
 
 ### 8. 洛克王国预置资料

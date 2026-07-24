@@ -52,12 +52,28 @@ const report = [
     `- 事实：${preview.package.facts.length}`,
     `- 已批准资料源：${preview.previewMeta.approvedSourceIds.length}`,
     `- 待审资料源：${preview.previewMeta.pendingSourceIds.length}`,
+    `- 待审实体：${preview.previewMeta.candidateEntityIds.length}`,
+    `- 待审事实：${preview.previewMeta.candidateFactIds.length}`,
     '',
     '### 待审资料源',
     '',
     ...(preview.previewMeta.pendingSourceIds.length
       ? preview.previewMeta.pendingSourceIds.map((id) => `- \`${id}\``)
       : ['- 无']),
+    '',
+    '### 待审实体与阻塞项',
+    '',
+    ...(preview.researchCandidates.entities
+      .filter((candidate) => candidate.status === 'candidate')
+      .map((candidate) => `- \`${candidate.entity.id}\`：${candidate.blockers.join('、')}`)),
+    ...(preview.previewMeta.candidateEntityIds.length ? [] : ['- 无']),
+    '',
+    '### 待审事实与阻塞项',
+    '',
+    ...(preview.researchCandidates.facts
+      .filter((candidate) => candidate.status === 'candidate')
+      .map((candidate) => `- \`${candidate.fact.id}\`：${candidate.blockers.join('、')}`)),
+    ...(preview.previewMeta.candidateFactIds.length ? [] : ['- 无']),
     '',
   ]),
 ].join('\n')

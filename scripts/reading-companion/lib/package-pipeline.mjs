@@ -14,6 +14,20 @@ export const reportPath = path.join(
 )
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+const ENTITY_KINDS = new Set(['place', 'person', 'concept', 'event'])
+const PLACE_KINDS = new Set(['real', 'fictional', 'prototype', 'approximate'])
+const FACT_KINDS = new Set(['spatial', 'character', 'plot', 'history', 'concept'])
+const RISK_LEVELS = new Set(['safe', 'potential', 'high'])
+const RISK_CATEGORIES = new Set([
+  'character_relationship',
+  'location_significance',
+  'character_fate',
+  'future_event',
+  'historical_plot_link',
+  'route_significance',
+  'ending',
+  'identity_secret',
+])
 
 export async function readJson(filePath) {
   return JSON.parse(await readFile(filePath, 'utf8'))
@@ -59,6 +73,68 @@ function validateSourceCandidates(sourceCandidates) {
   }
 }
 
+function validateResearchCandidates(kind, candidates, sourceIds) {
+  if (!Array.isArray(candidates)) {
+    throw new Error(`staging.${kind}Candidates 必须是数组`)
+  }
+  const ids = new Set()
+  const itemKey = kind === 'entity' ? 'entity' : 'fact'
+  for (const candidate of candidates) {
+    const item = candidate?.[itemKey]
+    if (!['candidate', 'rejected'].includes(candidate?.status)) {
+      throw new Error(`${kind} 候选状态无效：${item?.id || 'unknown'}`)
+    }
+    if (!item?.id) throw new Error(`${kind} 候选必须包含 ${itemKey}.id`)
+    if (ids.has(item.id)) throw new Error(`${kind} 候选 id 重复：${item.id}`)
+    ids.add(item.id)
+    if (!Array.isArray(candidate.sourceIds) || candidate.sourceIds.length === 0) {
+      throw new Error(`${kind} 候选必须引用至少一个资料源：${item.id}`)
+    }
+    for (const sourceId of candidate.sourceIds) {
+      if (!sourceIds.has(sourceId)) {
+        throw new Error(`${kind} 候选引用未知资料源：${item.id} → ${sourceId}`)
+      }
+    }
+    if (candidate.status === 'candidate'
+      && (!Array.isArray(candidate.blockers) || candidate.blockers.length === 0)) {
+      throw new Error(`${kind} 待审候选必须说明阻塞项：${item.id}`)
+    }
+    if (kind === 'entity') {
+      if (!item.name || !item.kind) throw new Error(`实体候选缺少名称或类型：${item.id}`)
+      if (!ENTITY_KINDS.has(item.kind)) throw new Error(`实体候选类型无效：${item.id}`)
+      if (item.kind === 'place' && !PLACE_KINDS.has(item.placeKind)) {
+        throw new Error(`地点候选分类无效：${item.id}`)
+      }
+      const geometry = item.geometry
+      if (item.placeKind === 'fictional' && geometry) {
+        throw new Error(`虚构地点候选不能伪造坐标：${item.id}`)
+      }
+      if (geometry) {
+        if (!['point', 'area'].includes(geometry.type)
+          || !Number.isFinite(geometry.latitude)
+          || !Number.isFinite(geometry.longitude)
+          || geometry.latitude < -90
+          || geometry.latitude > 90
+          || geometry.longitude < -180
+          || geometry.longitude > 180) {
+          throw new Error(`实体候选坐标无效：${item.id}`)
+        }
+      }
+    } else {
+      if (!item.content || !FACT_KINDS.has(item.kind)) {
+        throw new Error(`事实候选缺少内容或类型无效：${item.id}`)
+      }
+      if (!RISK_LEVELS.has(item.riskLevel)) {
+        throw new Error(`事实候选风险等级无效：${item.id}`)
+      }
+      if (!Array.isArray(item.riskCategories)
+        || item.riskCategories.some((category) => !RISK_CATEGORIES.has(category))) {
+        throw new Error(`事实候选风险类别无效：${item.id}`)
+      }
+    }
+  }
+}
+
 function runtimeSource(source) {
   return Object.fromEntries(
     ['id', 'kind', 'label', 'organization', 'url', 'accessedAt', 'useFor', 'rightsStatus', 'notes']
@@ -80,6 +156,9 @@ function validateStaging(staging) {
     throw new Error('staging.order 必须是非负整数')
   }
   validateSourceCandidates(staging.sourceCandidates)
+  const sourceIds = new Set(staging.sourceCandidates.map((source) => source.id))
+  validateResearchCandidates('entity', staging.entityCandidates, sourceIds)
+  validateResearchCandidates('fact', staging.factCandidates, sourceIds)
   if (!Array.isArray(staging.entities) || !Array.isArray(staging.facts)) {
     throw new Error('staging.entities 和 staging.facts 必须是数组')
   }
@@ -120,6 +199,22 @@ export function buildReadingPreviewFromStaging(staging, basePackage = null) {
       rejectedSourceIds: staging.sourceCandidates
         .filter((source) => source.status === 'rejected')
         .map((source) => source.id),
+      candidateEntityIds: staging.entityCandidates
+        .filter((candidate) => candidate.status === 'candidate')
+        .map((candidate) => candidate.entity.id),
+      rejectedEntityIds: staging.entityCandidates
+        .filter((candidate) => candidate.status === 'rejected')
+        .map((candidate) => candidate.entity.id),
+      candidateFactIds: staging.factCandidates
+        .filter((candidate) => candidate.status === 'candidate')
+        .map((candidate) => candidate.fact.id),
+      rejectedFactIds: staging.factCandidates
+        .filter((candidate) => candidate.status === 'rejected')
+        .map((candidate) => candidate.fact.id),
+    },
+    researchCandidates: {
+      entities: staging.entityCandidates,
+      facts: staging.factCandidates,
     },
     catalogEntry: {
       id: nextPackage.id,
