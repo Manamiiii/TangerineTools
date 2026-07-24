@@ -1,11 +1,28 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { BookOpen, Image, Lock, MapPin, ShieldCheck, Upload, X } from 'lucide-react'
+import {
+  AlertTriangle,
+  BookOpen,
+  Eye,
+  EyeOff,
+  Image,
+  Lock,
+  MapPin,
+  ShieldCheck,
+  Upload,
+  X,
+} from 'lucide-react'
 import { getReadingState, saveReadingState } from '../db.js'
 import { loadReadingPackage, loadReadingPackageCatalog } from '../data/readingPackages.js'
 import {
+  SPOILER_GATE_ACTION,
+  SPOILER_CATEGORY_LABELS,
+  SPOILER_RISK,
+  canRevealRisk,
   projectReadingPlaces,
+  spoilerGateAction,
   visibleReadingEntities,
+  visibleReadingFacts,
 } from '../domain/readingCompanion.js'
 
 const PLACE_KIND_LABELS = {
@@ -119,6 +136,134 @@ function ReadingMapPanel({ entities, currentChapterId, chapters }) {
               <small>仅展示资料包中已审计的空间字段，不生成剧情解释。</small>
             </div>
           )}
+        </div>
+      )}
+    </section>
+  )
+}
+
+function ReadingFactContent({ fact, entities, onHide }) {
+  const entityNames = fact.entityIds
+    .map((entityId) => entities.find((entity) => entity.id === entityId)?.name)
+    .filter(Boolean)
+  return (
+    <div className={`reader-fact-content ${fact.riskLevel}`}>
+      <p>{fact.content}</p>
+      {entityNames.length > 0 && <small>相关实体：{entityNames.join('、')}</small>}
+      {fact.riskLevel !== SPOILER_RISK.SAFE && (
+        <button type="button" className="btn btn-sm" onClick={onHide}>
+          <EyeOff size={13} /> 收起并撤销本次授权
+        </button>
+      )}
+    </div>
+  )
+}
+
+function ReadingFactsPanel({ facts, entities, currentChapterId, currentChapter, chapters }) {
+  const visibleFacts = useMemo(
+    () => visibleReadingFacts(facts, currentChapterId, chapters),
+    [facts, currentChapterId, chapters],
+  )
+  const [gateStates, setGateStates] = useState({})
+
+  function setGateState(factId, state) {
+    setGateStates((current) => ({ ...current, [factId]: state }))
+  }
+
+  function riskCategories(fact) {
+    return fact.riskCategories.map(
+      (category) => SPOILER_CATEGORY_LABELS[category] || '未分类风险',
+    )
+  }
+
+  return (
+    <section className="reader-panel">
+      <div className="reader-panel-heading">
+        <div>
+          <span className="reader-step">04</span>
+          <h3>查看已读资料</h3>
+        </div>
+        <span className="reader-system-chip"><ShieldCheck size={13} /> 确定性剧透门禁</span>
+      </div>
+      {visibleFacts.length === 0 ? (
+        <div className="reader-facts-empty">
+          <ShieldCheck size={24} />
+          <strong>当前没有可展示的正式事实</strong>
+          <p>测试夹具和临时研究不会出现在这里；只有通过发布流程的已审计事实才会进入门禁。</p>
+        </div>
+      ) : (
+        <div className="reader-fact-list">
+          {visibleFacts.map((fact, index) => {
+            const gateState = gateStates[fact.id] || 'hidden'
+            const gateAction = spoilerGateAction(fact.riskLevel)
+            const isSafe = gateAction === SPOILER_GATE_ACTION.DISPLAY
+            const isRevealed = canRevealRisk(
+              fact.riskLevel,
+              gateState === 'revealed' ? fact.riskLevel : 'none',
+            )
+            return (
+              <article className={`reader-fact-card ${fact.riskLevel}`} key={fact.id}>
+                <div className="reader-fact-heading">
+                  <strong>已审计说明 {index + 1}</strong>
+                  <span>{isSafe ? '安全资料' : fact.riskLevel === SPOILER_RISK.HIGH ? '高风险' : '潜在剧透'}</span>
+                </div>
+                {isRevealed ? (
+                  <ReadingFactContent
+                    fact={fact}
+                    entities={entities}
+                    onHide={() => setGateState(fact.id, 'hidden')}
+                  />
+                ) : gateState === 'hidden' ? (
+                  <div className="reader-fact-locked">
+                    <EyeOff size={18} />
+                    <p>已审计内容在确认前不会写入页面。</p>
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      onClick={() => setGateState(fact.id, 'warning')}
+                    >
+                      <Eye size={13} /> 请求查看
+                    </button>
+                  </div>
+                ) : (
+                  <div className={`reader-spoiler-warning ${gateState === 'confirming' ? 'high' : ''}`} role="alert">
+                    <AlertTriangle size={20} />
+                    <div>
+                      <strong>
+                        {gateState === 'confirming'
+                          ? '请再次确认显示高风险内容'
+                          : '以下内容可能涉及剧透'}
+                      </strong>
+                      <p>可能涉及：{riskCategories(fact).join('、')}。</p>
+                      <small>当前阅读进度：{currentChapter?.label || '未知'}。</small>
+                      <div className="reader-warning-actions">
+                        <button
+                          type="button"
+                          className="btn btn-sm"
+                          onClick={() => setGateState(fact.id, 'hidden')}
+                        >
+                          保持隐藏
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-danger"
+                          onClick={() => setGateState(
+                            fact.id,
+                            gateAction === SPOILER_GATE_ACTION.CONFIRM_TWICE
+                              && gateState !== 'confirming'
+                              ? 'confirming'
+                              : 'revealed',
+                          )}
+                        >
+                          {gateState === 'confirming' ? '确认显示' : '仍然查看'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </article>
+            )
+          })}
         </div>
       )}
     </section>
@@ -333,6 +478,15 @@ export function ReaderTool({ scene }) {
           <ReadingMapPanel
             entities={readingPackage.entities}
             currentChapterId={currentChapterId}
+            chapters={readingPackage.chapters}
+          />
+
+          <ReadingFactsPanel
+            key={`${readingPackage.id}:${currentChapterId}`}
+            facts={readingPackage.facts}
+            entities={readingPackage.entities}
+            currentChapterId={currentChapterId}
+            currentChapter={currentChapter}
             chapters={readingPackage.chapters}
           />
         </main>

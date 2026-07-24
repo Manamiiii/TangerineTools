@@ -13,6 +13,7 @@ import {
   strongestSpoilerRisk,
   validateReadingPackage,
   visibleReadingEntities,
+  visibleReadingFacts,
 } from '../../src/domain/readingCompanion.js'
 import {
   buildReadingPreviewFromStaging,
@@ -49,7 +50,7 @@ test('package validation rejects duplicate chapters and unknown fact references'
   const errors = validateReadingPackage(invalidPackage)
   assert.ok(errors.some((error) => error.includes('章节 id 重复')))
   assert.ok(errors.some((error) => error.includes('riskLevel')))
-  assert.ok(errors.some((error) => error.includes('未知章节')))
+  assert.ok(errors.some((error) => error.includes('已知章节')))
   assert.ok(errors.some((error) => error.includes('未知实体')))
 })
 
@@ -130,6 +131,54 @@ test('entity visibility and spatial projection are deterministic system capabili
     projected.map(({ x, y }) => [x, y]),
     [[8, 8], [92, 92]],
   )
+})
+
+test('formal facts require sources, known categories, and stay unavailable before reveal chapter', () => {
+  const packageWithFacts = structuredClone(readingPackage)
+  packageWithFacts.entities = [{
+    id: 'place-real',
+    name: '测试真实地点',
+    kind: 'place',
+    placeKind: 'real',
+    revealAt: { chapterId: 'chapter-01' },
+    sourceIds: ['source-weread-edition-metadata'],
+    geometry: { type: 'point', latitude: 34, longitude: -85 },
+  }]
+  packageWithFacts.facts = [
+    {
+      id: 'fact-safe',
+      kind: 'spatial',
+      content: '这是一条纯空间事实。',
+      entityIds: ['place-real'],
+      revealAt: { chapterId: 'chapter-01' },
+      riskLevel: SPOILER_RISK.SAFE,
+      riskCategories: [],
+      sourceIds: ['source-weread-edition-metadata'],
+    },
+    {
+      id: 'fact-potential',
+      kind: 'character',
+      content: '这是一条需要确认的关系事实。',
+      entityIds: ['place-real'],
+      revealAt: { chapterId: 'chapter-03' },
+      riskLevel: SPOILER_RISK.POTENTIAL,
+      riskCategories: ['character_relationship'],
+      sourceIds: ['source-weread-edition-metadata'],
+    },
+  ]
+  assert.deepEqual(validateReadingPackage(packageWithFacts), [])
+  assert.deepEqual(
+    visibleReadingFacts(
+      packageWithFacts.facts,
+      'chapter-02',
+      packageWithFacts.chapters,
+    ).map(({ id }) => id),
+    ['fact-safe'],
+  )
+
+  packageWithFacts.facts[1].riskCategories = ['model-written-free-text']
+  const errors = validateReadingPackage(packageWithFacts)
+  assert.ok(errors.some((error) => error.includes('未知风险类别')))
 })
 
 test('reading state keys isolate scenes and editions without changing the Dexie schema', () => {

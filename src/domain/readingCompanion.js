@@ -12,10 +12,23 @@ export const SPOILER_GATE_ACTION = {
   CONFIRM_TWICE: 'confirm-twice',
 }
 
+export const SPOILER_CATEGORY_LABELS = {
+  location_significance: '地点的剧情意义',
+  character_relationship: '人物关系',
+  character_fate: '人物命运',
+  future_event: '后续事件',
+  historical_plot_link: '历史与剧情联系',
+  route_significance: '路线的剧情意义',
+  ending: '结局',
+  identity_secret: '身份或核心秘密',
+}
+
 const VALID_RISK_LEVELS = new Set(Object.values(SPOILER_RISK))
 const VALID_ENTITY_KINDS = new Set(['place', 'person', 'concept', 'event'])
 const VALID_PLACE_KINDS = new Set(['real', 'fictional', 'prototype', 'approximate'])
 const VALID_GEOMETRY_TYPES = new Set(['point', 'area'])
+const VALID_FACT_KINDS = new Set(['spatial', 'character', 'plot', 'history', 'concept'])
+const VALID_RISK_CATEGORIES = new Set(Object.keys(SPOILER_CATEGORY_LABELS))
 
 function isObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -49,6 +62,15 @@ export function visibleReadingEntities(entities, currentChapterId, chapters) {
   if (!Array.isArray(entities)) return []
   return entities.filter((entity) => isRevealedAtChapter(
     entity?.revealAt,
+    currentChapterId,
+    chapters,
+  ))
+}
+
+export function visibleReadingFacts(facts, currentChapterId, chapters) {
+  if (!Array.isArray(facts)) return []
+  return facts.filter((fact) => isRevealedAtChapter(
+    fact?.revealAt,
     currentChapterId,
     chapters,
   ))
@@ -220,16 +242,45 @@ export function validateReadingPackage(pkg) {
       }
     }
   }
+  const factIds = new Set()
   for (const [index, fact] of (Array.isArray(pkg.facts) ? pkg.facts : []).entries()) {
     if (!isObject(fact) || !isNonEmptyString(fact.id)) {
       errors.push(`facts[${index}].id 不能为空`)
       continue
     }
+    if (factIds.has(fact.id)) errors.push(`事实 id 重复：${fact.id}`)
+    factIds.add(fact.id)
+    if (!VALID_FACT_KINDS.has(fact.kind)) errors.push(`facts[${index}].kind 无效`)
+    if (!isNonEmptyString(fact.content)) errors.push(`facts[${index}].content 不能为空`)
     if (!VALID_RISK_LEVELS.has(fact.riskLevel)) {
       errors.push(`facts[${index}].riskLevel 无效`)
     }
-    if (fact.revealAt?.chapterId && !chapterIds.has(fact.revealAt.chapterId)) {
-      errors.push(`facts[${index}].revealAt 引用了未知章节`)
+    if (!fact.revealAt?.chapterId || !chapterIds.has(fact.revealAt.chapterId)) {
+      errors.push(`facts[${index}].revealAt 必须引用已知章节`)
+    }
+    if (!Array.isArray(fact.entityIds)) {
+      errors.push(`facts[${index}].entityIds 必须是数组`)
+    }
+    if (!Array.isArray(fact.sourceIds) || fact.sourceIds.length === 0) {
+      errors.push(`facts[${index}].sourceIds 必须是非空数组`)
+    } else {
+      for (const sourceId of fact.sourceIds) {
+        if (!sourceIds.has(sourceId)) {
+          errors.push(`facts[${index}] 引用了未知来源：${sourceId}`)
+        }
+      }
+    }
+    if (!Array.isArray(fact.riskCategories)) {
+      errors.push(`facts[${index}].riskCategories 必须是数组`)
+    } else {
+      if (fact.riskLevel !== SPOILER_RISK.SAFE && fact.riskCategories.length === 0) {
+        errors.push(`facts[${index}] 的潜在或高风险内容必须声明风险类别`)
+      }
+      for (const category of fact.riskCategories) {
+        if (!VALID_RISK_CATEGORIES.has(category)) {
+          errors.push(`facts[${index}] 使用了未知风险类别：${category}`)
+        }
+      }
     }
     for (const entityId of fact.entityIds || []) {
       if (!entityIds.has(entityId)) errors.push(`facts[${index}] 引用了未知实体：${entityId}`)

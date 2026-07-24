@@ -114,6 +114,7 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 - 用户手动选择当前已读章节；进度以 `readerState:{sceneId}:{editionId}` 命名空间保存在 Dexie `meta` 表中，不改变 schema v1。
 - 支持粘贴当前段落和选择页面截图。段落不持久化，截图只通过临时对象 URL 在本机预览；OCR、实体识别和模型调用尚未接入。
 - 地点实体必须声明类型、首次可揭示章节和已批准来源；坐标支持精确点或带半径的模糊区域，虚构地点不能伪造精确点。界面只按当前章节展示已揭示地点，并用确定性空间投影呈现审计坐标；外部地图底图尚未接入。
+- 正式事实必须引用已批准来源和已知章节，并使用预定义风险类别。当前章节之后或边界不明的事实不会进入展示列表；`safe` 内容直接显示，`potential` 内容先显示无细节警告，`high` 内容需要二次确认。授权仅保存在当前组件状态，收起内容、切换章节或切换资料包都会撤销。
 - 纯领域逻辑定义 `safe` / `potential` / `high` 风险、未来章节提升为潜在剧透、未知边界保守处理、单次授权等级和高风险二次确认动作。
 - `npm run check:reader:packages` 校验资料目录及所有运行时资料包。
 - 研究资料位于 `scripts/reading/data/staging/`；管线自动发现全部 staging，逐书生成版本化 preview，并派生统一运行时 catalog。新书 staging 携带完整 `package`，已有书可用 `basePackagePath` 复用正式包，不需要修改脚本。`check:reader:preset` 输出 dry-run 报告，`apply:reader:preset` 仅在显式确认环境变量存在时写入正式资料包。只有 `approved` 来源进入运行时包，`candidate` 与 `rejected` 来源保留在审计数据中。
