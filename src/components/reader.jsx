@@ -3,6 +3,17 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { BookOpen, Image, Lock, MapPin, ShieldCheck, Upload, X } from 'lucide-react'
 import { getReadingState, saveReadingState } from '../db.js'
 import { loadReadingPackage, loadReadingPackageCatalog } from '../data/readingPackages.js'
+import {
+  projectReadingPlaces,
+  visibleReadingEntities,
+} from '../domain/readingCompanion.js'
+
+const PLACE_KIND_LABELS = {
+  real: '真实地点',
+  fictional: '虚构地点',
+  prototype: '原型地点',
+  approximate: '模糊区域',
+}
 
 function LoadingPanel({ message }) {
   return <div className="reader-loading">{message}</div>
@@ -14,6 +25,103 @@ function ReaderError({ message }) {
       <strong>阅读资料加载失败</strong>
       <span>{message}</span>
     </div>
+  )
+}
+
+function ReadingMapPanel({ entities, currentChapterId, chapters }) {
+  const places = useMemo(
+    () => visibleReadingEntities(entities, currentChapterId, chapters)
+      .filter((entity) => entity.kind === 'place'),
+    [entities, currentChapterId, chapters],
+  )
+  const projectedPlaces = useMemo(() => projectReadingPlaces(places), [places])
+  const [selectedPlaceId, setSelectedPlaceId] = useState('')
+  const selectedPlace = places.find((place) => place.id === selectedPlaceId) || places[0] || null
+
+  useEffect(() => {
+    if (selectedPlaceId && !places.some((place) => place.id === selectedPlaceId)) {
+      setSelectedPlaceId('')
+    }
+  }, [places, selectedPlaceId])
+
+  return (
+    <section className="reader-panel">
+      <div className="reader-panel-heading">
+        <div>
+          <span className="reader-step">03</span>
+          <h3>探索已读地点</h3>
+        </div>
+        <span className="reader-system-chip"><ShieldCheck size={13} /> 系统规则过滤</span>
+      </div>
+      {places.length === 0 ? (
+        <div className="reader-map-empty">
+          <MapPin size={24} />
+          <strong>当前进度还没有可展示的已审计地点</strong>
+          <p>这里只读取正式资料包，不会用临时推断或模型猜测填充地点。</p>
+        </div>
+      ) : (
+        <div className="reader-map-layout">
+          <div className="reader-map-canvas" aria-label="已读地点空间概览">
+            <span className="reader-map-axis north">北</span>
+            <span className="reader-map-axis south">南</span>
+            {projectedPlaces.map((place) => {
+              const entity = places.find((item) => item.id === place.id)
+              return (
+                <button
+                  className={`reader-map-marker ${selectedPlace?.id === place.id ? 'active' : ''}`}
+                  key={place.id}
+                  type="button"
+                  style={{ left: `${place.x}%`, top: `${place.y}%` }}
+                  onClick={() => setSelectedPlaceId(place.id)}
+                  aria-label={`查看${entity.name}`}
+                >
+                  <MapPin size={18} />
+                  <span>{entity.name}</span>
+                </button>
+              )
+            })}
+            {projectedPlaces.length === 0 && (
+              <div className="reader-map-unplaced">已出现的地点尚无可发布空间位置</div>
+            )}
+          </div>
+          <div className="reader-place-list">
+            {places.map((place) => (
+              <button
+                className={selectedPlace?.id === place.id ? 'active' : ''}
+                key={place.id}
+                type="button"
+                onClick={() => setSelectedPlaceId(place.id)}
+              >
+                <strong>{place.name}</strong>
+                <span>{PLACE_KIND_LABELS[place.placeKind] || '地点'}</span>
+              </button>
+            ))}
+          </div>
+          {selectedPlace && (
+            <div className="reader-place-detail">
+              <div>
+                <strong>{selectedPlace.name}</strong>
+                <span>{PLACE_KIND_LABELS[selectedPlace.placeKind] || '地点'}</span>
+              </div>
+              {selectedPlace.aliases?.length > 0 && (
+                <p>别名：{selectedPlace.aliases.join('、')}</p>
+              )}
+              {selectedPlace.parentLabel && <p>地理层级：{selectedPlace.parentLabel}</p>}
+              {selectedPlace.geometry ? (
+                <p>
+                  {selectedPlace.geometry.type === 'area' ? '区域中心约 ' : ''}
+                  {selectedPlace.geometry.latitude.toFixed(4)}, {selectedPlace.geometry.longitude.toFixed(4)}
+                  {selectedPlace.geometry.type === 'area' && ` · 半径约 ${selectedPlace.geometry.radiusKm} km`}
+                </p>
+              ) : (
+                <p>资料包未发布可显示的位置。</p>
+              )}
+              <small>仅展示资料包中已审计的空间字段，不生成剧情解释。</small>
+            </div>
+          )}
+        </div>
+      )}
+    </section>
   )
 }
 
@@ -216,18 +324,30 @@ export function ReaderTool({ scene }) {
             <div className="reader-analysis-placeholder">
               <ShieldCheck size={22} />
               <div>
-                <strong>输入入口已就绪</strong>
+                <strong>未来模型能力 · 尚未接入</strong>
                 <p>实体识别会在地点与人物资料完成审计后开放，避免用未校验结果误导阅读。</p>
               </div>
             </div>
           </section>
+
+          <ReadingMapPanel
+            entities={readingPackage.entities}
+            currentChapterId={currentChapterId}
+            chapters={readingPackage.chapters}
+          />
         </main>
 
         <aside className="reader-sidebar">
           <section className="reader-sidebar-card">
             <h3><MapPin size={17} /> 地图资料</h3>
-            <strong>{readingPackage.entities.length} 个已审计实体</strong>
-            <p>坐标、距离和方向等纯空间字段可以直接展示。地点资料尚待建库。</p>
+            <strong>
+              {visibleReadingEntities(
+                readingPackage.entities,
+                currentChapterId,
+                readingPackage.chapters,
+              ).filter((entity) => entity.kind === 'place').length} 个当前可见地点
+            </strong>
+            <p>数量按已读章节确定性过滤；正式《飘》地点资料仍待版本证据。</p>
           </section>
           <section className="reader-sidebar-card">
             <h3><ShieldCheck size={17} /> 剧透门禁</h3>

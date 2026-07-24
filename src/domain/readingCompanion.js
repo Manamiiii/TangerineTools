@@ -13,6 +13,9 @@ export const SPOILER_GATE_ACTION = {
 }
 
 const VALID_RISK_LEVELS = new Set(Object.values(SPOILER_RISK))
+const VALID_ENTITY_KINDS = new Set(['place', 'person', 'concept', 'event'])
+const VALID_PLACE_KINDS = new Set(['real', 'fictional', 'prototype', 'approximate'])
+const VALID_GEOMETRY_TYPES = new Set(['point', 'area'])
 
 function isObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -31,6 +34,51 @@ export function readingStateKey(sceneId, editionId) {
 
 export function chapterIndex(chapters, chapterId) {
   return chapters.findIndex((chapter) => chapter.id === chapterId)
+}
+
+export function isRevealedAtChapter(revealAt, currentChapterId, chapters) {
+  if (!revealAt?.chapterId || !isNonEmptyString(currentChapterId) || !Array.isArray(chapters)) {
+    return false
+  }
+  const revealIndex = chapterIndex(chapters, revealAt.chapterId)
+  const currentIndex = chapterIndex(chapters, currentChapterId)
+  return revealIndex >= 0 && currentIndex >= revealIndex
+}
+
+export function visibleReadingEntities(entities, currentChapterId, chapters) {
+  if (!Array.isArray(entities)) return []
+  return entities.filter((entity) => isRevealedAtChapter(
+    entity?.revealAt,
+    currentChapterId,
+    chapters,
+  ))
+}
+
+export function projectReadingPlaces(entities) {
+  const places = (Array.isArray(entities) ? entities : [])
+    .filter((entity) => entity?.kind === 'place' && entity.geometry)
+    .map((entity) => ({
+      id: entity.id,
+      latitude: entity.geometry.latitude,
+      longitude: entity.geometry.longitude,
+    }))
+    .filter(({ latitude, longitude }) => Number.isFinite(latitude) && Number.isFinite(longitude))
+  if (places.length === 0) return []
+
+  const latitudes = places.map((place) => place.latitude)
+  const longitudes = places.map((place) => place.longitude)
+  const minLatitude = Math.min(...latitudes)
+  const maxLatitude = Math.max(...latitudes)
+  const minLongitude = Math.min(...longitudes)
+  const maxLongitude = Math.max(...longitudes)
+  const latitudeSpan = maxLatitude - minLatitude
+  const longitudeSpan = maxLongitude - minLongitude
+
+  return places.map((place) => ({
+    ...place,
+    x: longitudeSpan === 0 ? 50 : 8 + ((place.longitude - minLongitude) / longitudeSpan) * 84,
+    y: latitudeSpan === 0 ? 50 : 8 + ((maxLatitude - place.latitude) / latitudeSpan) * 84,
+  }))
 }
 
 export function riskForDisclosure({ riskLevel, revealAt, currentChapterId, chapters }) {
@@ -119,7 +167,59 @@ export function validateReadingPackage(pkg) {
   }
 
   const chapterIds = new Set(Array.isArray(pkg.chapters) ? pkg.chapters.map((chapter) => chapter?.id) : [])
-  const entityIds = new Set(Array.isArray(pkg.entities) ? pkg.entities.map((entity) => entity?.id) : [])
+  const sourceIds = new Set()
+  for (const [index, source] of (Array.isArray(pkg.sources) ? pkg.sources : []).entries()) {
+    if (!isObject(source) || !isNonEmptyString(source.id)) {
+      errors.push(`sources[${index}].id 不能为空`)
+      continue
+    }
+    if (sourceIds.has(source.id)) errors.push(`来源 id 重复：${source.id}`)
+    sourceIds.add(source.id)
+  }
+  const entityIds = new Set()
+  for (const [index, entity] of (Array.isArray(pkg.entities) ? pkg.entities : []).entries()) {
+    if (!isObject(entity) || !isNonEmptyString(entity.id)) {
+      errors.push(`entities[${index}].id 不能为空`)
+      continue
+    }
+    if (entityIds.has(entity.id)) errors.push(`实体 id 重复：${entity.id}`)
+    entityIds.add(entity.id)
+    if (!isNonEmptyString(entity.name)) errors.push(`entities[${index}].name 不能为空`)
+    if (!VALID_ENTITY_KINDS.has(entity.kind)) errors.push(`entities[${index}].kind 无效`)
+    if (!entity.revealAt?.chapterId || !chapterIds.has(entity.revealAt.chapterId)) {
+      errors.push(`entities[${index}].revealAt 必须引用已知章节`)
+    }
+    if (!Array.isArray(entity.sourceIds) || entity.sourceIds.length === 0) {
+      errors.push(`entities[${index}].sourceIds 必须是非空数组`)
+    } else {
+      for (const sourceId of entity.sourceIds) {
+        if (!sourceIds.has(sourceId)) {
+          errors.push(`entities[${index}] 引用了未知来源：${sourceId}`)
+        }
+      }
+    }
+    if (entity.kind === 'place') {
+      if (!VALID_PLACE_KINDS.has(entity.placeKind)) {
+        errors.push(`entities[${index}].placeKind 无效`)
+      }
+      if (entity.geometry) {
+        const { type, latitude, longitude, radiusKm } = entity.geometry
+        if (!VALID_GEOMETRY_TYPES.has(type)) errors.push(`entities[${index}].geometry.type 无效`)
+        if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+          errors.push(`entities[${index}].geometry.latitude 无效`)
+        }
+        if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+          errors.push(`entities[${index}].geometry.longitude 无效`)
+        }
+        if (type === 'area' && (!Number.isFinite(radiusKm) || radiusKm <= 0)) {
+          errors.push(`entities[${index}].geometry.radiusKm 无效`)
+        }
+        if (entity.placeKind === 'fictional' && type === 'point') {
+          errors.push(`entities[${index}] 的虚构地点不能伪造精确坐标`)
+        }
+      }
+    }
+  }
   for (const [index, fact] of (Array.isArray(pkg.facts) ? pkg.facts : []).entries()) {
     if (!isObject(fact) || !isNonEmptyString(fact.id)) {
       errors.push(`facts[${index}].id 不能为空`)

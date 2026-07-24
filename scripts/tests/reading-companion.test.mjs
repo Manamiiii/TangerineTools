@@ -5,11 +5,14 @@ import {
   SPOILER_GATE_ACTION,
   SPOILER_RISK,
   canRevealRisk,
+  isRevealedAtChapter,
+  projectReadingPlaces,
   readingStateKey,
   riskForDisclosure,
   spoilerGateAction,
   strongestSpoilerRisk,
   validateReadingPackage,
+  visibleReadingEntities,
 } from '../../src/domain/readingCompanion.js'
 import {
   buildReadingPreviewFromStaging,
@@ -48,6 +51,85 @@ test('package validation rejects duplicate chapters and unknown fact references'
   assert.ok(errors.some((error) => error.includes('riskLevel')))
   assert.ok(errors.some((error) => error.includes('未知章节')))
   assert.ok(errors.some((error) => error.includes('未知实体')))
+})
+
+test('package validation requires auditable place boundaries and avoids fabricated fictional points', () => {
+  const validPackage = structuredClone(readingPackage)
+  validPackage.entities = [{
+    id: 'place-real',
+    name: '测试真实地点',
+    kind: 'place',
+    placeKind: 'real',
+    aliases: [],
+    revealAt: { chapterId: 'chapter-01' },
+    sourceIds: ['source-weread-edition-metadata'],
+    geometry: {
+      type: 'point',
+      latitude: 33.7,
+      longitude: -84.4,
+    },
+  }]
+  assert.deepEqual(validateReadingPackage(validPackage), [])
+
+  const invalidPackage = structuredClone(readingPackage)
+  invalidPackage.entities = [{
+    id: 'place-fictional',
+    name: '测试庄园',
+    kind: 'place',
+    placeKind: 'fictional',
+    revealAt: { chapterId: 'chapter-01' },
+    sourceIds: ['missing-source'],
+    geometry: {
+      type: 'point',
+      latitude: 33.7,
+      longitude: -84.4,
+    },
+  }]
+  const errors = validateReadingPackage(invalidPackage)
+  assert.ok(errors.some((error) => error.includes('未知来源')))
+  assert.ok(errors.some((error) => error.includes('虚构地点不能伪造精确坐标')))
+})
+
+test('entity visibility and spatial projection are deterministic system capabilities', () => {
+  const entities = [
+    {
+      id: 'place-real',
+      name: '真实地点',
+      kind: 'place',
+      revealAt: { chapterId: 'chapter-01' },
+      geometry: { type: 'point', latitude: 34, longitude: -85 },
+    },
+    {
+      id: 'place-area',
+      name: '模糊区域',
+      kind: 'place',
+      revealAt: { chapterId: 'chapter-03' },
+      geometry: { type: 'area', latitude: 32, longitude: -82, radiusKm: 20 },
+    },
+    {
+      id: 'place-unknown-boundary',
+      name: '未知边界地点',
+      kind: 'place',
+      revealAt: null,
+      geometry: { type: 'point', latitude: 33, longitude: -83 },
+    },
+  ]
+  assert.equal(
+    isRevealedAtChapter({ chapterId: 'chapter-01' }, 'chapter-02', readingPackage.chapters),
+    true,
+  )
+  assert.deepEqual(
+    visibleReadingEntities(entities, 'chapter-02', readingPackage.chapters).map(({ id }) => id),
+    ['place-real'],
+  )
+  const projected = projectReadingPlaces(
+    visibleReadingEntities(entities, 'chapter-03', readingPackage.chapters),
+  )
+  assert.deepEqual(projected.map(({ id }) => id), ['place-real', 'place-area'])
+  assert.deepEqual(
+    projected.map(({ x, y }) => [x, y]),
+    [[8, 8], [92, 92]],
+  )
 })
 
 test('reading state keys isolate scenes and editions without changing the Dexie schema', () => {
