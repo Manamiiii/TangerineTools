@@ -1,0 +1,349 @@
+{
+  "schemaVersion": 1,
+  "slug": "gone-with-the-wind-zh-9787570202188",
+  "order": 0,
+  "packageId": "reader-package-gone-with-the-wind-zh-9787570202188",
+  "packageVersion": "1.1.0",
+  "basePackagePath": "public/presets/reading-companion/gone-with-the-wind-zh-9787570202188.json",
+  "catalogEntry": {
+    "title": "飘",
+    "editionLabel": "长江文艺出版社 · 2018年5月"
+  },
+  "sourceCandidates": [
+    {
+      "id": "source-weread-edition-metadata",
+      "status": "approved",
+      "kind": "user-provided-edition-metadata",
+      "label": "微信读书版本详情与版权信息",
+      "accessedAt": "2026-07-24",
+      "useFor": ["edition", "chapter_structure"],
+      "notes": "用于确认 ISBN、译者、出版社、出版时间和连续 1–63 章结构；不包含正文。"
+    },
+    {
+      "id": "candidate-loc-america-reads-gwtw",
+      "status": "candidate",
+      "kind": "library-bibliography",
+      "label": "Library of Congress · America Reads · Gone With the Wind",
+      "organization": "Library of Congress",
+      "url": "https://www.loc.gov/exhibits/america-reads/1900-to-1949.html#obj019",
+      "accessedAt": "2026-07-24",
+      "useFor": ["original_bibliography", "historical_scope"],
+      "rightsStatus": "metadata-reference-only",
+      "notes": "可核对原作作者、1936 年 Macmillan 初版和美国南北战争背景；不作为中文译文章节定位依据。"
+    },
+    {
+      "id": "candidate-census-2025-gazetteer",
+      "status": "candidate",
+      "kind": "modern-geography",
+      "label": "U.S. Census Bureau · 2025 Gazetteer Files",
+      "organization": "United States Census Bureau",
+      "url": "https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.2025.html",
+      "accessedAt": "2026-07-24",
+      "useFor": ["modern_place_names", "administrative_hierarchy", "representative_coordinates"],
+      "rightsStatus": "dataset-terms-review-required",
+      "notes": "候选用于现代真实地点的名称、GEOID、行政层级和代表坐标；历史边界需另行核对。"
+    },
+    {
+      "id": "source-census-2025-georgia-incorporated-places",
+      "status": "approved",
+      "kind": "modern-geography",
+      "label": "U.S. Census Bureau · 2025 ACS Georgia Incorporated Places",
+      "organization": "United States Census Bureau",
+      "url": "https://tigerweb.geo.census.gov/tigerwebmain/Files/acs25/tigerweb_acs25_incplace_ga.html",
+      "accessedAt": "2026-07-24",
+      "useFor": ["modern_place_names", "geoid", "representative_coordinates"],
+      "rightsStatus": "public-government-data",
+      "notes": "可核对 Atlanta 与 Jonesboro 的现代行政地名、GEOID 和代表坐标；不能证明作品年代的边界或地点在本译本中的首次出现。"
+    },
+    {
+      "id": "source-atlanta-history-center-so-red-the-rose",
+      "status": "approved",
+      "kind": "museum-research",
+      "label": "Atlanta History Center · So Red the Rose: The Gone With the Wind That Never Was",
+      "organization": "Atlanta History Center",
+      "url": "https://www.atlantahistorycenter.com/blog/so-red-the-rose-the-gone-with-the-wind-that-never-was/",
+      "accessedAt": "2026-07-24",
+      "useFor": ["fictional_place_classification", "atlanta_setting", "architectural_context"],
+      "rightsStatus": "reference-only",
+      "notes": "可支持作品同时涉及虚构的佐治亚种植园与真实的亚特兰大地点，也说明塔拉没有可直接采用的单一精确原型坐标；不能用于本译本章节定位。"
+    },
+    {
+      "id": "source-atlanta-history-center-telling-stories-citations",
+      "status": "approved",
+      "kind": "museum-citation-document",
+      "label": "Atlanta History Center · Telling Stories Citation Document",
+      "organization": "Atlanta History Center",
+      "url": "https://www.atlantahistorycenter.com/app/uploads/2025/08/Telling-Stories-Citation-Document-Public_Final.pdf",
+      "accessedAt": "2026-07-24",
+      "useFor": ["fictional_place_classification", "research_provenance"],
+      "rightsStatus": "reference-only",
+      "notes": "该馆的引用文件明确区分真实历史地点与作品中的虚构地点；只作为候选分类依据，不作为中文译本章节证据。"
+    },
+    {
+      "id": "source-new-georgia-encyclopedia-gwtw",
+      "status": "approved",
+      "kind": "state-encyclopedia",
+      "label": "New Georgia Encyclopedia · Gone With the Wind (Novel)",
+      "organization": "New Georgia Encyclopedia",
+      "url": "https://www.georgiaencyclopedia.org/articles/arts-culture/gone-with-the-wind-novel/",
+      "accessedAt": "2026-07-24",
+      "useFor": ["historical_scope", "place_candidates", "work_context"],
+      "rightsStatus": "reference-only",
+      "notes": "页面包含剧情概述；运行时只采用经人工摘出的地点名称与虚构分类，并且只在读者精确输入同名内容后显示，不复制剧情概述，也不能代替本译本 revealAt 证据。"
+    },
+    {
+      "id": "source-new-georgia-encyclopedia-clayton-county",
+      "status": "approved",
+      "kind": "state-encyclopedia",
+      "label": "New Georgia Encyclopedia · Clayton County",
+      "organization": "New Georgia Encyclopedia",
+      "url": "https://www.georgiaencyclopedia.org/articles/counties-cities-neighborhoods/clayton-county/",
+      "accessedAt": "2026-07-24",
+      "useFor": ["regional_background", "jonesboro_context"],
+      "rightsStatus": "reference-only",
+      "notes": "可支持琼斯伯勒与克莱顿县是作者创作背景来源；仍需确认作品是否直接命名该地点以及指定译本中的出现章节。"
+    },
+    {
+      "id": "candidate-loc-general-maps",
+      "status": "candidate",
+      "kind": "historical-map",
+      "label": "Library of Congress · General Maps",
+      "organization": "Library of Congress, Geography and Map Division",
+      "url": "https://www.loc.gov/collections/general-maps/about-this-collection/rights-and-access/",
+      "accessedAt": "2026-07-24",
+      "useFor": ["historical_map_layers", "historical_boundaries", "historical_routes"],
+      "rightsStatus": "item-level-review-required",
+      "notes": "数字馆藏通常允许使用与再利用，但每张地图仍需检查 Rights Advisory 和署名要求。"
+    },
+    {
+      "id": "candidate-openstreetmap",
+      "status": "candidate",
+      "kind": "map-basemap",
+      "label": "OpenStreetMap",
+      "organization": "OpenStreetMap Foundation and contributors",
+      "url": "https://www.openstreetmap.org/copyright",
+      "accessedAt": "2026-07-24",
+      "useFor": ["interactive_basemap", "modern_roads"],
+      "rightsStatus": "ODbL-1.0-attribution-required",
+      "notes": "如采用，界面必须显示 OpenStreetMap contributors 署名并遵守 ODbL；公共瓦片服务另受使用政策限制。"
+    }
+  ],
+  "entityCandidates": [
+    {
+      "status": "candidate",
+      "entity": {
+        "id": "place-atlanta",
+        "name": "亚特兰大",
+        "originalName": "Atlanta",
+        "kind": "place",
+        "placeKind": "real",
+        "aliases": [],
+        "parentLabel": "佐治亚州，美国",
+        "revealAt": null,
+        "geometry": {
+          "type": "point",
+          "latitude": 33.7628947,
+          "longitude": -84.4220844
+        }
+      },
+      "sourceIds": [
+        "source-census-2025-georgia-incorporated-places",
+        "source-atlanta-history-center-so-red-the-rose"
+      ],
+      "blockers": [
+        "missing_edition_chapter_evidence",
+        "edition_aliases_not_audited"
+      ],
+      "notes": "现代代表坐标可核验；正式发布前仍需从范纯海、夏旻译本确认首次可揭示章节和该版本译名。"
+    },
+    {
+      "status": "candidate",
+      "entity": {
+        "id": "place-jonesboro-georgia",
+        "name": "琼斯伯勒",
+        "originalName": "Jonesboro",
+        "kind": "place",
+        "placeKind": "real",
+        "aliases": [],
+        "parentLabel": "克莱顿县，佐治亚州，美国",
+        "revealAt": null,
+        "geometry": {
+          "type": "point",
+          "latitude": 33.5211498,
+          "longitude": -84.3546835
+        }
+      },
+      "sourceIds": [
+        "source-census-2025-georgia-incorporated-places",
+        "source-new-georgia-encyclopedia-clayton-county"
+      ],
+      "blockers": [
+        "book_relevance_requires_confirmation",
+        "missing_edition_chapter_evidence",
+        "edition_aliases_not_audited"
+      ],
+      "notes": "公开资料能确认真实地点和创作背景联系，但不足以证明作品正文直接出现该地名。"
+    },
+    {
+      "status": "candidate",
+      "entity": {
+        "id": "place-tara",
+        "name": "塔拉庄园",
+        "originalName": "Tara",
+        "kind": "place",
+        "placeKind": "fictional",
+        "aliases": [],
+        "parentLabel": "佐治亚州（虚构地点）",
+        "revealAt": null
+      },
+      "sourceIds": [
+        "source-atlanta-history-center-so-red-the-rose",
+        "source-atlanta-history-center-telling-stories-citations"
+      ],
+      "blockers": [
+        "missing_edition_chapter_evidence",
+        "edition_aliases_not_audited"
+      ],
+      "notes": "保留为无坐标的虚构地点；公开资料中的建筑灵感不能被转换成精确地图点。"
+    },
+    {
+      "status": "candidate",
+      "entity": {
+        "id": "place-twelve-oaks",
+        "name": "十二橡树庄园",
+        "originalName": "Twelve Oaks",
+        "kind": "place",
+        "placeKind": "fictional",
+        "aliases": [],
+        "parentLabel": "佐治亚州（虚构地点）",
+        "revealAt": null
+      },
+      "sourceIds": [
+        "source-new-georgia-encyclopedia-gwtw",
+        "source-atlanta-history-center-telling-stories-citations"
+      ],
+      "blockers": [
+        "missing_edition_chapter_evidence",
+        "edition_aliases_not_audited"
+      ],
+      "notes": "外部页面含剧情概述，因此只记录地点名称和虚构分类，不转存剧情说明。"
+    }
+  ],
+  "factCandidates": [
+    {
+      "status": "candidate",
+      "fact": {
+        "id": "fact-atlanta-modern-representative-coordinate",
+        "kind": "spatial",
+        "content": "美国人口普查局 2025 年资料中，亚特兰大的现代代表坐标为北纬 33.7628947、东经 -84.4220844。",
+        "entityIds": ["place-atlanta"],
+        "revealAt": null,
+        "riskLevel": "safe",
+        "riskCategories": [],
+        "confidence": 1
+      },
+      "sourceIds": ["source-census-2025-georgia-incorporated-places"],
+      "blockers": [
+        "referenced_entity_not_approved",
+        "missing_edition_chapter_evidence"
+      ],
+      "notes": "这是现代地理数据，不代表作品年代的城市边界。"
+    },
+    {
+      "status": "candidate",
+      "fact": {
+        "id": "fact-work-broad-historical-scope",
+        "kind": "history",
+        "content": "作品的广义历史背景涉及美国内战与战后重建时期的佐治亚州。",
+        "entityIds": [],
+        "revealAt": null,
+        "riskLevel": "potential",
+        "riskCategories": ["historical_plot_link"],
+        "confidence": 0.98
+      },
+      "sourceIds": [
+        "candidate-loc-america-reads-gwtw",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "blockers": [
+        "missing_edition_chapter_evidence",
+        "spoiler_boundary_requires_review"
+      ],
+      "notes": "即使是广义时代背景，也必须先确定在指定译本中何时可安全揭示。"
+    }
+  ],
+  "onDemandEntities": [
+    {
+      "id": "place-atlanta",
+      "name": "亚特兰大",
+      "originalName": "Atlanta",
+      "aliases": ["Atlanta"],
+      "kind": "place",
+      "placeKind": "real",
+      "activation": "exact-reader-input",
+      "parentLabel": "佐治亚州，美国",
+      "geometry": {
+        "type": "point",
+        "latitude": 33.7628947,
+        "longitude": -84.4220844
+      },
+      "sourceIds": [
+        "source-census-2025-georgia-incorporated-places",
+        "source-atlanta-history-center-so-red-the-rose"
+      ],
+      "scopeNote": "坐标是现代行政地点的代表坐标，不表示作品年代的城市边界。"
+    },
+    {
+      "id": "place-jonesboro-georgia",
+      "name": "琼斯伯勒",
+      "originalName": "Jonesboro",
+      "aliases": ["Jonesboro"],
+      "kind": "place",
+      "placeKind": "real",
+      "activation": "exact-reader-input",
+      "parentLabel": "克莱顿县，佐治亚州，美国",
+      "geometry": {
+        "type": "point",
+        "latitude": 33.5211498,
+        "longitude": -84.3546835
+      },
+      "sourceIds": [
+        "source-census-2025-georgia-incorporated-places",
+        "source-new-georgia-encyclopedia-clayton-county"
+      ],
+      "scopeNote": "公开资料确认其现代位置和创作背景联系，不代表已经证明正文直接出现该地名。"
+    },
+    {
+      "id": "place-tara",
+      "name": "塔拉庄园",
+      "originalName": "Tara",
+      "aliases": ["塔拉", "Tara"],
+      "kind": "place",
+      "placeKind": "fictional",
+      "activation": "exact-reader-input",
+      "parentLabel": "佐治亚州（虚构地点）",
+      "sourceIds": [
+        "source-atlanta-history-center-so-red-the-rose",
+        "source-atlanta-history-center-telling-stories-citations"
+      ],
+      "scopeNote": "公开研究支持其虚构地点分类；系统不会把建筑灵感伪装成精确坐标。"
+    },
+    {
+      "id": "place-twelve-oaks",
+      "name": "十二橡树庄园",
+      "originalName": "Twelve Oaks",
+      "aliases": ["十二橡树", "Twelve Oaks"],
+      "kind": "place",
+      "placeKind": "fictional",
+      "activation": "exact-reader-input",
+      "parentLabel": "佐治亚州（虚构地点）",
+      "sourceIds": [
+        "source-new-georgia-encyclopedia-gwtw",
+        "source-atlanta-history-center-telling-stories-citations"
+      ],
+      "scopeNote": "只提供虚构地点分类，不包含外部资料页面中的剧情概述。"
+    }
+  ],
+  "entities": [],
+  "facts": []
+}

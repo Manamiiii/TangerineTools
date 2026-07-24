@@ -5,13 +5,14 @@ TangerineTools 是一个本地优先（local-first）的个人资料管理 Web A
 ## 特性概览
 
 - **本地优先，无后端依赖**：数据保存在浏览器 IndexedDB 中，通过 Dexie.js 读写；应用可作为静态站点部署。
-- **场景化工具箱**：首页管理多个场景，每个场景可单独启用资料库、收集记录、统计视图、性格推荐和孵蛋推荐五种工具。
+- **场景化工具箱**：首页管理多个场景，每个场景可单独启用资料库、收集记录、统计视图、性格推荐、孵蛋推荐和阅读伴侣六种工具。
 - **可配置资料库**：支持多资料表、字段管理、搜索、排序、筛选、分页、详情弹窗，以及由字段配置控制的紧凑列宽、多行标签、摘要单元格、引用头像和图标化选项。
 - **引用与多引用字段**：支持单条资料引用和一对多资料引用；洛克王国精灵通过 `skillRefs` 关联技能资料，技能通过 `learnerRefs` 反向关联可学精灵。
 - **收集记录**：记录“我具体拥有哪一只 / 哪一份”，支持一对一和一对多模式；可搜索引用字段在同一个组合框中完成输入筛选和选择。
 - **统计视图**：从资料库或收集记录选择数据源，按字段分组并叠加数值阈值条件统计。
 - **性格推荐**：每个编号从普通形态进入，展示统一绝对刻度的六维、动态分位、完整特性和同编号全部形态差异；候选按强化维度与推荐档位展示，按进化链匹配已获得性格，并为推荐/可保留性格提供预填快速新增收集记录。
 - **孵蛋推荐**：结合收集记录、性别、异色/炫彩、性格、蛋组和繁育谱系，对可用父母组合进行排序。
+- **阅读伴侣**：Windows 首版可安装为 PWA，从书架选择正式资料包或凭版本信息和目录建立个人书籍；书内固定提供阅读输入、已遇到、地图和设置，存在正式事实时才显示背景与注释。章节在书籍页右上角选择，输入页可直接记录未命中名称。支持剪贴板和设备端中英文截图 OCR，并可选配兼容模型识别当前段落里的名称候选；真实地点可经国内/国际公网地图搜索并以点、路径或范围加入可全屏的个人地图。设置页集中管理模型和地图 Key、数据边界与接入教程，同时以确定性规则约束资料的可揭示进度和剧透确认级别。
 - **全量导入/导出**：在首页通过 JSON 文件手动备份或迁移全部本地数据。
 - **洛克王国预置资料**：首次启动会自动创建“洛克王国”场景，包含精灵基础资料和技能资料；当前正式预置只由版本化 BWiki staging / preview 审计产物显式发布。
 
@@ -43,6 +44,8 @@ npm install
 npm run dev
 ```
 
+拉取包含新依赖的代码后如果出现模块缺失或无法启动，请先重新执行 `npm install`，再运行 `npm run dev`。
+
 ### 生产构建 / 预览 / 静态检查
 
 ```bash
@@ -59,6 +62,10 @@ npm run lint
 | `npm run build` | 生成生产构建 |
 | `npm run preview` | 本地预览生产构建产物 |
 | `npm run lint` | 使用 oxlint 做静态检查 |
+| `npm run check:reader:packages` | 校验阅读资料目录、版本信息、稳定章节和事实引用 |
+| `npm run preview:reader` | 从阅读资料 staging 生成版本化发布预览 |
+| `npm run check:reader:preset` | dry-run 检查阅读资料 preview 与正式资料包差异并生成本地报告 |
+| `npm run apply:reader:preset` | 显式发布阅读资料 preview；还必须提供确认环境变量 |
 | `npm run check:nature` | 在 `artifacts/nature/` 生成本地性格推荐校准报告 |
 | `npm run sync:bwiki:staging` | 刷新 BWiki 精灵、技能、蛋和果实 staging |
 | `npm run sync:bwiki:details` | 刷新 BWiki 精灵详情 staging |
@@ -84,10 +91,12 @@ npm run lint
 │   │   ├── confirmed-results.md          # 用户确认的回归基线
 │   │   └── open-issues.md                # 尚待确认的通用规则问题
 │   ├── reading-companion/
-│   │   └── product-and-architecture.md    # 经典文学阅读伴侣规划与剧透安全契约
+│   │   ├── product-and-architecture.md    # 经典文学阅读伴侣规划与剧透安全契约
+│   │   └── trial-guide.md                 # 当前试用范围、步骤和反馈重点
 │   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
 │   └── system-capabilities.md            # 已实现能力和明确非目标
 ├── public/presets/
+│   ├── reading-companion/                # 版本化书籍资料目录与运行时资料包
 │   ├── rockKingdomRows.json              # 运行时精灵 / 形态预置
 │   ├── rockKingdomSkillRows.json         # 运行时技能预置
 │   └── rockKingdomPresetMigration.json   # 已有浏览器安全升级所需的官方值指纹
@@ -98,6 +107,13 @@ npm run lint
 │   │   ├── apply-preset.mjs              # dry-run 校验与显式发布
 │   │   ├── lib/                          # 路径和标签规则共享模块
 │   │   └── data/                         # 版本化 staging 与 preview
+│   ├── reading-companion/
+│   │   ├── data/                         # 阅读资料 staging 与 preview
+│   │   ├── lib/                          # 阅读资料发布共享逻辑
+│   │   ├── tests/                        # 阅读资料包与门禁领域测试
+│   │   ├── build-preview.mjs             # staging 到发布候选
+│   │   ├── apply-preview.mjs             # dry-run 检查与显式发布
+│   │   └── validate-packages.mjs          # 正式阅读资料包结构校验
 │   ├── data/natureCalibrationSamples.json # 性格校准样例
 │   ├── tests/                            # node:test 纯逻辑与 fake-indexeddb 集成测试
 │   └── check-nature-recommendations.mjs  # 本地性格校准报告生成器
@@ -112,13 +128,23 @@ npm run lint
 │   │   ├── core.js                       # Dexie v1 schema 与数据库实例
 │   │   ├── importExport.js               # JSON 校验、导出与 merge-by-id 导入
 │   │   ├── repository.js                 # 场景、表、字段和行的 CRUD
+│   │   ├── seed.js                       # 应用预置初始化编排
 │   │   └── rockKingdomSeed.js            # 预置播种与三方迁移
 │   ├── domain/
 │   │   ├── nature.js / naturePve.js      # 性格规则引擎 / PVE 展示判定
 │   │   ├── natureRowAdapter.js            # 资料行到推荐输入的适配
 │   │   ├── rockKingdom*.js               # 形态、展示和共享标签规则
-│   │   └── owned.js / stock.js / breeding*.js # 各工具纯领域逻辑
-│   ├── presets/rockKingdom.js             # 场景、字段和选项定义
+│   │   └── owned.js / stock.js / breeding*.js # 其他工具纯领域逻辑
+│   ├── features/reading-companion/
+│   │   ├── components/                   # 阅读伴侣专用界面
+│   │   ├── data/                         # 运行时资料包读取
+│   │   ├── db/                           # 阅读进度与场景播种
+│   │   ├── domain/                       # 资料包校验、章节过滤与剧透门禁
+│   │   ├── map/                          # 互动底图供应商与默认视野配置
+│   │   ├── preset.js                     # 经典文学阅读场景定义
+│   │   └── index.js                      # 功能公开入口
+│   ├── presets/
+│   │   └── rockKingdom.js                # 洛克王国场景、字段和选项
 │   ├── App.jsx                            # hash 路由、工具懒加载、全局导入导出
 │   ├── db.js                              # 稳定的数据访问兼容门面
 │   ├── constants.js / utils.js            # 全局约定与通用工具
@@ -146,8 +172,20 @@ git diff --check
 - `npm test` 覆盖领域规则、PVE 判定、预置三方迁移、导入校验、仓储级联、IndexedDB 播种/失败重试、BWiki staging 结构和文档当前态约束。
 - 涉及性格规则时额外运行 `npm run check:nature`，并检查已确认样例是否出现非预期漂移。
 - 涉及 BWiki 预置时先运行 `npm run check:bwiki:preset`；该命令只生成 `artifacts/` 审计报告，不会写入正式预置。
-- 涉及工具入口、懒加载或 Hook 时，启动 `npm run dev` 后依次切换资料库、收集记录、统计视图、性格推荐和孵蛋推荐，确认均完成渲染且没有进入错误恢复页。
+- 涉及工具入口、懒加载或 Hook 时，启动 `npm run dev` 后依次切换资料库、收集记录、统计视图、性格推荐、孵蛋推荐和阅读伴侣，确认均完成渲染且没有进入错误恢复页。
+- 涉及阅读资料包时运行 `npm run check:reader:packages`，确认目录、版本、章节和事实引用全部有效。
+- 涉及阅读资料发布时依次运行 `npm run preview:reader` 和 `npm run check:reader:preset`；正式写入必须显式设置 `READING_PACKAGE_OVERWRITE=CONFIRM_READING_PACKAGE` 后运行 `npm run apply:reader:preset`。
 - 上述验证不会清空浏览器中的收集记录或统计配置；导入仍按 id 合并。
+
+## 经典文学阅读预置
+
+应用首次初始化会创建「经典文学阅读」场景，只启用阅读伴侣。用户删除该场景后不会自动重建；用户修改名称或工具组合时，初始化流程不会覆盖这些设置。
+
+运行时资料目录位于 `public/presets/reading-companion/`。《飘》资料包对应长江文艺出版社 2018 年 5 月版、ISBN `9787570202188`，章节稳定标识覆盖 1–63 章。正式实体、事实和来源只通过 `scripts/reading-companion/data/` 下的 staging / preview / apply 流程发布；候选来源不会进入运行时资料包。
+
+阅读伴侣按当前章节过滤正式资料包中的实体和事实。书架可使用书目和目录创建只保存在当前设备的个人空资料包。已审计或读者确认的真实地点可显示在 Leaflet 互动地图中，地图服务返回的 GeoJSON 允许河流、山脉和区域按路径或范围显示；底图不可用时仍保留地点坐标与详情。地图支持列表联动、自动适配视野、整栏大画布和全屏显示，并以代表坐标计算已读地点之间的方向和直线距离。安全事实直接显示，潜在剧透需要确认，高风险内容需要二次确认；授权不会持久化。正式地点和事实必须引用已批准来源与指定版本的章节边界；开发时研究候选与测试夹具不属于运行时正式资料。
+
+新增书籍只需要增加一份 staging JSON。新书 staging 携带完整 `package`，已有书更新可以通过 `basePackagePath` 复用正式包；管线自动发现全部 staging、生成逐书 preview 和统一 catalog，不需要修改发布脚本。
 
 ## 洛克王国预置资料
 
@@ -192,7 +230,8 @@ git diff --check
 - [`docs/nature/single-creature-template.md`](docs/nature/single-creature-template.md)：单只精灵定位与性格核对格式。
 - [`docs/nature/confirmed-results.md`](docs/nature/confirmed-results.md)：用户确认过的单只结果，用作规则回归基线。
 - [`docs/nature/open-issues.md`](docs/nature/open-issues.md)：尚未形成稳定规则的通用问题。
-- [`docs/reading-companion/product-and-architecture.md`](docs/reading-companion/product-and-architecture.md)：经典文学阅读伴侣的规划范围、按书建库、跨端入口和剧透安全契约；当前尚未实现。
+- [`docs/reading-companion/product-and-architecture.md`](docs/reading-companion/product-and-architecture.md)：经典文学阅读伴侣的已实现范围、按书建库、跨端入口和剧透安全契约。
+- [`docs/reading-companion/trial-guide.md`](docs/reading-companion/trial-guide.md)：阅读伴侣当前可试用范围、启动步骤和反馈重点。
 
 根 README 是项目结构、命令和维护文档的统一入口；专题文档只保存各自领域内不可由代码结构直接表达的规则与约束。
 

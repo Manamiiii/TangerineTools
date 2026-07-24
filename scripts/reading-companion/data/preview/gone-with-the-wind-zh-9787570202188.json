@@ -1,0 +1,711 @@
+{
+  "previewMeta": {
+    "slug": "gone-with-the-wind-zh-9787570202188",
+    "order": 0,
+    "packageId": "reader-package-gone-with-the-wind-zh-9787570202188",
+    "targetPath": "public/presets/reading-companion/gone-with-the-wind-zh-9787570202188.json",
+    "approvedSourceIds": [
+      "source-weread-edition-metadata",
+      "source-census-2025-georgia-incorporated-places",
+      "source-atlanta-history-center-so-red-the-rose",
+      "source-atlanta-history-center-telling-stories-citations",
+      "source-new-georgia-encyclopedia-gwtw",
+      "source-new-georgia-encyclopedia-clayton-county"
+    ],
+    "pendingSourceIds": [
+      "candidate-loc-america-reads-gwtw",
+      "candidate-census-2025-gazetteer",
+      "candidate-loc-general-maps",
+      "candidate-openstreetmap"
+    ],
+    "rejectedSourceIds": [],
+    "candidateEntityIds": [
+      "place-atlanta",
+      "place-jonesboro-georgia",
+      "place-tara",
+      "place-twelve-oaks"
+    ],
+    "rejectedEntityIds": [],
+    "candidateFactIds": [
+      "fact-atlanta-modern-representative-coordinate",
+      "fact-work-broad-historical-scope"
+    ],
+    "rejectedFactIds": [],
+    "onDemandEntityIds": [
+      "place-atlanta",
+      "place-jonesboro-georgia",
+      "place-tara",
+      "place-twelve-oaks"
+    ]
+  },
+  "researchCandidates": {
+    "entities": [
+      {
+        "status": "candidate",
+        "entity": {
+          "id": "place-atlanta",
+          "name": "亚特兰大",
+          "originalName": "Atlanta",
+          "kind": "place",
+          "placeKind": "real",
+          "aliases": [],
+          "parentLabel": "佐治亚州，美国",
+          "revealAt": null,
+          "geometry": {
+            "type": "point",
+            "latitude": 33.7628947,
+            "longitude": -84.4220844
+          }
+        },
+        "sourceIds": [
+          "source-census-2025-georgia-incorporated-places",
+          "source-atlanta-history-center-so-red-the-rose"
+        ],
+        "blockers": [
+          "missing_edition_chapter_evidence",
+          "edition_aliases_not_audited"
+        ],
+        "notes": "现代代表坐标可核验；正式发布前仍需从范纯海、夏旻译本确认首次可揭示章节和该版本译名。"
+      },
+      {
+        "status": "candidate",
+        "entity": {
+          "id": "place-jonesboro-georgia",
+          "name": "琼斯伯勒",
+          "originalName": "Jonesboro",
+          "kind": "place",
+          "placeKind": "real",
+          "aliases": [],
+          "parentLabel": "克莱顿县，佐治亚州，美国",
+          "revealAt": null,
+          "geometry": {
+            "type": "point",
+            "latitude": 33.5211498,
+            "longitude": -84.3546835
+          }
+        },
+        "sourceIds": [
+          "source-census-2025-georgia-incorporated-places",
+          "source-new-georgia-encyclopedia-clayton-county"
+        ],
+        "blockers": [
+          "book_relevance_requires_confirmation",
+          "missing_edition_chapter_evidence",
+          "edition_aliases_not_audited"
+        ],
+        "notes": "公开资料能确认真实地点和创作背景联系，但不足以证明作品正文直接出现该地名。"
+      },
+      {
+        "status": "candidate",
+        "entity": {
+          "id": "place-tara",
+          "name": "塔拉庄园",
+          "originalName": "Tara",
+          "kind": "place",
+          "placeKind": "fictional",
+          "aliases": [],
+          "parentLabel": "佐治亚州（虚构地点）",
+          "revealAt": null
+        },
+        "sourceIds": [
+          "source-atlanta-history-center-so-red-the-rose",
+          "source-atlanta-history-center-telling-stories-citations"
+        ],
+        "blockers": [
+          "missing_edition_chapter_evidence",
+          "edition_aliases_not_audited"
+        ],
+        "notes": "保留为无坐标的虚构地点；公开资料中的建筑灵感不能被转换成精确地图点。"
+      },
+      {
+        "status": "candidate",
+        "entity": {
+          "id": "place-twelve-oaks",
+          "name": "十二橡树庄园",
+          "originalName": "Twelve Oaks",
+          "kind": "place",
+          "placeKind": "fictional",
+          "aliases": [],
+          "parentLabel": "佐治亚州（虚构地点）",
+          "revealAt": null
+        },
+        "sourceIds": [
+          "source-new-georgia-encyclopedia-gwtw",
+          "source-atlanta-history-center-telling-stories-citations"
+        ],
+        "blockers": [
+          "missing_edition_chapter_evidence",
+          "edition_aliases_not_audited"
+        ],
+        "notes": "外部页面含剧情概述，因此只记录地点名称和虚构分类，不转存剧情说明。"
+      }
+    ],
+    "facts": [
+      {
+        "status": "candidate",
+        "fact": {
+          "id": "fact-atlanta-modern-representative-coordinate",
+          "kind": "spatial",
+          "content": "美国人口普查局 2025 年资料中，亚特兰大的现代代表坐标为北纬 33.7628947、东经 -84.4220844。",
+          "entityIds": [
+            "place-atlanta"
+          ],
+          "revealAt": null,
+          "riskLevel": "safe",
+          "riskCategories": [],
+          "confidence": 1
+        },
+        "sourceIds": [
+          "source-census-2025-georgia-incorporated-places"
+        ],
+        "blockers": [
+          "referenced_entity_not_approved",
+          "missing_edition_chapter_evidence"
+        ],
+        "notes": "这是现代地理数据，不代表作品年代的城市边界。"
+      },
+      {
+        "status": "candidate",
+        "fact": {
+          "id": "fact-work-broad-historical-scope",
+          "kind": "history",
+          "content": "作品的广义历史背景涉及美国内战与战后重建时期的佐治亚州。",
+          "entityIds": [],
+          "revealAt": null,
+          "riskLevel": "potential",
+          "riskCategories": [
+            "historical_plot_link"
+          ],
+          "confidence": 0.98
+        },
+        "sourceIds": [
+          "candidate-loc-america-reads-gwtw",
+          "source-new-georgia-encyclopedia-gwtw"
+        ],
+        "blockers": [
+          "missing_edition_chapter_evidence",
+          "spoiler_boundary_requires_review"
+        ],
+        "notes": "即使是广义时代背景，也必须先确定在指定译本中何时可安全揭示。"
+      }
+    ]
+  },
+  "catalogEntry": {
+    "id": "reader-package-gone-with-the-wind-zh-9787570202188",
+    "title": "飘",
+    "editionLabel": "长江文艺出版社 · 2018年5月",
+    "path": "presets/reading-companion/gone-with-the-wind-zh-9787570202188.json"
+  },
+  "package": {
+    "schemaVersion": 1,
+    "packageVersion": "1.1.0",
+    "id": "reader-package-gone-with-the-wind-zh-9787570202188",
+    "book": {
+      "id": "gone-with-the-wind",
+      "title": "飘",
+      "originalTitle": "Gone with the Wind",
+      "author": "玛格丽特·米切尔",
+      "originalLanguage": "en"
+    },
+    "edition": {
+      "id": "gone-with-the-wind-zh-9787570202188",
+      "isbn": "9787570202188",
+      "language": "zh-CN",
+      "translators": [
+        "范纯海",
+        "夏旻"
+      ],
+      "publisher": "长江文艺出版社",
+      "publishedAt": "2018-05",
+      "digitalProvider": "微信读书",
+      "chapterCount": 63
+    },
+    "chapters": [
+      {
+        "id": "chapter-01",
+        "number": 1,
+        "label": "第 1 章"
+      },
+      {
+        "id": "chapter-02",
+        "number": 2,
+        "label": "第 2 章"
+      },
+      {
+        "id": "chapter-03",
+        "number": 3,
+        "label": "第 3 章"
+      },
+      {
+        "id": "chapter-04",
+        "number": 4,
+        "label": "第 4 章"
+      },
+      {
+        "id": "chapter-05",
+        "number": 5,
+        "label": "第 5 章"
+      },
+      {
+        "id": "chapter-06",
+        "number": 6,
+        "label": "第 6 章"
+      },
+      {
+        "id": "chapter-07",
+        "number": 7,
+        "label": "第 7 章"
+      },
+      {
+        "id": "chapter-08",
+        "number": 8,
+        "label": "第 8 章"
+      },
+      {
+        "id": "chapter-09",
+        "number": 9,
+        "label": "第 9 章"
+      },
+      {
+        "id": "chapter-10",
+        "number": 10,
+        "label": "第 10 章"
+      },
+      {
+        "id": "chapter-11",
+        "number": 11,
+        "label": "第 11 章"
+      },
+      {
+        "id": "chapter-12",
+        "number": 12,
+        "label": "第 12 章"
+      },
+      {
+        "id": "chapter-13",
+        "number": 13,
+        "label": "第 13 章"
+      },
+      {
+        "id": "chapter-14",
+        "number": 14,
+        "label": "第 14 章"
+      },
+      {
+        "id": "chapter-15",
+        "number": 15,
+        "label": "第 15 章"
+      },
+      {
+        "id": "chapter-16",
+        "number": 16,
+        "label": "第 16 章"
+      },
+      {
+        "id": "chapter-17",
+        "number": 17,
+        "label": "第 17 章"
+      },
+      {
+        "id": "chapter-18",
+        "number": 18,
+        "label": "第 18 章"
+      },
+      {
+        "id": "chapter-19",
+        "number": 19,
+        "label": "第 19 章"
+      },
+      {
+        "id": "chapter-20",
+        "number": 20,
+        "label": "第 20 章"
+      },
+      {
+        "id": "chapter-21",
+        "number": 21,
+        "label": "第 21 章"
+      },
+      {
+        "id": "chapter-22",
+        "number": 22,
+        "label": "第 22 章"
+      },
+      {
+        "id": "chapter-23",
+        "number": 23,
+        "label": "第 23 章"
+      },
+      {
+        "id": "chapter-24",
+        "number": 24,
+        "label": "第 24 章"
+      },
+      {
+        "id": "chapter-25",
+        "number": 25,
+        "label": "第 25 章"
+      },
+      {
+        "id": "chapter-26",
+        "number": 26,
+        "label": "第 26 章"
+      },
+      {
+        "id": "chapter-27",
+        "number": 27,
+        "label": "第 27 章"
+      },
+      {
+        "id": "chapter-28",
+        "number": 28,
+        "label": "第 28 章"
+      },
+      {
+        "id": "chapter-29",
+        "number": 29,
+        "label": "第 29 章"
+      },
+      {
+        "id": "chapter-30",
+        "number": 30,
+        "label": "第 30 章"
+      },
+      {
+        "id": "chapter-31",
+        "number": 31,
+        "label": "第 31 章"
+      },
+      {
+        "id": "chapter-32",
+        "number": 32,
+        "label": "第 32 章"
+      },
+      {
+        "id": "chapter-33",
+        "number": 33,
+        "label": "第 33 章"
+      },
+      {
+        "id": "chapter-34",
+        "number": 34,
+        "label": "第 34 章"
+      },
+      {
+        "id": "chapter-35",
+        "number": 35,
+        "label": "第 35 章"
+      },
+      {
+        "id": "chapter-36",
+        "number": 36,
+        "label": "第 36 章"
+      },
+      {
+        "id": "chapter-37",
+        "number": 37,
+        "label": "第 37 章"
+      },
+      {
+        "id": "chapter-38",
+        "number": 38,
+        "label": "第 38 章"
+      },
+      {
+        "id": "chapter-39",
+        "number": 39,
+        "label": "第 39 章"
+      },
+      {
+        "id": "chapter-40",
+        "number": 40,
+        "label": "第 40 章"
+      },
+      {
+        "id": "chapter-41",
+        "number": 41,
+        "label": "第 41 章"
+      },
+      {
+        "id": "chapter-42",
+        "number": 42,
+        "label": "第 42 章"
+      },
+      {
+        "id": "chapter-43",
+        "number": 43,
+        "label": "第 43 章"
+      },
+      {
+        "id": "chapter-44",
+        "number": 44,
+        "label": "第 44 章"
+      },
+      {
+        "id": "chapter-45",
+        "number": 45,
+        "label": "第 45 章"
+      },
+      {
+        "id": "chapter-46",
+        "number": 46,
+        "label": "第 46 章"
+      },
+      {
+        "id": "chapter-47",
+        "number": 47,
+        "label": "第 47 章"
+      },
+      {
+        "id": "chapter-48",
+        "number": 48,
+        "label": "第 48 章"
+      },
+      {
+        "id": "chapter-49",
+        "number": 49,
+        "label": "第 49 章"
+      },
+      {
+        "id": "chapter-50",
+        "number": 50,
+        "label": "第 50 章"
+      },
+      {
+        "id": "chapter-51",
+        "number": 51,
+        "label": "第 51 章"
+      },
+      {
+        "id": "chapter-52",
+        "number": 52,
+        "label": "第 52 章"
+      },
+      {
+        "id": "chapter-53",
+        "number": 53,
+        "label": "第 53 章"
+      },
+      {
+        "id": "chapter-54",
+        "number": 54,
+        "label": "第 54 章"
+      },
+      {
+        "id": "chapter-55",
+        "number": 55,
+        "label": "第 55 章"
+      },
+      {
+        "id": "chapter-56",
+        "number": 56,
+        "label": "第 56 章"
+      },
+      {
+        "id": "chapter-57",
+        "number": 57,
+        "label": "第 57 章"
+      },
+      {
+        "id": "chapter-58",
+        "number": 58,
+        "label": "第 58 章"
+      },
+      {
+        "id": "chapter-59",
+        "number": 59,
+        "label": "第 59 章"
+      },
+      {
+        "id": "chapter-60",
+        "number": 60,
+        "label": "第 60 章"
+      },
+      {
+        "id": "chapter-61",
+        "number": 61,
+        "label": "第 61 章"
+      },
+      {
+        "id": "chapter-62",
+        "number": 62,
+        "label": "第 62 章"
+      },
+      {
+        "id": "chapter-63",
+        "number": 63,
+        "label": "第 63 章"
+      }
+    ],
+    "entities": [],
+    "facts": [],
+    "sources": [
+      {
+        "id": "source-weread-edition-metadata",
+        "kind": "user-provided-edition-metadata",
+        "label": "微信读书版本详情与版权信息",
+        "accessedAt": "2026-07-24",
+        "useFor": [
+          "edition",
+          "chapter_structure"
+        ],
+        "notes": "用于确认 ISBN、译者、出版社、出版时间和连续 1–63 章结构；不包含正文。"
+      },
+      {
+        "id": "source-census-2025-georgia-incorporated-places",
+        "kind": "modern-geography",
+        "label": "U.S. Census Bureau · 2025 ACS Georgia Incorporated Places",
+        "organization": "United States Census Bureau",
+        "url": "https://tigerweb.geo.census.gov/tigerwebmain/Files/acs25/tigerweb_acs25_incplace_ga.html",
+        "accessedAt": "2026-07-24",
+        "useFor": [
+          "modern_place_names",
+          "geoid",
+          "representative_coordinates"
+        ],
+        "rightsStatus": "public-government-data",
+        "notes": "可核对 Atlanta 与 Jonesboro 的现代行政地名、GEOID 和代表坐标；不能证明作品年代的边界或地点在本译本中的首次出现。"
+      },
+      {
+        "id": "source-atlanta-history-center-so-red-the-rose",
+        "kind": "museum-research",
+        "label": "Atlanta History Center · So Red the Rose: The Gone With the Wind That Never Was",
+        "organization": "Atlanta History Center",
+        "url": "https://www.atlantahistorycenter.com/blog/so-red-the-rose-the-gone-with-the-wind-that-never-was/",
+        "accessedAt": "2026-07-24",
+        "useFor": [
+          "fictional_place_classification",
+          "atlanta_setting",
+          "architectural_context"
+        ],
+        "rightsStatus": "reference-only",
+        "notes": "可支持作品同时涉及虚构的佐治亚种植园与真实的亚特兰大地点，也说明塔拉没有可直接采用的单一精确原型坐标；不能用于本译本章节定位。"
+      },
+      {
+        "id": "source-atlanta-history-center-telling-stories-citations",
+        "kind": "museum-citation-document",
+        "label": "Atlanta History Center · Telling Stories Citation Document",
+        "organization": "Atlanta History Center",
+        "url": "https://www.atlantahistorycenter.com/app/uploads/2025/08/Telling-Stories-Citation-Document-Public_Final.pdf",
+        "accessedAt": "2026-07-24",
+        "useFor": [
+          "fictional_place_classification",
+          "research_provenance"
+        ],
+        "rightsStatus": "reference-only",
+        "notes": "该馆的引用文件明确区分真实历史地点与作品中的虚构地点；只作为候选分类依据，不作为中文译本章节证据。"
+      },
+      {
+        "id": "source-new-georgia-encyclopedia-gwtw",
+        "kind": "state-encyclopedia",
+        "label": "New Georgia Encyclopedia · Gone With the Wind (Novel)",
+        "organization": "New Georgia Encyclopedia",
+        "url": "https://www.georgiaencyclopedia.org/articles/arts-culture/gone-with-the-wind-novel/",
+        "accessedAt": "2026-07-24",
+        "useFor": [
+          "historical_scope",
+          "place_candidates",
+          "work_context"
+        ],
+        "rightsStatus": "reference-only",
+        "notes": "页面包含剧情概述；运行时只采用经人工摘出的地点名称与虚构分类，并且只在读者精确输入同名内容后显示，不复制剧情概述，也不能代替本译本 revealAt 证据。"
+      },
+      {
+        "id": "source-new-georgia-encyclopedia-clayton-county",
+        "kind": "state-encyclopedia",
+        "label": "New Georgia Encyclopedia · Clayton County",
+        "organization": "New Georgia Encyclopedia",
+        "url": "https://www.georgiaencyclopedia.org/articles/counties-cities-neighborhoods/clayton-county/",
+        "accessedAt": "2026-07-24",
+        "useFor": [
+          "regional_background",
+          "jonesboro_context"
+        ],
+        "rightsStatus": "reference-only",
+        "notes": "可支持琼斯伯勒与克莱顿县是作者创作背景来源；仍需确认作品是否直接命名该地点以及指定译本中的出现章节。"
+      }
+    ],
+    "onDemandEntities": [
+      {
+        "id": "place-atlanta",
+        "name": "亚特兰大",
+        "originalName": "Atlanta",
+        "aliases": [
+          "Atlanta"
+        ],
+        "kind": "place",
+        "placeKind": "real",
+        "activation": "exact-reader-input",
+        "parentLabel": "佐治亚州，美国",
+        "geometry": {
+          "type": "point",
+          "latitude": 33.7628947,
+          "longitude": -84.4220844
+        },
+        "sourceIds": [
+          "source-census-2025-georgia-incorporated-places",
+          "source-atlanta-history-center-so-red-the-rose"
+        ],
+        "scopeNote": "坐标是现代行政地点的代表坐标，不表示作品年代的城市边界。"
+      },
+      {
+        "id": "place-jonesboro-georgia",
+        "name": "琼斯伯勒",
+        "originalName": "Jonesboro",
+        "aliases": [
+          "Jonesboro"
+        ],
+        "kind": "place",
+        "placeKind": "real",
+        "activation": "exact-reader-input",
+        "parentLabel": "克莱顿县，佐治亚州，美国",
+        "geometry": {
+          "type": "point",
+          "latitude": 33.5211498,
+          "longitude": -84.3546835
+        },
+        "sourceIds": [
+          "source-census-2025-georgia-incorporated-places",
+          "source-new-georgia-encyclopedia-clayton-county"
+        ],
+        "scopeNote": "公开资料确认其现代位置和创作背景联系，不代表已经证明正文直接出现该地名。"
+      },
+      {
+        "id": "place-tara",
+        "name": "塔拉庄园",
+        "originalName": "Tara",
+        "aliases": [
+          "塔拉",
+          "Tara"
+        ],
+        "kind": "place",
+        "placeKind": "fictional",
+        "activation": "exact-reader-input",
+        "parentLabel": "佐治亚州（虚构地点）",
+        "sourceIds": [
+          "source-atlanta-history-center-so-red-the-rose",
+          "source-atlanta-history-center-telling-stories-citations"
+        ],
+        "scopeNote": "公开研究支持其虚构地点分类；系统不会把建筑灵感伪装成精确坐标。"
+      },
+      {
+        "id": "place-twelve-oaks",
+        "name": "十二橡树庄园",
+        "originalName": "Twelve Oaks",
+        "aliases": [
+          "十二橡树",
+          "Twelve Oaks"
+        ],
+        "kind": "place",
+        "placeKind": "fictional",
+        "activation": "exact-reader-input",
+        "parentLabel": "佐治亚州（虚构地点）",
+        "sourceIds": [
+          "source-new-georgia-encyclopedia-gwtw",
+          "source-atlanta-history-center-telling-stories-citations"
+        ],
+        "scopeNote": "只提供虚构地点分类，不包含外部资料页面中的剧情概述。"
+      }
+    ]
+  }
+}
