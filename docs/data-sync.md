@@ -42,7 +42,7 @@ db.version(1).stores({
 - 收集记录工具（`owned`）复用 `catalogTables` / `catalogFields` / `catalogRows` 三张表存储数据，通过 `catalogTables.kind === 'owned'` 与普通资料库表区分。
 - 收集记录表还可以带非索引配置 `collectionMode: 'single' | 'multiple'`：`single` 表示同一 reference 只保留一条收集记录，`multiple` 表示同一 reference 可记录多条。
 - 普通新建场景首次打开收集记录工具时，只创建空的收集记录表，不写入默认字段；洛克王国场景会补齐精灵收集字段，这是该预置场景自身的数据模板，不是全局模板。
-- 洛克王国收集记录表首次可用时会从当前正式精灵资料中挑选 52 条“存在异色形态、拥有可孵蛋蛋组”的不同进化线代表，写入孵蛋推荐调试记录。记录使用独立稳定 id 和一次性 `meta.seededRockKingdomBreedingFixturesV1` 标记；同 id 已存在时跳过，播种完成后用户删除或编辑的记录不再补写。该调试集不参与正式精灵资料发布，也不改变导入的合并语义。
+- 洛克王国收集记录表只补齐场景专属字段，不预置收集行。启动流程按固定测试 id 排除孵蛋调试记录；用户自行新增的记录即使备注相同也会保留。
 - 统计视图工具的内部工具值为 `stock`；它从当前场景的普通资料表和收集记录表中选择数据源，按字段分组并叠加数值阈值条件做即时统计，不创建固定字段表。
 - `kind` 和 `collectionMode` 都是非索引属性（不在 `.stores()` 的索引串里），只在按 `sceneId` 查询后用 JS 过滤/读取，因此**没有引入 Dexie schema 版本变更**。
 - 资料库工具（`CatalogTool`）的普通资料表选择器使用 `.filter((t) => !t.kind)` 排除收集记录表。性格推荐工具固定绑定洛克王国 `精灵基础资料` 表，并通过 `skillRefs` 读取技能资料。

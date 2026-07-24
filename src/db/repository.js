@@ -3,11 +3,6 @@
 import { db } from './core.js'
 import { OWNED_TABLE_NAME, ROCK_KINGDOM_COLLECTION_FIELDS } from '../domain/owned.js'
 import {
-  buildRockKingdomBreedingFixtures,
-  ROCK_KINGDOM_BREEDING_FIXTURE_COUNT,
-} from '../domain/breedingFixtures.js'
-import {
-  ROCK_KINGDOM_CREATURE_TABLE_ID,
   ROCK_KINGDOM_PRESET,
 } from '../presets/rockKingdom.js'
 import { deriveFieldKey, generateId, normalizeField, nowIso } from '../utils.js'
@@ -172,30 +167,6 @@ function collectionFieldsForScene(sceneId) {
   return sceneId === ROCK_KINGDOM_PRESET.scene.id ? ROCK_KINGDOM_COLLECTION_FIELDS : []
 }
 
-const ROCK_KINGDOM_BREEDING_FIXTURE_META_KEY = 'seededRockKingdomBreedingFixturesV1'
-
-async function ensureRockKingdomBreedingFixtures(sceneId, tableId, now) {
-  if (sceneId !== ROCK_KINGDOM_PRESET.scene.id) return
-  if ((await db.meta.get(ROCK_KINGDOM_BREEDING_FIXTURE_META_KEY))?.value) return
-
-  const catalogRows = await db.catalogRows
-    .where('tableId')
-    .equals(ROCK_KINGDOM_CREATURE_TABLE_ID)
-    .toArray()
-  const fixtures = buildRockKingdomBreedingFixtures(catalogRows, tableId, now)
-  if (fixtures.length !== ROCK_KINGDOM_BREEDING_FIXTURE_COUNT) return
-
-  await db.transaction('rw', db.catalogRows, db.meta, async () => {
-    const existing = await db.catalogRows.bulkGet(fixtures.map((row) => row.id))
-    const missing = fixtures.filter((_, index) => !existing[index])
-    if (missing.length > 0) await db.catalogRows.bulkAdd(missing)
-    await db.meta.put({
-      key: ROCK_KINGDOM_BREEDING_FIXTURE_META_KEY,
-      value: { count: fixtures.length, seededAt: now },
-    })
-  })
-}
-
 export async function ensureOwnedTable(sceneId) {
   const tableId = `table-owned-${sceneId}`
   const now = nowIso()
@@ -220,7 +191,6 @@ export async function ensureOwnedTable(sceneId) {
       )
       await reconcileRockKingdomOwnedFields(existing.id, sceneId, fixedFields, catalogTable?.id || null, now)
     }
-    await ensureRockKingdomBreedingFixtures(sceneId, existing.id, now)
     return existing
   }
 
@@ -255,7 +225,6 @@ export async function ensureOwnedTable(sceneId) {
     await db.catalogTables.put(table)
     for (const field of fields) await db.catalogFields.put(field)
   })
-  await ensureRockKingdomBreedingFixtures(sceneId, table.id, now)
   return table
 }
 

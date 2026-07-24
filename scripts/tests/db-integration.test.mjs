@@ -9,7 +9,7 @@ const [creatures, skills, migration] = await Promise.all([
   readFile(new URL('public/presets/rockKingdomSkillRows.json', repoUrl), 'utf8').then(JSON.parse),
   readFile(new URL('public/presets/rockKingdomPresetMigration.json', repoUrl), 'utf8').then(JSON.parse),
 ])
-const { db, ensureOwnedTable, ensureSeeded, importAllData } = await import('../../src/db.js')
+const { db, ensureSeeded, importAllData } = await import('../../src/db.js')
 
 function presetResponse(url, failCreatureRows = false) {
   const value = String(url)
@@ -86,7 +86,7 @@ test('an offline preset failure remains retryable', async () => {
   assert.equal(await db.catalogRows.where('tableId').equals('table-rock-kingdom-elf-basic').count(), creatures.length)
 })
 
-test('startup removes only retired breeding demo rows from collection data', async () => {
+test('startup removes only retired breeding test rows from collection data', async () => {
   await resetDatabase()
   globalThis.fetch = async (url) => presetResponse(url)
   await ensureSeeded()
@@ -94,44 +94,23 @@ test('startup removes only retired breeding demo rows from collection data', asy
   const now = new Date().toISOString()
   await db.catalogRows.bulkPut([
     { id: 'owned-rock-breeding-demo-1', tableId: ownedTableId, values: { note: '旧演示' }, createdAt: now, updatedAt: now },
+    { id: 'owned-rock-breeding-fixture-test', tableId: ownedTableId, values: { note: '孵蛋推荐调试预置（可删除）' }, createdAt: now, updatedAt: now },
     { id: 'owned-user-kept', tableId: ownedTableId, values: { note: '用户记录' }, createdAt: now, updatedAt: now },
+    { id: 'owned-user-same-note', tableId: ownedTableId, values: { note: '孵蛋推荐调试预置（可删除）' }, createdAt: now, updatedAt: now },
+  ])
+  await db.meta.bulkPut([
+    { key: 'seededRockKingdomBreedingDemoOwnedRows', value: true },
+    { key: 'seededRockKingdomBreedingFixturesV1', value: true },
   ])
 
   await ensureSeeded()
 
   assert.equal(await db.catalogRows.get('owned-rock-breeding-demo-1'), undefined)
+  assert.equal(await db.catalogRows.get('owned-rock-breeding-fixture-test'), undefined)
   assert.equal((await db.catalogRows.get('owned-user-kept')).values.note, '用户记录')
-})
-
-test('owned table receives 52 removable shiny breeding fixtures only once', async () => {
-  await resetDatabase()
-  globalThis.fetch = async (url) => presetResponse(url)
-  await ensureSeeded()
-
-  const table = await ensureOwnedTable('scene-rock-kingdom')
-  const fixtureRows = (await db.catalogRows.where('tableId').equals(table.id).toArray())
-    .filter((row) => row.values?.note === '孵蛋推荐调试预置（可删除）')
-  assert.equal(fixtureRows.length, 52)
-  assert.equal(new Set(fixtureRows.map((row) => row.values.ref)).size, 52)
-  assert.equal(fixtureRows.filter((row) => row.values.gender === 'male').length, 26)
-  assert.equal(fixtureRows.filter((row) => row.values.gender === 'female').length, 26)
-
-  const creaturesById = new Map(creatures.map((row) => [row.id, row]))
-  for (const row of fixtureRows) {
-    const creature = creaturesById.get(row.values.ref)
-    assert.ok(creature)
-    assert.equal(creature.values.shiny, 'yes')
-    assert.ok(creature.values.eggGroups.some((group) => group !== '无法孵蛋'))
-  }
-
-  await db.catalogRows.delete(fixtureRows[0].id)
-  await ensureOwnedTable('scene-rock-kingdom')
-  assert.equal(await db.catalogRows.get(fixtureRows[0].id), undefined)
-  assert.equal(
-    (await db.catalogRows.where('tableId').equals(table.id).toArray())
-      .filter((row) => row.values?.note === '孵蛋推荐调试预置（可删除）').length,
-    51,
-  )
+  assert.equal((await db.catalogRows.get('owned-user-same-note')).values.note, '孵蛋推荐调试预置（可删除）')
+  assert.equal(await db.meta.get('seededRockKingdomBreedingDemoOwnedRows'), undefined)
+  assert.equal(await db.meta.get('seededRockKingdomBreedingFixturesV1'), undefined)
 })
 
 test.after(async () => {

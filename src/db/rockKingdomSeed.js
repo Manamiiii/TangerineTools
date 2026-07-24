@@ -23,7 +23,7 @@ export async function ensureSeeded() {
     await seedRockKingdomStructure()
     await db.meta.put({ key: 'seededRockKingdom', value: true })
   }
-  await removeRetiredBreedingDemoOwnedRows()
+  await removeRetiredBreedingTestOwnedRows()
   const migrationKey = 'rockKingdomRuntimeMigrationVersion'
   const migrated = await db.meta.get(migrationKey)
   if (migrated?.value === ROCK_KINGDOM_ROWS_VERSION) {
@@ -348,11 +348,17 @@ async function migrateRockKingdomBreedingFieldLabels() {
   }
 }
 
-async function removeRetiredBreedingDemoOwnedRows() {
-  const ids = Array.from({ length: 10 }, (_, index) => `owned-rock-breeding-demo-${index + 1}`)
+async function removeRetiredBreedingTestOwnedRows() {
+  const demoIds = Array.from({ length: 10 }, (_, index) => `owned-rock-breeding-demo-${index + 1}`)
+  const fixtureIds = (await db.catalogRows.toCollection().primaryKeys())
+    .filter((id) => String(id).startsWith('owned-rock-breeding-fixture-'))
+  const ids = [...demoIds, ...fixtureIds]
   await db.transaction('rw', db.catalogRows, db.meta, async () => {
-    await db.catalogRows.bulkDelete(ids)
-    await db.meta.delete('seededRockKingdomBreedingDemoOwnedRows')
+    if (ids.length > 0) await db.catalogRows.bulkDelete(ids)
+    await db.meta.bulkDelete([
+      'seededRockKingdomBreedingDemoOwnedRows',
+      'seededRockKingdomBreedingFixturesV1',
+    ])
   })
 }
 
