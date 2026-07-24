@@ -83,6 +83,8 @@ npm run lint
 │   │   ├── single-creature-template.md   # 单只精灵核对模板
 │   │   ├── confirmed-results.md          # 用户确认的回归基线
 │   │   └── open-issues.md                # 尚待确认的通用规则问题
+│   ├── reading-companion/
+│   │   └── product-and-architecture.md    # 经典文学阅读伴侣规划与剧透安全契约
 │   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
 │   └── system-capabilities.md            # 已实现能力和明确非目标
 ├── public/presets/
@@ -190,6 +192,7 @@ git diff --check
 - [`docs/nature/single-creature-template.md`](docs/nature/single-creature-template.md)：单只精灵定位与性格核对格式。
 - [`docs/nature/confirmed-results.md`](docs/nature/confirmed-results.md)：用户确认过的单只结果，用作规则回归基线。
 - [`docs/nature/open-issues.md`](docs/nature/open-issues.md)：尚未形成稳定规则的通用问题。
+- [`docs/reading-companion/product-and-architecture.md`](docs/reading-companion/product-and-architecture.md)：经典文学阅读伴侣的规划范围、按书建库、跨端入口和剧透安全契约；当前尚未实现。
 
 根 README 是项目结构、命令和维护文档的统一入口；专题文档只保存各自领域内不可由代码结构直接表达的规则与约束。
 
