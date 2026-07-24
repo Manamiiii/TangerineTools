@@ -5,13 +5,17 @@ import {
   ArrowLeft,
   BookOpen,
   ClipboardPaste,
+  ExternalLink,
   Eye,
   EyeOff,
   Image,
   Laptop,
   LibraryBig,
   Lock,
+  Map as MapIcon,
   MapPin,
+  Maximize2,
+  Minimize2,
   Plus,
   ScanSearch,
   Settings2,
@@ -93,6 +97,14 @@ const OBSERVED_PLACE_KIND_LABELS = {
   [OBSERVED_PLACE_KIND.PROTOTYPE]: '有现实原型',
   [OBSERVED_PLACE_KIND.APPROXIMATE]: '位置模糊',
 }
+
+const READER_TAB = Object.freeze({
+  INPUT: 'input',
+  RECORDS: 'records',
+  MAP: 'map',
+  FACTS: 'facts',
+  SETTINGS: 'settings',
+})
 
 function LoadingPanel({ message }) {
   return <div className="reader-loading">{message}</div>
@@ -373,34 +385,27 @@ function ModelAnalysisPanel({
   bookTitle,
   currentChapter,
   onConfirmCandidate,
+  modelConfig,
+  onOpenSettings,
 }) {
-  const [open, setOpen] = useState(false)
-  const [endpoint, setEndpoint] = useState(
-    () => window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.endpoint)
-      || 'https://api.openai.com/v1/chat/completions',
-  )
-  const [model, setModel] = useState(
-    () => window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.model) || '',
-  )
-  const [apiKey, setApiKey] = useState(
-    () => window.sessionStorage.getItem(READING_MODEL_STORAGE_KEYS.apiKey) || '',
-  )
   const [requestState, setRequestState] = useState('idle')
   const [message, setMessage] = useState('')
   const [candidates, setCandidates] = useState([])
+  const configured = Boolean(
+    modelConfig.endpoint.trim()
+    && modelConfig.model.trim()
+    && modelConfig.apiKey.trim(),
+  )
 
   async function analyze() {
     setRequestState('working')
     setMessage('')
     setCandidates([])
-    window.localStorage.setItem(READING_MODEL_STORAGE_KEYS.endpoint, endpoint.trim())
-    window.localStorage.setItem(READING_MODEL_STORAGE_KEYS.model, model.trim())
-    window.sessionStorage.setItem(READING_MODEL_STORAGE_KEYS.apiKey, apiKey.trim())
     try {
       const results = await analyzeReadingExcerpt({
-        endpoint,
-        model,
-        apiKey,
+        endpoint: modelConfig.endpoint,
+        model: modelConfig.model,
+        apiKey: modelConfig.apiKey,
         excerpt,
         bookTitle,
         chapterLabel: currentChapter?.label,
@@ -442,49 +447,20 @@ function ModelAnalysisPanel({
             <p>只发送当前段落，识别名称候选；不会自动写入资料库或生成剧情解释。</p>
           </div>
         </div>
-        <button type="button" className="btn btn-sm" onClick={() => setOpen((value) => !value)}>
-          <Settings2 size={14} /> {open ? '收起配置' : '配置模型'}
+        <button type="button" className="btn btn-sm" onClick={onOpenSettings}>
+          <Settings2 size={14} /> 管理模型
         </button>
       </div>
-      {open && (
-        <div className="reader-model-config">
-          <label>
-            <span>兼容接口地址</span>
-            <input
-              value={endpoint}
-              onChange={(event) => setEndpoint(event.target.value)}
-              placeholder="https://…/v1/chat/completions"
-            />
-          </label>
-          <label>
-            <span>模型名称</span>
-            <input
-              value={model}
-              onChange={(event) => setModel(event.target.value)}
-              placeholder="填写服务商提供的模型 id"
-            />
-          </label>
-          <label>
-            <span>API Key</span>
-            <input
-              type="password"
-              value={apiKey}
-              onChange={(event) => setApiKey(event.target.value)}
-              placeholder="只保存在当前浏览器会话"
-              autoComplete="off"
-            />
-          </label>
-          <p>
-            点击识别会把当前段落、书名和当前章节标签发送到该地址。Key 只存在
-            sessionStorage，关闭浏览器后失效；接口地址和模型名保存在本机。
-          </p>
-        </div>
-      )}
+      <p className={`reader-service-status ${configured ? 'ready' : ''}`}>
+        {configured
+          ? `已配置 ${modelConfig.model}；点击识别才会发送当前段落。`
+          : '尚未完成模型配置。本机扫描和 OCR 不受影响。'}
+      </p>
       <button
         type="button"
         className="btn reader-model-run"
         onClick={analyze}
-        disabled={!excerpt.trim() || requestState === 'working'}
+        disabled={!configured || !excerpt.trim() || requestState === 'working'}
       >
         <Sparkles size={15} />
         {requestState === 'working' ? '正在识别当前段落…' : '用模型识别名称候选'}
@@ -517,6 +493,203 @@ function ModelAnalysisPanel({
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+function ReadingServiceSettings({
+  modelConfig,
+  mapConfig,
+  onSaveModel,
+  onSaveMap,
+}) {
+  const [modelDraft, setModelDraft] = useState(modelConfig)
+  const [mapDraft, setMapDraft] = useState(mapConfig)
+  const [message, setMessage] = useState('')
+
+  useEffect(() => setModelDraft(modelConfig), [modelConfig])
+  useEffect(() => setMapDraft(mapConfig), [mapConfig])
+
+  function saveModel(event) {
+    event.preventDefault()
+    onSaveModel(modelDraft)
+    setMessage(
+      modelDraft.apiKey.trim()
+        ? '模型配置已保存。请回到“阅读输入”，用当前段落验证。'
+        : '模型地址和名称已保存，API Key 已清除。',
+    )
+  }
+
+  function saveMap(event) {
+    event.preventDefault()
+    onSaveMap(mapDraft)
+    setMessage(
+      mapDraft.providerId === READING_MAP_PROVIDER.DOMESTIC
+        ? (mapDraft.tiandituToken.trim()
+          ? '国内地图配置已保存，可以回到地图验证底图和搜索。'
+          : '已切换到国内地图，但还需要填写天地图浏览器端 Key。')
+        : '已切换到国际地图；底图免 Key，国内网络不可用时可使用 VPN。',
+    )
+  }
+
+  return (
+    <div className="reader-settings-grid">
+      <section className="reader-panel reader-settings-card">
+        <div className="reader-panel-heading">
+          <div><Sparkles size={20} /><h3>模型服务</h3></div>
+          <span className="reader-system-chip">可选</span>
+        </div>
+        <p className="reader-settings-intro">
+          当前只用于从你主动放入的一小段文字中提取人物、地点、概念和事件名称候选。
+          候选必须由你确认，模型不能直接写入正式资料包。
+        </p>
+        <form className="reader-settings-form" onSubmit={saveModel}>
+          <label>
+            <span>Chat Completions 兼容地址</span>
+            <input
+              value={modelDraft.endpoint}
+              onChange={(event) => setModelDraft((current) => ({
+                ...current,
+                endpoint: event.target.value,
+              }))}
+              placeholder="https://api.openai.com/v1/chat/completions"
+            />
+          </label>
+          <label>
+            <span>模型 ID</span>
+            <input
+              value={modelDraft.model}
+              onChange={(event) => setModelDraft((current) => ({
+                ...current,
+                model: event.target.value,
+              }))}
+              placeholder="按服务商文档填写"
+            />
+          </label>
+          <label>
+            <span>API Key</span>
+            <input
+              type="password"
+              value={modelDraft.apiKey}
+              onChange={(event) => setModelDraft((current) => ({
+                ...current,
+                apiKey: event.target.value,
+              }))}
+              placeholder="只保存在当前浏览器会话"
+              autoComplete="off"
+            />
+          </label>
+          <div className="reader-settings-actions">
+            <button type="submit" className="btn">保存模型配置</button>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => setModelDraft((current) => ({ ...current, apiKey: '' }))}
+            >
+              清除 Key
+            </button>
+          </div>
+        </form>
+        <details className="reader-service-guide">
+          <summary>OpenAI 配置教程</summary>
+          <ol>
+            <li>
+              在 OpenAI 平台创建 API Key；ChatGPT 订阅和 API 额度不是同一项。
+            </li>
+            <li>
+              地址填写 <code>https://api.openai.com/v1/chat/completions</code>。
+            </li>
+            <li>
+              模型 ID 从官方模型目录选择；保存后到“阅读输入”放入短段落测试。
+            </li>
+          </ol>
+          <div className="reader-guide-links">
+            <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">
+              创建 API Key <ExternalLink size={12} />
+            </a>
+            <a href="https://developers.openai.com/api/docs/models" target="_blank" rel="noreferrer">
+              查看模型目录 <ExternalLink size={12} />
+            </a>
+          </div>
+        </details>
+        <p className="reader-settings-storage">
+          地址和模型名保存在本机 localStorage；Key 仅存在 sessionStorage，关闭浏览器会话后失效。
+          调用时会把当前段落、书名和章节标签发送给你配置的服务商。
+        </p>
+      </section>
+
+      <section className="reader-panel reader-settings-card">
+        <div className="reader-panel-heading">
+          <div><MapIcon size={20} /><h3>地图服务</h3></div>
+          <span className="reader-system-chip">国内 / 国外</span>
+        </div>
+        <p className="reader-settings-intro">
+          底图和资料包外现实地点搜索会访问所选服务。虚构、不确定和仅有原型的地点不会自动提交搜索。
+        </p>
+        <form className="reader-settings-form" onSubmit={saveMap}>
+          <label>
+            <span>地图网络</span>
+            <select
+              value={mapDraft.providerId}
+              onChange={(event) => setMapDraft((current) => ({
+                ...current,
+                providerId: normalizeReadingMapProvider(event.target.value),
+              }))}
+            >
+              {Object.values(READING_MAP_PROVIDERS).map((provider) => (
+                <option key={provider.id} value={provider.id}>{provider.label}</option>
+              ))}
+            </select>
+            <small>{READING_MAP_PROVIDERS[mapDraft.providerId].description}</small>
+          </label>
+          {mapDraft.providerId === READING_MAP_PROVIDER.DOMESTIC && (
+            <label>
+              <span>天地图浏览器端 Key</span>
+              <input
+                type="password"
+                value={mapDraft.tiandituToken}
+                onChange={(event) => setMapDraft((current) => ({
+                  ...current,
+                  tiandituToken: event.target.value,
+                }))}
+                placeholder="在天地图控制台创建浏览器端应用"
+                autoComplete="off"
+              />
+            </label>
+          )}
+          <div className="reader-settings-actions">
+            <button type="submit" className="btn">保存地图配置</button>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => setMapDraft((current) => ({ ...current, tiandituToken: '' }))}
+            >
+              清除天地图 Key
+            </button>
+          </div>
+        </form>
+        <details className="reader-service-guide">
+          <summary>天地图配置教程</summary>
+          <ol>
+            <li>注册并登录天地图，进入控制台的应用管理。</li>
+            <li>创建应用并选择“浏览器端”，复制生成的 Key。</li>
+            <li>切换为“国内地图”，粘贴 Key 并保存，再到地图页验证。</li>
+          </ol>
+          <div className="reader-guide-links">
+            <a href="https://console.tianditu.gov.cn/api/key" target="_blank" rel="noreferrer">
+              打开天地图控制台 <ExternalLink size={12} />
+            </a>
+            <a href="https://www.tianditu.gov.cn/" target="_blank" rel="noreferrer">
+              天地图官网 <ExternalLink size={12} />
+            </a>
+          </div>
+        </details>
+        <p className="reader-settings-storage">
+          地图选择和天地图 Key 保存在当前浏览器。国际地图免 Key；国内网络加载失败时可切换国内地图，
+          国外地图不可访问时也可以使用 VPN。
+        </p>
+      </section>
+      {message && <p className="reader-settings-message" role="status">{message}</p>}
     </div>
   )
 }
@@ -600,7 +773,7 @@ function ObservedEntitiesPanel({
     <section className="reader-panel">
       <div className="reader-panel-heading">
         <div>
-          <span className="reader-step">03</span>
+          <UserRoundSearch size={20} />
           <h3>记录本章遇到的名字</h3>
         </div>
         <span className="reader-local-chip"><Lock size={13} /> 用户确认</span>
@@ -721,20 +894,19 @@ function ReadingMapPanel({
   currentChapterId,
   chapters,
   onChangeObservedEntities,
+  mapConfig,
+  onOpenSettings,
 }) {
-  const [providerId, setProviderId] = useState(() => normalizeReadingMapProvider(
-    window.localStorage.getItem(READING_MAP_STORAGE_KEYS.provider),
-  ))
-  const [tiandituToken, setTiandituToken] = useState(
-    () => window.localStorage.getItem(READING_MAP_STORAGE_KEYS.tiandituToken) || '',
-  )
-  const [tokenDraft, setTokenDraft] = useState(tiandituToken)
+  const { providerId, tiandituToken } = mapConfig
   const [lookupTargetId, setLookupTargetId] = useState('')
   const [lookupQuery, setLookupQuery] = useState('')
   const [lookupState, setLookupState] = useState('idle')
   const [lookupResults, setLookupResults] = useState([])
   const [lookupMessage, setLookupMessage] = useState('')
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
   const lookupRequestRef = useRef(0)
+  const workspaceRef = useRef(null)
   const places = useMemo(
     () => visibleReadingEntities(entities, currentChapterId, chapters)
       .filter((entity) => entity.kind === 'place'),
@@ -780,24 +952,43 @@ function ReadingMapPanel({
     setLookupMessage('')
   }, [providerId])
 
-  function changeProvider(nextProviderId) {
-    const normalizedProvider = normalizeReadingMapProvider(nextProviderId)
-    window.localStorage.setItem(READING_MAP_STORAGE_KEYS.provider, normalizedProvider)
-    setProviderId(normalizedProvider)
-  }
-
-  function saveTiandituToken(event) {
-    event.preventDefault()
-    const token = tokenDraft.trim()
-    if (token) {
-      window.localStorage.setItem(READING_MAP_STORAGE_KEYS.tiandituToken, token)
-    } else {
-      window.localStorage.removeItem(READING_MAP_STORAGE_KEYS.tiandituToken)
+  useEffect(() => {
+    function handleFullscreenChange() {
+      setIsFullscreen(document.fullscreenElement === workspaceRef.current)
     }
-    setTiandituToken(token)
-    setLookupResults([])
-    setLookupState('idle')
-    setLookupMessage(token ? '天地图 Key 已保存在当前浏览器。' : '已清除天地图 Key。')
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  }, [])
+
+  useEffect(() => {
+    if (!isExpanded) return undefined
+    function handleEscape(event) {
+      if (event.key === 'Escape') setIsExpanded(false)
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [isExpanded])
+
+  async function toggleFullscreen() {
+    if (isExpanded) {
+      setIsExpanded(false)
+      return
+    }
+    try {
+      if (document.fullscreenElement === workspaceRef.current) {
+        await document.exitFullscreen()
+      } else if (workspaceRef.current?.requestFullscreen) {
+        await workspaceRef.current.requestFullscreen()
+        if (document.fullscreenElement !== workspaceRef.current) setIsExpanded(true)
+      } else {
+        setIsExpanded(true)
+      }
+    } catch (error) {
+      setIsExpanded(true)
+      setLookupMessage(
+        `${error?.message || '浏览器未允许原生全屏'}；已改用窗口内全屏地图。`,
+      )
+    }
   }
 
   function beginLookup(place) {
@@ -853,36 +1044,33 @@ function ReadingMapPanel({
   }
 
   return (
-    <section className="reader-panel">
+    <section
+      className={`reader-panel reader-map-workspace ${isExpanded ? 'reader-map-expanded' : ''}`}
+      ref={workspaceRef}
+    >
       <div className="reader-panel-heading">
         <div>
-          <span className="reader-step">04</span>
+          <MapIcon size={20} />
           <h3>探索已读地点</h3>
         </div>
-        <span className="reader-system-chip"><ShieldCheck size={13} /> 系统规则过滤</span>
+        <div className="reader-map-heading-actions">
+          <span className="reader-system-chip"><ShieldCheck size={13} /> 系统规则过滤</span>
+          <button type="button" className="btn btn-sm" onClick={onOpenSettings}>
+            <Settings2 size={13} /> 地图设置
+          </button>
+          <button type="button" className="btn btn-sm" onClick={toggleFullscreen}>
+            {isFullscreen || isExpanded
+              ? <Minimize2 size={13} />
+              : <Maximize2 size={13} />}
+            {isFullscreen || isExpanded ? '退出全屏' : '全屏地图'}
+          </button>
+        </div>
       </div>
       <div className="reader-map-provider-panel">
-        <label>
-          地图网络
-          <select value={providerId} onChange={(event) => changeProvider(event.target.value)}>
-            {Object.values(READING_MAP_PROVIDERS).map((provider) => (
-              <option key={provider.id} value={provider.id}>{provider.label}</option>
-            ))}
-          </select>
-        </label>
+        <strong>{READING_MAP_PROVIDERS[providerId].label}</strong>
         <span>{READING_MAP_PROVIDERS[providerId].description}</span>
-        {providerId === READING_MAP_PROVIDER.DOMESTIC && (
-          <form onSubmit={saveTiandituToken}>
-            <input
-              aria-label="天地图浏览器端 Key"
-              autoComplete="off"
-              placeholder="输入天地图浏览器端 Key"
-              type="password"
-              value={tokenDraft}
-              onChange={(event) => setTokenDraft(event.target.value)}
-            />
-            <button type="submit">保存并启用</button>
-          </form>
+        {providerId === READING_MAP_PROVIDER.DOMESTIC && !tiandituToken && (
+          <button type="button" onClick={onOpenSettings}>填写天地图 Key</button>
         )}
       </div>
       <div className="reader-place-lookup">
@@ -1091,7 +1279,7 @@ function ReadingFactsPanel({ facts, entities, currentChapterId, currentChapter, 
     <section className="reader-panel">
       <div className="reader-panel-heading">
         <div>
-          <span className="reader-step">05</span>
+          <ShieldCheck size={20} />
           <h3>查看已读资料</h3>
         </div>
         <span className="reader-system-chip"><ShieldCheck size={13} /> 确定性剧透门禁</span>
@@ -1196,6 +1384,20 @@ export function ReaderTool({ scene }) {
   const [inputStatus, setInputStatus] = useState('')
   const [ocrState, setOcrState] = useState('idle')
   const [ocrProgress, setOcrProgress] = useState(0)
+  const [activeTab, setActiveTab] = useState(READER_TAB.INPUT)
+  const [modelConfig, setModelConfig] = useState(() => ({
+    endpoint: window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.endpoint)
+      || 'https://api.openai.com/v1/chat/completions',
+    model: window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.model) || '',
+    apiKey: window.sessionStorage.getItem(READING_MODEL_STORAGE_KEYS.apiKey) || '',
+  }))
+  const [mapConfig, setMapConfig] = useState(() => ({
+    providerId: normalizeReadingMapProvider(
+      window.localStorage.getItem(READING_MAP_STORAGE_KEYS.provider),
+    ),
+    tiandituToken:
+      window.localStorage.getItem(READING_MAP_STORAGE_KEYS.tiandituToken) || '',
+  }))
 
   useEffect(() => {
     let active = true
@@ -1318,6 +1520,7 @@ export function ReaderTool({ scene }) {
     setScanResults([])
     setScanPerformed(false)
     setScanStatus('')
+    setActiveTab(READER_TAB.INPUT)
     clearImage()
   }
 
@@ -1354,7 +1557,49 @@ export function ReaderTool({ scene }) {
     setScanResults([])
     setScanPerformed(false)
     setScanStatus('')
+    setActiveTab(READER_TAB.INPUT)
     clearImage()
+  }
+
+  function saveModelConfig(nextConfig) {
+    const normalized = {
+      endpoint: nextConfig.endpoint.trim(),
+      model: nextConfig.model.trim(),
+      apiKey: nextConfig.apiKey.trim(),
+    }
+    if (normalized.endpoint) {
+      window.localStorage.setItem(READING_MODEL_STORAGE_KEYS.endpoint, normalized.endpoint)
+    } else {
+      window.localStorage.removeItem(READING_MODEL_STORAGE_KEYS.endpoint)
+    }
+    if (normalized.model) {
+      window.localStorage.setItem(READING_MODEL_STORAGE_KEYS.model, normalized.model)
+    } else {
+      window.localStorage.removeItem(READING_MODEL_STORAGE_KEYS.model)
+    }
+    if (normalized.apiKey) {
+      window.sessionStorage.setItem(READING_MODEL_STORAGE_KEYS.apiKey, normalized.apiKey)
+    } else {
+      window.sessionStorage.removeItem(READING_MODEL_STORAGE_KEYS.apiKey)
+    }
+    setModelConfig(normalized)
+  }
+
+  function saveMapConfig(nextConfig) {
+    const normalized = {
+      providerId: normalizeReadingMapProvider(nextConfig.providerId),
+      tiandituToken: nextConfig.tiandituToken.trim(),
+    }
+    window.localStorage.setItem(READING_MAP_STORAGE_KEYS.provider, normalized.providerId)
+    if (normalized.tiandituToken) {
+      window.localStorage.setItem(
+        READING_MAP_STORAGE_KEYS.tiandituToken,
+        normalized.tiandituToken,
+      )
+    } else {
+      window.localStorage.removeItem(READING_MAP_STORAGE_KEYS.tiandituToken)
+    }
+    setMapConfig(normalized)
   }
 
   function changeExcerpt(value) {
@@ -1483,6 +1728,32 @@ export function ReaderTool({ scene }) {
   }
   if (!readingPackage) return <LoadingPanel message="正在加载阅读资料…" />
 
+  const readerTabs = [
+    { id: READER_TAB.INPUT, label: '阅读输入', icon: ClipboardPaste },
+    {
+      id: READER_TAB.RECORDS,
+      label: '本章记录',
+      icon: UserRoundSearch,
+      count: visibleObservedEntities(
+        observedEntities,
+        currentChapterId,
+        readingPackage.chapters,
+      ).length,
+    },
+    {
+      id: READER_TAB.MAP,
+      label: '地图',
+      icon: MapIcon,
+      count: visibleReadingEntities(
+        visibleMapEntities,
+        currentChapterId,
+        readingPackage.chapters,
+      ).filter((entity) => entity.kind === 'place').length,
+    },
+    { id: READER_TAB.FACTS, label: '已读资料', icon: ShieldCheck },
+    { id: READER_TAB.SETTINGS, label: '设置', icon: Settings2 },
+  ]
+
   return (
     <div className="reader-tool">
       <section className="reader-hero">
@@ -1515,12 +1786,48 @@ export function ReaderTool({ scene }) {
         </div>
       </section>
 
-      <div className="reader-layout">
-        <main className="reader-main">
+      <section className="reader-overview-strip" aria-label="当前资料包概况">
+        <span><b>{readingPackage.chapters.length}</b> 章节</span>
+        <span><b>{readingPackage.onDemandEntities?.length || 0}</b> 按需名称</span>
+        <span><b>{readingPackage.entities.length}</b> 正式实体</span>
+        <span><b>{readingPackage.facts.length}</b> 正式事实</span>
+        <small>资料包 {readingPackage.packageVersion}</small>
+      </section>
+
+      <nav className="reader-tabs" role="tablist" aria-label="阅读伴侣功能">
+        {readerTabs.map((tab) => {
+          const Icon = tab.icon
+          return (
+            <button
+              key={tab.id}
+              id={`reader-tab-${tab.id}`}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              aria-controls={`reader-panel-${tab.id}`}
+              className={activeTab === tab.id ? 'active' : ''}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <Icon size={17} />
+              <span>{tab.label}</span>
+              {Number.isFinite(tab.count) && <b>{tab.count}</b>}
+            </button>
+          )
+        })}
+      </nav>
+
+      <main
+        className="reader-tab-content"
+        id={`reader-panel-${activeTab}`}
+        role="tabpanel"
+        aria-labelledby={`reader-tab-${activeTab}`}
+      >
+        {activeTab === READER_TAB.INPUT && (
+          <div className="reader-input-grid">
           <section className="reader-panel">
             <div className="reader-panel-heading">
               <div>
-                <span className="reader-step">01</span>
+                <BookOpen size={20} />
                 <h3>设置阅读边界</h3>
               </div>
               <span className="reader-safe-chip"><ShieldCheck size={14} /> 严格无剧透</span>
@@ -1541,7 +1848,7 @@ export function ReaderTool({ scene }) {
           <section className="reader-panel">
             <div className="reader-panel-heading">
               <div>
-                <span className="reader-step">02</span>
+                <ClipboardPaste size={20} />
                 <h3>放入正在阅读的内容</h3>
               </div>
               <span className="reader-local-chip"><Lock size={13} /> 仅在本机</span>
@@ -1641,9 +1948,14 @@ export function ReaderTool({ scene }) {
               bookTitle={readingPackage.book.title}
               currentChapter={currentChapter}
               onConfirmCandidate={confirmModelCandidate}
+              modelConfig={modelConfig}
+              onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
             />
           </section>
+          </div>
+        )}
 
+        {activeTab === READER_TAB.RECORDS && (
           <ObservedEntitiesPanel
             observedEntities={observedEntities}
             onDemandEntities={readingPackage.onDemandEntities || []}
@@ -1652,7 +1964,9 @@ export function ReaderTool({ scene }) {
             chapters={readingPackage.chapters}
             onChange={changeObservedEntities}
           />
+        )}
 
+        {activeTab === READER_TAB.MAP && (
           <ReadingMapPanel
             entities={visibleMapEntities}
             observedEntities={observedEntities}
@@ -1660,8 +1974,12 @@ export function ReaderTool({ scene }) {
             currentChapterId={currentChapterId}
             chapters={readingPackage.chapters}
             onChangeObservedEntities={changeObservedEntities}
+            mapConfig={mapConfig}
+            onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
           />
+        )}
 
+        {activeTab === READER_TAB.FACTS && (
           <ReadingFactsPanel
             key={`${readingPackage.id}:${currentChapterId}`}
             facts={readingPackage.facts}
@@ -1670,53 +1988,17 @@ export function ReaderTool({ scene }) {
             currentChapter={currentChapter}
             chapters={readingPackage.chapters}
           />
-        </main>
+        )}
 
-        <aside className="reader-sidebar">
-          <section className="reader-sidebar-card">
-            <h3><LibraryBig size={17} /> 资料包内容</h3>
-            <div className="reader-package-stats">
-              <span><b>{readingPackage.chapters.length}</b> 稳定章节</span>
-              <span><b>{readingPackage.sources.length}</b> 已批准来源</span>
-              <span><b>{readingPackage.onDemandEntities?.length || 0}</b> 按需实体</span>
-              <span><b>{readingPackage.entities.length}</b> 章节实体</span>
-              <span><b>{readingPackage.facts.length}</b> 正式事实</span>
-            </div>
-            <p>版本 {readingPackage.packageVersion}。按需实体只在读者输入命中后出现；待审候选不会进入运行时资料包。</p>
-          </section>
-          <section className="reader-sidebar-card">
-            <h3><MapPin size={17} /> 地图资料</h3>
-            <strong>
-              {visibleReadingEntities(
-                visibleMapEntities,
-                currentChapterId,
-                readingPackage.chapters,
-              ).filter((entity) => entity.kind === 'place').length} 个当前可见地点
-            </strong>
-            <p>数量按已读章节确定性过滤；按需地点由读者确认章节解锁。</p>
-          </section>
-          <section className="reader-sidebar-card">
-            <h3><UserRoundSearch size={17} /> 已遇到的名字</h3>
-            <strong>
-              {visibleObservedEntities(
-                savedState?.observedEntities,
-                currentChapterId,
-                readingPackage.chapters,
-              ).length} 个当前可见记录
-            </strong>
-            <p>由读者主动确认并锚定章节；不会自动获得资料库事实。</p>
-          </section>
-          <section className="reader-sidebar-card">
-            <h3><ShieldCheck size={17} /> 剧透门禁</h3>
-            <ul className="reader-risk-list">
-              <li><span className="reader-risk-dot safe" />纯空间事实直接展示</li>
-              <li><span className="reader-risk-dot potential" />潜在剧透先强提醒</li>
-              <li><span className="reader-risk-dot high" />高风险内容二次确认</li>
-            </ul>
-            <p>授权只对当前一次内容有效，未知风险按潜在剧透处理。</p>
-          </section>
-        </aside>
-      </div>
+        {activeTab === READER_TAB.SETTINGS && (
+          <ReadingServiceSettings
+            modelConfig={modelConfig}
+            mapConfig={mapConfig}
+            onSaveModel={saveModelConfig}
+            onSaveMap={saveMapConfig}
+          />
+        )}
+      </main>
     </div>
   )
 }

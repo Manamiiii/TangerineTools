@@ -76,6 +76,15 @@ export function ReadingGeoMap({
   }, [])
 
   useEffect(() => {
+    if (!containerRef.current || typeof ResizeObserver === 'undefined') return undefined
+    const observer = new ResizeObserver(() => {
+      mapRef.current?.invalidateSize({ animate: false })
+    })
+    observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
     const map = mapRef.current
     if (!map) return undefined
 
