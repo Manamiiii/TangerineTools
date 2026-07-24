@@ -103,6 +103,43 @@ function ReadingLibrary({ catalog, onSelect }) {
           <div className="reader-observed-empty">还没有已发布的书籍资料包。</div>
         )}
       </section>
+      <section className="reader-trial-panel">
+        <div className="reader-trial-heading">
+          <div>
+            <span className="reader-safe-chip"><ShieldCheck size={14} /> 核心流程可试用</span>
+            <h3>第一次怎么用</h3>
+          </div>
+          <p>不需要上传整本书，也不需要配置模型。</p>
+        </div>
+        <ol className="reader-trial-steps">
+          <li>
+            <span>1</span>
+            <div><strong>选择正在读的书</strong><small>进入后把进度设为实际章节。</small></div>
+          </li>
+          <li>
+            <span>2</span>
+            <div><strong>粘贴刚读到的一小段</strong><small>文字只在当前页面处理，不会保存。</small></div>
+          </li>
+          <li>
+            <span>3</span>
+            <div><strong>扫描并确认名称</strong><small>只显示段落里真正命中的已审计名称。</small></div>
+          </li>
+          <li>
+            <span>4</span>
+            <div><strong>查看已解锁资料</strong><small>地点分类与安全空间资料受阅读进度约束。</small></div>
+          </li>
+        </ol>
+        <div className="reader-trial-boundary">
+          <div>
+            <strong>本次可以测试</strong>
+            <span>书架、章节进度、文本扫描、名称记录、地点解锁、本机保存</span>
+          </div>
+          <div>
+            <strong>暂未开放</strong>
+            <span>截图 OCR、自由问答、人物关系理解、自动发现未知名称</span>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
