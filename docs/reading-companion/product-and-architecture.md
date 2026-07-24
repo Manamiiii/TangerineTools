@@ -141,8 +141,8 @@
 
 当前发布目录与命令为：
 
-- `scripts/reading/data/staging/`：版本化研究输入、来源状态、实体和事实候选。
-- `scripts/reading/data/preview/`：由 staging 生成的逐书完整发布候选、统一 catalog 和审计元数据。
+- `scripts/reading-companion/data/staging/`：版本化研究输入、来源状态、实体和事实候选。
+- `scripts/reading-companion/data/preview/`：由 staging 生成的逐书完整发布候选、统一 catalog 和审计元数据。
 - `npm run preview:reader`：生成 preview。
 - `npm run check:reader:preset`：比较 preview 与正式资料并在 `artifacts/reading-companion/` 生成报告。
 - `READING_PACKAGE_OVERWRITE=CONFIRM_READING_PACKAGE npm run apply:reader:preset`：显式写入正式资料包。
@@ -349,6 +349,8 @@
 - 现有纯 CSS 和 hash 路由约定。
 
 阅读伴侣适合作为新的专用工具，例如内部值 `reader`。经典文学场景可以同时启用通用资料库和阅读伴侣；地图、剧透门禁和问答使用专用组件，不把业务判断塞进通用资料表组件。
+
+阅读伴侣运行时代码集中在 `src/features/reading-companion/`，维护脚本、版本化研究数据和专用测试集中在 `scripts/reading-companion/`。公共目录只承担工具注册、Dexie 实例、播种编排、兼容导出和全局样式；专用样式因项目约定保留在 `src/styles.css`，并使用 `reader-` 前缀隔离。
 
 ### 数据边界
 

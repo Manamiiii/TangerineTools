@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
-import { assertReadingPackage } from '../../src/domain/readingCompanion.js'
+import { assertReadingPackage } from '../../src/features/reading-companion/domain/readingCompanion.js'
 
 const repoRoot = path.resolve(import.meta.dirname, '../..')
 const publicRoot = path.join(repoRoot, 'public')

@@ -3,7 +3,10 @@
 export { db } from './db/core.js'
 export { EXPORT_SCHEMA_VERSION, exportAllData, importAllData, validateImportPayload } from './db/importExport.js'
 export { ensureSeeded } from './db/seed.js'
-export { getReadingState, saveReadingState } from './db/readingState.js'
+export {
+  getReadingState,
+  saveReadingState,
+} from './features/reading-companion/db/readingState.js'
 export {
   createCatalogTable,
   createField,

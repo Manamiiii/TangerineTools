@@ -16,7 +16,7 @@ const NatureTool = lazyTool(() => import('./components/nature.jsx'), 'NatureTool
 const StockTool = lazyTool(() => import('./components/stock.jsx'), 'StockTool')
 const OwnedTool = lazyTool(() => import('./components/owned.jsx'), 'OwnedTool')
 const BreedingTool = lazyTool(() => import('./components/breeding.jsx'), 'BreedingTool')
-const ReaderTool = lazyTool(() => import('./components/reader.jsx'), 'ReaderTool')
+const ReaderTool = lazyTool(() => import('./features/reading-companion/index.js'), 'ReaderTool')
 
 // 工具 value -> 对应的工具组件。只有 constants.js 中标记 ready:true 的工具
 // 才会被场景工作台实际渲染、并出现在多工具切换器中。

@@ -1,6 +1,6 @@
-import { READING_COMPANION_PRESET } from '../presets/readingCompanion.js'
-import { nowIso } from '../utils.js'
-import { db } from './core.js'
+import { db } from '../../../db/core.js'
+import { nowIso } from '../../../utils.js'
+import { READING_COMPANION_PRESET } from '../preset.js'
 
 const SEED_KEY = 'seededReadingCompanionScene'
 

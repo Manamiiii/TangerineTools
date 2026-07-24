@@ -117,7 +117,9 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 - 正式事实必须引用已批准来源和已知章节，并使用预定义风险类别。当前章节之后或边界不明的事实不会进入展示列表；`safe` 内容直接显示，`potential` 内容先显示无细节警告，`high` 内容需要二次确认。授权仅保存在当前组件状态，收起内容、切换章节或切换资料包都会撤销。
 - 纯领域逻辑定义 `safe` / `potential` / `high` 风险、未来章节提升为潜在剧透、未知边界保守处理、单次授权等级和高风险二次确认动作。
 - `npm run check:reader:packages` 校验资料目录及所有运行时资料包。
-- 研究资料位于 `scripts/reading/data/staging/`；管线自动发现全部 staging，逐书生成版本化 preview，并派生统一运行时 catalog。新书 staging 携带完整 `package`，已有书可用 `basePackagePath` 复用正式包，不需要修改脚本。`check:reader:preset` 输出 dry-run 报告，`apply:reader:preset` 仅在显式确认环境变量存在时写入正式资料包。只有 `approved` 来源进入运行时包，`candidate` 与 `rejected` 来源保留在审计数据中。
+- 阅读伴侣专用运行时代码位于 `src/features/reading-companion/`，研究、发布脚本及其领域测试位于 `scripts/reading-companion/`；公共目录只保留工具懒加载、Dexie 实例、播种编排和兼容导出等集成边界。
+- 项目样式仍按全局约定集中在 `src/styles.css`，阅读伴侣专用选择器统一使用 `reader-` 前缀，避免引入第二套样式入口。
+- 研究资料位于 `scripts/reading-companion/data/staging/`；管线自动发现全部 staging，逐书生成版本化 preview，并派生统一运行时 catalog。新书 staging 携带完整 `package`，已有书可用 `basePackagePath` 复用正式包，不需要修改脚本。`check:reader:preset` 输出 dry-run 报告，`apply:reader:preset` 仅在显式确认环境变量存在时写入正式资料包。只有 `approved` 来源进入运行时包，`candidate` 与 `rejected` 来源保留在审计数据中。
 - Codex 或其他模型在开发期间生成的研究结果属于建库候选，不是运行时模型能力；测试夹具也不是正式资料。只有仓库内可重复执行的代码、校验、发布流程和已批准资料包属于当前系统能力。
 
 ### 8. 洛克王国预置资料

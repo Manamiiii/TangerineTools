@@ -1,6 +1,6 @@
 import { readingStateKey } from '../domain/readingCompanion.js'
-import { nowIso } from '../utils.js'
-import { db } from './core.js'
+import { db } from '../../../db/core.js'
+import { nowIso } from '../../../utils.js'
 
 export async function getReadingState(sceneId, editionId) {
   const record = await db.meta.get(readingStateKey(sceneId, editionId))

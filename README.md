@@ -104,9 +104,10 @@ npm run lint
 │   │   ├── apply-preset.mjs              # dry-run 校验与显式发布
 │   │   ├── lib/                          # 路径和标签规则共享模块
 │   │   └── data/                         # 版本化 staging 与 preview
-│   ├── reading/
+│   ├── reading-companion/
 │   │   ├── data/                         # 阅读资料 staging 与 preview
 │   │   ├── lib/                          # 阅读资料发布共享逻辑
+│   │   ├── tests/                        # 阅读资料包与门禁领域测试
 │   │   ├── build-preview.mjs             # staging 到发布候选
 │   │   ├── apply-preview.mjs             # dry-run 检查与显式发布
 │   │   └── validate-packages.mjs          # 正式阅读资料包结构校验
@@ -119,25 +120,27 @@ npm run lint
 │   │   ├── catalog.jsx                   # 通用表格、字段、批量引用解析
 │   │   ├── owned.jsx / stock.jsx         # 收集记录 / 统计视图
 │   │   ├── nature.jsx / breeding.jsx     # 性格推荐 / 孵蛋推荐 UI
-│   │   ├── reader.jsx                    # 阅读进度、文本和截图输入
 │   │   └── common.jsx / ErrorBoundary.jsx # 通用控件与工具级错误恢复
 │   ├── db/
 │   │   ├── core.js                       # Dexie v1 schema 与数据库实例
 │   │   ├── importExport.js               # JSON 校验、导出与 merge-by-id 导入
 │   │   ├── repository.js                 # 场景、表、字段和行的 CRUD
-│   │   ├── readingState.js               # meta 中的阅读进度存取
-│   │   ├── readingCompanionSeed.js        # 经典文学阅读场景播种
 │   │   ├── seed.js                       # 应用预置初始化编排
 │   │   └── rockKingdomSeed.js            # 预置播种与三方迁移
 │   ├── domain/
 │   │   ├── nature.js / naturePve.js      # 性格规则引擎 / PVE 展示判定
 │   │   ├── natureRowAdapter.js            # 资料行到推荐输入的适配
 │   │   ├── rockKingdom*.js               # 形态、展示和共享标签规则
-│   │   ├── readingCompanion.js            # 资料包校验与剧透门禁
 │   │   └── owned.js / stock.js / breeding*.js # 其他工具纯领域逻辑
+│   ├── features/reading-companion/
+│   │   ├── components/                   # 阅读伴侣专用界面
+│   │   ├── data/                         # 运行时资料包读取
+│   │   ├── db/                           # 阅读进度与场景播种
+│   │   ├── domain/                       # 资料包校验、章节过滤与剧透门禁
+│   │   ├── preset.js                     # 经典文学阅读场景定义
+│   │   └── index.js                      # 功能公开入口
 │   ├── presets/
-│   │   ├── rockKingdom.js                # 洛克王国场景、字段和选项
-│   │   └── readingCompanion.js            # 经典文学阅读场景定义
+│   │   └── rockKingdom.js                # 洛克王国场景、字段和选项
 │   ├── App.jsx                            # hash 路由、工具懒加载、全局导入导出
 │   ├── db.js                              # 稳定的数据访问兼容门面
 │   ├── constants.js / utils.js            # 全局约定与通用工具
@@ -174,7 +177,7 @@ git diff --check
 
 应用首次初始化会创建「经典文学阅读」场景，只启用阅读伴侣。用户删除该场景后不会自动重建；用户修改名称或工具组合时，初始化流程不会覆盖这些设置。
 
-运行时资料目录位于 `public/presets/reading-companion/`。《飘》资料包对应长江文艺出版社 2018 年 5 月版、ISBN `9787570202188`，章节稳定标识覆盖 1–63 章。正式实体、事实和来源只通过 `scripts/reading/data/` 下的 staging / preview / apply 流程发布；候选来源不会进入运行时资料包。
+运行时资料目录位于 `public/presets/reading-companion/`。《飘》资料包对应长江文艺出版社 2018 年 5 月版、ISBN `9787570202188`，章节稳定标识覆盖 1–63 章。正式实体、事实和来源只通过 `scripts/reading-companion/data/` 下的 staging / preview / apply 流程发布；候选来源不会进入运行时资料包。
 
 阅读伴侣按当前章节过滤正式资料包中的实体和事实，并可在不依赖模型或外部地图服务的空间概览中展示已审计地点。安全事实直接显示，潜在剧透需要确认，高风险内容需要二次确认；授权不会持久化。正式地点和事实必须引用已批准来源与指定版本的章节边界；开发时研究候选与测试夹具不属于运行时正式资料。
 

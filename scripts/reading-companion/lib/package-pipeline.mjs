@@ -1,11 +1,11 @@
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { assertReadingPackage } from '../../../src/domain/readingCompanion.js'
+import { assertReadingPackage } from '../../../src/features/reading-companion/domain/readingCompanion.js'
 
 export const repoRoot = path.resolve(import.meta.dirname, '../../..')
 export const publicRoot = path.join(repoRoot, 'public/presets/reading-companion')
-export const stagingRoot = path.join(repoRoot, 'scripts/reading/data/staging')
-export const previewRoot = path.join(repoRoot, 'scripts/reading/data/preview')
+export const stagingRoot = path.join(repoRoot, 'scripts/reading-companion/data/staging')
+export const previewRoot = path.join(repoRoot, 'scripts/reading-companion/data/preview')
 export const previewCatalogPath = path.join(previewRoot, 'catalog.json')
 export const publicCatalogPath = path.join(publicRoot, 'catalog.json')
 export const reportPath = path.join(

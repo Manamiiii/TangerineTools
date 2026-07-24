@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { assertReadingPackage } from '../../src/domain/readingCompanion.js'
+import { assertReadingPackage } from '../../src/features/reading-companion/domain/readingCompanion.js'
 import {
   packagePaths,
   previewCatalogPath,

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFile } from 'node:fs/promises'
+import { access, readFile } from 'node:fs/promises'
 import test from 'node:test'
 import {
   SPOILER_GATE_ACTION,
@@ -14,19 +14,47 @@ import {
   validateReadingPackage,
   visibleReadingEntities,
   visibleReadingFacts,
-} from '../../src/domain/readingCompanion.js'
+} from '../../../src/features/reading-companion/domain/readingCompanion.js'
 import {
   buildReadingPreviewFromStaging,
   buildReadingPreviews,
-} from '../reading/lib/package-pipeline.mjs'
+} from '../lib/package-pipeline.mjs'
 
-const repoUrl = new URL('../../', import.meta.url)
+const repoUrl = new URL('../../../', import.meta.url)
 const readingPackage = JSON.parse(
   await readFile(
     new URL('public/presets/reading-companion/gone-with-the-wind-zh-9787570202188.json', repoUrl),
     'utf8',
   ),
 )
+
+test('reading companion keeps feature code and maintenance files in dedicated directories', async () => {
+  const dedicatedPaths = [
+    'src/features/reading-companion/index.js',
+    'src/features/reading-companion/components/ReaderTool.jsx',
+    'src/features/reading-companion/data/readingPackages.js',
+    'src/features/reading-companion/db/readingState.js',
+    'src/features/reading-companion/db/seed.js',
+    'src/features/reading-companion/domain/readingCompanion.js',
+    'src/features/reading-companion/preset.js',
+    'scripts/reading-companion/build-preview.mjs',
+    'docs/reading-companion/product-and-architecture.md',
+  ]
+  await Promise.all(dedicatedPaths.map((file) => access(new URL(file, repoUrl))))
+
+  const retiredMixedPaths = [
+    'src/components/reader.jsx',
+    'src/data/readingPackages.js',
+    'src/db/readingState.js',
+    'src/db/readingCompanionSeed.js',
+    'src/domain/readingCompanion.js',
+    'src/presets/readingCompanion.js',
+    'scripts/reading/build-preview.mjs',
+  ]
+  for (const file of retiredMixedPaths) {
+    await assert.rejects(access(new URL(file, repoUrl)), { code: 'ENOENT' })
+  }
+})
 
 test('Gone with the Wind package preserves the confirmed edition and 63 stable chapters', () => {
   assert.deepEqual(validateReadingPackage(readingPackage), [])

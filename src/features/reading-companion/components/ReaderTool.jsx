@@ -12,7 +12,7 @@ import {
   Upload,
   X,
 } from 'lucide-react'
-import { getReadingState, saveReadingState } from '../db.js'
+import { getReadingState, saveReadingState } from '../db/readingState.js'
 import { loadReadingPackage, loadReadingPackageCatalog } from '../data/readingPackages.js'
 import {
   SPOILER_GATE_ACTION,

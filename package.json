@@ -11,10 +11,10 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "check:reader:packages": "node scripts/reading/validate-packages.mjs",
-    "preview:reader": "node scripts/reading/build-preview.mjs",
-    "check:reader:preset": "node scripts/reading/apply-preview.mjs",
-    "apply:reader:preset": "node scripts/reading/apply-preview.mjs --write",
+    "check:reader:packages": "node scripts/reading-companion/validate-packages.mjs",
+    "preview:reader": "node scripts/reading-companion/build-preview.mjs",
+    "check:reader:preset": "node scripts/reading-companion/apply-preview.mjs",
+    "apply:reader:preset": "node scripts/reading-companion/apply-preview.mjs --write",
     "check:nature": "node scripts/check-nature-recommendations.mjs",
     "sync:breeding": "node scripts/bwiki/sync-breeding.mjs",
     "sync:bwiki:staging": "node scripts/bwiki/sync-staging.mjs",
@@ -22,7 +22,7 @@
     "preview:bwiki": "node scripts/bwiki/build-preview.mjs",
     "check:bwiki:preset": "node scripts/bwiki/apply-preset.mjs",
     "apply:bwiki:preset": "node scripts/bwiki/apply-preset.mjs --write",
-    "test": "node --test scripts/tests/*.test.mjs"
+    "test": "node --test scripts/tests/*.test.mjs scripts/reading-companion/tests/*.test.mjs"
   },
   "dependencies": {
     "dexie": "^4.4.4",
