@@ -8,21 +8,28 @@ import {
   Image,
   Lock,
   MapPin,
+  Plus,
   ShieldCheck,
+  Trash2,
   Upload,
+  UserRoundSearch,
   X,
 } from 'lucide-react'
 import { getReadingState, saveReadingState } from '../db/readingState.js'
 import { loadReadingPackage, loadReadingPackageCatalog } from '../data/readingPackages.js'
+import { generateId } from '../../../utils.js'
 import {
   SPOILER_GATE_ACTION,
   SPOILER_CATEGORY_LABELS,
   SPOILER_RISK,
   canRevealRisk,
+  OBSERVED_ENTITY_KIND,
   projectReadingPlaces,
   spoilerGateAction,
+  upsertObservedEntity,
   visibleReadingEntities,
   visibleReadingFacts,
+  visibleObservedEntities,
 } from '../domain/readingCompanion.js'
 
 const PLACE_KIND_LABELS = {
@@ -30,6 +37,13 @@ const PLACE_KIND_LABELS = {
   fictional: '虚构地点',
   prototype: '原型地点',
   approximate: '模糊区域',
+}
+
+const OBSERVED_KIND_LABELS = {
+  [OBSERVED_ENTITY_KIND.PLACE]: '地点',
+  [OBSERVED_ENTITY_KIND.PERSON]: '人物',
+  [OBSERVED_ENTITY_KIND.CONCEPT]: '概念',
+  [OBSERVED_ENTITY_KIND.EVENT]: '事件',
 }
 
 function LoadingPanel({ message }) {
@@ -42,6 +56,123 @@ function ReaderError({ message }) {
       <strong>阅读资料加载失败</strong>
       <span>{message}</span>
     </div>
+  )
+}
+
+function ObservedEntitiesPanel({
+  observedEntities,
+  currentChapterId,
+  currentChapter,
+  chapters,
+  onChange,
+}) {
+  const [name, setName] = useState('')
+  const [kind, setKind] = useState(OBSERVED_ENTITY_KIND.PLACE)
+  const [status, setStatus] = useState('')
+  const visibleEntities = useMemo(
+    () => visibleObservedEntities(observedEntities, currentChapterId, chapters),
+    [observedEntities, currentChapterId, chapters],
+  )
+  const hiddenCount = observedEntities.length - visibleEntities.length
+
+  async function addObservedEntity(event) {
+    event.preventDefault()
+    setStatus('')
+    try {
+      const next = upsertObservedEntity(observedEntities, {
+        id: generateId('observed'),
+        name,
+        kind,
+        firstSeenChapterId: currentChapterId,
+      }, chapters)
+      if (next === observedEntities) {
+        setStatus('这个名称已经记录在当前章或更早章节。')
+        return
+      }
+      await onChange(next)
+      setName('')
+      setStatus(`已把首次遇到位置记在${currentChapter?.label || '当前章'}。`)
+    } catch (error) {
+      setStatus(error?.message || '保存失败')
+    }
+  }
+
+  async function removeObservedEntity(id) {
+    setStatus('')
+    try {
+      await onChange(observedEntities.filter((entity) => entity.id !== id))
+    } catch (error) {
+      setStatus(error?.message || '删除失败')
+    }
+  }
+
+  return (
+    <section className="reader-panel">
+      <div className="reader-panel-heading">
+        <div>
+          <span className="reader-step">03</span>
+          <h3>记录本章遇到的名字</h3>
+        </div>
+        <span className="reader-local-chip"><Lock size={13} /> 用户确认</span>
+      </div>
+      <p className="reader-help reader-observed-intro">
+        没有原文预分析时，章节仍可记录“你到这里已经遇到它”。这里只保存你主动输入的名称，不自动补充人物关系或剧情。
+      </p>
+      <form className="reader-observed-form" onSubmit={addObservedEntity}>
+        <label>
+          <span>名称</span>
+          <input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="例如：刚刚读到的人名或地名"
+            maxLength={120}
+          />
+        </label>
+        <label>
+          <span>类型</span>
+          <select value={kind} onChange={(event) => setKind(event.target.value)}>
+            {Object.entries(OBSERVED_KIND_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+        </label>
+        <button type="submit" className="btn reader-observed-add" disabled={!name.trim()}>
+          <Plus size={15} /> 记在{currentChapter?.label || '当前章'}
+        </button>
+      </form>
+      {status && <p className="reader-observed-status" role="status">{status}</p>}
+      {visibleEntities.length > 0 ? (
+        <div className="reader-observed-list">
+          {visibleEntities.map((entity) => {
+            const chapter = chapters.find((item) => item.id === entity.firstSeenChapterId)
+            return (
+              <div className="reader-observed-item" key={entity.id}>
+                <UserRoundSearch size={16} />
+                <div>
+                  <strong>{entity.name}</strong>
+                  <span>{OBSERVED_KIND_LABELS[entity.kind]} · 首次记录于{chapter?.label || '未知章节'}</span>
+                </div>
+                <button
+                  type="button"
+                  className="icon-btn"
+                  onClick={() => removeObservedEntity(entity.id)}
+                  aria-label={`删除${entity.name}的遇见记录`}
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      ) : (
+        <div className="reader-observed-empty">当前章及之前还没有手动记录的名称。</div>
+      )}
+      {hiddenCount > 0 && (
+        <p className="reader-observed-hidden">
+          有 {hiddenCount} 条较后章节的记录已隐藏，回到相应进度后才会显示名称。
+        </p>
+      )}
+    </section>
   )
 }
 
@@ -65,7 +196,7 @@ function ReadingMapPanel({ entities, currentChapterId, chapters }) {
     <section className="reader-panel">
       <div className="reader-panel-heading">
         <div>
-          <span className="reader-step">03</span>
+          <span className="reader-step">04</span>
           <h3>探索已读地点</h3>
         </div>
         <span className="reader-system-chip"><ShieldCheck size={13} /> 系统规则过滤</span>
@@ -180,7 +311,7 @@ function ReadingFactsPanel({ facts, entities, currentChapterId, currentChapter, 
     <section className="reader-panel">
       <div className="reader-panel-heading">
         <div>
-          <span className="reader-step">04</span>
+          <span className="reader-step">05</span>
           <h3>查看已读资料</h3>
         </div>
         <span className="reader-system-chip"><ShieldCheck size={13} /> 确定性剧透门禁</span>
@@ -349,6 +480,21 @@ export function ReaderTool({ scene }) {
     }
   }
 
+  async function changeObservedEntities(observedEntities) {
+    setSaveState('saving')
+    try {
+      await saveReadingState(scene.id, editionId, {
+        packageId: readingPackage.id,
+        bookId: readingPackage.book.id,
+        observedEntities,
+      })
+      setSaveState('saved')
+    } catch (error) {
+      setSaveState('error')
+      throw error
+    }
+  }
+
   function chooseImage(event) {
     const file = event.target.files?.[0]
     if (!file) return
@@ -475,6 +621,14 @@ export function ReaderTool({ scene }) {
             </div>
           </section>
 
+          <ObservedEntitiesPanel
+            observedEntities={savedState?.observedEntities || []}
+            currentChapterId={currentChapterId}
+            currentChapter={currentChapter}
+            chapters={readingPackage.chapters}
+            onChange={changeObservedEntities}
+          />
+
           <ReadingMapPanel
             entities={readingPackage.entities}
             currentChapterId={currentChapterId}
@@ -502,6 +656,17 @@ export function ReaderTool({ scene }) {
               ).filter((entity) => entity.kind === 'place').length} 个当前可见地点
             </strong>
             <p>数量按已读章节确定性过滤；正式《飘》地点资料仍待版本证据。</p>
+          </section>
+          <section className="reader-sidebar-card">
+            <h3><UserRoundSearch size={17} /> 已遇到的名字</h3>
+            <strong>
+              {visibleObservedEntities(
+                savedState?.observedEntities,
+                currentChapterId,
+                readingPackage.chapters,
+              ).length} 个当前可见记录
+            </strong>
+            <p>由读者主动确认并锚定章节；不会自动获得资料库事实。</p>
           </section>
           <section className="reader-sidebar-card">
             <h3><ShieldCheck size={17} /> 剧透门禁</h3>

@@ -6,14 +6,17 @@ import {
   SPOILER_RISK,
   canRevealRisk,
   isRevealedAtChapter,
+  normalizeObservedEntityName,
   projectReadingPlaces,
   readingStateKey,
   riskForDisclosure,
   spoilerGateAction,
   strongestSpoilerRisk,
+  upsertObservedEntity,
   validateReadingPackage,
   visibleReadingEntities,
   visibleReadingFacts,
+  visibleObservedEntities,
 } from '../../../src/features/reading-companion/domain/readingCompanion.js'
 import {
   buildReadingPreviewFromStaging,
@@ -215,6 +218,55 @@ test('reading state keys isolate scenes and editions without changing the Dexie 
     'readerState:scene-reading:gone-with-the-wind-zh-9787570202188',
   )
   assert.throws(() => readingStateKey('', 'edition'), /场景和版本/)
+})
+
+test('reader-confirmed names use chapters without requiring book text or guessed facts', () => {
+  const chapters = readingPackage.chapters
+  const first = upsertObservedEntity([], {
+    id: 'observed-tara',
+    name: '  塔拉庄园  ',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-03',
+  }, chapters)
+  assert.deepEqual(first, [{
+    id: 'observed-tara',
+    name: '塔拉庄园',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-03',
+  }])
+  assert.equal(normalizeObservedEntityName('ＴＡＲＡ  '), 'tara')
+  assert.deepEqual(visibleObservedEntities(first, 'chapter-02', chapters), [])
+  assert.deepEqual(
+    visibleObservedEntities(first, 'chapter-03', chapters).map(({ name }) => name),
+    ['塔拉庄园'],
+  )
+
+  const unchanged = upsertObservedEntity(first, {
+    id: 'observed-duplicate',
+    name: '塔拉庄园',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-05',
+  }, chapters)
+  assert.equal(unchanged, first)
+
+  const correctedEarlier = upsertObservedEntity(first, {
+    id: 'observed-duplicate',
+    name: '塔拉庄园',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-01',
+  }, chapters)
+  assert.equal(correctedEarlier.length, 1)
+  assert.equal(correctedEarlier[0].id, 'observed-tara')
+  assert.equal(correctedEarlier[0].firstSeenChapterId, 'chapter-01')
+  assert.throws(
+    () => upsertObservedEntity([], {
+      id: 'invalid',
+      name: '未知名称',
+      kind: 'place',
+      firstSeenChapterId: 'chapter-99',
+    }, chapters),
+    /已知章节/,
+  )
 })
 
 test('spoiler risk defaults unknown boundaries to potential and preserves high risk', () => {

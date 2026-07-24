@@ -48,11 +48,23 @@ test('reading progress uses namespaced meta records and merges updates', async (
   await saveReadingState(sceneId, editionId, {
     packageId: 'reader-package-gone-with-the-wind-zh-9787570202188',
     currentChapterId: 'chapter-01',
+    observedEntities: [{
+      id: 'observed-place',
+      name: '读者确认的地点',
+      kind: 'place',
+      firstSeenChapterId: 'chapter-01',
+    }],
   })
   await saveReadingState(sceneId, editionId, { currentChapterId: 'chapter-12' })
   const state = await getReadingState(sceneId, editionId)
   assert.equal(state.packageId, 'reader-package-gone-with-the-wind-zh-9787570202188')
   assert.equal(state.currentChapterId, 'chapter-12')
+  assert.deepEqual(state.observedEntities, [{
+    id: 'observed-place',
+    name: '读者确认的地点',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-01',
+  }])
   assert.equal(state.sceneId, sceneId)
   assert.equal(state.editionId, editionId)
 })

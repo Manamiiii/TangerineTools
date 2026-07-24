@@ -12,6 +12,13 @@ export const SPOILER_GATE_ACTION = {
   CONFIRM_TWICE: 'confirm-twice',
 }
 
+export const OBSERVED_ENTITY_KIND = {
+  PLACE: 'place',
+  PERSON: 'person',
+  CONCEPT: 'concept',
+  EVENT: 'event',
+}
+
 export const SPOILER_CATEGORY_LABELS = {
   location_significance: '地点的剧情意义',
   character_relationship: '人物关系',
@@ -47,6 +54,54 @@ export function readingStateKey(sceneId, editionId) {
 
 export function chapterIndex(chapters, chapterId) {
   return chapters.findIndex((chapter) => chapter.id === chapterId)
+}
+
+export function normalizeObservedEntityName(name) {
+  return typeof name === 'string'
+    ? name.normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase()
+    : ''
+}
+
+export function upsertObservedEntity(observedEntities, candidate, chapters) {
+  const current = Array.isArray(observedEntities) ? observedEntities : []
+  const name = typeof candidate?.name === 'string' ? candidate.name.normalize('NFKC').trim() : ''
+  const normalizedName = normalizeObservedEntityName(name)
+  if (!normalizedName) throw new Error('遇到的名称不能为空')
+  if (!VALID_ENTITY_KINDS.has(candidate?.kind)) throw new Error('遇到的内容类型无效')
+  const candidateChapterIndex = chapterIndex(chapters, candidate?.firstSeenChapterId)
+  if (candidateChapterIndex < 0) throw new Error('首次遇到位置必须是已知章节')
+
+  const existingIndex = current.findIndex((item) => (
+    item?.kind === candidate.kind
+    && normalizeObservedEntityName(item.name) === normalizedName
+  ))
+  if (existingIndex < 0) {
+    if (!isNonEmptyString(candidate?.id)) throw new Error('新记录需要稳定 id')
+    return [...current, {
+      id: candidate.id,
+      name,
+      kind: candidate.kind,
+      firstSeenChapterId: candidate.firstSeenChapterId,
+    }]
+  }
+
+  const existing = current[existingIndex]
+  const existingChapterIndex = chapterIndex(chapters, existing.firstSeenChapterId)
+  if (existingChapterIndex >= 0 && existingChapterIndex <= candidateChapterIndex) return current
+  return current.map((item, index) => (
+    index === existingIndex
+      ? { ...existing, name, firstSeenChapterId: candidate.firstSeenChapterId }
+      : item
+  ))
+}
+
+export function visibleObservedEntities(observedEntities, currentChapterId, chapters) {
+  if (!Array.isArray(observedEntities)) return []
+  return observedEntities.filter((item) => isRevealedAtChapter(
+    { chapterId: item?.firstSeenChapterId },
+    currentChapterId,
+    chapters,
+  ))
 }
 
 export function isRevealedAtChapter(revealAt, currentChapterId, chapters) {
