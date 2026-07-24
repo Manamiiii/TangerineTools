@@ -29,7 +29,7 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 - 场景字段：名称、类型（通用整理/游戏资料/镜头素材/资料档案，`constants.js` 的 `SCENE_TYPES`）、色调（`COLOR_PALETTE` 预设色板，新建时优先随机未使用颜色）、启用的工具（`SCENE_TOOLS`）。
 - 点击场景行进入该场景的工作台（hash 路由 `#scene/{id}`）。
 
-场景工作台按 `scene.tools` 里启用的、且 `ready: true` 的工具渲染。若启用了多个工具，工作台顶部会出现分段式切换器，可在已启用工具之间自由切换（不会互相影响数据）。目前 `catalog`（资料库）、`owned`（收集记录）、`stock`（统计视图）、`nature`（性格推荐）、`breeding`（孵蛋推荐）五个工具均已落地。
+场景工作台按 `scene.tools` 里启用的、且 `ready: true` 的工具渲染。若启用了多个工具，工作台顶部会出现分段式切换器，可在已启用工具之间自由切换（不会互相影响数据）。目前 `catalog`（资料库）、`owned`（收集记录）、`stock`（统计视图）、`nature`（性格推荐）、`breeding`（孵蛋推荐）、`reader`（阅读伴侣）六个工具均已落地。
 
 ### 2. 资料库工具（`catalog`）
 
@@ -104,7 +104,18 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 - 后代种类按母亲提示并明确展示精灵名称；性格继承按父/母/随机概率说明展示。父母名称是卡片主信息，头像、性别、异色和炫彩图标作为辅助信息；点击父母打开对应收集记录详情，其中精灵引用可继续打开完整资料详情。
 - 洛克王国收集记录表只预置字段结构，不预置精灵收集行；孵蛋推荐直接读取用户维护的真实收集记录。
 
-### 7. 洛克王国预置资料
+### 7. 阅读伴侣工具（`reader`）
+
+场景启用「阅读伴侣」工具后会渲染 `ReaderTool`：
+
+- 运行时从 `public/presets/reading-companion/catalog.json` 读取版本化书籍目录，并对资料包 schema、稳定章节、事实风险和引用关系做校验。
+- 内置《飘》长江文艺出版社 2018 年 5 月版（ISBN `9787570202188`）的版本元数据和连续 1–63 章稳定标识。资料包中的实体和事实集合只接受经过来源审计的内容，当前为空。
+- 用户手动选择当前已读章节；进度以 `readerState:{sceneId}:{editionId}` 命名空间保存在 Dexie `meta` 表中，不改变 schema v1。
+- 支持粘贴当前段落和选择页面截图。段落不持久化，截图只通过临时对象 URL 在本机预览；OCR、实体识别和模型调用尚未接入。
+- 纯领域逻辑定义 `safe` / `potential` / `high` 风险、未来章节提升为潜在剧透、未知边界保守处理、单次授权等级和高风险二次确认动作。
+- `npm run check:reader:packages` 校验资料目录及所有运行时资料包。
+
+### 8. 洛克王国预置资料
 
 - 首次启动自动播种（`ensureSeeded`，通过 `meta.seededRockKingdom` 防止重复播种）：
   - 场景「洛克王国」默认按资料库、性格推荐、收集记录、孵蛋推荐、统计视图的工作流顺序启用五个工具。
@@ -118,13 +129,13 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 - 精灵与技能图片使用经审计的 BWiki / patchwiki URL；存在异色的精灵保存 BWiki 实际异色图片，收集记录和孵蛋推荐中的已拥有个体按异色状态切换头像。炫彩仍只作为个体标记和繁育概率参与展示，不生成或模拟每只精灵不同的炫彩外观。
 - 迁移策略：通过版本化基线正式值指纹做三方合并，只更新空值、无效值或匹配基线正式值的精灵 / 技能字段；用户自定义非空值、用户新增的非占位资料行、owned 收集记录和 stock 统计配置不会被覆盖或删除；不改变 Dexie schema 版本。
 
-### 8. 全量数据导出 / 导入（仅首页）
+### 9. 全量数据导出 / 导入（仅首页）
 
 - **导出**：一键导出全部 Dexie 数据（`scenes` / `catalogTables` / `catalogFields` / `catalogRows` / `meta`）为带时间戳的 JSON 文件下载。
 - **导入**：选择 JSON 文件后二次确认，采用「同 id 覆盖、文件中不存在的本地数据保留」的合并策略（非整表替换）；导入前做基础结构校验（`validateImportPayload`）。
 
 
-### 9. Android Chrome PWA 安装基础能力
+### 10. Android Chrome PWA 安装基础能力
 
 - 站点提供 Web App Manifest、`theme-color`、192/512 SVG 图标和 `display: standalone` 配置。
 - Manifest 的 `start_url`、`scope` 和图标路径使用相对路径，配合 Vite `base: './'` 兼容 GitHub Pages 仓库子路径部署。

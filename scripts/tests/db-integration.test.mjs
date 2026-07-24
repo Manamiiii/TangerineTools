@@ -9,7 +9,7 @@ const [creatures, skills, migration] = await Promise.all([
   readFile(new URL('public/presets/rockKingdomSkillRows.json', repoUrl), 'utf8').then(JSON.parse),
   readFile(new URL('public/presets/rockKingdomPresetMigration.json', repoUrl), 'utf8').then(JSON.parse),
 ])
-const { db, ensureSeeded, importAllData } = await import('../../src/db.js')
+const { db, ensureSeeded, getReadingState, importAllData, saveReadingState } = await import('../../src/db.js')
 
 function presetResponse(url, failCreatureRows = false) {
   const value = String(url)
@@ -39,6 +39,22 @@ test('official shiny creature rows have audited BWiki images', () => {
   for (const row of shinyRows) {
     assert.match(row.values.shinyImage, /^https:\/\/patchwiki\.biligame\.com\//)
   }
+})
+
+test('reading progress uses namespaced meta records and merges updates', async () => {
+  await resetDatabase()
+  const sceneId = 'scene-reader-test'
+  const editionId = 'gone-with-the-wind-zh-9787570202188'
+  await saveReadingState(sceneId, editionId, {
+    packageId: 'reader-package-gone-with-the-wind-zh-9787570202188',
+    currentChapterId: 'chapter-01',
+  })
+  await saveReadingState(sceneId, editionId, { currentChapterId: 'chapter-12' })
+  const state = await getReadingState(sceneId, editionId)
+  assert.equal(state.packageId, 'reader-package-gone-with-the-wind-zh-9787570202188')
+  assert.equal(state.currentChapterId, 'chapter-12')
+  assert.equal(state.sceneId, sceneId)
+  assert.equal(state.editionId, editionId)
 })
 
 test('seed migration is versioned and preserves imported custom preset values', async () => {

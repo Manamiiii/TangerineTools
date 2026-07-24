@@ -3,6 +3,7 @@
 export { db } from './db/core.js'
 export { EXPORT_SCHEMA_VERSION, exportAllData, importAllData, validateImportPayload } from './db/importExport.js'
 export { ensureSeeded } from './db/rockKingdomSeed.js'
+export { getReadingState, saveReadingState } from './db/readingState.js'
 export {
   createCatalogTable,
   createField,

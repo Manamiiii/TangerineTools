@@ -5,13 +5,14 @@ TangerineTools 是一个本地优先（local-first）的个人资料管理 Web A
 ## 特性概览
 
 - **本地优先，无后端依赖**：数据保存在浏览器 IndexedDB 中，通过 Dexie.js 读写；应用可作为静态站点部署。
-- **场景化工具箱**：首页管理多个场景，每个场景可单独启用资料库、收集记录、统计视图、性格推荐和孵蛋推荐五种工具。
+- **场景化工具箱**：首页管理多个场景，每个场景可单独启用资料库、收集记录、统计视图、性格推荐、孵蛋推荐和阅读伴侣六种工具。
 - **可配置资料库**：支持多资料表、字段管理、搜索、排序、筛选、分页、详情弹窗，以及由字段配置控制的紧凑列宽、多行标签、摘要单元格、引用头像和图标化选项。
 - **引用与多引用字段**：支持单条资料引用和一对多资料引用；洛克王国精灵通过 `skillRefs` 关联技能资料，技能通过 `learnerRefs` 反向关联可学精灵。
 - **收集记录**：记录“我具体拥有哪一只 / 哪一份”，支持一对一和一对多模式；可搜索引用字段在同一个组合框中完成输入筛选和选择。
 - **统计视图**：从资料库或收集记录选择数据源，按字段分组并叠加数值阈值条件统计。
 - **性格推荐**：每个编号从普通形态进入，展示统一绝对刻度的六维、动态分位、完整特性和同编号全部形态差异；候选按强化维度与推荐档位展示，按进化链匹配已获得性格，并为推荐/可保留性格提供预填快速新增收集记录。
 - **孵蛋推荐**：结合收集记录、性别、异色/炫彩、性格、蛋组和繁育谱系，对可用父母组合进行排序。
+- **阅读伴侣**：按指定译本保存阅读章节，接收粘贴段落或页面截图，并以确定性规则约束资料的可揭示进度和剧透确认级别。
 - **全量导入/导出**：在首页通过 JSON 文件手动备份或迁移全部本地数据。
 - **洛克王国预置资料**：首次启动会自动创建“洛克王国”场景，包含精灵基础资料和技能资料；当前正式预置只由版本化 BWiki staging / preview 审计产物显式发布。
 
@@ -59,6 +60,7 @@ npm run lint
 | `npm run build` | 生成生产构建 |
 | `npm run preview` | 本地预览生产构建产物 |
 | `npm run lint` | 使用 oxlint 做静态检查 |
+| `npm run check:reader:packages` | 校验阅读资料目录、版本信息、稳定章节和事实引用 |
 | `npm run check:nature` | 在 `artifacts/nature/` 生成本地性格推荐校准报告 |
 | `npm run sync:bwiki:staging` | 刷新 BWiki 精灵、技能、蛋和果实 staging |
 | `npm run sync:bwiki:details` | 刷新 BWiki 精灵详情 staging |
@@ -88,6 +90,7 @@ npm run lint
 │   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
 │   └── system-capabilities.md            # 已实现能力和明确非目标
 ├── public/presets/
+│   ├── reading-companion/                # 版本化书籍资料目录与运行时资料包
 │   ├── rockKingdomRows.json              # 运行时精灵 / 形态预置
 │   ├── rockKingdomSkillRows.json         # 运行时技能预置
 │   └── rockKingdomPresetMigration.json   # 已有浏览器安全升级所需的官方值指纹
@@ -98,6 +101,7 @@ npm run lint
 │   │   ├── apply-preset.mjs              # dry-run 校验与显式发布
 │   │   ├── lib/                          # 路径和标签规则共享模块
 │   │   └── data/                         # 版本化 staging 与 preview
+│   ├── reading/validate-packages.mjs      # 阅读资料包发布结构校验
 │   ├── data/natureCalibrationSamples.json # 性格校准样例
 │   ├── tests/                            # node:test 纯逻辑与 fake-indexeddb 集成测试
 │   └── check-nature-recommendations.mjs  # 本地性格校准报告生成器
@@ -107,17 +111,20 @@ npm run lint
 │   │   ├── catalog.jsx                   # 通用表格、字段、批量引用解析
 │   │   ├── owned.jsx / stock.jsx         # 收集记录 / 统计视图
 │   │   ├── nature.jsx / breeding.jsx     # 性格推荐 / 孵蛋推荐 UI
+│   │   ├── reader.jsx                    # 阅读进度、文本和截图输入
 │   │   └── common.jsx / ErrorBoundary.jsx # 通用控件与工具级错误恢复
 │   ├── db/
 │   │   ├── core.js                       # Dexie v1 schema 与数据库实例
 │   │   ├── importExport.js               # JSON 校验、导出与 merge-by-id 导入
 │   │   ├── repository.js                 # 场景、表、字段和行的 CRUD
+│   │   ├── readingState.js               # meta 中的阅读进度存取
 │   │   └── rockKingdomSeed.js            # 预置播种与三方迁移
 │   ├── domain/
 │   │   ├── nature.js / naturePve.js      # 性格规则引擎 / PVE 展示判定
 │   │   ├── natureRowAdapter.js            # 资料行到推荐输入的适配
 │   │   ├── rockKingdom*.js               # 形态、展示和共享标签规则
-│   │   └── owned.js / stock.js / breeding*.js # 各工具纯领域逻辑
+│   │   ├── readingCompanion.js            # 资料包校验与剧透门禁
+│   │   └── owned.js / stock.js / breeding*.js # 其他工具纯领域逻辑
 │   ├── presets/rockKingdom.js             # 场景、字段和选项定义
 │   ├── App.jsx                            # hash 路由、工具懒加载、全局导入导出
 │   ├── db.js                              # 稳定的数据访问兼容门面
@@ -146,7 +153,8 @@ git diff --check
 - `npm test` 覆盖领域规则、PVE 判定、预置三方迁移、导入校验、仓储级联、IndexedDB 播种/失败重试、BWiki staging 结构和文档当前态约束。
 - 涉及性格规则时额外运行 `npm run check:nature`，并检查已确认样例是否出现非预期漂移。
 - 涉及 BWiki 预置时先运行 `npm run check:bwiki:preset`；该命令只生成 `artifacts/` 审计报告，不会写入正式预置。
-- 涉及工具入口、懒加载或 Hook 时，启动 `npm run dev` 后依次切换资料库、收集记录、统计视图、性格推荐和孵蛋推荐，确认均完成渲染且没有进入错误恢复页。
+- 涉及工具入口、懒加载或 Hook 时，启动 `npm run dev` 后依次切换资料库、收集记录、统计视图、性格推荐、孵蛋推荐和阅读伴侣，确认均完成渲染且没有进入错误恢复页。
+- 涉及阅读资料包时运行 `npm run check:reader:packages`，确认目录、版本、章节和事实引用全部有效。
 - 上述验证不会清空浏览器中的收集记录或统计配置；导入仍按 id 合并。
 
 ## 洛克王国预置资料
@@ -192,7 +200,7 @@ git diff --check
 - [`docs/nature/single-creature-template.md`](docs/nature/single-creature-template.md)：单只精灵定位与性格核对格式。
 - [`docs/nature/confirmed-results.md`](docs/nature/confirmed-results.md)：用户确认过的单只结果，用作规则回归基线。
 - [`docs/nature/open-issues.md`](docs/nature/open-issues.md)：尚未形成稳定规则的通用问题。
-- [`docs/reading-companion/product-and-architecture.md`](docs/reading-companion/product-and-architecture.md)：经典文学阅读伴侣的规划范围、按书建库、跨端入口和剧透安全契约；当前尚未实现。
+- [`docs/reading-companion/product-and-architecture.md`](docs/reading-companion/product-and-architecture.md)：经典文学阅读伴侣的已实现范围、按书建库、跨端入口和剧透安全契约。
 
 根 README 是项目结构、命令和维护文档的统一入口；专题文档只保存各自领域内不可由代码结构直接表达的规则与约束。
 

@@ -31,11 +31,18 @@ db.version(1).stores({
 | `catalogTables` | `id` | `sceneId`, `order` | 资料表：`sceneId` / `name` / `order` / 时间戳 / 可选的 `kind`（非索引属性；`'owned'` 表示收集记录表，缺省表示普通资料库表；导入兼容 `kind: 'stock'` 记录，但统计视图不读取该类固定表） |
 | `catalogFields` | `id` | `tableId`, `order` | 字段：`tableId` / `key` / `name` / `type` / `order` / `hidden` / 类型相关配置（`options` / `statsMap` / `statsDimensions` / `statsStyle` / `referenceTableId` / `display` 等） |
 | `catalogRows` | `id` | `tableId` | 行：`tableId` / `values`（以字段 `key` 为键的对象） / 时间戳 |
-| `meta` | `key` | — | 内部标记，如播种标记 `seededRockKingdom` |
+| `meta` | `key` | — | 内部标记和无需索引的本地状态，如播种标记 `seededRockKingdom` 与阅读进度 |
 
 字段的 `key` 由 `deriveFieldKey`（`src/utils.js`）从字段名派生，并保证在同一资料表内唯一；行数据 `values` 用字段 `key`（而非字段 `id`）作为属性名存取。普通新建场景不会预置业务字段；资料库字段和收集记录字段都由用户在字段管理里创建。洛克王国作为应用自带预置场景，会在自己的资料库表与收集记录表里补齐官方/场景专属字段。
 
 `display` 是非索引展示配置，不改变字段值结构或 Dexie schema。通用表格按该配置处理列宽、括号换行、多行标签与溢出数量、摘要字段组合、引用行的标签/图片，以及单选项的图标模式。预置场景只声明展示元数据；`CellView` 不按场景字段名选择渲染分支。
+
+### 阅读伴侣状态
+
+- 阅读资料包位于 `public/presets/reading-companion/`，属于版本化静态内容，不写入 IndexedDB。
+- 当前章节使用 `readerState:{sceneId}:{editionId}` 作为 `meta.key`；值包含 `packageId`、`bookId`、`sceneId`、`editionId`、`currentChapterId` 和更新时间。
+- 同一书籍版本在不同场景中相互隔离。记录随全量 JSON 导出/导入传输，并遵循相同 key 覆盖、本地其他 key 保留的合并语义。
+- 用户粘贴的段落和选择的截图不写入 IndexedDB。剧透授权属于单次界面状态，不写入 `meta`。
 
 ### `catalogTables.kind` 与收集记录 / 统计视图
 

@@ -11,6 +11,7 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
+    "check:reader:packages": "node scripts/reading/validate-packages.mjs",
     "check:nature": "node scripts/check-nature-recommendations.mjs",
     "sync:breeding": "node scripts/bwiki/sync-breeding.mjs",
     "sync:bwiki:staging": "node scripts/bwiki/sync-staging.mjs",
