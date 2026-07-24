@@ -2,13 +2,16 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import {
   AlertTriangle,
+  ArrowLeft,
   BookOpen,
   Eye,
   EyeOff,
   Image,
+  LibraryBig,
   Lock,
   MapPin,
   Plus,
+  ScanSearch,
   ShieldCheck,
   Trash2,
   Upload,
@@ -26,6 +29,7 @@ import {
   OBSERVED_ENTITY_KIND,
   matchOnDemandEntity,
   projectReadingPlaces,
+  scanOnDemandEntities,
   spoilerGateAction,
   unlockedOnDemandEntities,
   upsertObservedEntity,
@@ -57,6 +61,48 @@ function ReaderError({ message }) {
     <div className="reader-error" role="alert">
       <strong>阅读资料加载失败</strong>
       <span>{message}</span>
+    </div>
+  )
+}
+
+function ReadingLibrary({ catalog, onSelect }) {
+  return (
+    <div className="reader-tool reader-library">
+      <section className="reader-library-hero">
+        <span className="reader-eyebrow"><LibraryBig size={15} /> 经典文学阅读伴侣</span>
+        <h2>选择一本书</h2>
+        <p>每本书拥有独立的版本资料、阅读进度和已遇到名称。</p>
+      </section>
+      <section className="reader-library-panel">
+        <div className="reader-library-heading">
+          <div>
+            <h3>我的书架</h3>
+            <span>{catalog.length} 本已准备</span>
+          </div>
+          <small>选择后进入该书的阅读空间</small>
+        </div>
+        {catalog.length > 0 ? (
+          <div className="reader-book-grid">
+            {catalog.map((entry) => (
+              <button
+                className="reader-book-card"
+                key={entry.id}
+                type="button"
+                onClick={() => onSelect(entry.id)}
+              >
+                <span className="reader-book-cover"><BookOpen size={26} /></span>
+                <span className="reader-book-copy">
+                  <strong>{entry.title}</strong>
+                  <small>{entry.editionLabel}</small>
+                  <b>开始阅读</b>
+                </span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="reader-observed-empty">还没有已发布的书籍资料包。</div>
+        )}
+      </section>
     </div>
   )
 }
@@ -431,6 +477,9 @@ export function ReaderTool({ scene }) {
   const [saveState, setSaveState] = useState('idle')
   const [excerpt, setExcerpt] = useState('')
   const [imageInput, setImageInput] = useState(null)
+  const [scanResults, setScanResults] = useState([])
+  const [scanPerformed, setScanPerformed] = useState(false)
+  const [scanStatus, setScanStatus] = useState('')
 
   useEffect(() => {
     let active = true
@@ -438,7 +487,6 @@ export function ReaderTool({ scene }) {
       .then((entries) => {
         if (!active) return
         setCatalog(entries)
-        setSelectedPackageId((current) => current || entries[0]?.id || '')
       })
       .catch((error) => {
         if (active) setLoadError(error?.message || '无法读取阅读资料目录')
@@ -535,6 +583,60 @@ export function ReaderTool({ scene }) {
     }
   }
 
+  function selectBook(packageId) {
+    setSelectedPackageId(packageId)
+    setPendingChapterId('')
+    setExcerpt('')
+    setScanResults([])
+    setScanPerformed(false)
+    setScanStatus('')
+    clearImage()
+  }
+
+  function returnToLibrary() {
+    setSelectedPackageId('')
+    setReadingPackage(null)
+    setPendingChapterId('')
+    setExcerpt('')
+    setScanResults([])
+    setScanPerformed(false)
+    setScanStatus('')
+    clearImage()
+  }
+
+  function changeExcerpt(value) {
+    setExcerpt(value)
+    setScanResults([])
+    setScanPerformed(false)
+    setScanStatus('')
+  }
+
+  function scanExcerpt() {
+    setScanResults(scanOnDemandEntities(excerpt, readingPackage.onDemandEntities || []))
+    setScanPerformed(true)
+    setScanStatus('')
+  }
+
+  async function confirmScannedEntity({ entity, matchedTerm }) {
+    setScanStatus('')
+    try {
+      const next = upsertObservedEntity(observedEntities, {
+        id: generateId('observed'),
+        name: matchedTerm,
+        kind: entity.kind,
+        firstSeenChapterId: currentChapterId,
+      }, readingPackage.chapters)
+      if (next === observedEntities) {
+        setScanStatus(`“${matchedTerm}”已经记录在当前章或更早章节。`)
+        return
+      }
+      await changeObservedEntities(next)
+      setScanStatus(`已确认“${matchedTerm}”出现在${currentChapter?.label || '当前章'}。`)
+    } catch (error) {
+      setScanStatus(error?.message || '保存扫描结果失败')
+    }
+  }
+
   function chooseImage(event) {
     const file = event.target.files?.[0]
     if (!file) return
@@ -549,12 +651,17 @@ export function ReaderTool({ scene }) {
   }
 
   if (loadError) return <ReaderError message={loadError} />
-  if (!catalog || !readingPackage) return <LoadingPanel message="正在加载阅读资料…" />
+  if (!catalog) return <LoadingPanel message="正在加载阅读书架…" />
+  if (!selectedPackageId) return <ReadingLibrary catalog={catalog} onSelect={selectBook} />
+  if (!readingPackage) return <LoadingPanel message="正在加载阅读资料…" />
 
   return (
     <div className="reader-tool">
       <section className="reader-hero">
         <div className="reader-hero-copy">
+          <button type="button" className="reader-back-button" onClick={returnToLibrary}>
+            <ArrowLeft size={15} /> 返回书架
+          </button>
           <span className="reader-eyebrow"><BookOpen size={15} /> 经典文学阅读伴侣</span>
           <h2>{readingPackage.book.title}</h2>
           <p>{readingPackage.book.author} · {readingPackage.edition.translators.join('、')} 译</p>
@@ -585,15 +692,7 @@ export function ReaderTool({ scene }) {
               </div>
               <span className="reader-safe-chip"><ShieldCheck size={14} /> 严格无剧透</span>
             </div>
-            <div className="reader-controls">
-              <label>
-                <span>书籍版本</span>
-                <select value={selectedPackageId} onChange={(event) => setSelectedPackageId(event.target.value)}>
-                  {catalog.map((entry) => (
-                    <option key={entry.id} value={entry.id}>{entry.title} · {entry.editionLabel}</option>
-                  ))}
-                </select>
-              </label>
+            <div className="reader-controls reader-controls-single">
               <label>
                 <span>我已经读到</span>
                 <select value={currentChapterId} onChange={(event) => changeChapter(event.target.value)}>
@@ -619,12 +718,49 @@ export function ReaderTool({ scene }) {
               <textarea
                 className="textarea"
                 value={excerpt}
-                onChange={(event) => setExcerpt(event.target.value)}
-                placeholder="从微信读书复制一小段文字，后续将从这里识别人名、地名和时代概念…"
+                onChange={(event) => changeExcerpt(event.target.value)}
+                placeholder="从微信读书复制一小段文字，本机可以扫描其中已审计的名称…"
                 rows={7}
               />
               <small>{excerpt.length} 字 · 当前不会上传或持久化这段文字</small>
             </label>
+            <div className="reader-scan-actions">
+              <button type="button" className="btn" onClick={scanExcerpt} disabled={!excerpt.trim()}>
+                <ScanSearch size={15} /> 本机扫描已知名称
+              </button>
+              <span>只查找段落中实际出现的资料包名称，不会显示候选清单。</span>
+            </div>
+            {scanPerformed && (
+              <div className="reader-scan-results" role="status">
+                <div className="reader-scan-results-heading">
+                  <strong>扫描结果</strong>
+                  <span>{scanResults.length} 个精确命中</span>
+                </div>
+                {scanResults.length > 0 ? scanResults.map((result) => (
+                  <div className="reader-scan-result" key={result.entity.id}>
+                    <div>
+                      <strong>{result.matchedTerm}</strong>
+                      <span>
+                        {result.entity.kind === OBSERVED_ENTITY_KIND.PLACE
+                          ? PLACE_KIND_LABELS[result.entity.placeKind]
+                          : OBSERVED_KIND_LABELS[result.entity.kind]}
+                        {result.entity.name !== result.matchedTerm ? ` · 资料名 ${result.entity.name}` : ''}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      onClick={() => confirmScannedEntity(result)}
+                    >
+                      <Plus size={13} /> 确认记在{currentChapter?.label || '当前章'}
+                    </button>
+                  </div>
+                )) : (
+                  <p>当前段落没有命中资料包内已审计名称。系统不会据此猜测人物、地点或剧情。</p>
+                )}
+                {scanStatus && <p className="reader-scan-status">{scanStatus}</p>}
+              </div>
+            )}
 
             <div className="reader-upload">
               <div className="reader-upload-copy">
@@ -655,8 +791,8 @@ export function ReaderTool({ scene }) {
             <div className="reader-analysis-placeholder">
               <ShieldCheck size={22} />
               <div>
-                <strong>未来模型能力 · 尚未接入</strong>
-                <p>实体识别会在地点与人物资料完成审计后开放，避免用未校验结果误导阅读。</p>
+                <strong>模型识别 · 尚未接入</strong>
+                <p>当前精确扫描是确定性的本机能力；语义识别、上下文消歧和未知实体发现仍需要未来的模型适配器。</p>
               </div>
             </div>
           </section>
@@ -688,6 +824,17 @@ export function ReaderTool({ scene }) {
 
         <aside className="reader-sidebar">
           <section className="reader-sidebar-card">
+            <h3><LibraryBig size={17} /> 资料包内容</h3>
+            <div className="reader-package-stats">
+              <span><b>{readingPackage.chapters.length}</b> 稳定章节</span>
+              <span><b>{readingPackage.sources.length}</b> 已批准来源</span>
+              <span><b>{readingPackage.onDemandEntities?.length || 0}</b> 按需实体</span>
+              <span><b>{readingPackage.entities.length}</b> 章节实体</span>
+              <span><b>{readingPackage.facts.length}</b> 正式事实</span>
+            </div>
+            <p>版本 {readingPackage.packageVersion}。按需实体只在读者输入命中后出现；待审候选不会进入运行时资料包。</p>
+          </section>
+          <section className="reader-sidebar-card">
             <h3><MapPin size={17} /> 地图资料</h3>
             <strong>
               {visibleReadingEntities(
@@ -696,7 +843,7 @@ export function ReaderTool({ scene }) {
                 readingPackage.chapters,
               ).filter((entity) => entity.kind === 'place').length} 个当前可见地点
             </strong>
-            <p>数量按已读章节确定性过滤；正式《飘》地点资料仍待版本证据。</p>
+            <p>数量按已读章节确定性过滤；按需地点由读者确认章节解锁。</p>
           </section>
           <section className="reader-sidebar-card">
             <h3><UserRoundSearch size={17} /> 已遇到的名字</h3>

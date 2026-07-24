@@ -116,6 +116,38 @@ export function matchOnDemandEntity(onDemandEntities, observedName, kind) {
   )) || null
 }
 
+function textContainsExactTerm(text, term) {
+  const normalizedText = typeof text === 'string' ? text.normalize('NFKC').toLocaleLowerCase() : ''
+  const normalizedTerm = normalizeObservedEntityName(term)
+  if (!normalizedText || !normalizedTerm) return false
+  const needsWordBoundary = /[a-z0-9]/.test(normalizedTerm)
+  let index = normalizedText.indexOf(normalizedTerm)
+  while (index >= 0) {
+    const before = normalizedText[index - 1] || ''
+    const after = normalizedText[index + normalizedTerm.length] || ''
+    if (!needsWordBoundary || (!/[a-z0-9]/.test(before) && !/[a-z0-9]/.test(after))) {
+      return true
+    }
+    index = normalizedText.indexOf(normalizedTerm, index + 1)
+  }
+  return false
+}
+
+export function scanOnDemandEntities(text, onDemandEntities) {
+  if (typeof text !== 'string' || !text.trim() || !Array.isArray(onDemandEntities)) return []
+  const matches = []
+  for (const entity of onDemandEntities) {
+    const terms = [...new Set([
+      entity?.name,
+      entity?.originalName,
+      ...(entity?.aliases || []),
+    ].filter(Boolean))]
+    const matchedTerm = terms.find((term) => textContainsExactTerm(text, term))
+    if (matchedTerm) matches.push({ entity, matchedTerm })
+  }
+  return matches
+}
+
 export function unlockedOnDemandEntities(
   onDemandEntities,
   observedEntities,

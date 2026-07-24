@@ -11,6 +11,7 @@ import {
   projectReadingPlaces,
   readingStateKey,
   riskForDisclosure,
+  scanOnDemandEntities,
   spoilerGateAction,
   strongestSpoilerRisk,
   unlockedOnDemandEntities,
@@ -319,6 +320,41 @@ test('on-demand entities unlock only after an exact reader-confirmed name match'
   assert.equal(unlocked.readerConfirmedName, '亚特兰大市')
   assert.equal(unlocked.accessMode, 'reader-confirmed-exact-match')
   assert.deepEqual(unlocked.revealAt, { chapterId: 'chapter-03' })
+})
+
+test('local excerpt scanning only returns audited names that actually occur in the text', () => {
+  const onDemandEntities = [
+    {
+      id: 'place-atlanta',
+      name: '亚特兰大',
+      originalName: 'Atlanta',
+      aliases: ['亚特兰大市'],
+      kind: 'place',
+      placeKind: 'real',
+    },
+    {
+      id: 'place-tara',
+      name: '塔拉庄园',
+      originalName: 'Tara',
+      aliases: [],
+      kind: 'place',
+      placeKind: 'fictional',
+    },
+  ]
+
+  assert.deepEqual(
+    scanOnDemandEntities('她离开亚特兰大，想起塔拉庄园。', onDemandEntities)
+      .map(({ entity, matchedTerm }) => [entity.id, matchedTerm]),
+    [
+      ['place-atlanta', '亚特兰大'],
+      ['place-tara', '塔拉庄园'],
+    ],
+  )
+  assert.deepEqual(scanOnDemandEntities('只写到亚特兰，还不是完整名称。', onDemandEntities), [])
+  assert.deepEqual(scanOnDemandEntities('Atlantas is not Atlanta.', onDemandEntities)
+    .map(({ entity, matchedTerm }) => [entity.id, matchedTerm]), [['place-atlanta', 'Atlanta']])
+  assert.deepEqual(scanOnDemandEntities('Atlantas', onDemandEntities), [])
+  assert.deepEqual(scanOnDemandEntities('这里没有任何已知名称。', onDemandEntities), [])
 })
 
 test('spoiler risk defaults unknown boundaries to potential and preserves high risk', () => {
