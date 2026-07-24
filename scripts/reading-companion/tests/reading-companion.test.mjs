@@ -26,6 +26,11 @@ import {
   buildReadingPreviewFromStaging,
   buildReadingPreviews,
 } from '../lib/package-pipeline.mjs'
+import {
+  READING_MAP_PROVIDER,
+  normalizeReadingMapProvider,
+  readingMapTileSources,
+} from '../../../src/features/reading-companion/map/mapConfig.js'
 
 const repoUrl = new URL('../../../', import.meta.url)
 const readingPackage = JSON.parse(
@@ -63,6 +68,26 @@ test('reading companion keeps feature code and maintenance files in dedicated di
   for (const file of retiredMixedPaths) {
     await assert.rejects(access(new URL(file, repoUrl)), { code: 'ENOENT' })
   }
+})
+
+test('reading map providers keep international fallback and require a domestic browser key', () => {
+  assert.equal(
+    normalizeReadingMapProvider('unknown-provider'),
+    READING_MAP_PROVIDER.INTERNATIONAL,
+  )
+  const internationalSources = readingMapTileSources(READING_MAP_PROVIDER.INTERNATIONAL)
+  assert.equal(internationalSources.length, 1)
+  assert.match(internationalSources[0].url, /openstreetmap/)
+
+  assert.deepEqual(readingMapTileSources(READING_MAP_PROVIDER.DOMESTIC), [])
+  const domesticSources = readingMapTileSources(
+    READING_MAP_PROVIDER.DOMESTIC,
+    ' key with spaces ',
+  )
+  assert.equal(domesticSources.length, 2)
+  assert.match(domesticSources[0].url, /vec_w\/wmts/)
+  assert.match(domesticSources[1].url, /cva_w\/wmts/)
+  assert.ok(domesticSources.every((source) => source.url.includes('tk=key%20with%20spaces')))
 })
 
 test('Gone with the Wind package preserves the confirmed edition and 63 stable chapters', () => {

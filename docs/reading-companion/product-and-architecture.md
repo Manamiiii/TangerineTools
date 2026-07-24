@@ -176,7 +176,7 @@
 - [Atlanta History Center](https://www.atlantahistorycenter.com/blog/so-red-the-rose-the-gone-with-the-wind-that-never-was/) 用于区分真实的亚特兰大地点与虚构种植园，并防止给塔拉等虚构地点伪造精确坐标。
 - [New Georgia Encyclopedia · Gone With the Wind](https://www.georgiaencyclopedia.org/articles/arts-culture/gone-with-the-wind-novel/) 与 [Clayton County](https://www.georgiaencyclopedia.org/articles/counties-cities-neighborhoods/clayton-county/) 用于候选时代范围、地点名称和地区背景。包含剧情概述的页面仅供建库审阅，不能直接成为运行时安全内容。
 - [Library of Congress · General Maps](https://www.loc.gov/collections/general-maps/about-this-collection/rights-and-access/) 用于候选历史地图。每个地图条目必须单独检查 Rights Advisory 与署名要求。
-- [OpenStreetMap](https://www.openstreetmap.org/copyright) 为互动地图提供在线标准瓦片。地图始终显示贡献者署名，不提供瓦片预取或离线下载，也不调用地理编码接口；瓦片地址集中在 `src/features/reading-companion/map/mapConfig.js`，可以在不改动地图组件的情况下替换供应商。
+- 互动地图支持两种可切换底图：国际模式使用 [OpenStreetMap](https://www.openstreetmap.org/copyright) 在线标准瓦片，免 Key，但在国内网络可能需要 VPN；国内模式使用[天地图](https://www.tianditu.gov.cn/)矢量底图与注记，需要使用者在界面填写浏览器端 Key。选择和 Key 只保存在当前浏览器的 `localStorage`，不进入资料包、IndexedDB 导出或仓库。两种模式都始终显示供应商署名，不提供瓦片预取或离线下载，也不调用地理编码接口。底图配置集中在 `src/features/reading-companion/map/mapConfig.js`，底图只负责显示，不能成为正式地点坐标或虚构地点定位的证据。
 
 这些外部来源均不能替代指定中文译本对 `revealAt` 的章节证据。缺少对应章节文本时，实体和事实保持待审，不进入正式资料包。
 
