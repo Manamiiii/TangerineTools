@@ -2,10 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
 import {
   READING_MAP_DEFAULT_VIEW,
-  READING_MAP_PROVIDER,
-  READING_MAP_PROVIDERS,
-  READING_MAP_STORAGE_KEYS,
-  normalizeReadingMapProvider,
   readingMapTileSources,
 } from '../map/mapConfig.js'
 
@@ -28,7 +24,13 @@ function markerStyle(place, active = false) {
   }
 }
 
-export function ReadingGeoMap({ places, selectedPlaceId, onSelectPlace }) {
+export function ReadingGeoMap({
+  places,
+  selectedPlaceId,
+  onSelectPlace,
+  providerId,
+  tiandituToken,
+}) {
   const containerRef = useRef(null)
   const mapRef = useRef(null)
   const tileLayersRef = useRef([])
@@ -36,13 +38,6 @@ export function ReadingGeoMap({ places, selectedPlaceId, onSelectPlace }) {
   const markersRef = useRef(new Map())
   const onSelectPlaceRef = useRef(onSelectPlace)
   const [tileState, setTileState] = useState('loading')
-  const [providerId, setProviderId] = useState(() => normalizeReadingMapProvider(
-    window.localStorage.getItem(READING_MAP_STORAGE_KEYS.provider),
-  ))
-  const [tiandituToken, setTiandituToken] = useState(
-    () => window.localStorage.getItem(READING_MAP_STORAGE_KEYS.tiandituToken) || '',
-  )
-  const [tokenDraft, setTokenDraft] = useState(tiandituToken)
   const spatialPlaces = useMemo(
     () => places.filter((place) => (
       Number.isFinite(place.geometry?.latitude)
@@ -177,49 +172,8 @@ export function ReadingGeoMap({ places, selectedPlaceId, onSelectPlace }) {
     }
   }, [selectedPlaceId, spatialPlaces])
 
-  function selectProvider(nextProviderId) {
-    const normalizedProvider = normalizeReadingMapProvider(nextProviderId)
-    window.localStorage.setItem(READING_MAP_STORAGE_KEYS.provider, normalizedProvider)
-    setProviderId(normalizedProvider)
-  }
-
-  function saveTiandituToken(event) {
-    event.preventDefault()
-    const token = tokenDraft.trim()
-    if (token) {
-      window.localStorage.setItem(READING_MAP_STORAGE_KEYS.tiandituToken, token)
-    } else {
-      window.localStorage.removeItem(READING_MAP_STORAGE_KEYS.tiandituToken)
-    }
-    setTiandituToken(token)
-  }
-
   return (
     <div className="reader-interactive-map">
-      <div className="reader-map-provider-panel">
-        <label>
-          地图网络
-          <select value={providerId} onChange={(event) => selectProvider(event.target.value)}>
-            {Object.values(READING_MAP_PROVIDERS).map((provider) => (
-              <option key={provider.id} value={provider.id}>{provider.label}</option>
-            ))}
-          </select>
-        </label>
-        <span>{READING_MAP_PROVIDERS[providerId].description}</span>
-        {providerId === READING_MAP_PROVIDER.DOMESTIC && (
-          <form onSubmit={saveTiandituToken}>
-            <input
-              aria-label="天地图浏览器端 Key"
-              autoComplete="off"
-              placeholder="输入天地图浏览器端 Key"
-              type="password"
-              value={tokenDraft}
-              onChange={(event) => setTokenDraft(event.target.value)}
-            />
-            <button type="submit">保存并启用</button>
-          </form>
-        )}
-      </div>
       <div
         className="reader-leaflet-map"
         ref={containerRef}

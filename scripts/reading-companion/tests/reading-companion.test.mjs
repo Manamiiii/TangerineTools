@@ -5,11 +5,14 @@ import {
   SPOILER_GATE_ACTION,
   SPOILER_RISK,
   canRevealRisk,
+  clearObservedPlaceLocation,
+  confirmObservedPlaceLocation,
   isRevealedAtChapter,
   matchOnDemandEntity,
   normalizeObservedEntityName,
   projectReadingPlaces,
   readingPlaceRelations,
+  readerConfirmedMapEntities,
   readingStateKey,
   riskForDisclosure,
   scanOnDemandEntities,
@@ -31,6 +34,11 @@ import {
   normalizeReadingMapProvider,
   readingMapTileSources,
 } from '../../../src/features/reading-companion/map/mapConfig.js'
+import {
+  normalizeNominatimResults,
+  normalizeTiandituResults,
+  searchReadingPlaces,
+} from '../../../src/features/reading-companion/map/geocoding.js'
 
 const repoUrl = new URL('../../../', import.meta.url)
 const readingPackage = JSON.parse(
@@ -49,6 +57,7 @@ test('reading companion keeps feature code and maintenance files in dedicated di
     'src/features/reading-companion/db/readingState.js',
     'src/features/reading-companion/db/seed.js',
     'src/features/reading-companion/domain/readingCompanion.js',
+    'src/features/reading-companion/map/geocoding.js',
     'src/features/reading-companion/map/mapConfig.js',
     'src/features/reading-companion/preset.js',
     'scripts/reading-companion/build-preview.mjs',
@@ -88,6 +97,69 @@ test('reading map providers keep international fallback and require a domestic b
   assert.match(domesticSources[0].url, /vec_w\/wmts/)
   assert.match(domesticSources[1].url, /cva_w\/wmts/)
   assert.ok(domesticSources.every((source) => source.url.includes('tk=key%20with%20spaces')))
+})
+
+test('map search adapters normalize international and domestic results without guessing coordinates', async () => {
+  assert.deepEqual(normalizeNominatimResults([
+    {
+      place_id: 42,
+      display_name: 'Atlanta, Fulton County, Georgia, United States',
+      lat: '33.7489924',
+      lon: '-84.3902644',
+    },
+    { place_id: 43, display_name: 'Invalid', lat: '999', lon: '0' },
+  ]), [{
+    id: '42',
+    label: 'Atlanta, Fulton County, Georgia, United States',
+    latitude: 33.7489924,
+    longitude: -84.3902644,
+    providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+  }])
+
+  assert.deepEqual(normalizeTiandituResults({
+    pois: [{
+      hotPointID: 'tdt-1',
+      name: '亚特兰大',
+      eaddress: 'Atlanta',
+      province: 'Georgia',
+      lonlat: '-84.3902644,33.7489924',
+    }],
+  }), [{
+    id: 'tdt-1',
+    label: '亚特兰大 · Atlanta · Georgia',
+    latitude: 33.7489924,
+    longitude: -84.3902644,
+    providerId: READING_MAP_PROVIDER.DOMESTIC,
+  }])
+
+  let requestedUrl = ''
+  const results = await searchReadingPlaces({
+    providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+    query: 'Atlanta',
+    fetchImpl: async (url) => {
+      requestedUrl = url
+      return {
+        ok: true,
+        json: async () => [{
+          place_id: 42,
+          display_name: 'Atlanta, Georgia',
+          lat: '33.7489924',
+          lon: '-84.3902644',
+        }],
+      }
+    },
+  })
+  assert.match(requestedUrl, /^https:\/\/nominatim\.openstreetmap\.org\/search\?/)
+  assert.match(requestedUrl, /q=Atlanta/)
+  assert.equal(results[0].label, 'Atlanta, Georgia')
+  await assert.rejects(
+    searchReadingPlaces({
+      providerId: READING_MAP_PROVIDER.DOMESTIC,
+      query: '亚特兰大',
+      fetchImpl: async () => ({ ok: true, json: async () => ({}) }),
+    }),
+    /浏览器端 Key/,
+  )
 })
 
 test('Gone with the Wind package preserves the confirmed edition and 63 stable chapters', () => {
@@ -324,6 +396,55 @@ test('reader-confirmed names use chapters without requiring book text or guessed
       firstSeenChapterId: 'chapter-99',
     }, chapters),
     /已知章节/,
+  )
+})
+
+test('a reader-confirmed geocoder result stays personal and follows the chapter boundary', () => {
+  const observed = [{
+    id: 'observed-savannah',
+    name: '萨凡纳',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-03',
+  }]
+  const located = confirmObservedPlaceLocation(observed, 'observed-savannah', {
+    id: 'nominatim-1',
+    label: 'Savannah, Georgia, United States',
+    providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+    latitude: 32.0809,
+    longitude: -81.0912,
+  })
+  assert.equal(observed[0].mapLocation, undefined)
+  assert.equal(located[0].mapLocation.providerId, READING_MAP_PROVIDER.INTERNATIONAL)
+  assert.deepEqual(readerConfirmedMapEntities(
+    located,
+    'chapter-02',
+    readingPackage.chapters,
+  ), [])
+  const [mapEntity] = readerConfirmedMapEntities(
+    located,
+    'chapter-03',
+    readingPackage.chapters,
+  )
+  assert.equal(mapEntity.id, 'reader-map:observed-savannah')
+  assert.equal(mapEntity.accessMode, 'reader-confirmed-geocoder')
+  assert.equal(mapEntity.placeKind, 'real')
+  assert.deepEqual(mapEntity.geometry, {
+    type: 'point',
+    latitude: 32.0809,
+    longitude: -81.0912,
+  })
+  const cleared = clearObservedPlaceLocation(located, 'observed-savannah')
+  assert.equal(cleared[0].mapLocation, undefined)
+  assert.equal(cleared[0].name, '萨凡纳')
+  assert.equal(cleared[0].firstSeenChapterId, 'chapter-03')
+  assert.throws(
+    () => confirmObservedPlaceLocation(observed, 'observed-savannah', {
+      label: 'Invalid',
+      providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+      latitude: 200,
+      longitude: 0,
+    }),
+    /纬度无效/,
   )
 })
 

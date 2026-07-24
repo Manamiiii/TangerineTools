@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import {
   AlertTriangle,
@@ -22,14 +22,24 @@ import { getReadingState, saveReadingState } from '../db/readingState.js'
 import { loadReadingPackage, loadReadingPackageCatalog } from '../data/readingPackages.js'
 import { ReadingGeoMap } from './ReadingGeoMap.jsx'
 import { generateId } from '../../../utils.js'
+import { searchReadingPlaces } from '../map/geocoding.js'
+import {
+  READING_MAP_PROVIDER,
+  READING_MAP_PROVIDERS,
+  READING_MAP_STORAGE_KEYS,
+  normalizeReadingMapProvider,
+} from '../map/mapConfig.js'
 import {
   SPOILER_GATE_ACTION,
   SPOILER_CATEGORY_LABELS,
   SPOILER_RISK,
   canRevealRisk,
+  clearObservedPlaceLocation,
+  confirmObservedPlaceLocation,
   OBSERVED_ENTITY_KIND,
   matchOnDemandEntity,
   readingPlaceRelations,
+  readerConfirmedMapEntities,
   scanOnDemandEntities,
   spoilerGateAction,
   unlockedOnDemandEntities,
@@ -193,6 +203,16 @@ function ObservedEntitiesPanel({
     }
   }
 
+  async function removeObservedMapLocation(id) {
+    setStatus('')
+    try {
+      await onChange(clearObservedPlaceLocation(observedEntities, id))
+      setStatus('已清除个人地图位置，名称和首次遇到章节仍然保留。')
+    } catch (error) {
+      setStatus(error?.message || '清除地图位置失败')
+    }
+  }
+
   return (
     <section className="reader-panel">
       <div className="reader-panel-heading">
@@ -250,6 +270,19 @@ function ObservedEntitiesPanel({
                       {match.scopeNote && <small>{match.scopeNote}</small>}
                     </div>
                   )}
+                  {entity.mapLocation && (
+                    <div className="reader-observed-match">
+                      <b>个人确认的现实位置</b>
+                      <span>{entity.mapLocation.label}</span>
+                      <button
+                        type="button"
+                        className="reader-observed-unlink"
+                        onClick={() => removeObservedMapLocation(entity.id)}
+                      >
+                        清除地图位置并重新选择
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <button
                   type="button"
@@ -275,7 +308,27 @@ function ObservedEntitiesPanel({
   )
 }
 
-function ReadingMapPanel({ entities, currentChapterId, chapters }) {
+function ReadingMapPanel({
+  entities,
+  observedEntities,
+  onDemandEntities,
+  currentChapterId,
+  chapters,
+  onChangeObservedEntities,
+}) {
+  const [providerId, setProviderId] = useState(() => normalizeReadingMapProvider(
+    window.localStorage.getItem(READING_MAP_STORAGE_KEYS.provider),
+  ))
+  const [tiandituToken, setTiandituToken] = useState(
+    () => window.localStorage.getItem(READING_MAP_STORAGE_KEYS.tiandituToken) || '',
+  )
+  const [tokenDraft, setTokenDraft] = useState(tiandituToken)
+  const [lookupTargetId, setLookupTargetId] = useState('')
+  const [lookupQuery, setLookupQuery] = useState('')
+  const [lookupState, setLookupState] = useState('idle')
+  const [lookupResults, setLookupResults] = useState([])
+  const [lookupMessage, setLookupMessage] = useState('')
+  const lookupRequestRef = useRef(0)
   const places = useMemo(
     () => visibleReadingEntities(entities, currentChapterId, chapters)
       .filter((entity) => entity.kind === 'place'),
@@ -288,6 +341,19 @@ function ReadingMapPanel({ entities, currentChapterId, chapters }) {
     )),
     [places],
   )
+  const visibleObservedPlaces = useMemo(
+    () => visibleObservedEntities(observedEntities, currentChapterId, chapters)
+      .filter((entity) => entity.kind === OBSERVED_ENTITY_KIND.PLACE),
+    [observedEntities, currentChapterId, chapters],
+  )
+  const searchableObservedPlaces = useMemo(
+    () => visibleObservedPlaces.filter((entity) => (
+      !entity.mapLocation
+      && !matchOnDemandEntity(onDemandEntities, entity.name, entity.kind)
+    )),
+    [visibleObservedPlaces, onDemandEntities],
+  )
+  const lookupTarget = searchableObservedPlaces.find((place) => place.id === lookupTargetId)
   const [selectedPlaceId, setSelectedPlaceId] = useState('')
   const selectedPlace = places.find((place) => place.id === selectedPlaceId) || places[0] || null
   const placeRelations = useMemo(
@@ -301,6 +367,84 @@ function ReadingMapPanel({ entities, currentChapterId, chapters }) {
     }
   }, [places, selectedPlaceId])
 
+  useEffect(() => {
+    setLookupResults([])
+    setLookupState('idle')
+    setLookupMessage('')
+  }, [providerId])
+
+  function changeProvider(nextProviderId) {
+    const normalizedProvider = normalizeReadingMapProvider(nextProviderId)
+    window.localStorage.setItem(READING_MAP_STORAGE_KEYS.provider, normalizedProvider)
+    setProviderId(normalizedProvider)
+  }
+
+  function saveTiandituToken(event) {
+    event.preventDefault()
+    const token = tokenDraft.trim()
+    if (token) {
+      window.localStorage.setItem(READING_MAP_STORAGE_KEYS.tiandituToken, token)
+    } else {
+      window.localStorage.removeItem(READING_MAP_STORAGE_KEYS.tiandituToken)
+    }
+    setTiandituToken(token)
+    setLookupResults([])
+    setLookupState('idle')
+    setLookupMessage(token ? '天地图 Key 已保存在当前浏览器。' : '已清除天地图 Key。')
+  }
+
+  function beginLookup(place) {
+    setLookupTargetId(place.id)
+    setLookupQuery(place.name)
+    setLookupResults([])
+    setLookupState('idle')
+    setLookupMessage('')
+  }
+
+  async function submitLookup(event) {
+    event.preventDefault()
+    const requestId = lookupRequestRef.current + 1
+    lookupRequestRef.current = requestId
+    setLookupState('loading')
+    setLookupMessage('')
+    setLookupResults([])
+    try {
+      const results = await searchReadingPlaces({
+        providerId,
+        query: lookupQuery,
+        tiandituToken,
+      })
+      if (lookupRequestRef.current !== requestId) return
+      setLookupResults(results)
+      setLookupState('ready')
+      if (results.length === 0) setLookupMessage('没有找到候选；可以补充英文名、州或国家后重试。')
+    } catch (error) {
+      if (lookupRequestRef.current !== requestId) return
+      setLookupState('error')
+      setLookupMessage(error?.message || '地图搜索失败')
+    }
+  }
+
+  async function confirmLookupResult(result) {
+    if (!lookupTarget) return
+    setLookupMessage('')
+    try {
+      const next = confirmObservedPlaceLocation(
+        observedEntities,
+        lookupTarget.id,
+        result,
+      )
+      await onChangeObservedEntities(next)
+      setLookupTargetId('')
+      setLookupQuery('')
+      setLookupResults([])
+      setLookupState('idle')
+      setLookupMessage(`已把“${lookupTarget.name}”作为个人确认的现实地点加入地图。`)
+    } catch (error) {
+      setLookupMessage(error?.message || '保存地图位置失败')
+    }
+  }
+
   return (
     <section className="reader-panel">
       <div className="reader-panel-heading">
@@ -309,6 +453,88 @@ function ReadingMapPanel({ entities, currentChapterId, chapters }) {
           <h3>探索已读地点</h3>
         </div>
         <span className="reader-system-chip"><ShieldCheck size={13} /> 系统规则过滤</span>
+      </div>
+      <div className="reader-map-provider-panel">
+        <label>
+          地图网络
+          <select value={providerId} onChange={(event) => changeProvider(event.target.value)}>
+            {Object.values(READING_MAP_PROVIDERS).map((provider) => (
+              <option key={provider.id} value={provider.id}>{provider.label}</option>
+            ))}
+          </select>
+        </label>
+        <span>{READING_MAP_PROVIDERS[providerId].description}</span>
+        {providerId === READING_MAP_PROVIDER.DOMESTIC && (
+          <form onSubmit={saveTiandituToken}>
+            <input
+              aria-label="天地图浏览器端 Key"
+              autoComplete="off"
+              placeholder="输入天地图浏览器端 Key"
+              type="password"
+              value={tokenDraft}
+              onChange={(event) => setTokenDraft(event.target.value)}
+            />
+            <button type="submit">保存并启用</button>
+          </form>
+        )}
+      </div>
+      <div className="reader-place-lookup">
+        <div className="reader-place-lookup-heading">
+          <div>
+            <strong>资料包外地点</strong>
+            <span>只搜索你已经记录、但资料包尚未收录的地点。</span>
+          </div>
+          <small>点击搜索后，搜索词会发送给所选地图服务。</small>
+        </div>
+        {searchableObservedPlaces.length > 0 ? (
+          <div className="reader-place-lookup-targets">
+            {searchableObservedPlaces.map((place) => (
+              <button
+                className={lookupTargetId === place.id ? 'active' : ''}
+                key={place.id}
+                type="button"
+                onClick={() => beginLookup(place)}
+              >
+                <MapPin size={13} /> 为“{place.name}”查找现实位置
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p>步骤 03 中新增的未知地点会出现在这里；已审计地点无需再次搜索。</p>
+        )}
+        {lookupTarget && (
+          <form className="reader-place-lookup-form" onSubmit={submitLookup}>
+            <label>
+              <span>地图搜索词</span>
+              <input
+                value={lookupQuery}
+                onChange={(event) => setLookupQuery(event.target.value)}
+                maxLength={120}
+                placeholder="可补充英文名、州或国家"
+              />
+            </label>
+            <button type="submit" className="btn btn-sm" disabled={!lookupQuery.trim() || lookupState === 'loading'}>
+              <ScanSearch size={13} /> {lookupState === 'loading' ? '搜索中…' : '搜索公网地图'}
+            </button>
+          </form>
+        )}
+        {lookupResults.length > 0 && (
+          <div className="reader-place-lookup-results">
+            {lookupResults.map((result) => (
+              <article key={result.id}>
+                <div>
+                  <strong>{result.label}</strong>
+                  <span>{result.latitude.toFixed(5)}, {result.longitude.toFixed(5)}</span>
+                </div>
+                <button type="button" onClick={() => confirmLookupResult(result)}>
+                  确认“{lookupTarget?.name}”是这个现实地点
+                </button>
+              </article>
+            ))}
+            <small>不要为虚构地点选择“看起来相近”的现实坐标；不确定时保持未定位。</small>
+          </div>
+        )}
+        {lookupMessage && <p className="reader-place-lookup-message" role="status">{lookupMessage}</p>}
       </div>
       {places.length === 0 ? (
         <div className="reader-map-empty">
@@ -323,6 +549,8 @@ function ReadingMapPanel({ entities, currentChapterId, chapters }) {
               places={spatialPlaces}
               selectedPlaceId={selectedPlaceId}
               onSelectPlace={setSelectedPlaceId}
+              providerId={providerId}
+              tiandituToken={tiandituToken}
             />
           ) : (
             <div className="reader-map-unplaced">
@@ -358,6 +586,19 @@ function ReadingMapPanel({ entities, currentChapterId, chapters }) {
                   由你输入“{selectedPlace.readerConfirmedName}”后精确解锁，不是系统预判的出现章节。
                 </p>
               )}
+              {selectedPlace.accessMode === 'reader-confirmed-geocoder' && (
+                <p className="reader-place-unlock-note">
+                  这是你从公网地图候选中确认的现代现实位置，不是正式书籍资料。
+                </p>
+              )}
+              {selectedPlace.geocodingProviderId && (
+                <p>
+                  位置候选来源：
+                  {selectedPlace.geocodingProviderId === READING_MAP_PROVIDER.DOMESTIC
+                    ? '天地图'
+                    : 'OpenStreetMap Nominatim'}
+                </p>
+              )}
               {selectedPlace.parentLabel && <p>地理层级：{selectedPlace.parentLabel}</p>}
               {selectedPlace.geometry ? (
                 <p>
@@ -382,7 +623,11 @@ function ReadingMapPanel({ entities, currentChapterId, chapters }) {
                   ))}
                 </div>
               )}
-              <small>仅展示资料包中已审计的空间字段，不生成剧情解释。</small>
+              <small>
+                {selectedPlace.accessMode === 'reader-confirmed-geocoder'
+                  ? '个人确认位置只用于当前阅读地图，不会写回正式资料包。'
+                  : '仅展示资料包中已审计的空间字段，不生成剧情解释。'}
+              </small>
             </div>
           )}
         </div>
@@ -597,9 +842,17 @@ export function ReaderTool({ scene }) {
       currentChapterId,
     ],
   )
+  const personalMapEntities = useMemo(
+    () => readerConfirmedMapEntities(
+      observedEntities,
+      currentChapterId,
+      readingPackage?.chapters,
+    ),
+    [observedEntities, currentChapterId, readingPackage?.chapters],
+  )
   const visibleMapEntities = useMemo(
-    () => [...(readingPackage?.entities || []), ...unlockedEntities],
-    [readingPackage?.entities, unlockedEntities],
+    () => [...(readingPackage?.entities || []), ...unlockedEntities, ...personalMapEntities],
+    [readingPackage?.entities, unlockedEntities, personalMapEntities],
   )
 
   async function changeChapter(chapterId) {
@@ -859,8 +1112,11 @@ export function ReaderTool({ scene }) {
 
           <ReadingMapPanel
             entities={visibleMapEntities}
+            observedEntities={observedEntities}
+            onDemandEntities={readingPackage.onDemandEntities || []}
             currentChapterId={currentChapterId}
             chapters={readingPackage.chapters}
+            onChangeObservedEntities={changeObservedEntities}
           />
 
           <ReadingFactsPanel

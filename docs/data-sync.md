@@ -41,6 +41,7 @@ db.version(1).stores({
 
 - 阅读资料包位于 `public/presets/reading-companion/`，属于版本化静态内容，不写入 IndexedDB。
 - 当前章节使用 `readerState:{sceneId}:{editionId}` 作为 `meta.key`；值包含 `packageId`、`bookId`、`sceneId`、`editionId`、`currentChapterId` 和更新时间。
+- 读者确认名称保存在同一记录的 `observedEntities`。资料包外地点经过使用者选择公网地图候选后，可以附带 `mapLocation`，其中仅保存供应商、候选 id、显示地址和经纬度；它是个人确认的现代位置，不会写回正式阅读资料包。
 - 同一书籍版本在不同场景中相互隔离。记录随全量 JSON 导出/导入传输，并遵循相同 key 覆盖、本地其他 key 保留的合并语义。
 - 用户粘贴的段落和选择的截图不写入 IndexedDB。剧透授权属于单次界面状态，不写入 `meta`。
 

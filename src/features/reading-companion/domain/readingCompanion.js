@@ -104,6 +104,78 @@ export function visibleObservedEntities(observedEntities, currentChapterId, chap
   ))
 }
 
+export function confirmObservedPlaceLocation(observedEntities, observedEntityId, location) {
+  if (!Array.isArray(observedEntities)) throw new Error('已遇到名称记录无效')
+  const index = observedEntities.findIndex((item) => item?.id === observedEntityId)
+  if (index < 0) throw new Error('找不到要定位的地点记录')
+  const observed = observedEntities[index]
+  if (observed.kind !== OBSERVED_ENTITY_KIND.PLACE) throw new Error('只有地点记录可以确认地图位置')
+  const latitude = Number(location?.latitude)
+  const longitude = Number(location?.longitude)
+  if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+    throw new Error('地图候选纬度无效')
+  }
+  if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+    throw new Error('地图候选经度无效')
+  }
+  if (!isNonEmptyString(location?.label) || !isNonEmptyString(location?.providerId)) {
+    throw new Error('地图候选缺少来源或名称')
+  }
+  return observedEntities.map((item, itemIndex) => (
+    itemIndex === index
+      ? {
+          ...item,
+          mapLocation: {
+            resultId: String(location.id || ''),
+            label: location.label.trim(),
+            providerId: location.providerId,
+            latitude,
+            longitude,
+          },
+        }
+      : item
+  ))
+}
+
+export function clearObservedPlaceLocation(observedEntities, observedEntityId) {
+  if (!Array.isArray(observedEntities)) throw new Error('已遇到名称记录无效')
+  const index = observedEntities.findIndex((item) => item?.id === observedEntityId)
+  if (index < 0) throw new Error('找不到要取消定位的地点记录')
+  return observedEntities.map((item, itemIndex) => {
+    if (itemIndex !== index || !item.mapLocation) return item
+    const withoutLocation = { ...item }
+    delete withoutLocation.mapLocation
+    return withoutLocation
+  })
+}
+
+export function readerConfirmedMapEntities(observedEntities, currentChapterId, chapters) {
+  return visibleObservedEntities(observedEntities, currentChapterId, chapters)
+    .filter((item) => (
+      item?.kind === OBSERVED_ENTITY_KIND.PLACE
+      && Number.isFinite(item.mapLocation?.latitude)
+      && Number.isFinite(item.mapLocation?.longitude)
+    ))
+    .map((item) => ({
+      id: `reader-map:${item.id}`,
+      name: item.name,
+      kind: 'place',
+      placeKind: 'real',
+      aliases: [],
+      parentLabel: item.mapLocation.label,
+      revealAt: { chapterId: item.firstSeenChapterId },
+      geometry: {
+        type: 'point',
+        latitude: item.mapLocation.latitude,
+        longitude: item.mapLocation.longitude,
+      },
+      accessMode: 'reader-confirmed-geocoder',
+      readerConfirmedName: item.name,
+      geocodingProviderId: item.mapLocation.providerId,
+      scopeNote: '由读者从公网地图搜索结果中选择，仅代表个人确认的现代现实位置。',
+    }))
+}
+
 export function matchOnDemandEntity(onDemandEntities, observedName, kind) {
   const normalizedName = normalizeObservedEntityName(observedName)
   if (!normalizedName || !VALID_ENTITY_KINDS.has(kind) || !Array.isArray(onDemandEntities)) {
