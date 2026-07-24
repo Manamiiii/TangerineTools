@@ -6,12 +6,14 @@ import {
   SPOILER_RISK,
   canRevealRisk,
   isRevealedAtChapter,
+  matchOnDemandEntity,
   normalizeObservedEntityName,
   projectReadingPlaces,
   readingStateKey,
   riskForDisclosure,
   spoilerGateAction,
   strongestSpoilerRisk,
+  unlockedOnDemandEntities,
   upsertObservedEntity,
   validateReadingPackage,
   visibleReadingEntities,
@@ -269,6 +271,56 @@ test('reader-confirmed names use chapters without requiring book text or guessed
   )
 })
 
+test('on-demand entities unlock only after an exact reader-confirmed name match', () => {
+  const onDemandEntities = [{
+    id: 'place-atlanta',
+    name: '亚特兰大',
+    originalName: 'Atlanta',
+    aliases: ['亚特兰大市'],
+    kind: 'place',
+    placeKind: 'real',
+    activation: 'exact-reader-input',
+    sourceIds: ['source-weread-edition-metadata'],
+    geometry: { type: 'point', latitude: 33.7628, longitude: -84.422 },
+  }]
+  assert.equal(
+    matchOnDemandEntity(onDemandEntities, '亚特兰大', 'place')?.id,
+    'place-atlanta',
+  )
+  assert.equal(
+    matchOnDemandEntity(onDemandEntities, ' Atlanta ', 'place')?.id,
+    'place-atlanta',
+  )
+  assert.equal(matchOnDemandEntity(onDemandEntities, '亚特兰', 'place'), null)
+  assert.equal(matchOnDemandEntity(onDemandEntities, '亚特兰大', 'person'), null)
+
+  const observed = [{
+    id: 'observed-atlanta',
+    name: '亚特兰大市',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-03',
+  }]
+  assert.deepEqual(
+    unlockedOnDemandEntities(
+      onDemandEntities,
+      observed,
+      'chapter-02',
+      readingPackage.chapters,
+    ),
+    [],
+  )
+  const [unlocked] = unlockedOnDemandEntities(
+    onDemandEntities,
+    observed,
+    'chapter-03',
+    readingPackage.chapters,
+  )
+  assert.equal(unlocked.id, 'place-atlanta')
+  assert.equal(unlocked.readerConfirmedName, '亚特兰大市')
+  assert.equal(unlocked.accessMode, 'reader-confirmed-exact-match')
+  assert.deepEqual(unlocked.revealAt, { chapterId: 'chapter-03' })
+})
+
 test('spoiler risk defaults unknown boundaries to potential and preserves high risk', () => {
   const chapters = readingPackage.chapters
   assert.equal(
@@ -325,17 +377,19 @@ test('reading preview publishes only approved sources and keeps candidates pendi
   assert.equal(catalog.packages.length, 1)
   const [preview] = previews
   assert.deepEqual(validateReadingPackage(preview.package), [])
-  assert.deepEqual(preview.previewMeta.approvedSourceIds, ['source-weread-edition-metadata'])
-  assert.equal(preview.previewMeta.pendingSourceIds.length, 9)
+  assert.equal(preview.previewMeta.approvedSourceIds.length, 6)
+  assert.equal(preview.previewMeta.pendingSourceIds.length, 4)
   assert.equal(preview.previewMeta.candidateEntityIds.length, 4)
   assert.equal(preview.previewMeta.candidateFactIds.length, 2)
+  assert.equal(preview.previewMeta.onDemandEntityIds.length, 4)
   assert.equal(preview.researchCandidates.entities.length, 4)
   assert.equal(preview.researchCandidates.facts.length, 2)
+  assert.equal(preview.package.onDemandEntities.length, 4)
   assert.deepEqual(preview.package.entities, [])
   assert.deepEqual(preview.package.facts, [])
   assert.deepEqual(
     preview.package.sources.map((source) => source.id),
-    ['source-weread-edition-metadata'],
+    preview.previewMeta.approvedSourceIds,
   )
   assert.equal(
     preview.package.sources.some((source) => source.id.startsWith('candidate-')),
@@ -359,6 +413,7 @@ test('a new book can build its first preview from staging without pipeline code 
     }],
     entityCandidates: [],
     factCandidates: [],
+    onDemandEntities: [],
     entities: [],
     facts: [],
     package: {
@@ -418,6 +473,7 @@ test('research candidates require provenance and blockers and never publish impl
       blockers: ['missing_edition_chapter_evidence'],
     }],
     factCandidates: [],
+    onDemandEntities: [],
     entities: [],
     facts: [],
     package: readingPackage,

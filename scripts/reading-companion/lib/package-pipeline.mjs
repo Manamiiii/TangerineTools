@@ -159,8 +159,10 @@ function validateStaging(staging) {
   const sourceIds = new Set(staging.sourceCandidates.map((source) => source.id))
   validateResearchCandidates('entity', staging.entityCandidates, sourceIds)
   validateResearchCandidates('fact', staging.factCandidates, sourceIds)
-  if (!Array.isArray(staging.entities) || !Array.isArray(staging.facts)) {
-    throw new Error('staging.entities 和 staging.facts 必须是数组')
+  if (!Array.isArray(staging.onDemandEntities)
+    || !Array.isArray(staging.entities)
+    || !Array.isArray(staging.facts)) {
+    throw new Error('staging.onDemandEntities、entities 和 facts 必须是数组')
   }
   if (!staging.package && !staging.basePackagePath) {
     throw new Error('新书 staging 必须包含 package；已有书更新可以使用 basePackagePath')
@@ -182,6 +184,7 @@ export function buildReadingPreviewFromStaging(staging, basePackage = null) {
     ...packageTemplate,
     packageVersion: staging.packageVersion,
     sources: approvedSources,
+    onDemandEntities: staging.onDemandEntities,
     entities: staging.entities,
     facts: staging.facts,
   })
@@ -211,6 +214,7 @@ export function buildReadingPreviewFromStaging(staging, basePackage = null) {
       rejectedFactIds: staging.factCandidates
         .filter((candidate) => candidate.status === 'rejected')
         .map((candidate) => candidate.fact.id),
+      onDemandEntityIds: staging.onDemandEntities.map((entity) => entity.id),
     },
     researchCandidates: {
       entities: staging.entityCandidates,

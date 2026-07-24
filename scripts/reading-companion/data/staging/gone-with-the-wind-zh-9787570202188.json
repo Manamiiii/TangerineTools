@@ -3,7 +3,7 @@
   "slug": "gone-with-the-wind-zh-9787570202188",
   "order": 0,
   "packageId": "reader-package-gone-with-the-wind-zh-9787570202188",
-  "packageVersion": "1.0.0",
+  "packageVersion": "1.1.0",
   "basePackagePath": "public/presets/reading-companion/gone-with-the-wind-zh-9787570202188.json",
   "catalogEntry": {
     "title": "飘",
@@ -44,8 +44,8 @@
       "notes": "候选用于现代真实地点的名称、GEOID、行政层级和代表坐标；历史边界需另行核对。"
     },
     {
-      "id": "candidate-census-2025-georgia-incorporated-places",
-      "status": "candidate",
+      "id": "source-census-2025-georgia-incorporated-places",
+      "status": "approved",
       "kind": "modern-geography",
       "label": "U.S. Census Bureau · 2025 ACS Georgia Incorporated Places",
       "organization": "United States Census Bureau",
@@ -56,8 +56,8 @@
       "notes": "可核对 Atlanta 与 Jonesboro 的现代行政地名、GEOID 和代表坐标；不能证明作品年代的边界或地点在本译本中的首次出现。"
     },
     {
-      "id": "candidate-atlanta-history-center-so-red-the-rose",
-      "status": "candidate",
+      "id": "source-atlanta-history-center-so-red-the-rose",
+      "status": "approved",
       "kind": "museum-research",
       "label": "Atlanta History Center · So Red the Rose: The Gone With the Wind That Never Was",
       "organization": "Atlanta History Center",
@@ -68,8 +68,8 @@
       "notes": "可支持作品同时涉及虚构的佐治亚种植园与真实的亚特兰大地点，也说明塔拉没有可直接采用的单一精确原型坐标；不能用于本译本章节定位。"
     },
     {
-      "id": "candidate-atlanta-history-center-telling-stories-citations",
-      "status": "candidate",
+      "id": "source-atlanta-history-center-telling-stories-citations",
+      "status": "approved",
       "kind": "museum-citation-document",
       "label": "Atlanta History Center · Telling Stories Citation Document",
       "organization": "Atlanta History Center",
@@ -80,8 +80,8 @@
       "notes": "该馆的引用文件明确区分真实历史地点与作品中的虚构地点；只作为候选分类依据，不作为中文译本章节证据。"
     },
     {
-      "id": "candidate-new-georgia-encyclopedia-gwtw",
-      "status": "candidate",
+      "id": "source-new-georgia-encyclopedia-gwtw",
+      "status": "approved",
       "kind": "state-encyclopedia",
       "label": "New Georgia Encyclopedia · Gone With the Wind (Novel)",
       "organization": "New Georgia Encyclopedia",
@@ -89,11 +89,11 @@
       "accessedAt": "2026-07-24",
       "useFor": ["historical_scope", "place_candidates", "work_context"],
       "rightsStatus": "reference-only",
-      "notes": "页面包含剧情概述，只允许研究人员在建库候选层使用；不得直接进入运行时安全内容，也不能代替本译本 revealAt 证据。"
+      "notes": "页面包含剧情概述；运行时只采用经人工摘出的地点名称与虚构分类，并且只在读者精确输入同名内容后显示，不复制剧情概述，也不能代替本译本 revealAt 证据。"
     },
     {
-      "id": "candidate-new-georgia-encyclopedia-clayton-county",
-      "status": "candidate",
+      "id": "source-new-georgia-encyclopedia-clayton-county",
+      "status": "approved",
       "kind": "state-encyclopedia",
       "label": "New Georgia Encyclopedia · Clayton County",
       "organization": "New Georgia Encyclopedia",
@@ -147,8 +147,8 @@
         }
       },
       "sourceIds": [
-        "candidate-census-2025-georgia-incorporated-places",
-        "candidate-atlanta-history-center-so-red-the-rose"
+        "source-census-2025-georgia-incorporated-places",
+        "source-atlanta-history-center-so-red-the-rose"
       ],
       "blockers": [
         "missing_edition_chapter_evidence",
@@ -174,8 +174,8 @@
         }
       },
       "sourceIds": [
-        "candidate-census-2025-georgia-incorporated-places",
-        "candidate-new-georgia-encyclopedia-clayton-county"
+        "source-census-2025-georgia-incorporated-places",
+        "source-new-georgia-encyclopedia-clayton-county"
       ],
       "blockers": [
         "book_relevance_requires_confirmation",
@@ -197,8 +197,8 @@
         "revealAt": null
       },
       "sourceIds": [
-        "candidate-atlanta-history-center-so-red-the-rose",
-        "candidate-atlanta-history-center-telling-stories-citations"
+        "source-atlanta-history-center-so-red-the-rose",
+        "source-atlanta-history-center-telling-stories-citations"
       ],
       "blockers": [
         "missing_edition_chapter_evidence",
@@ -219,8 +219,8 @@
         "revealAt": null
       },
       "sourceIds": [
-        "candidate-new-georgia-encyclopedia-gwtw",
-        "candidate-atlanta-history-center-telling-stories-citations"
+        "source-new-georgia-encyclopedia-gwtw",
+        "source-atlanta-history-center-telling-stories-citations"
       ],
       "blockers": [
         "missing_edition_chapter_evidence",
@@ -242,7 +242,7 @@
         "riskCategories": [],
         "confidence": 1
       },
-      "sourceIds": ["candidate-census-2025-georgia-incorporated-places"],
+      "sourceIds": ["source-census-2025-georgia-incorporated-places"],
       "blockers": [
         "referenced_entity_not_approved",
         "missing_edition_chapter_evidence"
@@ -263,13 +263,85 @@
       },
       "sourceIds": [
         "candidate-loc-america-reads-gwtw",
-        "candidate-new-georgia-encyclopedia-gwtw"
+        "source-new-georgia-encyclopedia-gwtw"
       ],
       "blockers": [
         "missing_edition_chapter_evidence",
         "spoiler_boundary_requires_review"
       ],
       "notes": "即使是广义时代背景，也必须先确定在指定译本中何时可安全揭示。"
+    }
+  ],
+  "onDemandEntities": [
+    {
+      "id": "place-atlanta",
+      "name": "亚特兰大",
+      "originalName": "Atlanta",
+      "aliases": ["Atlanta"],
+      "kind": "place",
+      "placeKind": "real",
+      "activation": "exact-reader-input",
+      "parentLabel": "佐治亚州，美国",
+      "geometry": {
+        "type": "point",
+        "latitude": 33.7628947,
+        "longitude": -84.4220844
+      },
+      "sourceIds": [
+        "source-census-2025-georgia-incorporated-places",
+        "source-atlanta-history-center-so-red-the-rose"
+      ],
+      "scopeNote": "坐标是现代行政地点的代表坐标，不表示作品年代的城市边界。"
+    },
+    {
+      "id": "place-jonesboro-georgia",
+      "name": "琼斯伯勒",
+      "originalName": "Jonesboro",
+      "aliases": ["Jonesboro"],
+      "kind": "place",
+      "placeKind": "real",
+      "activation": "exact-reader-input",
+      "parentLabel": "克莱顿县，佐治亚州，美国",
+      "geometry": {
+        "type": "point",
+        "latitude": 33.5211498,
+        "longitude": -84.3546835
+      },
+      "sourceIds": [
+        "source-census-2025-georgia-incorporated-places",
+        "source-new-georgia-encyclopedia-clayton-county"
+      ],
+      "scopeNote": "公开资料确认其现代位置和创作背景联系，不代表已经证明正文直接出现该地名。"
+    },
+    {
+      "id": "place-tara",
+      "name": "塔拉庄园",
+      "originalName": "Tara",
+      "aliases": ["塔拉", "Tara"],
+      "kind": "place",
+      "placeKind": "fictional",
+      "activation": "exact-reader-input",
+      "parentLabel": "佐治亚州（虚构地点）",
+      "sourceIds": [
+        "source-atlanta-history-center-so-red-the-rose",
+        "source-atlanta-history-center-telling-stories-citations"
+      ],
+      "scopeNote": "公开研究支持其虚构地点分类；系统不会把建筑灵感伪装成精确坐标。"
+    },
+    {
+      "id": "place-twelve-oaks",
+      "name": "十二橡树庄园",
+      "originalName": "Twelve Oaks",
+      "aliases": ["十二橡树", "Twelve Oaks"],
+      "kind": "place",
+      "placeKind": "fictional",
+      "activation": "exact-reader-input",
+      "parentLabel": "佐治亚州（虚构地点）",
+      "sourceIds": [
+        "source-new-georgia-encyclopedia-gwtw",
+        "source-atlanta-history-center-telling-stories-citations"
+      ],
+      "scopeNote": "只提供虚构地点分类，不包含外部资料页面中的剧情概述。"
     }
   ],
   "entities": [],

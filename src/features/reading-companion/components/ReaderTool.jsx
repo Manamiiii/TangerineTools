@@ -24,8 +24,10 @@ import {
   SPOILER_RISK,
   canRevealRisk,
   OBSERVED_ENTITY_KIND,
+  matchOnDemandEntity,
   projectReadingPlaces,
   spoilerGateAction,
+  unlockedOnDemandEntities,
   upsertObservedEntity,
   visibleReadingEntities,
   visibleReadingFacts,
@@ -61,6 +63,7 @@ function ReaderError({ message }) {
 
 function ObservedEntitiesPanel({
   observedEntities,
+  onDemandEntities,
   currentChapterId,
   currentChapter,
   chapters,
@@ -145,12 +148,24 @@ function ObservedEntitiesPanel({
         <div className="reader-observed-list">
           {visibleEntities.map((entity) => {
             const chapter = chapters.find((item) => item.id === entity.firstSeenChapterId)
+            const match = matchOnDemandEntity(onDemandEntities, entity.name, entity.kind)
             return (
               <div className="reader-observed-item" key={entity.id}>
                 <UserRoundSearch size={16} />
                 <div>
                   <strong>{entity.name}</strong>
                   <span>{OBSERVED_KIND_LABELS[entity.kind]} · 首次记录于{chapter?.label || '未知章节'}</span>
+                  {match && (
+                    <div className="reader-observed-match">
+                      <b>已精确匹配公开候选</b>
+                      <span>
+                        {match.name !== entity.name ? `资料名：${match.name} · ` : ''}
+                        {match.kind === 'place' ? PLACE_KIND_LABELS[match.placeKind] : OBSERVED_KIND_LABELS[match.kind]}
+                      </span>
+                      {match.parentLabel && <span>{match.parentLabel}</span>}
+                      {match.scopeNote && <small>{match.scopeNote}</small>}
+                    </div>
+                  )}
                 </div>
                 <button
                   type="button"
@@ -254,6 +269,11 @@ function ReadingMapPanel({ entities, currentChapterId, chapters }) {
               {selectedPlace.aliases?.length > 0 && (
                 <p>别名：{selectedPlace.aliases.join('、')}</p>
               )}
+              {selectedPlace.accessMode === 'reader-confirmed-exact-match' && (
+                <p className="reader-place-unlock-note">
+                  由你输入“{selectedPlace.readerConfirmedName}”后精确解锁，不是系统预判的出现章节。
+                </p>
+              )}
               {selectedPlace.parentLabel && <p>地理层级：{selectedPlace.parentLabel}</p>}
               {selectedPlace.geometry ? (
                 <p>
@@ -264,6 +284,7 @@ function ReadingMapPanel({ entities, currentChapterId, chapters }) {
               ) : (
                 <p>资料包未发布可显示的位置。</p>
               )}
+              {selectedPlace.scopeNote && <p>{selectedPlace.scopeNote}</p>}
               <small>仅展示资料包中已审计的空间字段，不生成剧情解释。</small>
             </div>
           )}
@@ -462,6 +483,25 @@ export function ReaderTool({ scene }) {
     const { edition } = readingPackage
     return `${edition.publisher} · ${edition.publishedAt.replace('-', '年')}月 · ISBN ${edition.isbn}`
   }, [readingPackage])
+  const observedEntities = savedState?.observedEntities || []
+  const unlockedEntities = useMemo(
+    () => unlockedOnDemandEntities(
+      readingPackage?.onDemandEntities,
+      observedEntities,
+      currentChapterId,
+      readingPackage?.chapters,
+    ),
+    [
+      readingPackage?.onDemandEntities,
+      readingPackage?.chapters,
+      observedEntities,
+      currentChapterId,
+    ],
+  )
+  const visibleMapEntities = useMemo(
+    () => [...(readingPackage?.entities || []), ...unlockedEntities],
+    [readingPackage?.entities, unlockedEntities],
+  )
 
   async function changeChapter(chapterId) {
     setPendingChapterId(chapterId)
@@ -622,7 +662,8 @@ export function ReaderTool({ scene }) {
           </section>
 
           <ObservedEntitiesPanel
-            observedEntities={savedState?.observedEntities || []}
+            observedEntities={observedEntities}
+            onDemandEntities={readingPackage.onDemandEntities || []}
             currentChapterId={currentChapterId}
             currentChapter={currentChapter}
             chapters={readingPackage.chapters}
@@ -630,7 +671,7 @@ export function ReaderTool({ scene }) {
           />
 
           <ReadingMapPanel
-            entities={readingPackage.entities}
+            entities={visibleMapEntities}
             currentChapterId={currentChapterId}
             chapters={readingPackage.chapters}
           />
@@ -650,7 +691,7 @@ export function ReaderTool({ scene }) {
             <h3><MapPin size={17} /> 地图资料</h3>
             <strong>
               {visibleReadingEntities(
-                readingPackage.entities,
+                visibleMapEntities,
                 currentChapterId,
                 readingPackage.chapters,
               ).filter((entity) => entity.kind === 'place').length} 个当前可见地点

@@ -50,6 +50,7 @@ const report = [
     `- 章节：${preview.package.chapters.length}`,
     `- 实体：${preview.package.entities.length}`,
     `- 事实：${preview.package.facts.length}`,
+    `- 按需精确匹配实体：${preview.package.onDemandEntities?.length || 0}`,
     `- 已批准资料源：${preview.previewMeta.approvedSourceIds.length}`,
     `- 待审资料源：${preview.previewMeta.pendingSourceIds.length}`,
     `- 待审实体：${preview.previewMeta.candidateEntityIds.length}`,

@@ -104,6 +104,42 @@ export function visibleObservedEntities(observedEntities, currentChapterId, chap
   ))
 }
 
+export function matchOnDemandEntity(onDemandEntities, observedName, kind) {
+  const normalizedName = normalizeObservedEntityName(observedName)
+  if (!normalizedName || !VALID_ENTITY_KINDS.has(kind) || !Array.isArray(onDemandEntities)) {
+    return null
+  }
+  return onDemandEntities.find((entity) => (
+    entity?.kind === kind
+    && [entity.name, entity.originalName, ...(entity.aliases || [])]
+      .some((name) => normalizeObservedEntityName(name) === normalizedName)
+  )) || null
+}
+
+export function unlockedOnDemandEntities(
+  onDemandEntities,
+  observedEntities,
+  currentChapterId,
+  chapters,
+) {
+  const unlocked = new Map()
+  for (const observed of visibleObservedEntities(
+    observedEntities,
+    currentChapterId,
+    chapters,
+  )) {
+    const match = matchOnDemandEntity(onDemandEntities, observed.name, observed.kind)
+    if (!match || unlocked.has(match.id)) continue
+    unlocked.set(match.id, {
+      ...match,
+      revealAt: { chapterId: observed.firstSeenChapterId },
+      readerConfirmedName: observed.name,
+      accessMode: 'reader-confirmed-exact-match',
+    })
+  }
+  return [...unlocked.values()]
+}
+
 export function isRevealedAtChapter(revealAt, currentChapterId, chapters) {
   if (!revealAt?.chapterId || !isNonEmptyString(currentChapterId) || !Array.isArray(chapters)) {
     return false
@@ -242,6 +278,9 @@ export function validateReadingPackage(pkg) {
   for (const key of ['entities', 'facts', 'sources']) {
     if (!Array.isArray(pkg[key])) errors.push(`${key} 必须是数组`)
   }
+  if (pkg.onDemandEntities !== undefined && !Array.isArray(pkg.onDemandEntities)) {
+    errors.push('onDemandEntities 必须是数组')
+  }
 
   const chapterIds = new Set(Array.isArray(pkg.chapters) ? pkg.chapters.map((chapter) => chapter?.id) : [])
   const sourceIds = new Set()
@@ -293,6 +332,55 @@ export function validateReadingPackage(pkg) {
         }
         if (entity.placeKind === 'fictional' && type === 'point') {
           errors.push(`entities[${index}] 的虚构地点不能伪造精确坐标`)
+        }
+      }
+    }
+  }
+  const onDemandEntityIds = new Set()
+  for (const [index, entity] of (
+    Array.isArray(pkg.onDemandEntities) ? pkg.onDemandEntities : []
+  ).entries()) {
+    const label = `onDemandEntities[${index}]`
+    if (!isObject(entity) || !isNonEmptyString(entity.id)) {
+      errors.push(`${label}.id 不能为空`)
+      continue
+    }
+    if (entityIds.has(entity.id) || onDemandEntityIds.has(entity.id)) {
+      errors.push(`实体 id 重复：${entity.id}`)
+    }
+    onDemandEntityIds.add(entity.id)
+    if (!isNonEmptyString(entity.name)) errors.push(`${label}.name 不能为空`)
+    if (!VALID_ENTITY_KINDS.has(entity.kind)) errors.push(`${label}.kind 无效`)
+    if (entity.activation !== 'exact-reader-input') {
+      errors.push(`${label}.activation 必须为 exact-reader-input`)
+    }
+    if (!Array.isArray(entity.aliases)
+      || entity.aliases.some((alias) => !isNonEmptyString(alias))) {
+      errors.push(`${label}.aliases 必须是字符串数组`)
+    }
+    if (!Array.isArray(entity.sourceIds) || entity.sourceIds.length === 0) {
+      errors.push(`${label}.sourceIds 必须是非空数组`)
+    } else {
+      for (const sourceId of entity.sourceIds) {
+        if (!sourceIds.has(sourceId)) errors.push(`${label} 引用了未知来源：${sourceId}`)
+      }
+    }
+    if (entity.kind === 'place') {
+      if (!VALID_PLACE_KINDS.has(entity.placeKind)) errors.push(`${label}.placeKind 无效`)
+      if (entity.geometry) {
+        const { type, latitude, longitude, radiusKm } = entity.geometry
+        if (!VALID_GEOMETRY_TYPES.has(type)) errors.push(`${label}.geometry.type 无效`)
+        if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+          errors.push(`${label}.geometry.latitude 无效`)
+        }
+        if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+          errors.push(`${label}.geometry.longitude 无效`)
+        }
+        if (type === 'area' && (!Number.isFinite(radiusKm) || radiusKm <= 0)) {
+          errors.push(`${label}.geometry.radiusKm 无效`)
+        }
+        if (entity.placeKind === 'fictional' && type === 'point') {
+          errors.push(`${label} 的虚构地点不能伪造精确坐标`)
         }
       }
     }
