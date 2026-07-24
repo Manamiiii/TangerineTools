@@ -1,5 +1,7 @@
 {
   "previewMeta": {
+    "slug": "gone-with-the-wind-zh-9787570202188",
+    "order": 0,
     "packageId": "reader-package-gone-with-the-wind-zh-9787570202188",
     "targetPath": "public/presets/reading-companion/gone-with-the-wind-zh-9787570202188.json",
     "approvedSourceIds": [
@@ -12,6 +14,12 @@
       "candidate-openstreetmap"
     ],
     "rejectedSourceIds": []
+  },
+  "catalogEntry": {
+    "id": "reader-package-gone-with-the-wind-zh-9787570202188",
+    "title": "飘",
+    "editionLabel": "长江文艺出版社 · 2018年5月",
+    "path": "presets/reading-companion/gone-with-the-wind-zh-9787570202188.json"
   },
   "package": {
     "schemaVersion": 1,

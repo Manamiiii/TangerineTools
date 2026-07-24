@@ -11,7 +11,10 @@ import {
   strongestSpoilerRisk,
   validateReadingPackage,
 } from '../../src/domain/readingCompanion.js'
-import { buildReadingPreview } from '../reading/lib/package-pipeline.mjs'
+import {
+  buildReadingPreviewFromStaging,
+  buildReadingPreviews,
+} from '../reading/lib/package-pipeline.mjs'
 
 const repoUrl = new URL('../../', import.meta.url)
 const readingPackage = JSON.parse(
@@ -106,7 +109,10 @@ test('spoiler gate requires the matching one-time authorization level', () => {
 })
 
 test('reading preview publishes only approved sources and keeps candidates pending', async () => {
-  const preview = await buildReadingPreview()
+  const { previews, catalog } = await buildReadingPreviews()
+  assert.equal(previews.length, 1)
+  assert.equal(catalog.packages.length, 1)
+  const [preview] = previews
   assert.deepEqual(validateReadingPackage(preview.package), [])
   assert.deepEqual(preview.previewMeta.approvedSourceIds, ['source-weread-edition-metadata'])
   assert.equal(preview.previewMeta.pendingSourceIds.length, 4)
@@ -118,4 +124,51 @@ test('reading preview publishes only approved sources and keeps candidates pendi
     preview.package.sources.some((source) => source.id.startsWith('candidate-')),
     false,
   )
+})
+
+test('a new book can build its first preview from staging without pipeline code changes', () => {
+  const staging = {
+    schemaVersion: 1,
+    slug: 'test-book-zh-test-edition',
+    order: 1,
+    packageId: 'reader-package-test-book-zh-test-edition',
+    packageVersion: '1.0.0',
+    catalogEntry: { title: '测试书籍', editionLabel: '测试出版社 · 2026年' },
+    sourceCandidates: [{
+      id: 'source-test-edition',
+      status: 'approved',
+      kind: 'edition-metadata',
+      label: '测试版本信息',
+    }],
+    entities: [],
+    facts: [],
+    package: {
+      schemaVersion: 1,
+      packageVersion: '1.0.0',
+      id: 'reader-package-test-book-zh-test-edition',
+      book: {
+        id: 'test-book',
+        title: '测试书籍',
+        author: '测试作者',
+        originalLanguage: 'zh',
+      },
+      edition: {
+        id: 'test-book-zh-test-edition',
+        isbn: '0000000000000',
+        language: 'zh-CN',
+        publisher: '测试出版社',
+        publishedAt: '2026',
+        chapterCount: 1,
+      },
+      chapters: [{ id: 'chapter-01', number: 1, label: '第 1 章' }],
+      entities: [],
+      facts: [],
+      sources: [],
+    },
+  }
+  const preview = buildReadingPreviewFromStaging(staging)
+  assert.equal(preview.package.book.title, '测试书籍')
+  assert.equal(preview.previewMeta.targetPath, 'public/presets/reading-companion/test-book-zh-test-edition.json')
+  assert.equal(preview.catalogEntry.path, 'presets/reading-companion/test-book-zh-test-edition.json')
+  assert.deepEqual(preview.package.sources.map((source) => source.id), ['source-test-edition'])
 })

@@ -176,6 +176,8 @@ git diff --check
 
 运行时资料目录位于 `public/presets/reading-companion/`。《飘》资料包对应长江文艺出版社 2018 年 5 月版、ISBN `9787570202188`，章节稳定标识覆盖 1–63 章。正式实体、事实和来源只通过 `scripts/reading/data/` 下的 staging / preview / apply 流程发布；候选来源不会进入运行时资料包。
 
+新增书籍只需要增加一份 staging JSON。新书 staging 携带完整 `package`，已有书更新可以通过 `basePackagePath` 复用正式包；管线自动发现全部 staging、生成逐书 preview 和统一 catalog，不需要修改发布脚本。
+
 ## 洛克王国预置资料
 
 首次启动时会自动创建洛克王国场景：

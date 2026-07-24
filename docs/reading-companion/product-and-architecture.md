@@ -117,13 +117,22 @@
 当前发布目录与命令为：
 
 - `scripts/reading/data/staging/`：版本化研究输入、来源状态、实体和事实候选。
-- `scripts/reading/data/preview/`：由 staging 生成的完整发布候选和审计元数据。
+- `scripts/reading/data/preview/`：由 staging 生成的逐书完整发布候选、统一 catalog 和审计元数据。
 - `npm run preview:reader`：生成 preview。
 - `npm run check:reader:preset`：比较 preview 与正式资料并在 `artifacts/reading-companion/` 生成报告。
 - `READING_PACKAGE_OVERWRITE=CONFIRM_READING_PACKAGE npm run apply:reader:preset`：显式写入正式资料包。
 - `npm run check:reader:packages`：校验运行时目录和正式资料包。
 
 资料源状态使用 `approved`、`candidate` 和 `rejected`。只有 `approved` 来源可以进入运行时资料包；候选和拒绝项只保留在 staging 与 preview 审计元数据中。
+
+管线枚举 staging 目录内的全部 JSON，不保存单一书籍硬编码。每份 staging 都声明唯一 `slug`、顺序、catalog 展示信息、版本、来源状态、实体和事实：
+
+- 首次发布的新书必须提供完整 `package`，包括作品、版本和稳定章节。
+- 已有书更新可以提供 `basePackagePath`，在正式包的作品、版本和章节基础上替换受审计的来源、实体和事实。
+- preview 自动生成 `presets/reading-companion/{slug}.json` 目标和统一 catalog 条目。
+- slug、顺序、资料包 id 和 catalog 路径必须唯一且满足固定路径格式。
+
+因此，新书接入的数据准备不要求修改浏览器组件或发布脚本；建库质量仍通过首本真实书籍的完整流程逐步校准。
 
 ### 当前资料源候选
 

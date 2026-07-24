@@ -13,7 +13,12 @@ if (catalog?.schemaVersion !== 1 || !Array.isArray(catalog.packages) || catalog.
 
 const ids = new Set()
 for (const entry of catalog.packages) {
-  if (!entry?.id || !entry?.path) throw new Error('阅读资料目录项缺少 id 或 path')
+  if (!entry?.id || !entry?.title || !entry?.editionLabel || !entry?.path) {
+    throw new Error('阅读资料目录项缺少 id、title、editionLabel 或 path')
+  }
+  if (!/^presets\/reading-companion\/[a-z0-9]+(?:-[a-z0-9]+)*\.json$/.test(entry.path)) {
+    throw new Error(`阅读资料目录路径无效：${entry.path}`)
+  }
   if (ids.has(entry.id)) throw new Error(`阅读资料目录 id 重复：${entry.id}`)
   ids.add(entry.id)
   const packagePath = path.join(publicRoot, entry.path)
