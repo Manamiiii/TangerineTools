@@ -19,10 +19,15 @@ import {
   X,
 } from 'lucide-react'
 import { getReadingState, saveReadingState } from '../db/readingState.js'
+import { savePersonalReadingPackage } from '../db/personalBooks.js'
 import { loadReadingPackage, loadReadingPackageCatalog } from '../data/readingPackages.js'
 import { ReadingGeoMap } from './ReadingGeoMap.jsx'
 import { generateId } from '../../../utils.js'
 import { searchReadingPlaces } from '../map/geocoding.js'
+import {
+  createPersonalReadingPackage,
+  personalCatalogEntry,
+} from '../domain/personalBooks.js'
 import {
   READING_MAP_PROVIDER,
   READING_MAP_PROVIDERS,
@@ -37,6 +42,7 @@ import {
   clearObservedPlaceLocation,
   confirmObservedPlaceLocation,
   OBSERVED_ENTITY_KIND,
+  OBSERVED_PLACE_KIND,
   matchOnDemandEntity,
   readingPlaceRelations,
   readerConfirmedMapEntities,
@@ -44,6 +50,7 @@ import {
   spoilerGateAction,
   unlockedOnDemandEntities,
   upsertObservedEntity,
+  updateObservedPlaceKind,
   visibleReadingEntities,
   visibleReadingFacts,
   visibleObservedEntities,
@@ -63,6 +70,14 @@ const OBSERVED_KIND_LABELS = {
   [OBSERVED_ENTITY_KIND.EVENT]: '事件',
 }
 
+const OBSERVED_PLACE_KIND_LABELS = {
+  [OBSERVED_PLACE_KIND.UNKNOWN]: '不确定',
+  [OBSERVED_PLACE_KIND.REAL]: '现实地点',
+  [OBSERVED_PLACE_KIND.FICTIONAL]: '虚构地点',
+  [OBSERVED_PLACE_KIND.PROTOTYPE]: '有现实原型',
+  [OBSERVED_PLACE_KIND.APPROXIMATE]: '位置模糊',
+}
+
 function LoadingPanel({ message }) {
   return <div className="reader-loading">{message}</div>
 }
@@ -76,7 +91,126 @@ function ReaderError({ message }) {
   )
 }
 
-function ReadingLibrary({ catalog, onSelect }) {
+function PersonalBookCreator({ onCreate, onCancel }) {
+  const [form, setForm] = useState({
+    title: '',
+    author: '',
+    translators: '',
+    publisher: '',
+    isbn: '',
+    publishedAt: '',
+    originalLanguage: '',
+    chapterCount: 1,
+    chapterText: '',
+  })
+  const [status, setStatus] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  function change(key, value) {
+    setForm((current) => ({ ...current, [key]: value }))
+    setStatus('')
+  }
+
+  async function submit(event) {
+    event.preventDefault()
+    setSaving(true)
+    setStatus('')
+    try {
+      await onCreate(form)
+    } catch (error) {
+      setStatus(error?.message || '创建书籍失败')
+      setSaving(false)
+    }
+  }
+
+  return (
+    <section className="reader-personal-book-creator">
+      <div className="reader-personal-book-heading">
+        <div>
+          <strong>添加个人书籍</strong>
+          <span>只创建书目、版本和章节；稍后仍可导入正式资料包。</span>
+        </div>
+        <button type="button" className="icon-btn" onClick={onCancel} aria-label="关闭添加书籍">
+          <X size={15} />
+        </button>
+      </div>
+      <form onSubmit={submit}>
+        <div className="reader-personal-book-grid">
+          <label>
+            <span>书名 *</span>
+            <input value={form.title} onChange={(event) => change('title', event.target.value)} />
+          </label>
+          <label>
+            <span>作者 *</span>
+            <input value={form.author} onChange={(event) => change('author', event.target.value)} />
+          </label>
+          <label>
+            <span>译者</span>
+            <input
+              value={form.translators}
+              onChange={(event) => change('translators', event.target.value)}
+              placeholder="多人用顿号分隔"
+            />
+          </label>
+          <label>
+            <span>出版社 / 版本</span>
+            <input value={form.publisher} onChange={(event) => change('publisher', event.target.value)} />
+          </label>
+          <label>
+            <span>ISBN</span>
+            <input value={form.isbn} onChange={(event) => change('isbn', event.target.value)} />
+          </label>
+          <label>
+            <span>出版月份</span>
+            <input
+              type="month"
+              value={form.publishedAt}
+              onChange={(event) => change('publishedAt', event.target.value)}
+            />
+          </label>
+          <label>
+            <span>原作语言</span>
+            <input
+              value={form.originalLanguage}
+              onChange={(event) => change('originalLanguage', event.target.value)}
+              placeholder="例如 en、zh"
+            />
+          </label>
+          <label>
+            <span>章节数</span>
+            <input
+              type="number"
+              min="1"
+              max="1000"
+              value={form.chapterCount}
+              onChange={(event) => change('chapterCount', event.target.value)}
+            />
+          </label>
+        </div>
+        <label className="reader-personal-chapters">
+          <span>或者粘贴目录（每行一章）</span>
+          <textarea
+            rows={6}
+            value={form.chapterText}
+            onChange={(event) => change('chapterText', event.target.value)}
+            placeholder={'1\n2\n3\n…\n也可以粘贴“第一章 某某”等完整标题'}
+          />
+          <small>粘贴目录后以非空行数为准；纯数字会自动显示为“第 N 章”。</small>
+        </label>
+        {status && <p className="reader-observed-status" role="alert">{status}</p>}
+        <div className="reader-personal-book-actions">
+          <button type="button" className="btn" onClick={onCancel}>取消</button>
+          <button type="submit" className="btn btn-primary" disabled={saving}>
+            <Plus size={14} /> {saving ? '创建中…' : '创建并开始阅读'}
+          </button>
+        </div>
+      </form>
+    </section>
+  )
+}
+
+function ReadingLibrary({ catalog, onSelect, onCreate }) {
+  const [creating, setCreating] = useState(false)
   return (
     <div className="reader-tool reader-library">
       <section className="reader-library-hero">
@@ -90,8 +224,16 @@ function ReadingLibrary({ catalog, onSelect }) {
             <h3>我的书架</h3>
             <span>{catalog.length} 本已准备</span>
           </div>
-          <small>选择后进入该书的阅读空间</small>
+          <button type="button" className="btn btn-sm" onClick={() => setCreating(true)}>
+            <Plus size={13} /> 添加书籍
+          </button>
         </div>
+        {creating && (
+          <PersonalBookCreator
+            onCreate={onCreate}
+            onCancel={() => setCreating(false)}
+          />
+        )}
         {catalog.length > 0 ? (
           <div className="reader-book-grid">
             {catalog.map((entry) => (
@@ -105,6 +247,7 @@ function ReadingLibrary({ catalog, onSelect }) {
                 <span className="reader-book-copy">
                   <strong>{entry.title}</strong>
                   <small>{entry.editionLabel}</small>
+                  {entry.source === 'personal' && <em>个人书籍</em>}
                   <b>开始阅读</b>
                 </span>
               </button>
@@ -165,6 +308,7 @@ function ObservedEntitiesPanel({
 }) {
   const [name, setName] = useState('')
   const [kind, setKind] = useState(OBSERVED_ENTITY_KIND.PLACE)
+  const [placeKind, setPlaceKind] = useState(OBSERVED_PLACE_KIND.UNKNOWN)
   const [status, setStatus] = useState('')
   const visibleEntities = useMemo(
     () => visibleObservedEntities(observedEntities, currentChapterId, chapters),
@@ -180,6 +324,7 @@ function ObservedEntitiesPanel({
         id: generateId('observed'),
         name,
         kind,
+        placeKind,
         firstSeenChapterId: currentChapterId,
       }, chapters)
       if (next === observedEntities) {
@@ -188,6 +333,7 @@ function ObservedEntitiesPanel({
       }
       await onChange(next)
       setName('')
+      setPlaceKind(OBSERVED_PLACE_KIND.UNKNOWN)
       setStatus(`已把首次遇到位置记在${currentChapter?.label || '当前章'}。`)
     } catch (error) {
       setStatus(error?.message || '保存失败')
@@ -213,6 +359,20 @@ function ObservedEntitiesPanel({
     }
   }
 
+  async function changeObservedPlaceKind(id, nextPlaceKind) {
+    setStatus('')
+    try {
+      await onChange(updateObservedPlaceKind(observedEntities, id, nextPlaceKind))
+      setStatus(
+        nextPlaceKind === OBSERVED_PLACE_KIND.REAL
+          ? '已标记为现实地点，可以在地图区域搜索位置。'
+          : '已更新地点性质；非现实地点不会发送给公网地图搜索。',
+      )
+    } catch (error) {
+      setStatus(error?.message || '更新地点性质失败')
+    }
+  }
+
   return (
     <section className="reader-panel">
       <div className="reader-panel-heading">
@@ -235,6 +395,16 @@ function ObservedEntitiesPanel({
             maxLength={120}
           />
         </label>
+        {kind === OBSERVED_ENTITY_KIND.PLACE && (
+          <label>
+            <span>地点性质</span>
+            <select value={placeKind} onChange={(event) => setPlaceKind(event.target.value)}>
+              {Object.entries(OBSERVED_PLACE_KIND_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </label>
+        )}
         <label>
           <span>类型</span>
           <select value={kind} onChange={(event) => setKind(event.target.value)}>
@@ -269,6 +439,19 @@ function ObservedEntitiesPanel({
                       {match.parentLabel && <span>{match.parentLabel}</span>}
                       {match.scopeNote && <small>{match.scopeNote}</small>}
                     </div>
+                  )}
+                  {!match && entity.kind === OBSERVED_ENTITY_KIND.PLACE && (
+                    <label className="reader-observed-place-kind">
+                      <span>地点性质</span>
+                      <select
+                        value={entity.placeKind || OBSERVED_PLACE_KIND.UNKNOWN}
+                        onChange={(event) => changeObservedPlaceKind(entity.id, event.target.value)}
+                      >
+                        {Object.entries(OBSERVED_PLACE_KIND_LABELS).map(([value, label]) => (
+                          <option key={value} value={value}>{label}</option>
+                        ))}
+                      </select>
+                    </label>
                   )}
                   {entity.mapLocation && (
                     <div className="reader-observed-match">
@@ -349,6 +532,7 @@ function ReadingMapPanel({
   const searchableObservedPlaces = useMemo(
     () => visibleObservedPlaces.filter((entity) => (
       !entity.mapLocation
+      && entity.placeKind === OBSERVED_PLACE_KIND.REAL
       && !matchOnDemandEntity(onDemandEntities, entity.name, entity.kind)
     )),
     [visibleObservedPlaces, onDemandEntities],
@@ -500,7 +684,7 @@ function ReadingMapPanel({
             ))}
           </div>
         ) : (
-          <p>步骤 03 中新增的未知地点会出现在这里；已审计地点无需再次搜索。</p>
+          <p>只有明确标记为“现实地点”的资料包外名称才会出现在这里；虚构或不确定地点不会发送给公网地图。</p>
         )}
         {lookupTarget && (
           <form className="reader-place-lookup-form" onSubmit={submitLookup}>
@@ -524,7 +708,13 @@ function ReadingMapPanel({
               <article key={result.id}>
                 <div>
                   <strong>{result.label}</strong>
-                  <span>{result.latitude.toFixed(5)}, {result.longitude.toFixed(5)}</span>
+                  <span>
+                    {result.latitude.toFixed(5)}, {result.longitude.toFixed(5)}
+                    {result.category && ` · ${result.category}`}
+                    {result.geometry && result.geometry.type !== 'Point'
+                      ? ` · ${result.geometry.type}`
+                      : ''}
+                  </span>
                 </div>
                 <button type="button" onClick={() => confirmLookupResult(result)}>
                   确认“{lookupTarget?.name}”是这个现实地点
@@ -602,7 +792,11 @@ function ReadingMapPanel({
               {selectedPlace.parentLabel && <p>地理层级：{selectedPlace.parentLabel}</p>}
               {selectedPlace.geometry ? (
                 <p>
-                  {selectedPlace.geometry.type === 'area' ? '区域中心约 ' : ''}
+                  {selectedPlace.geometry.type === 'area'
+                    ? '区域中心约 '
+                    : selectedPlace.geometry.type === 'geojson'
+                      ? `${selectedPlace.geometry.geojson?.type || '路径'}代表位置约 `
+                      : ''}
                   {selectedPlace.geometry.latitude.toFixed(4)}, {selectedPlace.geometry.longitude.toFixed(4)}
                   {selectedPlace.geometry.type === 'area' && ` · 半径约 ${selectedPlace.geometry.radiusKm} km`}
                 </p>
@@ -825,7 +1019,11 @@ export function ReaderTool({ scene }) {
   const editionSummary = useMemo(() => {
     if (!readingPackage) return ''
     const { edition } = readingPackage
-    return `${edition.publisher} · ${edition.publishedAt.replace('-', '年')}月 · ISBN ${edition.isbn}`
+    return [
+      edition.publisher,
+      edition.publishedAt === '未知' ? null : `${edition.publishedAt.replace('-', '年')}月`,
+      edition.isbn.startsWith('personal-') ? null : `ISBN ${edition.isbn}`,
+    ].filter(Boolean).join(' · ')
   }, [readingPackage])
   const observedEntities = savedState?.observedEntities || []
   const unlockedEntities = useMemo(
@@ -897,6 +1095,22 @@ export function ReaderTool({ scene }) {
     clearImage()
   }
 
+  async function createPersonalBook(form) {
+    const pkg = createPersonalReadingPackage({
+      ...form,
+      packageId: generateId('reader-package-personal'),
+      bookId: generateId('reader-book-personal'),
+      editionId: generateId('reader-edition-personal'),
+    })
+    await savePersonalReadingPackage(pkg)
+    const entry = personalCatalogEntry(pkg)
+    setCatalog((current) => [
+      ...(current || []).filter((item) => item.id !== entry.id),
+      entry,
+    ])
+    selectBook(pkg.id)
+  }
+
   function returnToLibrary() {
     setSelectedPackageId('')
     setReadingPackage(null)
@@ -956,7 +1170,15 @@ export function ReaderTool({ scene }) {
 
   if (loadError) return <ReaderError message={loadError} />
   if (!catalog) return <LoadingPanel message="正在加载阅读书架…" />
-  if (!selectedPackageId) return <ReadingLibrary catalog={catalog} onSelect={selectBook} />
+  if (!selectedPackageId) {
+    return (
+      <ReadingLibrary
+        catalog={catalog}
+        onSelect={selectBook}
+        onCreate={createPersonalBook}
+      />
+    )
+  }
   if (!readingPackage) return <LoadingPanel message="正在加载阅读资料…" />
 
   return (
@@ -968,7 +1190,12 @@ export function ReaderTool({ scene }) {
           </button>
           <span className="reader-eyebrow"><BookOpen size={15} /> 经典文学阅读伴侣</span>
           <h2>{readingPackage.book.title}</h2>
-          <p>{readingPackage.book.author} · {readingPackage.edition.translators.join('、')} 译</p>
+          <p>
+            {readingPackage.book.author}
+            {readingPackage.edition.translators.length > 0
+              ? ` · ${readingPackage.edition.translators.join('、')} 译`
+              : ''}
+          </p>
           <small>{editionSummary}</small>
         </div>
         <div className="reader-progress-card">

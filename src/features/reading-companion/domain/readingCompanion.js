@@ -19,6 +19,14 @@ export const OBSERVED_ENTITY_KIND = {
   EVENT: 'event',
 }
 
+export const OBSERVED_PLACE_KIND = {
+  UNKNOWN: 'unknown',
+  REAL: 'real',
+  FICTIONAL: 'fictional',
+  PROTOTYPE: 'prototype',
+  APPROXIMATE: 'approximate',
+}
+
 export const SPOILER_CATEGORY_LABELS = {
   location_significance: '地点的剧情意义',
   character_relationship: '人物关系',
@@ -33,7 +41,15 @@ export const SPOILER_CATEGORY_LABELS = {
 const VALID_RISK_LEVELS = new Set(Object.values(SPOILER_RISK))
 const VALID_ENTITY_KINDS = new Set(['place', 'person', 'concept', 'event'])
 const VALID_PLACE_KINDS = new Set(['real', 'fictional', 'prototype', 'approximate'])
-const VALID_GEOMETRY_TYPES = new Set(['point', 'area'])
+const VALID_OBSERVED_PLACE_KINDS = new Set(Object.values(OBSERVED_PLACE_KIND))
+const VALID_GEOMETRY_TYPES = new Set(['point', 'area', 'geojson'])
+const VALID_GEOJSON_TYPES = new Set([
+  'Point',
+  'LineString',
+  'MultiLineString',
+  'Polygon',
+  'MultiPolygon',
+])
 const VALID_FACT_KINDS = new Set(['spatial', 'character', 'plot', 'history', 'concept'])
 const VALID_RISK_CATEGORIES = new Set(Object.keys(SPOILER_CATEGORY_LABELS))
 
@@ -82,6 +98,13 @@ export function upsertObservedEntity(observedEntities, candidate, chapters) {
       name,
       kind: candidate.kind,
       firstSeenChapterId: candidate.firstSeenChapterId,
+      ...(candidate.kind === OBSERVED_ENTITY_KIND.PLACE
+        ? {
+            placeKind: VALID_OBSERVED_PLACE_KINDS.has(candidate.placeKind)
+              ? candidate.placeKind
+              : OBSERVED_PLACE_KIND.UNKNOWN,
+          }
+        : {}),
     }]
   }
 
@@ -93,6 +116,22 @@ export function upsertObservedEntity(observedEntities, candidate, chapters) {
       ? { ...existing, name, firstSeenChapterId: candidate.firstSeenChapterId }
       : item
   ))
+}
+
+export function updateObservedPlaceKind(observedEntities, observedEntityId, placeKind) {
+  if (!Array.isArray(observedEntities)) throw new Error('已遇到名称记录无效')
+  if (!VALID_OBSERVED_PLACE_KINDS.has(placeKind)) throw new Error('地点性质无效')
+  const index = observedEntities.findIndex((item) => item?.id === observedEntityId)
+  if (index < 0) throw new Error('找不到要分类的地点记录')
+  if (observedEntities[index].kind !== OBSERVED_ENTITY_KIND.PLACE) {
+    throw new Error('只有地点记录可以设置地点性质')
+  }
+  return observedEntities.map((item, itemIndex) => {
+    if (itemIndex !== index) return item
+    const next = { ...item, placeKind }
+    if (placeKind !== OBSERVED_PLACE_KIND.REAL) delete next.mapLocation
+    return next
+  })
 }
 
 export function visibleObservedEntities(observedEntities, currentChapterId, chapters) {
@@ -110,6 +149,9 @@ export function confirmObservedPlaceLocation(observedEntities, observedEntityId,
   if (index < 0) throw new Error('找不到要定位的地点记录')
   const observed = observedEntities[index]
   if (observed.kind !== OBSERVED_ENTITY_KIND.PLACE) throw new Error('只有地点记录可以确认地图位置')
+  if (observed.placeKind !== OBSERVED_PLACE_KIND.REAL) {
+    throw new Error('只有明确标记为现实地点后才能确认公网地图位置')
+  }
   const latitude = Number(location?.latitude)
   const longitude = Number(location?.longitude)
   if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
@@ -121,6 +163,9 @@ export function confirmObservedPlaceLocation(observedEntities, observedEntityId,
   if (!isNonEmptyString(location?.label) || !isNonEmptyString(location?.providerId)) {
     throw new Error('地图候选缺少来源或名称')
   }
+  if (location.geometry && !isValidGeoJsonGeometry(location.geometry)) {
+    throw new Error('地图候选几何数据无效')
+  }
   return observedEntities.map((item, itemIndex) => (
     itemIndex === index
       ? {
@@ -131,6 +176,7 @@ export function confirmObservedPlaceLocation(observedEntities, observedEntityId,
             providerId: location.providerId,
             latitude,
             longitude,
+            ...(location.geometry ? { geometry: location.geometry } : {}),
           },
         }
       : item
@@ -153,6 +199,7 @@ export function readerConfirmedMapEntities(observedEntities, currentChapterId, c
   return visibleObservedEntities(observedEntities, currentChapterId, chapters)
     .filter((item) => (
       item?.kind === OBSERVED_ENTITY_KIND.PLACE
+      && (item.placeKind === OBSERVED_PLACE_KIND.REAL || (!item.placeKind && item.mapLocation))
       && Number.isFinite(item.mapLocation?.latitude)
       && Number.isFinite(item.mapLocation?.longitude)
     ))
@@ -165,9 +212,10 @@ export function readerConfirmedMapEntities(observedEntities, currentChapterId, c
       parentLabel: item.mapLocation.label,
       revealAt: { chapterId: item.firstSeenChapterId },
       geometry: {
-        type: 'point',
+        type: item.mapLocation.geometry ? 'geojson' : 'point',
         latitude: item.mapLocation.latitude,
         longitude: item.mapLocation.longitude,
+        ...(item.mapLocation.geometry ? { geojson: item.mapLocation.geometry } : {}),
       },
       accessMode: 'reader-confirmed-geocoder',
       readerConfirmedName: item.name,
@@ -303,6 +351,69 @@ function placeCoordinates(place) {
   const longitude = place?.geometry?.longitude
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null
   return { latitude, longitude }
+}
+
+function geoJsonCoordinateCount(value) {
+  if (!Array.isArray(value)) return -1
+  if (
+    value.length >= 2
+    && value.every((item) => typeof item === 'number' && Number.isFinite(item))
+  ) {
+    const [longitude, latitude] = value
+    return longitude >= -180 && longitude <= 180 && latitude >= -90 && latitude <= 90
+      ? 1
+      : -1
+  }
+  let count = 0
+  for (const item of value) {
+    const itemCount = geoJsonCoordinateCount(item)
+    if (itemCount < 0) return -1
+    count += itemCount
+    if (count > 10000) return -1
+  }
+  return count
+}
+
+function isValidGeoJsonGeometry(geometry) {
+  if (
+    !isObject(geometry)
+    || !VALID_GEOJSON_TYPES.has(geometry.type)
+    || !Array.isArray(geometry.coordinates)
+  ) {
+    return false
+  }
+  const coordinateCount = geoJsonCoordinateCount(geometry.coordinates)
+  return coordinateCount > 0 && coordinateCount <= 10000
+}
+
+function validatePlaceGeometry(geometry, label, errors) {
+  if (!isObject(geometry)) {
+    errors.push(`${label}.geometry 必须是对象`)
+    return
+  }
+  const {
+    type,
+    latitude,
+    longitude,
+    radiusKm,
+    geojson,
+  } = geometry
+  if (!VALID_GEOMETRY_TYPES.has(type)) {
+    errors.push(`${label}.geometry.type 无效`)
+    return
+  }
+  if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+    errors.push(`${label}.geometry.latitude 无效`)
+  }
+  if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+    errors.push(`${label}.geometry.longitude 无效`)
+  }
+  if (type === 'area' && (!Number.isFinite(radiusKm) || radiusKm <= 0)) {
+    errors.push(`${label}.geometry.radiusKm 无效`)
+  }
+  if (type === 'geojson' && !isValidGeoJsonGeometry(geojson)) {
+    errors.push(`${label}.geometry.geojson 无效`)
+  }
 }
 
 function toRadians(degrees) {
@@ -480,18 +591,8 @@ export function validateReadingPackage(pkg) {
         errors.push(`entities[${index}].placeKind 无效`)
       }
       if (entity.geometry) {
-        const { type, latitude, longitude, radiusKm } = entity.geometry
-        if (!VALID_GEOMETRY_TYPES.has(type)) errors.push(`entities[${index}].geometry.type 无效`)
-        if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
-          errors.push(`entities[${index}].geometry.latitude 无效`)
-        }
-        if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
-          errors.push(`entities[${index}].geometry.longitude 无效`)
-        }
-        if (type === 'area' && (!Number.isFinite(radiusKm) || radiusKm <= 0)) {
-          errors.push(`entities[${index}].geometry.radiusKm 无效`)
-        }
-        if (entity.placeKind === 'fictional' && type === 'point') {
+        validatePlaceGeometry(entity.geometry, `entities[${index}]`, errors)
+        if (entity.placeKind === 'fictional' && entity.geometry.type !== 'area') {
           errors.push(`entities[${index}] 的虚构地点不能伪造精确坐标`)
         }
       }
@@ -529,18 +630,8 @@ export function validateReadingPackage(pkg) {
     if (entity.kind === 'place') {
       if (!VALID_PLACE_KINDS.has(entity.placeKind)) errors.push(`${label}.placeKind 无效`)
       if (entity.geometry) {
-        const { type, latitude, longitude, radiusKm } = entity.geometry
-        if (!VALID_GEOMETRY_TYPES.has(type)) errors.push(`${label}.geometry.type 无效`)
-        if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
-          errors.push(`${label}.geometry.latitude 无效`)
-        }
-        if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
-          errors.push(`${label}.geometry.longitude 无效`)
-        }
-        if (type === 'area' && (!Number.isFinite(radiusKm) || radiusKm <= 0)) {
-          errors.push(`${label}.geometry.radiusKm 无效`)
-        }
-        if (entity.placeKind === 'fictional' && type === 'point') {
+        validatePlaceGeometry(entity.geometry, label, errors)
+        if (entity.placeKind === 'fictional' && entity.geometry.type !== 'area') {
           errors.push(`${label} 的虚构地点不能伪造精确坐标`)
         }
       }

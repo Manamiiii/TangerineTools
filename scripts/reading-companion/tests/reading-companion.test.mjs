@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { access, readFile } from 'node:fs/promises'
 import test from 'node:test'
 import {
+  OBSERVED_PLACE_KIND,
   SPOILER_GATE_ACTION,
   SPOILER_RISK,
   canRevealRisk,
@@ -19,6 +20,7 @@ import {
   spoilerGateAction,
   strongestSpoilerRisk,
   unlockedOnDemandEntities,
+  updateObservedPlaceKind,
   upsertObservedEntity,
   validateReadingPackage,
   visibleReadingEntities,
@@ -35,10 +37,16 @@ import {
   readingMapTileSources,
 } from '../../../src/features/reading-companion/map/mapConfig.js'
 import {
+  normalizeGeoJsonGeometry,
   normalizeNominatimResults,
   normalizeTiandituResults,
   searchReadingPlaces,
 } from '../../../src/features/reading-companion/map/geocoding.js'
+import {
+  buildPersonalChapters,
+  createPersonalReadingPackage,
+  personalCatalogEntry,
+} from '../../../src/features/reading-companion/domain/personalBooks.js'
 
 const repoUrl = new URL('../../../', import.meta.url)
 const readingPackage = JSON.parse(
@@ -54,8 +62,10 @@ test('reading companion keeps feature code and maintenance files in dedicated di
     'src/features/reading-companion/components/ReaderTool.jsx',
     'src/features/reading-companion/components/ReadingGeoMap.jsx',
     'src/features/reading-companion/data/readingPackages.js',
+    'src/features/reading-companion/db/personalBooks.js',
     'src/features/reading-companion/db/readingState.js',
     'src/features/reading-companion/db/seed.js',
+    'src/features/reading-companion/domain/personalBooks.js',
     'src/features/reading-companion/domain/readingCompanion.js',
     'src/features/reading-companion/map/geocoding.js',
     'src/features/reading-companion/map/mapConfig.js',
@@ -77,6 +87,52 @@ test('reading companion keeps feature code and maintenance files in dedicated di
   for (const file of retiredMixedPaths) {
     await assert.rejects(access(new URL(file, repoUrl)), { code: 'ENOENT' })
   }
+})
+
+test('personal books accept a chapter count or pasted numeric directory', () => {
+  assert.deepEqual(buildPersonalChapters({ chapterCount: 3, chapterText: '' }), [
+    { id: 'chapter-01', number: 1, label: '第 1 章' },
+    { id: 'chapter-02', number: 2, label: '第 2 章' },
+    { id: 'chapter-03', number: 3, label: '第 3 章' },
+  ])
+  assert.deepEqual(buildPersonalChapters({
+    chapterCount: 1,
+    chapterText: '1\n2\n尾声',
+  }), [
+    { id: 'chapter-01', number: 1, label: '第 1 章' },
+    { id: 'chapter-02', number: 2, label: '第 2 章' },
+    { id: 'chapter-03', number: 3, label: '尾声' },
+  ])
+  assert.throws(
+    () => buildPersonalChapters({ chapterCount: 0, chapterText: '' }),
+    /章节数量/,
+  )
+})
+
+test('personal book creation produces a valid empty local package and catalog entry', () => {
+  const pkg = createPersonalReadingPackage({
+    packageId: 'reader-package-personal-test',
+    bookId: 'reader-book-personal-test',
+    editionId: 'reader-edition-personal-test',
+    title: '测试个人书籍',
+    author: '测试作者',
+    publisher: '测试出版社',
+    publishedAt: '2026-07',
+    translators: '译者甲、译者乙',
+    chapterCount: 2,
+  })
+  assert.deepEqual(validateReadingPackage(pkg), [])
+  assert.equal(pkg.personal, true)
+  assert.equal(pkg.chapters.length, 2)
+  assert.deepEqual(pkg.entities, [])
+  assert.deepEqual(pkg.facts, [])
+  assert.deepEqual(pkg.edition.translators, ['译者甲', '译者乙'])
+  assert.deepEqual(personalCatalogEntry(pkg), {
+    id: pkg.id,
+    title: '测试个人书籍',
+    editionLabel: '测试出版社 · 2026-07',
+    source: 'personal',
+  })
 })
 
 test('reading map providers keep international fallback and require a domestic browser key', () => {
@@ -363,6 +419,7 @@ test('reader-confirmed names use chapters without requiring book text or guessed
     name: '塔拉庄园',
     kind: 'place',
     firstSeenChapterId: 'chapter-03',
+    placeKind: OBSERVED_PLACE_KIND.UNKNOWN,
   }])
   assert.equal(normalizeObservedEntityName('ＴＡＲＡ  '), 'tara')
   assert.deepEqual(visibleObservedEntities(first, 'chapter-02', chapters), [])
@@ -405,6 +462,7 @@ test('a reader-confirmed geocoder result stays personal and follows the chapter 
     name: '萨凡纳',
     kind: 'place',
     firstSeenChapterId: 'chapter-03',
+    placeKind: OBSERVED_PLACE_KIND.REAL,
   }]
   const located = confirmObservedPlaceLocation(observed, 'observed-savannah', {
     id: 'nominatim-1',
@@ -446,6 +504,82 @@ test('a reader-confirmed geocoder result stays personal and follows the chapter 
     }),
     /纬度无效/,
   )
+})
+
+test('unknown or fictional places never go to the public map until the reader marks them as real', () => {
+  const observed = [{
+    id: 'observed-unknown-place',
+    name: '某个庄园',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-01',
+    placeKind: OBSERVED_PLACE_KIND.UNKNOWN,
+  }]
+  const location = {
+    id: 'nominatim-2',
+    label: 'An unrelated public-map result',
+    providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+    latitude: 40,
+    longitude: -80,
+  }
+
+  assert.throws(
+    () => confirmObservedPlaceLocation(observed, observed[0].id, location),
+    /明确标记为现实地点/,
+  )
+  const real = updateObservedPlaceKind(
+    observed,
+    observed[0].id,
+    OBSERVED_PLACE_KIND.REAL,
+  )
+  const located = confirmObservedPlaceLocation(real, observed[0].id, location)
+  assert.equal(located[0].mapLocation.label, location.label)
+
+  const fictional = updateObservedPlaceKind(
+    located,
+    observed[0].id,
+    OBSERVED_PLACE_KIND.FICTIONAL,
+  )
+  assert.equal(fictional[0].placeKind, OBSERVED_PLACE_KIND.FICTIONAL)
+  assert.equal(fictional[0].mapLocation, undefined)
+})
+
+test('reader-confirmed rivers and regions preserve safe GeoJSON geometry', () => {
+  const line = {
+    type: 'LineString',
+    coordinates: [[-91, 35], [-90, 34], [-89, 33]],
+  }
+  assert.deepEqual(normalizeGeoJsonGeometry(line), line)
+  assert.equal(normalizeGeoJsonGeometry({
+    type: 'LineString',
+    coordinates: [[999, 35], [-90, 34]],
+  }), null)
+
+  const observed = [{
+    id: 'observed-river',
+    name: '示例河流',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-01',
+    placeKind: OBSERVED_PLACE_KIND.REAL,
+  }]
+  const located = confirmObservedPlaceLocation(observed, observed[0].id, {
+    id: 'nominatim-river',
+    label: 'Example River',
+    providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+    latitude: 34,
+    longitude: -90,
+    geometry: line,
+  })
+  const [mapEntity] = readerConfirmedMapEntities(
+    located,
+    'chapter-01',
+    readingPackage.chapters,
+  )
+  assert.deepEqual(mapEntity.geometry, {
+    type: 'geojson',
+    latitude: 34,
+    longitude: -90,
+    geojson: line,
+  })
 })
 
 test('on-demand entities unlock only after an exact reader-confirmed name match', () => {

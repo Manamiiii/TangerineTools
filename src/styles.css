@@ -3658,6 +3658,86 @@ img {
   font-size: 11px;
 }
 
+.reader-personal-book-creator {
+  margin-bottom: 16px;
+  padding: 14px;
+  border: 1px solid #c4b5fd;
+  border-radius: var(--radius-lg);
+  background: #faf5ff;
+}
+
+.reader-personal-book-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.reader-personal-book-heading > div {
+  display: grid;
+  gap: 3px;
+}
+
+.reader-personal-book-heading strong {
+  color: #4c1d95;
+  font-size: 13px;
+}
+
+.reader-personal-book-heading span,
+.reader-personal-chapters small {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.reader-personal-book-creator form {
+  display: grid;
+  gap: 12px;
+}
+
+.reader-personal-book-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.reader-personal-book-grid label,
+.reader-personal-chapters {
+  display: grid;
+  gap: 4px;
+}
+
+.reader-personal-book-grid label > span,
+.reader-personal-chapters > span {
+  color: #475569;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.reader-personal-book-grid input,
+.reader-personal-chapters textarea {
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-size: 11px;
+}
+
+.reader-personal-chapters textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.reader-personal-book-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .reader-book-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -3709,6 +3789,17 @@ img {
 .reader-book-copy small {
   color: var(--text-muted);
   font-size: 11px;
+}
+
+.reader-book-copy em {
+  width: fit-content;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #f3e8ff;
+  color: #7e22ce;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 700;
 }
 
 .reader-book-copy b {
@@ -4145,7 +4236,7 @@ img {
 
 .reader-observed-form {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 120px auto;
+  grid-template-columns: minmax(0, 1fr) 110px 130px auto;
   gap: 10px;
   align-items: end;
   margin-top: 14px;
@@ -4262,6 +4353,25 @@ img {
   color: #047857;
   cursor: pointer;
   font-size: 9px;
+}
+
+.reader-observed-place-kind {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  color: #475569;
+  font-size: 10px;
+}
+
+.reader-observed-place-kind select {
+  min-height: 27px;
+  padding: 3px 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: #fff;
+  color: #1e293b;
+  font-size: 10px;
 }
 
 .reader-observed-empty {
@@ -4961,6 +5071,10 @@ img {
   .reader-trial-steps {
     grid-template-columns: 1fr 1fr;
   }
+
+  .reader-personal-book-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media (max-width: 560px) {
@@ -4981,6 +5095,10 @@ img {
   }
 
   .reader-book-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reader-personal-book-grid {
     grid-template-columns: 1fr;
   }
 

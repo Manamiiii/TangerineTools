@@ -1,4 +1,8 @@
 import { assertReadingPackage } from '../domain/readingCompanion.js'
+import {
+  listPersonalReadingPackageEntries,
+  loadPersonalReadingPackage,
+} from '../db/personalBooks.js'
 
 const catalogUrl = `${import.meta.env.BASE_URL}presets/reading-companion/catalog.json`
 
@@ -9,7 +13,10 @@ async function fetchJson(url, label) {
 }
 
 export async function loadReadingPackageCatalog() {
-  const catalog = await fetchJson(catalogUrl, '阅读资料目录')
+  const [catalog, personalEntries] = await Promise.all([
+    fetchJson(catalogUrl, '阅读资料目录'),
+    listPersonalReadingPackageEntries(),
+  ])
   if (catalog?.schemaVersion !== 1 || !Array.isArray(catalog.packages)) {
     throw new Error('阅读资料目录格式无效')
   }
@@ -21,10 +28,11 @@ export async function loadReadingPackageCatalog() {
       throw new Error(`阅读资料目录路径无效：${entry.id}`)
     }
   }
-  return catalog.packages
+  return [...catalog.packages, ...personalEntries]
 }
 
 export async function loadReadingPackage(entry) {
+  if (entry?.source === 'personal') return loadPersonalReadingPackage(entry.id)
   if (!entry?.path) throw new Error('阅读资料目录缺少资料包路径')
   const url = `${import.meta.env.BASE_URL}${entry.path}`
   return assertReadingPackage(await fetchJson(url, '阅读资料包'))

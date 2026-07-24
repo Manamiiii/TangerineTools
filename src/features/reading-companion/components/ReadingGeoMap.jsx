@@ -58,7 +58,7 @@ export function ReadingGeoMap({
       minZoom: 2,
       zoomControl: true,
     }).setView(READING_MAP_DEFAULT_VIEW.center, READING_MAP_DEFAULT_VIEW.zoom)
-    const markerLayer = L.layerGroup().addTo(map)
+    const markerLayer = L.featureGroup().addTo(map)
 
     mapRef.current = map
     markerLayerRef.current = markerLayer
@@ -120,16 +120,27 @@ export function ReadingGeoMap({
     map.invalidateSize({ animate: false })
 
     for (const place of spatialPlaces) {
-      const { latitude, longitude, type, radiusKm } = place.geometry
-      const marker = type === 'area'
-        ? L.circle([latitude, longitude], {
-            ...markerStyle(place),
-            radius: radiusKm * 1000,
-          })
-        : L.circleMarker(
-            [latitude, longitude],
-            markerStyle(place),
-          )
+      const {
+        latitude,
+        longitude,
+        type,
+        radiusKm,
+        geojson,
+      } = place.geometry
+      let marker
+      if (type === 'geojson' && geojson) {
+        marker = L.geoJSON(geojson, {
+          style: () => markerStyle(place),
+          pointToLayer: (_feature, latlng) => L.circleMarker(latlng, markerStyle(place)),
+        })
+      } else if (type === 'area') {
+        marker = L.circle([latitude, longitude], {
+          ...markerStyle(place),
+          radius: radiusKm * 1000,
+        })
+      } else {
+        marker = L.circleMarker([latitude, longitude], markerStyle(place))
+      }
       marker
         .bindTooltip(place.name, {
           className: 'reader-map-tooltip',
@@ -144,14 +155,12 @@ export function ReadingGeoMap({
 
     if (spatialPlaces.length === 0) {
       map.setView(READING_MAP_DEFAULT_VIEW.center, READING_MAP_DEFAULT_VIEW.zoom)
-    } else if (spatialPlaces.length === 1) {
+    } else if (spatialPlaces.length === 1 && spatialPlaces[0].geometry.type === 'point') {
       const [place] = spatialPlaces
       map.setView([place.geometry.latitude, place.geometry.longitude], 10)
     } else {
-      const bounds = L.latLngBounds(
-        spatialPlaces.map((place) => [place.geometry.latitude, place.geometry.longitude]),
-      )
-      map.fitBounds(bounds, { maxZoom: 10, padding: [36, 36] })
+      const bounds = markerLayer.getBounds()
+      if (bounds.isValid()) map.fitBounds(bounds, { maxZoom: 10, padding: [36, 36] })
     }
   }, [spatialPlaces])
 
@@ -161,14 +170,19 @@ export function ReadingGeoMap({
       const marker = markersRef.current.get(place.id)
       if (!marker) continue
       marker.setStyle(markerStyle(place, place.id === selectedPlaceId))
-      if (place.id === selectedPlaceId) marker.bringToFront()
+      if (place.id === selectedPlaceId && typeof marker.bringToFront === 'function') {
+        marker.bringToFront()
+      }
     }
     const selectedPlace = spatialPlaces.find((place) => place.id === selectedPlaceId)
     if (selectedPlace && mapRef.current) {
-      mapRef.current.panTo([
-        selectedPlace.geometry.latitude,
-        selectedPlace.geometry.longitude,
-      ])
+      const marker = markersRef.current.get(selectedPlace.id)
+      const bounds = typeof marker?.getBounds === 'function' ? marker.getBounds() : null
+      mapRef.current.panTo(
+        bounds?.isValid()
+          ? bounds.getCenter()
+          : [selectedPlace.geometry.latitude, selectedPlace.geometry.longitude],
+      )
     }
   }, [selectedPlaceId, spatialPlaces])
 

@@ -17,16 +17,67 @@ function finiteCoordinate(value, minimum, maximum) {
     : null
 }
 
-function normalizedResult({ id, label, latitude, longitude, providerId }) {
+function coordinateCount(value) {
+  if (!Array.isArray(value)) return 0
+  if (
+    value.length >= 2
+    && value.every((item) => typeof item === 'number' && Number.isFinite(item))
+  ) {
+    const [longitude, latitude] = value
+    return longitude >= -180 && longitude <= 180 && latitude >= -90 && latitude <= 90
+      ? 1
+      : -1
+  }
+  let count = 0
+  for (const item of value) {
+    const itemCount = coordinateCount(item)
+    if (itemCount < 0) return -1
+    count += itemCount
+    if (count > 10000) return -1
+  }
+  return count
+}
+
+export function normalizeGeoJsonGeometry(geometry) {
+  const validTypes = new Set([
+    'Point',
+    'LineString',
+    'MultiLineString',
+    'Polygon',
+    'MultiPolygon',
+  ])
+  if (!geometry || !validTypes.has(geometry.type) || !Array.isArray(geometry.coordinates)) {
+    return null
+  }
+  const count = coordinateCount(geometry.coordinates)
+  if (count < 1 || count > 10000) return null
+  return {
+    type: geometry.type,
+    coordinates: geometry.coordinates,
+  }
+}
+
+function normalizedResult({
+  id,
+  label,
+  latitude,
+  longitude,
+  providerId,
+  geometry,
+  category,
+}) {
   const normalizedLatitude = finiteCoordinate(latitude, -90, 90)
   const normalizedLongitude = finiteCoordinate(longitude, -180, 180)
   if (!label || normalizedLatitude === null || normalizedLongitude === null) return null
+  const normalizedGeometry = normalizeGeoJsonGeometry(geometry)
   return {
     id: String(id || `${providerId}:${normalizedLatitude}:${normalizedLongitude}`),
     label: String(label),
     latitude: normalizedLatitude,
     longitude: normalizedLongitude,
     providerId,
+    ...(normalizedGeometry ? { geometry: normalizedGeometry } : {}),
+    ...(category ? { category: String(category) } : {}),
   }
 }
 
@@ -39,6 +90,8 @@ export function normalizeNominatimResults(payload) {
       latitude: item?.lat,
       longitude: item?.lon,
       providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+      geometry: item?.geojson,
+      category: [item?.category || item?.class, item?.type].filter(Boolean).join('/'),
     }))
     .filter(Boolean)
 }
@@ -127,6 +180,8 @@ export async function searchReadingPlaces({
       q: searchQuery,
       format: 'jsonv2',
       addressdetails: '1',
+      polygon_geojson: '1',
+      polygon_threshold: '0.002',
       limit: '5',
     })
     const url = `https://nominatim.openstreetmap.org/search?${parameters}`
