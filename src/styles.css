@@ -1331,6 +1331,21 @@ img {
   vertical-align: middle;
 }
 
+.reference-list.is-plain {
+  column-gap: 0;
+  row-gap: 3px;
+  line-height: 1.45;
+}
+
+.reference-list.is-plain > .reference-inline:not(:last-child)::after {
+  content: "、";
+  color: var(--text-faint);
+}
+
+.reference-list.is-plain .cell-extra {
+  margin-left: 4px;
+}
+
 .reference-list-input {
   display: flex;
   flex-wrap: wrap;

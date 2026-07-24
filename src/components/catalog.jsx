@@ -534,7 +534,7 @@ function ReferenceListCellContent({ field, value, onOpenReference, referenceCont
   const tableLines = Number(field.display?.tableLines) || 0
   const lineStyle = tableLines > 0 ? { '--table-lines-height': `${tableLines * 23 - 4}px` } : undefined
   return (
-    <span className={`reference-list ${field.display?.stack ? 'is-stacked' : ''} ${tableLines > 0 ? 'lines-limited' : ''}`} style={lineStyle}>
+    <span className={`reference-list ${plain ? 'is-plain' : ''} ${field.display?.stack ? 'is-stacked' : ''} ${tableLines > 0 ? 'lines-limited' : ''}`} style={lineStyle}>
       {visibleIds.map((id) => {
         const row = rows.find((r) => r.id === id)
         const label = row ? referenceRowLabel(fields, row, field) : id

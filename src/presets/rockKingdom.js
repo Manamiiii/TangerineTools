@@ -11,7 +11,7 @@ const SCENE_ID = 'scene-rock-kingdom'
 export const ROCK_KINGDOM_CREATURE_TABLE_ID = 'table-rock-kingdom-elf-basic'
 const TABLE_ID = ROCK_KINGDOM_CREATURE_TABLE_ID
 const SKILL_TABLE_ID = 'table-rock-kingdom-skills'
-export const ROCK_KINGDOM_ROWS_VERSION = 'bwiki-2026-07-23-2c7990a9e90a1e02'
+export const ROCK_KINGDOM_ROWS_VERSION = 'bwiki-2026-07-24-2c7990a98d3181f9'
 
 // 系别图标使用 BWiki 精灵筛选页公开的无文字 patchwiki 小图标。
 // 覆盖当前全部 18 系；用户仍可在字段编辑中按需增删或替换自定义图标。
@@ -154,6 +154,12 @@ export const SKILL_EFFECT_TAG_OPTIONS = [
   { value: 'multiHit', label: '连击', color: '#f97316', image: '' },
   { value: 'charge', label: '蓄力', color: '#a16207', image: '' },
   { value: 'fieldEffect', label: '天气场地', color: '#0ea5e9', image: '' },
+  { value: 'dispel', label: '驱散净化', color: '#0284c7', image: '' },
+  { value: 'mark', label: '印记机制', color: '#8b5cf6', image: '' },
+  { value: 'choice', label: '选择变化', color: '#d97706', image: '' },
+  { value: 'teamSupport', label: '队伍辅助', color: '#059669', image: '' },
+  { value: 'directDamage', label: '直接伤害', color: '#e11d48', image: '' },
+  { value: 'specialMechanic', label: '特殊机制', color: '#64748b', image: '' },
 ]
 
 function makeField(partial, order, tableId = TABLE_ID, idPrefix = 'field-rock') {
@@ -229,13 +235,13 @@ const skillFields = [
   makeField({ key: 'cost', name: '能耗', type: 'number', display: { compact: true, tableWidth: 66 } }, 5, SKILL_TABLE_ID, 'field-rock-skill'),
   makeField({ key: 'priority', name: '先制/速度', type: 'text', display: { compact: true, tableWidth: 82 } }, 6, SKILL_TABLE_ID, 'field-rock-skill'),
   makeField(
-    { key: 'effectTags', name: '效果标签', type: 'multiselect', options: SKILL_EFFECT_TAG_OPTIONS, display: { tableLines: 3, tableMaxItems: 6, compact: true, tableWidth: 172 } },
+    { key: 'effectTags', name: '效果标签', type: 'multiselect', options: SKILL_EFFECT_TAG_OPTIONS, display: { tableLines: 2, tableMaxItems: 5, compact: true, tableWidth: 172 } },
     7,
     SKILL_TABLE_ID,
     'field-rock-skill',
   ),
   makeField({ key: 'effect', name: '效果', type: 'longtext', display: { compact: true, tableWidth: 236 } }, 8, SKILL_TABLE_ID, 'field-rock-skill'),
-  makeField({ key: 'learnerRefs', name: '可学精灵', type: 'references', referenceTableId: TABLE_ID, display: { referenceLabelFields: ['name'], breakParentheses: true, tableLines: 3, tableMaxItems: 6, compact: true, tableWidth: 196 } }, 9, SKILL_TABLE_ID, 'field-rock-skill'),
+  makeField({ key: 'learnerRefs', name: '可学精灵', type: 'references', referenceTableId: TABLE_ID, display: { referenceLabelFields: ['name'], plainReference: true, tableLines: 2, tableMaxItems: 5, compact: true, tableWidth: 196 } }, 9, SKILL_TABLE_ID, 'field-rock-skill'),
 ]
 
 export const ROCK_KINGDOM_PRESET = {

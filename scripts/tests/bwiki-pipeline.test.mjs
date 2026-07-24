@@ -25,3 +25,14 @@ test('BWiki detail staging keeps relation fields without duplicating skill bodie
 
   assert.ok(skillCardCount > 0)
 })
+
+test('published BWiki skills all have derived effect tags', async () => {
+  const rows = JSON.parse(await readFile(resolveRepoPath(BWIKI_PATHS.presets.skills), 'utf8'))
+  assert.ok(rows.length > 0)
+  for (const row of rows) {
+    assert.ok(
+      Array.isArray(row.values?.effectTags) && row.values.effectTags.length > 0,
+      `${row.values?.name || row.id} 缺少效果标签`,
+    )
+  }
+})

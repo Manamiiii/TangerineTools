@@ -2,7 +2,7 @@
 import { createHash } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
-import { deriveSkillTags, deriveTraitTags } from './lib/rock-kingdom-tags.mjs'
+import { deriveSkillEffectTags, deriveSkillTags, deriveTraitTags } from './lib/rock-kingdom-tags.mjs'
 import { BWIKI_PATHS } from './lib/paths.mjs'
 
 const INPUTS = {
@@ -274,21 +274,26 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
     else skillIssues.newRows.push(`${skill.name} → ${id}`)
     skillMatches.set(skill.name, { id, match })
     skillNameToId.set(normalizeName(skill.name), id)
+    const values = {
+      ...existingValues,
+      image: skill.image || existingValues.image || '',
+      name: skill.name,
+      element: element.mapped,
+      category: category.mapped,
+      power: normalizeNumber(skill.power),
+      cost: normalizeNumber(skill.cost),
+      priority: existingValues.priority || '',
+      effect: skill.effect || existingValues.effect || '',
+      learnerRefs: [],
+    }
+    values.effectTags = deriveSkillEffectTags({
+      ...skill,
+      ...values,
+      effectTags: existingValues.effectTags || [],
+    })
     return {
       id,
-      values: {
-        ...existingValues,
-        image: skill.image || existingValues.image || '',
-        name: skill.name,
-        element: element.mapped,
-        category: category.mapped,
-        power: normalizeNumber(skill.power),
-        cost: normalizeNumber(skill.cost),
-        priority: existingValues.priority || '',
-        effectTags: existingValues.effectTags || [],
-        effect: skill.effect || existingValues.effect || '',
-        learnerRefs: [],
-      },
+      values,
       previewMeta: {
         source: skill.source,
         sourceUrl: skill.sourceUrl,

@@ -114,6 +114,17 @@ test('exposes trait as a configurable summary and keeps breeding images beside i
   assert.deepEqual(creatureFields.slice(traitIndex + 1, traitIndex + 3).map((field) => field.key), ['fruitImage', 'eggImage'])
 })
 
+test('keeps skill rows compact and presents learner names without nested pills', () => {
+  const skillFields = ROCK_KINGDOM_PRESET.fields
+    .filter((field) => field.tableId === ROCK_KINGDOM_PRESET.tables[1].id)
+  const effectTags = skillFields.find((field) => field.key === 'effectTags')
+  const learnerRefs = skillFields.find((field) => field.key === 'learnerRefs')
+  assert.equal(effectTags.display.tableLines, 2)
+  assert.equal(learnerRefs.display.tableLines, 2)
+  assert.equal(learnerRefs.display.plainReference, true)
+  assert.equal(learnerRefs.display.breakParentheses, undefined)
+})
+
 test('sorts creature forms by number, stage, final form, then boss form', () => {
   const rows = [
     row('boss', 'NO.007', '烈火战神', '首领形态'),

@@ -1,6 +1,6 @@
 {
   "source": "bwiki-preview",
-  "generatedAt": "2026-07-23T08:20:58.228Z",
+  "generatedAt": "2026-07-24T03:15:46.399Z",
   "inputs": {
     "creatures": "scripts/bwiki/data/staging/creatures.json",
     "skills": "scripts/bwiki/data/staging/skills.json",
@@ -82,7 +82,9 @@
         "power": 65,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -189,7 +191,9 @@
         "power": 110,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-210",
@@ -225,7 +229,9 @@
         "power": 90,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-002",
@@ -282,7 +288,9 @@
         "power": 90,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤。每次使用后，本技能威力永久+45。",
         "learnerRefs": [
           "rock-creature-src-064",
@@ -325,7 +333,9 @@
         "power": 130,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-054",
@@ -391,7 +401,9 @@
         "power": 135,
         "cost": 7,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，回合结束时，本技能能耗永久-1。",
         "learnerRefs": [
           "rock-creature-src-011",
@@ -1380,7 +1392,9 @@
         "power": 65,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，若敌方能量小于等于2，造成5倍伤害。",
         "learnerRefs": [
           "rock-creature-src-026",
@@ -1422,7 +1436,9 @@
         "power": 140,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，每次使用后，本技能能耗永久+1。",
         "learnerRefs": [
           "rock-creature-src-002",
@@ -1469,7 +1485,9 @@
         "power": 1,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，使用时消耗所有能量，消耗越高，伤害越高。",
         "learnerRefs": [
           "rock-creature-src-008",
@@ -1616,7 +1634,9 @@
         "power": 80,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，每应对成功1次，本技能威力永久+90。",
         "learnerRefs": [
           "rock-creature-src-078",
@@ -1782,7 +1802,9 @@
         "power": 130,
         "cost": 6,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，每使用1次普通系技能，本技能能耗永久-2。",
         "learnerRefs": [
           "rock-creature-src-012",
@@ -2723,7 +2745,8 @@
         "cost": 1,
         "priority": "",
         "effectTags": [
-          "statDebuff"
+          "statDebuff",
+          "speed"
         ],
         "effect": "敌方获得物攻-60%和速度-60。",
         "learnerRefs": [
@@ -3194,7 +3217,9 @@
         "power": "",
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "自己获得1层攻击印记。",
         "learnerRefs": [
           "rock-creature-src-011",
@@ -3549,7 +3574,9 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "敌方获得1层棘刺印记。",
         "learnerRefs": [
           "rock-creature-bwiki-c4d9725d943a",
@@ -3824,7 +3851,9 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "敌方获得1层萌化。",
         "learnerRefs": [
           "rock-creature-src-037",
@@ -4974,7 +5003,10 @@
         "power": "",
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "choice",
+          "teamSupport"
+        ],
         "effect": "每回合随机变成己方队伍中其他精灵的技能。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -5203,7 +5235,8 @@
         "cost": 0,
         "priority": "",
         "effectTags": [
-          "costChange"
+          "costChange",
+          "choice"
         ],
         "effect": "每回合随机变成敌方任意精灵的技能，且该技能能耗-2。",
         "learnerRefs": [
@@ -5408,7 +5441,8 @@
         "cost": 0,
         "priority": "",
         "effectTags": [
-          "costChange"
+          "costChange",
+          "choice"
         ],
         "effect": "每回合随机变成自己未携带的技能，且该技能能耗-2。",
         "learnerRefs": [
@@ -5646,7 +5680,9 @@
         "power": 45,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-041",
@@ -5689,7 +5725,9 @@
         "power": 65,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-008",
@@ -5908,7 +5946,9 @@
         "power": 110,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-012",
@@ -6010,7 +6050,9 @@
         "power": 90,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -6372,7 +6414,9 @@
         "power": 155,
         "cost": 5,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-005",
@@ -6429,7 +6473,9 @@
         "power": 130,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-041",
@@ -6472,7 +6518,9 @@
         "power": 155,
         "cost": 5,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-bwiki-aecb348a0459",
@@ -6523,7 +6571,9 @@
         "power": 165,
         "cost": 6,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-037",
@@ -6829,7 +6879,9 @@
         "power": 160,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，敌方体重越低，威力越高。",
         "learnerRefs": [
           "rock-creature-src-011",
@@ -6872,7 +6924,9 @@
         "power": 80,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，敌方体重越高，本次技能威力越高。",
         "learnerRefs": [
           "rock-creature-src-356",
@@ -7343,7 +7397,9 @@
         "power": 115,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "dispel"
+        ],
         "effect": "造成魔伤，驱散敌方5层增益。",
         "learnerRefs": [
           "rock-creature-src-113",
@@ -7774,7 +7830,9 @@
         "power": "",
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "dispel"
+        ],
         "effect": "驱散敌方所有增益。",
         "learnerRefs": [
           "rock-creature-src-002",
@@ -8803,7 +8861,9 @@
         "cost": 3,
         "priority": "",
         "effectTags": [
-          "damageReduction"
+          "damageReduction",
+          "dispel",
+          "mark"
         ],
         "effect": "造成魔伤，若本次攻击未被防御技能应对，则驱散双方所有印记。",
         "learnerRefs": [
@@ -8962,7 +9022,11 @@
         "power": 65,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "dispel",
+          "mark",
+          "choice"
+        ],
         "effect": "造成魔伤，选择：驱散敌方所有增益或驱散双方1层印记。",
         "learnerRefs": [
           "rock-creature-src-167",
@@ -9007,7 +9071,9 @@
         "power": 80,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statBoost"
+        ],
         "effect": "造成魔伤，自己有减益时，本次技能威力+40。",
         "learnerRefs": [
           "rock-creature-src-130",
@@ -9045,7 +9111,9 @@
         "power": 125,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "choice"
+        ],
         "effect": "造成魔法伤害，巧变：魔攻技能。",
         "learnerRefs": [
           "rock-creature-src-041",
@@ -9085,7 +9153,11 @@
         "power": 70,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statBoost",
+          "counterStatus",
+          "choice"
+        ],
         "effect": "造成魔伤，选择：每次使用后威力永久+20或应对状态时本次技能威力+100%。",
         "learnerRefs": [
           "rock-creature-src-137",
@@ -9124,7 +9196,12 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "speed",
+          "healing",
+          "energyGain",
+          "statBoost"
+        ],
         "effect": "自己回复1能量和10%生命，并获得魔攻魔防+10%，速度+10。",
         "learnerRefs": [
           "rock-creature-src-045",
@@ -9215,7 +9292,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-002",
@@ -9367,7 +9446,9 @@
         "power": 150,
         "cost": 6,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-002",
@@ -9576,7 +9657,9 @@
         "power": 100,
         "cost": 7,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，每次使用其他草系技能后，本技能威力永久+60。",
         "learnerRefs": [
           "rock-creature-src-002",
@@ -10023,7 +10106,9 @@
         "power": "",
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "敌方获得1层寄生。",
         "learnerRefs": [
           "rock-creature-src-002",
@@ -10297,7 +10382,9 @@
         "power": "",
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "自己获得1层光合印记。",
         "learnerRefs": [
           "rock-creature-src-002",
@@ -10654,7 +10741,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-104",
@@ -10716,7 +10805,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -10955,7 +11046,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -11080,7 +11173,9 @@
         "power": 120,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-002",
@@ -11154,7 +11249,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-046",
@@ -11556,7 +11653,10 @@
         "power": 75,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "healing",
+          "energyGain"
+        ],
         "effect": "造成魔伤，为场下所有精灵回复1能量。",
         "learnerRefs": [
           "rock-creature-src-026",
@@ -11588,7 +11688,9 @@
         "power": 50,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statBoost"
+        ],
         "effect": "造成魔伤，自己每有1能量，本次技能威力+10。",
         "learnerRefs": [
           "rock-creature-src-074",
@@ -11618,7 +11720,12 @@
         "power": 95,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "healing",
+          "statBoost",
+          "counterStatus",
+          "choice"
+        ],
         "effect": "造成魔伤，选择：自己生命大于80%时威力+50或应对状态时自己回复35%生命。",
         "learnerRefs": [
           "rock-creature-src-208",
@@ -11653,7 +11760,9 @@
         "power": 85,
         "cost": 5,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "healing"
+        ],
         "effect": "造成物伤，自己回复20%生命。",
         "learnerRefs": [
           "rock-creature-src-068",
@@ -11698,7 +11807,11 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "healing",
+          "energyGain",
+          "choice"
+        ],
         "effect": "选择：自己回复25%生命或回复8能量。",
         "learnerRefs": [
           "rock-creature-src-068",
@@ -11794,7 +11907,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -11998,7 +12113,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-372",
@@ -12194,7 +12311,9 @@
         "power": 50,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，每次使用后，本技能威力永久+20。",
         "learnerRefs": [
           "rock-creature-src-005",
@@ -12418,7 +12537,9 @@
         "power": 15,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，每使用1次其他火系技能，本技能威力永久翻倍。",
         "learnerRefs": [
           "rock-creature-src-005",
@@ -13003,7 +13124,9 @@
         "power": 140,
         "cost": 5,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-005",
@@ -13048,7 +13171,9 @@
         "power": 160,
         "cost": 7,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-152",
@@ -13082,7 +13207,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-260",
@@ -13150,7 +13277,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-084",
@@ -13230,7 +13359,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -13382,7 +13513,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-005",
@@ -13476,7 +13609,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-378",
@@ -13513,7 +13648,9 @@
         "power": 120,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-052",
@@ -13746,7 +13883,11 @@
         "power": 40,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statBoost",
+          "dispel",
+          "mark"
+        ],
         "effect": "造成魔伤，驱散敌方所有印记，每驱散1层，获得物攻+20%。",
         "learnerRefs": [
           "rock-creature-src-161",
@@ -13773,7 +13914,9 @@
         "cost": 3,
         "priority": "",
         "effectTags": [
-          "control"
+          "control",
+          "dispel",
+          "mark"
         ],
         "effect": "驱散双方所有印记，每驱散1层，敌方获得5层灼烧。",
         "learnerRefs": [
@@ -13825,7 +13968,9 @@
         "power": 60,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "dispel"
+        ],
         "effect": "造成魔伤，驱散自己的减益。",
         "learnerRefs": [
           "rock-creature-src-152",
@@ -13857,7 +14002,9 @@
         "power": 75,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，每次击败敌方，本技能威力永久翻倍。",
         "learnerRefs": [
           "rock-creature-src-161",
@@ -13890,7 +14037,9 @@
         "power": 70,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "control"
+        ],
         "effect": "造成物伤，敌方获得4层灼烧。",
         "learnerRefs": [
           "rock-creature-src-378",
@@ -13924,7 +14073,11 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "damageReduction",
+          "statBoost",
+          "counterAttack"
+        ],
         "effect": "减伤70%，应对攻击：下一次攻击时，技能威力+50。",
         "learnerRefs": [
           "rock-creature-src-274",
@@ -13952,7 +14105,9 @@
         "power": 180,
         "cost": 5,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成高额物理伤害，自己下回合获得眩晕。",
         "learnerRefs": [
           "rock-creature-src-263",
@@ -13983,7 +14138,11 @@
         "power": "",
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statDebuff",
+          "control",
+          "choice"
+        ],
         "effect": "选择：敌方获得7层灼烧或物防-90%。",
         "learnerRefs": [
           "rock-creature-src-378",
@@ -14023,7 +14182,10 @@
         "cost": 1,
         "priority": "",
         "effectTags": [
-          "statBoost"
+          "statBoost",
+          "dispel",
+          "mark",
+          "choice"
         ],
         "effect": "驱散自己所有印记，每驱散1层，获得物攻+50%。巧变：火系攻击技能。",
         "learnerRefs": [
@@ -14108,7 +14270,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-008",
@@ -14219,7 +14383,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -14276,7 +14442,9 @@
         "power": 110,
         "cost": 5,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，每次使用后，本技能能耗永久-1。",
         "learnerRefs": [
           "rock-creature-src-008",
@@ -14797,7 +14965,9 @@
         "power": "",
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "自己获得1层湿润印记。",
         "learnerRefs": [
           "rock-creature-bwiki-aecb348a0459",
@@ -15188,7 +15358,9 @@
         "power": 140,
         "cost": 5,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-bwiki-bf820721eb70",
@@ -15231,7 +15403,9 @@
         "power": 90,
         "cost": 6,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，回合结束时，本技能威力永久+20。",
         "learnerRefs": [
           "rock-creature-src-008",
@@ -15276,7 +15450,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-041",
@@ -15317,7 +15493,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -15567,7 +15745,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-bwiki-bf820721eb70",
@@ -15700,7 +15880,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -15790,7 +15972,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-356",
@@ -15858,7 +16042,9 @@
         "power": 120,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-249",
@@ -15945,7 +16131,8 @@
         "cost": 1,
         "priority": "",
         "effectTags": [
-          "costChange"
+          "costChange",
+          "dispel"
         ],
         "effect": "驱散自己的减益，并获得全技能能耗-1。",
         "learnerRefs": [
@@ -16065,7 +16252,8 @@
         "priority": "",
         "effectTags": [
           "damageReduction",
-          "counterAttack"
+          "counterAttack",
+          "mark"
         ],
         "effect": "减伤60%，应对攻击：自己获得1层湿润印记。",
         "learnerRefs": [
@@ -16110,7 +16298,10 @@
         "power": 10,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statBoost",
+          "multiHit"
+        ],
         "effect": "造成物伤，3连击，本技能能耗每-1，威力+10。",
         "learnerRefs": [
           "rock-creature-src-164",
@@ -16144,7 +16335,10 @@
         "power": 110,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "costChange",
+          "fieldEffect"
+        ],
         "effect": "造成物伤，天气为雨天时，本技能能耗-2。",
         "learnerRefs": [
           "rock-creature-src-356",
@@ -16195,7 +16389,9 @@
         "cost": 0,
         "priority": "",
         "effectTags": [
-          "costChange"
+          "costChange",
+          "dispel",
+          "choice"
         ],
         "effect": "驱散自己的减益，自己每有1层减益，本技能能耗-1，巧变：水系攻击技能。",
         "learnerRefs": [
@@ -16239,7 +16435,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -16279,7 +16477,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -16337,7 +16537,9 @@
         "power": 60,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，每使用过1个其他系别技能，本技能威力永久+30。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -16373,7 +16575,9 @@
         "power": 50,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，携带其他系别技能会给本技能带来不同效果。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -16582,7 +16786,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -16683,7 +16889,9 @@
         "power": 120,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -16740,7 +16948,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-044",
@@ -16787,7 +16997,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-002",
@@ -17176,7 +17388,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -17338,7 +17552,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-002",
@@ -17630,7 +17846,10 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "damageReduction",
+          "counterAttack"
+        ],
         "effect": "减伤90%，应对攻击：自己获得光系技能威力永久+50%。",
         "learnerRefs": [
           "rock-creature-src-045",
@@ -17669,7 +17888,11 @@
         "power": 115,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statBoost",
+          "counterStatus",
+          "choice"
+        ],
         "effect": "造成物伤，选择：敌方携带光系技能时威力+50或应对状态时被应对的技能变为透射。",
         "learnerRefs": [
           "rock-creature-src-401",
@@ -17708,7 +17931,9 @@
         "power": 80,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，对混血精灵造成伤害+50%。",
         "learnerRefs": [
           "rock-creature-src-062",
@@ -17954,7 +18179,9 @@
         "power": 70,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，每回合位置发生变化时，本技能威力永久+15。",
         "learnerRefs": [
           "rock-creature-src-226",
@@ -17997,7 +18224,9 @@
         "power": 1,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，技能威力为两侧技能威力和的三分之一，传动1。",
         "learnerRefs": [
           "rock-creature-src-150",
@@ -18272,7 +18501,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-234",
@@ -18610,7 +18841,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-137",
@@ -18783,7 +19016,9 @@
         "power": 75,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，此技能位置不会改变。",
         "learnerRefs": [
           "rock-creature-src-188",
@@ -19033,7 +19268,9 @@
         "power": 50,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statBoost"
+        ],
         "effect": "造成魔伤，威力额外增加两侧技能威力差的二分之一，传动1。",
         "learnerRefs": [
           "rock-creature-src-337",
@@ -19063,7 +19300,11 @@
         "power": "",
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "speed",
+          "statBoost",
+          "choice"
+        ],
         "effect": "选择：自己获得速度+60或物攻+90%。",
         "learnerRefs": [
           "rock-creature-src-194",
@@ -19099,7 +19340,10 @@
         "power": 70,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statBoost",
+          "choice"
+        ],
         "effect": "造成物伤，传动1，选择：本技能位于1号位时威力+65或本回合额外传动1。",
         "learnerRefs": [
           "rock-creature-src-215",
@@ -19128,7 +19372,9 @@
         "power": 75,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，此技能位置不会改变。",
         "learnerRefs": [
           "rock-creature-src-479",
@@ -19157,7 +19403,9 @@
         "power": 85,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "counterStatus"
+        ],
         "effect": "造成魔伤，应对状态：本次伤害翻倍。",
         "learnerRefs": [
           "rock-creature-src-215",
@@ -19226,7 +19474,8 @@
         "cost": 2,
         "priority": "",
         "effectTags": [
-          "damageReduction"
+          "damageReduction",
+          "multiHit"
         ],
         "effect": "敌方获得威力-20，自己每受到1次抵抗伤害（不含连击），敌方额外获得威力-20，使用后重置。",
         "learnerRefs": [
@@ -19294,7 +19543,8 @@
         "cost": 3,
         "priority": "",
         "effectTags": [
-          "damageReduction"
+          "damageReduction",
+          "multiHit"
         ],
         "effect": "造成魔伤，每受到1次抵抗的技能攻击（不含连击），本技能威力永久+20。",
         "learnerRefs": [
@@ -19332,7 +19582,10 @@
         "power": "",
         "cost": 8,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "choice",
+          "teamSupport"
+        ],
         "effect": "使己方队伍中的所有精灵携带的技能跨精灵向下移动1个位置，巧变：机械系技能。",
         "learnerRefs": [
           "rock-creature-src-469",
@@ -19358,7 +19611,10 @@
         "power": 115,
         "cost": 5,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "damageReduction",
+          "multiHit"
+        ],
         "effect": "造成物伤，每受到1次抵抗的技能攻击（不含连击），本技能能耗永久-1。",
         "learnerRefs": [
           "rock-creature-src-226",
@@ -19391,7 +19647,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -19551,7 +19809,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -19946,7 +20206,9 @@
         "power": 140,
         "cost": 8,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，每被攻击1次。本技能能耗永久-1。",
         "learnerRefs": [
           "rock-creature-bwiki-c4d9725d943a",
@@ -20021,7 +20283,9 @@
         "power": 50,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，敌方获得3回合禁足。",
         "learnerRefs": [
           "rock-creature-bwiki-c4d9725d943a",
@@ -20119,7 +20383,9 @@
         "power": 140,
         "cost": 30,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，回合结束时，本技能能耗永久-5。",
         "learnerRefs": [
           "rock-creature-src-100",
@@ -20167,7 +20433,9 @@
         "power": 190,
         "cost": 10,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-032",
@@ -20827,7 +21095,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-044",
@@ -20869,7 +21139,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-bwiki-c4d9725d943a",
@@ -21010,7 +21282,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -21065,7 +21339,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-bwiki-c4d9725d943a",
@@ -21135,7 +21411,9 @@
         "power": 60,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，物防比敌方越高，本次技能威力越高。",
         "learnerRefs": [
           "rock-creature-src-110",
@@ -21256,7 +21534,9 @@
         "power": 120,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，本技能能耗固定为4。",
         "learnerRefs": [
           "rock-creature-src-032",
@@ -21553,7 +21833,9 @@
         "power": "",
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "自己获得1层蓄势印记。",
         "learnerRefs": [
           "rock-creature-src-032",
@@ -21755,7 +22037,8 @@
         "priority": "",
         "effectTags": [
           "damageReduction",
-          "counterAttack"
+          "counterAttack",
+          "statBoost"
         ],
         "effect": "减伤90%，应对攻击：自己获得物攻+50%。",
         "learnerRefs": [
@@ -21807,7 +22090,11 @@
         "power": 80,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "priority",
+          "speed",
+          "fieldEffect"
+        ],
         "effect": "造成魔伤，天气为沙暴时，先手+1。",
         "learnerRefs": [
           "rock-creature-src-130",
@@ -21844,7 +22131,12 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "speed",
+          "statBoost",
+          "statDebuff",
+          "choice"
+        ],
         "effect": "自己获得速度-20，选择：且额外获得物防+90%或魔防+90%。",
         "learnerRefs": [
           "rock-creature-src-032",
@@ -22760,7 +23052,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-377",
@@ -22801,7 +23095,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -22950,7 +23246,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -23479,7 +23777,9 @@
         "power": "",
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "敌方获得2层减速印记。",
         "learnerRefs": [
           "rock-creature-src-008",
@@ -23538,7 +23838,8 @@
         "priority": "",
         "effectTags": [
           "damageReduction",
-          "counterAttack"
+          "counterAttack",
+          "mark"
         ],
         "effect": "减伤70%，应对攻击：敌方获得2层减速印记。",
         "learnerRefs": [
@@ -23731,7 +24032,9 @@
         "power": 1,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，本技能威力等于敌方精灵技能总能耗的10倍。",
         "learnerRefs": [
           "rock-creature-src-137",
@@ -23900,7 +24203,11 @@
         "power": 95,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "healing",
+          "energyGain",
+          "control"
+        ],
         "effect": "造成物伤，敌方每有1层冻结，自己回复1能量。",
         "learnerRefs": [
           "rock-creature-src-377",
@@ -23940,7 +24247,11 @@
         "power": 95,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "control",
+          "counterStatus",
+          "choice"
+        ],
         "effect": "造成魔伤，敌方获得1层冻结，应对状态：额外获得4层冻结，巧变：冻结相关技能。",
         "learnerRefs": [
           "rock-creature-src-137",
@@ -23981,7 +24292,11 @@
         "power": 70,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "speed",
+          "statDebuff",
+          "choice"
+        ],
         "effect": "造成物伤，选择：敌方获得物防-30%或敌方获得速度-20。",
         "learnerRefs": [
           "rock-creature-src-257",
@@ -24013,7 +24328,10 @@
         "power": 80,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statBoost",
+          "fieldEffect"
+        ],
         "effect": "造成物伤，天气为暴风雪时，本次技能威力+50%",
         "learnerRefs": [
           "rock-creature-src-139",
@@ -24044,7 +24362,10 @@
         "power": "",
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "control",
+          "multiHit"
+        ],
         "effect": "3连击，每次连击敌方获得1层冻结。",
         "learnerRefs": [
           "rock-creature-src-144",
@@ -24084,7 +24405,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-155",
@@ -24945,7 +25268,9 @@
         "power": 120,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-229",
@@ -25004,7 +25329,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-208",
@@ -25039,7 +25366,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-155",
@@ -25075,7 +25404,9 @@
         "power": 140,
         "cost": 5,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-244",
@@ -25109,7 +25440,9 @@
         "power": "",
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "自己获得1层龙噬印记 。",
         "learnerRefs": [
           "rock-creature-src-208",
@@ -25168,7 +25501,9 @@
         "power": 60,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，若自己上回合未使用攻击技能，本技能威力永久+20。",
         "learnerRefs": [
           "rock-creature-src-167",
@@ -25204,7 +25539,13 @@
         "power": "",
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "damageReduction",
+          "costChange",
+          "counterDefense",
+          "charge",
+          "choice"
+        ],
         "effect": "下次技能无需蓄力，本技能可在蓄力状态下使用。选择：本次能耗-1或应对防御时打断，敌方下回合获得眩晕。",
         "learnerRefs": [
           "rock-creature-src-208",
@@ -25239,7 +25580,8 @@
         "priority": "",
         "effectTags": [
           "damageReduction",
-          "counterAttack"
+          "counterAttack",
+          "choice"
         ],
         "effect": "减伤90%，应对攻击。巧变：龙系状态技能。",
         "learnerRefs": [
@@ -25273,7 +25615,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-052",
@@ -25375,7 +25719,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-071",
@@ -25576,7 +25922,9 @@
         "power": 35,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，每次入场，本技能威力永久+40。",
         "learnerRefs": [
           "rock-creature-src-071",
@@ -25892,7 +26240,9 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "自己获得1层蓄电印记。",
         "learnerRefs": [
           "rock-creature-src-401",
@@ -26146,7 +26496,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-137",
@@ -26176,7 +26528,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -26403,7 +26757,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-084",
@@ -26471,7 +26827,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-085",
@@ -26505,7 +26863,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-375",
@@ -26719,7 +27079,9 @@
         "power": 60,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，每离场1次，本技能使用次数永久+1。",
         "learnerRefs": [
           "rock-creature-src-071",
@@ -26903,7 +27265,9 @@
         "power": "",
         "cost": 5,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "fieldEffect"
+        ],
         "effect": "将天气改为雷鸣，持续8回合。",
         "learnerRefs": [
           "rock-creature-src-247",
@@ -26934,7 +27298,9 @@
         "power": 75,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，敌方获得1层引电。",
         "learnerRefs": [
           "rock-creature-src-203",
@@ -27325,7 +27691,8 @@
         "cost": 4,
         "priority": "",
         "effectTags": [
-          "control"
+          "control",
+          "mark"
         ],
         "effect": "造成魔伤，若击败敌方则将中毒转化为中毒印记。",
         "learnerRefs": [
@@ -27795,7 +28162,9 @@
         "power": "",
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "specialMechanic"
+        ],
         "effect": "使敌方精灵减益的层数翻倍。",
         "learnerRefs": [
           "rock-creature-src-057",
@@ -27844,7 +28213,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-057",
@@ -27879,7 +28250,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -28127,7 +28500,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-002",
@@ -28425,7 +28800,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-002",
@@ -28626,7 +29003,8 @@
         "cost": 3,
         "priority": "",
         "effectTags": [
-          "control"
+          "control",
+          "mark"
         ],
         "effect": "敌方获得1层中毒印记。",
         "learnerRefs": [
@@ -28716,7 +29094,9 @@
         "power": 120,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-068",
@@ -28762,7 +29142,11 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "damageReduction",
+          "counterAttack",
+          "dispel"
+        ],
         "effect": "减伤90%，应对攻击：驱散敌方1种增益。",
         "learnerRefs": [
           "rock-creature-bwiki-c4d9725d943a",
@@ -28804,7 +29188,10 @@
         "power": 35,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "control",
+          "multiHit"
+        ],
         "effect": "造成魔伤，1连击，若敌方有中毒效果，本次技能连击数+2。",
         "learnerRefs": [
           "rock-creature-src-128",
@@ -28835,7 +29222,11 @@
         "power": "",
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "damageReduction",
+          "control",
+          "counterDefense"
+        ],
         "effect": "携带的攻击技能获得附加中毒3，应对防御：改为获得附加中毒6。",
         "learnerRefs": [
           "rock-creature-src-068",
@@ -28883,7 +29274,11 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "damageReduction",
+          "counterAttack",
+          "choice"
+        ],
         "effect": "减伤70%，巧变：毒系状态技能，应对攻击。",
         "learnerRefs": [
           "rock-creature-bwiki-c4d9725d943a",
@@ -28922,7 +29317,8 @@
         "cost": 0,
         "priority": "",
         "effectTags": [
-          "multiHit"
+          "multiHit",
+          "mark"
         ],
         "effect": "造成物伤，1连击，本技能会受奉献影响，每被影响1次，能耗永久+1。",
         "learnerRefs": [
@@ -28964,7 +29360,9 @@
         "cost": 1,
         "priority": "",
         "effectTags": [
-          "statBoost"
+          "statBoost",
+          "mark",
+          "teamSupport"
         ],
         "effect": "造成物伤，己方队伍获得1次奉献：威力+20。",
         "learnerRefs": [
@@ -29023,7 +29421,9 @@
         "cost": 3,
         "priority": "",
         "effectTags": [
-          "multiHit"
+          "multiHit",
+          "mark",
+          "teamSupport"
         ],
         "effect": "造成物伤，2连击。己方队伍获得1次奉献：获得连击数+1。",
         "learnerRefs": [
@@ -29066,7 +29466,8 @@
         "cost": 7,
         "priority": "",
         "effectTags": [
-          "multiHit"
+          "multiHit",
+          "mark"
         ],
         "effect": "造成物伤，1连击，本技能会受奉献影响。",
         "learnerRefs": [
@@ -29286,7 +29687,8 @@
         "cost": 2,
         "priority": "",
         "effectTags": [
-          "control"
+          "control",
+          "mark"
         ],
         "effect": "敌方获得2层中毒，获得1次奉献：敌方获得2层中毒。",
         "learnerRefs": [
@@ -29332,7 +29734,9 @@
         "effectTags": [
           "healing",
           "energyGain",
-          "costChange"
+          "costChange",
+          "mark",
+          "teamSupport"
         ],
         "effect": "自己回复2能量，己方队伍获得1次奉献：能耗-2。",
         "learnerRefs": [
@@ -29555,7 +29959,9 @@
         "cost": 1,
         "priority": "",
         "effectTags": [
-          "healing"
+          "healing",
+          "mark",
+          "teamSupport"
         ],
         "effect": "自己回复20%生命，己方队伍获得1次奉献：获得10%吸血。",
         "learnerRefs": [
@@ -29601,7 +30007,11 @@
         "power": "",
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark",
+          "choice",
+          "teamSupport"
+        ],
         "effect": "己方队伍获得2次随机奉献。",
         "learnerRefs": [
           "rock-creature-src-049",
@@ -29691,7 +30101,8 @@
         "effectTags": [
           "damageReduction",
           "counterAttack",
-          "pivot"
+          "pivot",
+          "teamSupport"
         ],
         "effect": "减伤70%，紧急脱离，应对攻击：下个入场精灵获得减伤。",
         "learnerRefs": [
@@ -29834,7 +30245,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-037",
@@ -29912,7 +30325,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -30159,7 +30574,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-037",
@@ -30309,7 +30726,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-037",
@@ -30369,7 +30788,9 @@
         "cost": 3,
         "priority": "",
         "effectTags": [
-          "counterStatus"
+          "counterStatus",
+          "dispel",
+          "mark"
         ],
         "effect": "造成物伤，驱散敌方所有印记，应对状态：改为偷取印记。",
         "learnerRefs": [
@@ -30457,7 +30878,9 @@
         "cost": 2,
         "priority": "",
         "effectTags": [
-          "healing"
+          "healing",
+          "dispel",
+          "mark"
         ],
         "effect": "驱散敌方印记，每层印记回复自己10%生命。",
         "learnerRefs": [
@@ -30508,7 +30931,10 @@
         "priority": "",
         "effectTags": [
           "damageReduction",
-          "counterAttack"
+          "counterAttack",
+          "mark",
+          "choice",
+          "teamSupport"
         ],
         "effect": "减伤80%，应对攻击：己方队伍获得1次随机奉献。",
         "learnerRefs": [
@@ -30556,7 +30982,13 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statBoost",
+          "multiHit",
+          "mark",
+          "choice",
+          "teamSupport"
+        ],
         "effect": "选择：己方队伍获得1次奉献：连击+1或威力+20。",
         "learnerRefs": [
           "rock-creature-src-104",
@@ -30593,7 +31025,9 @@
         "power": 80,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "造成魔伤，偷取敌方1层印记。",
         "learnerRefs": [
           "rock-creature-src-049",
@@ -31720,7 +32154,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-012",
@@ -32106,7 +32542,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-bwiki-bf820721eb70",
@@ -32265,7 +32703,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-054",
@@ -32337,7 +32777,9 @@
         "power": 140,
         "cost": 5,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-078",
@@ -32715,7 +33157,13 @@
         "power": "",
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "priority",
+          "speed",
+          "healing",
+          "statBoost",
+          "choice"
+        ],
         "effect": "本技能先手-1，选择：若自己生命低于20%，回复60%生命或若自己生命高于80%，获得物攻+150%。",
         "learnerRefs": [
           "rock-creature-src-078",
@@ -32766,7 +33214,11 @@
         "power": 70,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statBoost",
+          "counterStatus",
+          "choice"
+        ],
         "effect": "造成魔伤，选择：本次技能威力+20或应对状态时本次技能威力+140。",
         "learnerRefs": [
           "rock-creature-bwiki-bf820721eb70",
@@ -32805,7 +33257,9 @@
         "power": 80,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，若敌方本回合更换精灵，本次技能威力翻倍。",
         "learnerRefs": [
           "rock-creature-src-078",
@@ -33356,7 +33810,9 @@
         "power": "",
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "自己获得1层风起印记。",
         "learnerRefs": [
           "rock-creature-src-356",
@@ -33568,7 +34024,9 @@
         "power": 100,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，无法主动使用，在使用3次翼系技能后会自动使用此技能。",
         "learnerRefs": [
           "rock-creature-src-472",
@@ -33594,7 +34052,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-037",
@@ -33656,7 +34116,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -33837,7 +34299,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-005",
@@ -34097,7 +34561,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-012",
@@ -34157,7 +34623,9 @@
         "power": 140,
         "cost": 5,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-356",
@@ -34215,7 +34683,9 @@
         "power": 60,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，速度比敌方越高，本次技能威力越高。",
         "learnerRefs": [
           "rock-creature-src-356",
@@ -34278,7 +34748,8 @@
         "effectTags": [
           "priority",
           "swift",
-          "speed"
+          "speed",
+          "dispel"
         ],
         "effect": "迅捷，驱散敌方1种增益。",
         "learnerRefs": [
@@ -34803,7 +35274,9 @@
         "power": 50,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，自己每先于敌方行动1次，本技能威力永久+25。",
         "learnerRefs": [
           "rock-creature-src-236",
@@ -34835,7 +35308,10 @@
         "power": 20,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "multiHit",
+          "choice"
+        ],
         "effect": "造成物伤，2连击。选择：每次使用后本技能威力永久+10或连击数永久+1。",
         "learnerRefs": [
           "rock-creature-src-101",
@@ -34873,7 +35349,13 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "damageReduction",
+          "costChange",
+          "statBoost",
+          "counterDefense",
+          "choice"
+        ],
         "effect": "自己获得全技能威力+30，选择：本次能耗-1或应对防御时改为全技能威力永久+50。",
         "learnerRefs": [
           "rock-creature-src-011",
@@ -34933,7 +35415,11 @@
         "power": 40,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "damageReduction",
+          "multiHit",
+          "choice"
+        ],
         "effect": "造成魔伤，3连击。巧变：翼系防御技能。",
         "learnerRefs": [
           "rock-creature-src-101",
@@ -35004,7 +35490,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-037",
@@ -35116,7 +35604,8 @@
         "cost": 3,
         "priority": "",
         "effectTags": [
-          "statBoost"
+          "statBoost",
+          "mark"
         ],
         "effect": "造成物伤，自己获得萌化：本次技能威力+60。",
         "learnerRefs": [
@@ -35205,7 +35694,9 @@
         "power": 20,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，双方体重差越大，本次技能威力越高。",
         "learnerRefs": [
           "rock-creature-bwiki-c4d9725d943a",
@@ -35250,7 +35741,9 @@
         "power": "",
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "dispel"
+        ],
         "effect": "驱散自己的减益，自己的增益翻倍。",
         "learnerRefs": [
           "rock-creature-src-037",
@@ -35333,7 +35826,9 @@
         "power": "",
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "自己获得萌化：速度永久+150。",
         "learnerRefs": [
           "rock-creature-src-074",
@@ -35386,7 +35881,8 @@
         "cost": 2,
         "priority": "",
         "effectTags": [
-          "costChange"
+          "costChange",
+          "mark"
         ],
         "effect": "自己获得萌化：全技能能耗永久-3。",
         "learnerRefs": [
@@ -35445,7 +35941,9 @@
         "power": "",
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "将自己的萌化转移给敌方。",
         "learnerRefs": [
           "rock-creature-src-037",
@@ -35494,7 +35992,8 @@
         "cost": 3,
         "priority": "",
         "effectTags": [
-          "healing"
+          "healing",
+          "mark"
         ],
         "effect": "自己和敌方获得萌化：回复40%生命。",
         "learnerRefs": [
@@ -35777,7 +36276,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-130",
@@ -35822,7 +36323,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -36092,7 +36595,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-005",
@@ -36305,7 +36810,8 @@
         "cost": 3,
         "priority": "",
         "effectTags": [
-          "multiHit"
+          "multiHit",
+          "mark"
         ],
         "effect": "造成魔伤，3连击。自己获得萌化：威力永久+20。",
         "learnerRefs": [
@@ -36375,7 +36881,9 @@
         "power": 140,
         "cost": 5,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-037",
@@ -36433,7 +36941,8 @@
         "priority": "",
         "effectTags": [
           "boostTransfer",
-          "pivot"
+          "pivot",
+          "teamSupport"
         ],
         "effect": "自己脱离，下个入场精灵继承自己增益。",
         "learnerRefs": [
@@ -36481,7 +36990,8 @@
         "cost": 3,
         "priority": "",
         "effectTags": [
-          "multiHit"
+          "multiHit",
+          "mark"
         ],
         "effect": "造成物伤，1连击，双方携带的所有精灵每有1层萌化，本次技能连击数+1。",
         "learnerRefs": [
@@ -36534,7 +37044,8 @@
         "priority": "",
         "effectTags": [
           "damageReduction",
-          "counterAttack"
+          "counterAttack",
+          "mark"
         ],
         "effect": "减伤90%，应对攻击：敌方获得1层萌化。",
         "learnerRefs": [
@@ -36584,7 +37095,10 @@
         "power": 50,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statBoost",
+          "mark"
+        ],
         "effect": "造成物伤，若敌方有萌化，本次技能威力+100。",
         "learnerRefs": [
           "rock-creature-src-190",
@@ -36619,7 +37133,11 @@
         "power": "",
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "damageReduction",
+          "counterAttack",
+          "mark"
+        ],
         "effect": "减伤70%，应对攻击：自己获得1层萌芽印记。",
         "learnerRefs": [
           "rock-creature-src-260",
@@ -36650,7 +37168,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-062",
@@ -36692,7 +37212,9 @@
         "power": 85,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "造成魔伤，若敌方本回合更换精灵，本次攻击使敌方获得萌化。",
         "learnerRefs": [
           "rock-creature-src-084",
@@ -36723,7 +37245,11 @@
         "power": 110,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "costChange",
+          "mark",
+          "choice"
+        ],
         "effect": "造成魔伤，自己有减益时本技能能耗-1，选择：自己获得萌化或解除萌化。",
         "learnerRefs": [
           "rock-creature-src-084",
@@ -36755,7 +37281,9 @@
         "power": "",
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "自己获得1层萌芽印记。",
         "learnerRefs": [
           "rock-creature-src-071",
@@ -36790,7 +37318,9 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "multiHit"
+        ],
         "effect": "自己获得双攻永久+10%，2连击。自己有减益时，本次技能连击数+1。",
         "learnerRefs": [
           "rock-creature-src-090",
@@ -36825,7 +37355,9 @@
         "power": 80,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "choice"
+        ],
         "effect": "造成魔伤，自己每使用过1次选择技能，自己获得3层随机永久增益，使用后重置。",
         "learnerRefs": [
           "rock-creature-bwiki-d84d80cff897"
@@ -36978,7 +37510,9 @@
         "power": 40,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成魔伤，若敌方能量等于0，造成20倍伤害。",
         "learnerRefs": [
           "rock-creature-src-059",
@@ -37021,7 +37555,9 @@
         "power": 180,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "造成物伤，敌方每有1能量，本次技能威力-10%。",
         "learnerRefs": [
           "rock-creature-src-020",
@@ -37134,7 +37670,9 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "敌方获得1层降灵印记。",
         "learnerRefs": [
           "rock-creature-src-020",
@@ -37271,7 +37809,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -37377,7 +37917,9 @@
         "power": 140,
         "cost": 5,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-040",
@@ -37440,7 +37982,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-032",
@@ -37512,7 +38056,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -37694,7 +38240,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-005",
@@ -38509,7 +39057,10 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "energyDrain",
+          "statDebuff"
+        ],
         "effect": "敌方获得魔防-50%，且失去3能量。",
         "learnerRefs": [
           "rock-creature-src-059",
@@ -38546,7 +39097,9 @@
         "power": 120,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-026",
@@ -38615,7 +39168,9 @@
         "power": 80,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "choice"
+        ],
         "effect": "造成魔伤，自己每使用过1次选择技能，敌方获得3层随机永久减益，使用后重置。",
         "learnerRefs": [
           "rock-creature-bwiki-38258de0c3ef"
@@ -38693,7 +39248,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -39243,7 +39800,8 @@
         "cost": 1,
         "priority": "",
         "effectTags": [
-          "counterStatus"
+          "counterStatus",
+          "statBoost"
         ],
         "effect": "对自己造成物伤，应对状态：改为对敌方造成物伤，且本次技能威力+120。",
         "learnerRefs": [
@@ -39658,7 +40216,9 @@
         "power": "",
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "specialMechanic"
+        ],
         "effect": "与敌方交换增益和减益。",
         "learnerRefs": [
           "rock-creature-src-020",
@@ -39785,7 +40345,9 @@
         "power": "",
         "cost": 8,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "specialMechanic"
+        ],
         "effect": "与敌方交换携带的技能。",
         "learnerRefs": [
           "rock-creature-src-020",
@@ -40020,7 +40582,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-096",
@@ -40063,7 +40627,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-040",
@@ -40234,7 +40800,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-005",
@@ -40350,7 +40918,9 @@
         "power": 150,
         "cost": 6,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-385",
@@ -40737,7 +41307,9 @@
         "power": 140,
         "cost": 6,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "costChange"
+        ],
         "effect": "造成魔伤，敌方每有1只力竭精灵，本次技能能耗-1。",
         "learnerRefs": [
           "rock-creature-src-332",
@@ -40769,7 +41341,9 @@
         "power": "",
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "敌方获得1层暗涌印记。",
         "learnerRefs": [
           "rock-creature-src-020",
@@ -40801,7 +41375,10 @@
         "power": 75,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "healing",
+          "statBoost"
+        ],
         "effect": "造成物伤，自己每失去10%生命，本技能威力+10。",
         "learnerRefs": [
           "rock-creature-src-035",
@@ -40836,7 +41413,9 @@
         "power": 90,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "healing"
+        ],
         "effect": "造成物伤，若自己生命低于50%，本次攻击吸血50%。",
         "learnerRefs": [
           "rock-creature-src-110",
@@ -40868,7 +41447,11 @@
         "power": 85,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "healing",
+          "statBoost",
+          "choice"
+        ],
         "effect": "造成物伤，选择：本次技能威力+40，使用后自己生命-10%或自己生命低于50%时本次技能威力+100。",
         "learnerRefs": [
           "rock-creature-src-035",
@@ -40913,7 +41496,8 @@
         "cost": 3,
         "priority": "",
         "effectTags": [
-          "healing"
+          "healing",
+          "choice"
         ],
         "effect": "造成魔伤，巧变：吸血相关技能。",
         "learnerRefs": [
@@ -40950,7 +41534,8 @@
         "cost": 2,
         "priority": "",
         "effectTags": [
-          "healing"
+          "healing",
+          "choice"
         ],
         "effect": "自己的生命比例变为与敌方生命比例相同，巧变：恶系攻击技能。",
         "learnerRefs": [
@@ -40989,7 +41574,9 @@
         "power": 80,
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -41077,7 +41664,9 @@
         "power": 70,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "造成物伤，敌方获得1层星陨印记。",
         "learnerRefs": [
           "rock-creature-src-374",
@@ -41199,7 +41788,8 @@
         "cost": 7,
         "priority": "",
         "effectTags": [
-          "costChange"
+          "costChange",
+          "mark"
         ],
         "effect": "造成魔伤，敌方每有1层印记，本技能能耗-1。",
         "learnerRefs": [
@@ -41284,7 +41874,8 @@
         "cost": 4,
         "priority": "",
         "effectTags": [
-          "multiHit"
+          "multiHit",
+          "mark"
         ],
         "effect": "造成魔伤，1连击，敌方每有1层星陨印记，本次技能连击数+1。",
         "learnerRefs": [
@@ -41341,7 +41932,8 @@
         "cost": 2,
         "priority": "",
         "effectTags": [
-          "counterStatus"
+          "counterStatus",
+          "mark"
         ],
         "effect": "造成魔伤，应对状态：敌方获得3层星陨印记。",
         "learnerRefs": [
@@ -41377,7 +41969,9 @@
         "power": "",
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "敌方获得4层星陨印记。",
         "learnerRefs": [
           "rock-creature-src-002",
@@ -41593,7 +42187,9 @@
         "power": "",
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "敌方获得2层星陨印记。",
         "learnerRefs": [
           "rock-creature-src-098",
@@ -41663,7 +42259,8 @@
         "cost": 3,
         "priority": "",
         "effectTags": [
-          "multiHit"
+          "multiHit",
+          "mark"
         ],
         "effect": "2连击，每次连击使敌方获得1层星陨印记。",
         "learnerRefs": [
@@ -41699,7 +42296,9 @@
         "power": "",
         "cost": 2,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "敌方获得2层星陨印记，每使用1次，赋予的星陨印记层数永久+1。",
         "learnerRefs": [
           "rock-creature-src-118",
@@ -41734,7 +42333,9 @@
         "power": "",
         "cost": 7,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "敌方获得星陨印记，获得层数等于敌方印记层数。",
         "learnerRefs": [
           "rock-creature-src-098",
@@ -41788,7 +42389,8 @@
         "priority": "",
         "effectTags": [
           "damageReduction",
-          "counterDefense"
+          "counterDefense",
+          "mark"
         ],
         "effect": "敌方获得3层星陨印记，应对防御：额外使敌方星陨印记层数翻倍。",
         "learnerRefs": [
@@ -41854,7 +42456,9 @@
         "power": 40,
         "cost": 0,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-144",
@@ -41902,7 +42506,9 @@
         "power": 60,
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-001",
@@ -42136,7 +42742,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成物理伤害。",
         "learnerRefs": [
           "rock-creature-src-100",
@@ -42288,7 +42896,9 @@
         "power": 100,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "directDamage"
+        ],
         "effect": "对敌方精灵造成魔法伤害。",
         "learnerRefs": [
           "rock-creature-src-374",
@@ -42352,7 +42962,8 @@
         "priority": "",
         "effectTags": [
           "damageReduction",
-          "counterAttack"
+          "counterAttack",
+          "mark"
         ],
         "effect": "减伤80%，应对攻击：敌方获得2层星陨印记。",
         "learnerRefs": [
@@ -42510,7 +43121,9 @@
         "power": 55,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark"
+        ],
         "effect": "造成魔伤，双方已有的印记层数+1。",
         "learnerRefs": [
           "rock-creature-src-098",
@@ -42539,7 +43152,10 @@
         "power": 90,
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statBoost",
+          "mark"
+        ],
         "effect": "造成魔伤，若对手有印记，本次技能威力+40。",
         "learnerRefs": [
           "rock-creature-src-118",
@@ -42568,7 +43184,9 @@
         "power": "",
         "cost": 1,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "choice"
+        ],
         "effect": "自己获得随机16层属性增益，巧变：幻系攻击技能。",
         "learnerRefs": [
           "rock-creature-src-208",
@@ -42599,7 +43217,10 @@
         "power": 20,
         "cost": 4,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "statBoost",
+          "mark"
+        ],
         "effect": "造成物伤，敌方每有1层印记，本次攻击威力+20。",
         "learnerRefs": [
           "rock-creature-src-118",
@@ -42631,7 +43252,10 @@
         "power": "",
         "cost": 3,
         "priority": "",
-        "effectTags": [],
+        "effectTags": [
+          "mark",
+          "choice"
+        ],
         "effect": "选择：对手随机获得1种负面印记或自己随机获得1种正面印记。",
         "learnerRefs": [
           "rock-creature-src-104",
