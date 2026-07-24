@@ -39,7 +39,8 @@ import {
   Pagination,
   Popover,
 } from './common.jsx'
-import { CellView, DataGrid, FieldInput, FieldManagerModal, FilterPanel } from './catalog.jsx'
+import { DataGrid, FieldInput, FieldManagerModal, FilterPanel } from './catalog.jsx'
+import { RowDetailModal } from './rowDetail.jsx'
 
 // ---------------------------------------------------------------------------
 // 资料库：管理场景下的资料表，展示当前选中资料表的工作台
@@ -520,65 +521,6 @@ function RowFormModal({ table, fields, row, onClose }) {
           </FormRow>
         ))}
       </form>
-    </Modal>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// 行详情页（弹窗形式，展示包括隐藏字段在内的全部字段）
-// ---------------------------------------------------------------------------
-
-function RowDetailModal({ row, fields, rows = [], onClose, onEdit, onDelete, onOpenReference, title = '详情' }) {
-  const sorted = [...fields].sort((a, b) => a.order - b.order)
-  const summarySupplementKeys = new Set(sorted
-    .filter((field) => field.type === 'summary' || field.display?.kind === 'summary')
-    .flatMap((field) => [field.display.imageField, field.display.descriptionField])
-    .filter(Boolean))
-  const detailFields = sorted.filter((field) => !summarySupplementKeys.has(field.key))
-
-  return (
-    <Modal
-      title={title}
-      onClose={onClose}
-      width={680}
-      footer={
-        <>
-          <button type="button" className="btn" onClick={onClose}>
-            关闭
-          </button>
-          {onDelete && (
-            <button type="button" className="btn btn-danger" onClick={onDelete}>
-              删除
-            </button>
-          )}
-          {onEdit && (
-            <button type="button" className="btn btn-primary" onClick={onEdit}>
-              编辑
-            </button>
-          )}
-        </>
-      }
-    >
-      <div className="row-detail">
-        {detailFields.map((field) => (
-          <div key={field.id} className="row-detail-item">
-            <div className="row-detail-label">
-              {field.name}
-              {field.hidden && <span className="filter-hidden-badge">隐藏列</span>}
-            </div>
-            <div className="row-detail-value">
-              <CellView
-                field={field}
-                row={row}
-                allFields={sorted}
-                mode="detail"
-                onOpenReference={onOpenReference}
-                referenceRows={rows}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
     </Modal>
   )
 }

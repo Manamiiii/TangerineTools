@@ -755,7 +755,7 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
       const tableLines = Number(field.display?.tableLines) || 0
       const lineStyle = tableLines > 0 ? { '--table-lines-height': `${tableLines * 23 - 4}px` } : undefined
       return (
-        <span className={`cell-tag-group ${field.display?.stack ? 'is-stacked' : ''} ${tableLines > 0 ? 'lines-limited' : ''}`} style={lineStyle}>
+        <span className={`cell-tag-group cell-tag-group-${field.key} ${field.display?.stack ? 'is-stacked' : ''} ${tableLines > 0 ? 'lines-limited' : ''}`} style={lineStyle}>
           {shown.map((v) => {
             const opt = field.options?.find((o) => o.value === v)
             return opt ? <OptionTag key={v} option={opt} size={mode === 'detail' ? 'md' : 'sm'} /> : null

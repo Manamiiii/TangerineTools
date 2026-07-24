@@ -235,7 +235,7 @@ const skillFields = [
   makeField({ key: 'cost', name: '能耗', type: 'number', display: { compact: true, tableWidth: 66 } }, 5, SKILL_TABLE_ID, 'field-rock-skill'),
   makeField({ key: 'priority', name: '先制/速度', type: 'text', display: { compact: true, tableWidth: 82 } }, 6, SKILL_TABLE_ID, 'field-rock-skill'),
   makeField(
-    { key: 'effectTags', name: '效果标签', type: 'multiselect', options: SKILL_EFFECT_TAG_OPTIONS, display: { tableLines: 2, tableMaxItems: 5, compact: true, tableWidth: 172 } },
+    { key: 'effectTags', name: '效果标签', type: 'multiselect', options: SKILL_EFFECT_TAG_OPTIONS, display: { tableLines: 1, tableMaxItems: 4, compact: true, tableWidth: 172 } },
     7,
     SKILL_TABLE_ID,
     'field-rock-skill',

@@ -1421,6 +1421,18 @@ img {
   max-height: var(--table-lines-height);
 }
 
+.data-grid td .cell-tag-group-effectTags {
+  flex-wrap: nowrap;
+  align-items: center;
+  max-height: 19px;
+}
+
+.data-grid td .cell-tag-group-effectTags .option-tag {
+  min-height: 18px;
+  padding-block: 0;
+  line-height: 1.45;
+}
+
 .lines-limited:has(.cell-extra) {
   padding-right: 36px;
 }
@@ -3452,38 +3464,191 @@ img {
 }
 
 /* 孵蛋推荐工具 */
-.breeding-tool { display: flex; flex-direction: column; gap: 16px; }
-.breeding-hero, .breeding-notes, .breeding-batch-title, .breeding-pair-head, .breeding-parent { display: flex; align-items: center; gap: 10px; }
-.breeding-hero { justify-content: space-between; padding: 18px; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); }
-.breeding-hero h2 { margin: 0 0 6px; }
-.breeding-hero p, .breeding-pair p { margin: 0; color: var(--muted); }
-.breeding-notes { flex-wrap: wrap; color: var(--muted); font-size: 13px; }
-.breeding-notes span { padding: 8px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); }
-.breeding-batch { padding: 16px; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); }
-.breeding-batch-title { justify-content: space-between; margin-bottom: 12px; }
-.breeding-batch-title span { color: var(--muted); font-size: 13px; }
-.breeding-pairs { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
-.breeding-pair { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface-subtle); }
-.breeding-pair-head { justify-content: space-between; font-size: 13px; color: var(--muted); }
-.breeding-lineup { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 10px; }
-.breeding-arrow { width: 36px; height: 36px; border-radius: 999px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, #f97316, #f59e0b); font-weight: 900; box-shadow: 0 8px 18px rgba(249, 115, 22, 0.22); }
-.breeding-creature-row { min-width: 0; display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 16px; background: linear-gradient(180deg, #fff, #fff7ed); white-space: nowrap; overflow: hidden; }
-.breeding-creature-row.compact { background: #fff; }
-.breeding-creature-row img { width: 48px; height: 48px; object-fit: contain; flex: 0 0 auto; }
-.breeding-sex-symbol { width: 24px; height: 24px; display: grid; place-items: center; font-size: 21px; line-height: 1; font-weight: 900; flex: 0 0 auto; }
+.breeding-tool { display: flex; flex-direction: column; gap: 14px; }
+.breeding-hero,
+.breeding-section-title,
+.breeding-pair-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.breeding-hero { padding: 2px 2px 12px; border-bottom: 1px solid var(--border); }
+.breeding-hero h2 { margin: 0 0 4px; font-size: 18px; }
+.breeding-hero p { margin: 0; color: var(--muted); font-size: 13px; }
+.breeding-selection-count {
+  flex: 0 0 auto;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+.breeding-rules {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+  gap: 14px 22px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.breeding-rules-main,
+.breeding-priority { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.breeding-rules strong { color: var(--text); font-size: 13px; }
+.breeding-rules span,
+.breeding-priority li { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.breeding-priority ol {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding-left: 20px;
+}
+.breeding-warning {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  color: #b45309;
+  font-size: 12px;
+}
+.breeding-recommendation {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.breeding-section-title { margin-bottom: 12px; }
+.breeding-section-title span { color: var(--muted); font-size: 12px; }
+.breeding-pairs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.breeding-pair-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
+.breeding-pair-head { font-size: 12px; }
+.breeding-pair-head strong { color: var(--text); }
+.breeding-pair-head span {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.breeding-lineup {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+.breeding-pair-mark { color: var(--text-faint); font-size: 16px; font-weight: 700; text-align: center; }
+.breeding-creature-row {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-subtle);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.breeding-creature-row:hover { border-color: var(--primary); background: #fff7ed; }
+.breeding-creature-avatar {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+.breeding-creature-text {
+  min-width: 0;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+.breeding-creature-text strong,
+.breeding-creature-text small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.breeding-creature-text strong { color: var(--text); font-size: 14px; line-height: 1.25; }
+.breeding-creature-text small { color: var(--muted); font-size: 10px; }
+.breeding-sex-symbol {
+  width: 15px;
+  height: 15px;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 800;
+  flex: 0 0 auto;
+}
 .breeding-sex-symbol.male { color: #2563eb; }
 .breeding-sex-symbol.female { color: #e11d48; }
-.breeding-sex-symbol.offspring { color: #ea580c; transform: none; }
-.breeding-creature-text { min-width: 0; display: inline-flex; align-items: baseline; gap: 8px; overflow: hidden; }
-.breeding-creature-text strong, .breeding-creature-text em, .breeding-creature-text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.breeding-creature-text strong { font-size: 14px; }
-.breeding-creature-text em { color: #7c3aed; font-style: normal; font-size: 12px; }
-.breeding-creature-text small { color: var(--muted); font-size: 12px; }
-.breeding-status-image { width: 26px !important; height: 26px !important; object-fit: contain; flex: 0 0 auto; }
-.breeding-offspring-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 1fr); gap: 10px; }
-.breeding-prob-row { display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 10px; border: 1px dashed #fed7aa; border-radius: 16px; background: #fffbeb; color: #7c2d12; font-size: 12px; white-space: nowrap; overflow: hidden; }
-.breeding-prob-row span { overflow: hidden; text-overflow: ellipsis; }
-@media (max-width: 760px) { .breeding-lineup, .breeding-offspring-row { grid-template-columns: 1fr; } .breeding-arrow { transform: rotate(90deg); justify-self: center; } }
+.breeding-status-image {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+.breeding-creature-row .option-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+.breeding-creature-row .option-icon-image { width: 15px; height: 15px; }
+.breeding-offspring-row {
+  display: grid;
+  grid-template-columns: minmax(130px, .65fr) minmax(0, 1.35fr);
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.breeding-offspring { min-width: 0; display: flex; align-items: center; gap: 7px; }
+.breeding-offspring img { width: 30px; height: 30px; object-fit: contain; flex: 0 0 auto; }
+.breeding-offspring span { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.breeding-offspring small { color: var(--muted); font-size: 9px; }
+.breeding-offspring strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.breeding-prob-row {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 3px 10px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+.breeding-prob-row span { min-width: 0; }
+.breeding-prob-row strong { margin-right: 4px; color: var(--text); font-weight: 600; }
+@media (max-width: 900px) {
+  .breeding-rules { grid-template-columns: 1fr; }
+  .breeding-pairs { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .breeding-hero,
+  .breeding-section-title { align-items: flex-start; flex-direction: column; }
+  .breeding-lineup { grid-template-columns: 1fr; }
+  .breeding-pair-mark { transform: none; }
+  .breeding-offspring-row { grid-template-columns: 1fr; }
+  .breeding-prob-row { justify-content: flex-start; }
+}
 
 /* ---------------------------------------------------------------------------
    洛克王国统一卡片风格补充

@@ -197,7 +197,7 @@ async function migrateRockKingdomFieldOptions() {
 
 async function migrateRockKingdomFieldLayout() {
   const migrationKey = 'rockKingdomFieldLayoutVersion'
-  const targetVersion = 'catalog-layout-2026-07-22-v5'
+  const targetVersion = 'catalog-layout-2026-07-24-v6'
   const migrated = await db.meta.get(migrationKey)
   if (migrated?.value === targetVersion) return
   const presetById = new Map(ROCK_KINGDOM_PRESET.fields.map((field) => [field.id, field]))
