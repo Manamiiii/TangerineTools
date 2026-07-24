@@ -339,43 +339,16 @@ function ReadingLibrary({ catalog, onSelect, onCreate, onDelete }) {
           <div className="reader-observed-empty">还没有已发布的书籍资料包。</div>
         )}
       </section>
-      <section className="reader-trial-panel">
-        <div className="reader-trial-heading">
-          <div>
-            <span className="reader-safe-chip"><ShieldCheck size={14} /> 核心流程可试用</span>
-            <h3>第一次怎么用</h3>
-          </div>
-          <p>不需要上传整本书，也不需要配置模型。</p>
+      <details className="reader-library-guide">
+        <summary>
+          <span><ShieldCheck size={14} /> 使用说明</span>
+          <small>不需要上传整本书，也不需要配置模型</small>
+        </summary>
+        <div>
+          <p>选书后设置已读章节，粘贴一小段或放入截图，先扫描资料包中的已知名称；没有命中时也可以直接记录刚遇到的人物或地点。</p>
+          <p>原文只在当前页面处理。地图和资料只展示已经由你确认、或由正式资料包审计过的内容。</p>
         </div>
-        <ol className="reader-trial-steps">
-          <li>
-            <span>1</span>
-            <div><strong>选择正在读的书</strong><small>进入后把进度设为实际章节。</small></div>
-          </li>
-          <li>
-            <span>2</span>
-            <div><strong>粘贴刚读到的一小段</strong><small>文字只在当前页面处理，不会保存。</small></div>
-          </li>
-          <li>
-            <span>3</span>
-            <div><strong>扫描并确认名称</strong><small>只显示段落里真正命中的已审计名称。</small></div>
-          </li>
-          <li>
-            <span>4</span>
-            <div><strong>查看已解锁资料</strong><small>地点分类与安全空间资料受阅读进度约束。</small></div>
-          </li>
-        </ol>
-        <div className="reader-trial-boundary">
-          <div>
-            <strong>本次可以测试</strong>
-            <span>书架、章节进度、剪贴板、截图 OCR、名称识别、地点地图、本机保存</span>
-          </div>
-          <div>
-            <strong>暂未开放</strong>
-            <span>自由剧情问答、自动人物关系、移动端原生分享、未审计事实自动入库</span>
-          </div>
-        </div>
-      </section>
+      </details>
     </div>
   )
 }
@@ -694,6 +667,104 @@ function ReadingServiceSettings({
   )
 }
 
+function QuickObservedEntityForm({
+  observedEntities,
+  currentChapterId,
+  currentChapter,
+  chapters,
+  onChange,
+  onOpenRecords,
+  onOpenMap,
+}) {
+  const [name, setName] = useState('')
+  const [kind, setKind] = useState(OBSERVED_ENTITY_KIND.PLACE)
+  const [placeKind, setPlaceKind] = useState(OBSERVED_PLACE_KIND.UNKNOWN)
+  const [status, setStatus] = useState('')
+  const [lastSavedKind, setLastSavedKind] = useState('')
+
+  async function addObservedEntity(event) {
+    event.preventDefault()
+    setStatus('')
+    setLastSavedKind('')
+    try {
+      const next = upsertObservedEntity(observedEntities, {
+        id: generateId('observed'),
+        name,
+        kind,
+        placeKind,
+        firstSeenChapterId: currentChapterId,
+      }, chapters)
+      if (next === observedEntities) {
+        setStatus('这个名称已经记录在当前章或更早章节。')
+        return
+      }
+      await onChange(next)
+      setLastSavedKind(kind)
+      setName('')
+      setPlaceKind(OBSERVED_PLACE_KIND.UNKNOWN)
+      setStatus(`已记在${currentChapter?.label || '当前章'}，现在可以继续阅读。`)
+    } catch (error) {
+      setStatus(error?.message || '保存失败')
+    }
+  }
+
+  return (
+    <div className="reader-quick-add">
+      <div className="reader-quick-add-heading">
+        <div>
+          <strong>资料包没有？直接记录</strong>
+          <span>把刚遇到的名称记在当前章节，不需要切换到“已遇到”。</span>
+        </div>
+        <span className="reader-local-chip"><Lock size={13} /> 个人记录</span>
+      </div>
+      <form
+        className={kind === OBSERVED_ENTITY_KIND.PLACE ? '' : 'reader-quick-add-form-compact'}
+        onSubmit={addObservedEntity}
+      >
+        <label className="reader-quick-add-name">
+          <span>刚遇到的名称</span>
+          <input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="人名、地点或其他名词"
+            maxLength={120}
+          />
+        </label>
+        <label>
+          <span>类型</span>
+          <select value={kind} onChange={(event) => setKind(event.target.value)}>
+            {Object.entries(OBSERVED_KIND_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+        </label>
+        {kind === OBSERVED_ENTITY_KIND.PLACE && (
+          <label>
+            <span>地点性质</span>
+            <select value={placeKind} onChange={(event) => setPlaceKind(event.target.value)}>
+              {Object.entries(OBSERVED_PLACE_KIND_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </label>
+        )}
+        <button type="submit" className="btn btn-sm" disabled={!name.trim()}>
+          <Plus size={13} /> 记在{currentChapter?.label || '当前章'}
+        </button>
+      </form>
+      {status && (
+        <div className="reader-quick-add-status" role="status">
+          <span>{status}</span>
+          <button type="button" onClick={onOpenRecords}>查看已遇到</button>
+          {lastSavedKind === OBSERVED_ENTITY_KIND.PLACE && (
+            <button type="button" onClick={onOpenMap}>打开地图</button>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function ObservedEntitiesPanel({
   observedEntities,
   onDemandEntities,
@@ -774,12 +845,12 @@ function ObservedEntitiesPanel({
       <div className="reader-panel-heading">
         <div>
           <UserRoundSearch size={20} />
-          <h3>记录本章遇到的名字</h3>
+          <h3>管理已遇到的名称</h3>
         </div>
         <span className="reader-local-chip"><Lock size={13} /> 用户确认</span>
       </div>
       <p className="reader-help reader-observed-intro">
-        没有原文预分析时，章节仍可记录“你到这里已经遇到它”。这里只保存你主动输入的名称，不自动补充人物关系或剧情。
+        这里汇总当前进度以前由你确认的名称，并保留它们第一次遇到的章节。不会自动补充人物关系或剧情。
       </p>
       <form className="reader-observed-form" onSubmit={addObservedEntity}>
         <label>
@@ -1098,20 +1169,27 @@ function ReadingMapPanel({
           <p>只有明确标记为“现实地点”的资料包外名称才会出现在这里；虚构或不确定地点不会发送给公网地图。</p>
         )}
         {lookupTarget && (
-          <form className="reader-place-lookup-form" onSubmit={submitLookup}>
-            <label>
-              <span>地图搜索词</span>
-              <input
-                value={lookupQuery}
-                onChange={(event) => setLookupQuery(event.target.value)}
-                maxLength={120}
-                placeholder="可补充英文名、州或国家"
-              />
-            </label>
-            <button type="submit" className="btn btn-sm" disabled={!lookupQuery.trim() || lookupState === 'loading'}>
-              <ScanSearch size={13} /> {lookupState === 'loading' ? '搜索中…' : '搜索公网地图'}
-            </button>
-          </form>
+          <>
+            <div className="reader-place-name-context">
+              <span>作品中的名称</span>
+              <strong>{lookupTarget.name}</strong>
+              <small>公网地图主要收录现代名称。历史名称或旧译名可能无法直接命中，系统不会自行猜测对应关系。</small>
+            </div>
+            <form className="reader-place-lookup-form" onSubmit={submitLookup}>
+              <label>
+                <span>现代地图搜索词</span>
+                <input
+                  value={lookupQuery}
+                  onChange={(event) => setLookupQuery(event.target.value)}
+                  maxLength={120}
+                  placeholder="可手动补充英文名、州或国家"
+                />
+              </label>
+              <button type="submit" className="btn btn-sm" disabled={!lookupQuery.trim() || lookupState === 'loading'}>
+                <ScanSearch size={13} /> {lookupState === 'loading' ? '搜索中…' : '搜索公网地图'}
+              </button>
+            </form>
+          </>
         )}
         {lookupResults.length > 0 && (
           <div className="reader-place-lookup-results">
@@ -1132,34 +1210,29 @@ function ReadingMapPanel({
                 </button>
               </article>
             ))}
-            <small>不要为虚构地点选择“看起来相近”的现实坐标；不确定时保持未定位。</small>
+            <small>这些只是现代地图候选，不证明它与作品年代中的名称、边界或位置关系相同；不确定时保持未定位。</small>
           </div>
         )}
         {lookupMessage && <p className="reader-place-lookup-message" role="status">{lookupMessage}</p>}
       </div>
-      {places.length === 0 ? (
-        <div className="reader-map-empty">
-          <MapPin size={24} />
-          <strong>当前进度还没有可展示的已审计地点</strong>
-          <p>这里只读取正式资料包，不会用临时推断或模型猜测填充地点。</p>
-        </div>
-      ) : (
-        <div className="reader-map-layout">
-          {spatialPlaces.length > 0 ? (
-            <ReadingGeoMap
-              places={spatialPlaces}
-              selectedPlaceId={selectedPlaceId}
-              onSelectPlace={setSelectedPlaceId}
-              providerId={providerId}
-              tiandituToken={tiandituToken}
-            />
-          ) : (
-            <div className="reader-map-unplaced">
-              <MapPin size={22} />
-              <strong>已出现的地点没有可发布坐标</strong>
-              <span>虚构或位置不明确的地点不会被强行放到现实地图上。</span>
-            </div>
-          )}
+      <div className="reader-map-layout">
+        <ReadingGeoMap
+          places={spatialPlaces}
+          selectedPlaceId={selectedPlaceId}
+          onSelectPlace={setSelectedPlaceId}
+          providerId={providerId}
+          tiandituToken={tiandituToken}
+        />
+        {places.length === 0 ? (
+          <div className="reader-map-background-card">
+            <MapPin size={20} />
+            <strong>宽泛背景底图</strong>
+            <p>当前进度还没有已确认的可定位地点。底图只提供现代地理背景，不代表故事地点，也不证明任何位置关系。</p>
+            {onDemandEntities.length > 0 && (
+              <small>资料包另有 {onDemandEntities.length} 个按需地点；只有你在阅读中精确输入并确认后才会显示，不在这里提前列出名称。</small>
+            )}
+          </div>
+        ) : (
           <div className="reader-place-list">
             {places.map((place) => (
               <button
@@ -1173,8 +1246,9 @@ function ReadingMapPanel({
               </button>
             ))}
           </div>
-          {selectedPlace && (
-            <div className="reader-place-detail">
+        )}
+        {selectedPlace && (
+          <div className="reader-place-detail">
               <div>
                 <strong>{selectedPlace.name}</strong>
                 <span>{PLACE_KIND_LABELS[selectedPlace.placeKind] || '地点'}</span>
@@ -1233,10 +1307,9 @@ function ReadingMapPanel({
                   ? '个人确认位置只用于当前阅读地图，不会写回正式资料包。'
                   : '仅展示资料包中已审计的空间字段，不生成剧情解释。'}
               </small>
-            </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </section>
   )
 }
@@ -1732,7 +1805,7 @@ export function ReaderTool({ scene }) {
     { id: READER_TAB.INPUT, label: '阅读输入', icon: ClipboardPaste },
     {
       id: READER_TAB.RECORDS,
-      label: '本章记录',
+      label: '已遇到',
       icon: UserRoundSearch,
       count: visibleObservedEntities(
         observedEntities,
@@ -1750,7 +1823,9 @@ export function ReaderTool({ scene }) {
         readingPackage.chapters,
       ).filter((entity) => entity.kind === 'place').length,
     },
-    { id: READER_TAB.FACTS, label: '已读资料', icon: ShieldCheck },
+    ...(readingPackage.facts.length > 0
+      ? [{ id: READER_TAB.FACTS, label: '背景与注释', icon: ShieldCheck }]
+      : []),
     { id: READER_TAB.SETTINGS, label: '设置', icon: Settings2 },
   ]
 
@@ -1772,8 +1847,14 @@ export function ReaderTool({ scene }) {
           <small>{editionSummary}</small>
         </div>
         <div className="reader-progress-card">
-          <span>当前阅读进度</span>
-          <strong>{currentChapter?.label || '未选择'}</strong>
+          <label>
+            <span>我已经读到</span>
+            <select value={currentChapterId} onChange={(event) => changeChapter(event.target.value)}>
+              {readingPackage.chapters.map((chapter) => (
+                <option key={chapter.id} value={chapter.id}>{chapter.label}</option>
+              ))}
+            </select>
+          </label>
           <div className="reader-progress-track" aria-label={`阅读进度 ${progressPercent}%`}>
             <span style={{ width: `${progressPercent}%` }} />
           </div>
@@ -1824,27 +1905,6 @@ export function ReaderTool({ scene }) {
       >
         {activeTab === READER_TAB.INPUT && (
           <div className="reader-input-grid">
-          <section className="reader-panel">
-            <div className="reader-panel-heading">
-              <div>
-                <BookOpen size={20} />
-                <h3>设置阅读边界</h3>
-              </div>
-              <span className="reader-safe-chip"><ShieldCheck size={14} /> 严格无剧透</span>
-            </div>
-            <div className="reader-controls reader-controls-single">
-              <label>
-                <span>我已经读到</span>
-                <select value={currentChapterId} onChange={(event) => changeChapter(event.target.value)}>
-                  {readingPackage.chapters.map((chapter) => (
-                    <option key={chapter.id} value={chapter.id}>{chapter.label}</option>
-                  ))}
-                </select>
-              </label>
-            </div>
-            <p className="reader-help">资料查询只允许使用这一章及之前可以揭示的内容。修改进度会保存在当前设备。</p>
-          </section>
-
           <section className="reader-panel">
             <div className="reader-panel-heading">
               <div>
@@ -1905,6 +1965,16 @@ export function ReaderTool({ scene }) {
                 {scanStatus && <p className="reader-scan-status">{scanStatus}</p>}
               </div>
             )}
+
+            <QuickObservedEntityForm
+              observedEntities={observedEntities}
+              currentChapterId={currentChapterId}
+              currentChapter={currentChapter}
+              chapters={readingPackage.chapters}
+              onChange={changeObservedEntities}
+              onOpenRecords={() => setActiveTab(READER_TAB.RECORDS)}
+              onOpenMap={() => setActiveTab(READER_TAB.MAP)}
+            />
 
             <div className="reader-upload">
               <div className="reader-upload-copy">

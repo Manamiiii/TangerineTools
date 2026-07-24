@@ -1,6 +1,6 @@
 export const READING_MAP_DEFAULT_VIEW = Object.freeze({
-  center: [33.67, -84.39],
-  zoom: 9,
+  center: [32.7, -83.3],
+  zoom: 6,
 })
 
 export const READING_MAP_PROVIDER = Object.freeze({
