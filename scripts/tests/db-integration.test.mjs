@@ -90,6 +90,30 @@ test('seed migration is versioned and preserves imported custom preset values', 
   )
 })
 
+test('startup seeds one reader scene and never overwrites user customization', async () => {
+  await resetDatabase()
+  globalThis.fetch = async (url) => presetResponse(url)
+  await ensureSeeded()
+
+  const sceneId = 'scene-reading-companion'
+  const seededScene = await db.scenes.get(sceneId)
+  assert.equal(seededScene.name, '经典文学阅读')
+  assert.equal(seededScene.type, 'reading')
+  assert.deepEqual(seededScene.tools, ['reader'])
+  assert.equal((await db.meta.get('seededReadingCompanionScene'))?.value, true)
+
+  await db.scenes.update(sceneId, { name: '我的文学阅读', tools: ['reader', 'catalog'] })
+  await db.meta.delete('seededReadingCompanionScene')
+  await ensureSeeded()
+  const customizedScene = await db.scenes.get(sceneId)
+  assert.equal(customizedScene.name, '我的文学阅读')
+  assert.deepEqual(customizedScene.tools, ['reader', 'catalog'])
+
+  await db.scenes.delete(sceneId)
+  await ensureSeeded()
+  assert.equal(await db.scenes.get(sceneId), undefined)
+})
+
 test('an offline preset failure remains retryable', async () => {
   await resetDatabase()
   globalThis.fetch = async (url) => presetResponse(url, true)

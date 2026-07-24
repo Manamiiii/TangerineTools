@@ -2,7 +2,7 @@
 
 ## 状态与定位
 
-本文定义 TangerineTools 中“经典文学阅读伴侣”的现有能力、内容建库方式、运行时边界、剧透安全规则和跨端技术边界。场景工具 `reader` 已提供版本化资料读取、章节进度、文本/截图输入和确定性剧透门禁基础；地图、OCR、实体资料、运行时模型和原生分享入口仍属于待建设范围。
+本文定义 TangerineTools 中“经典文学阅读伴侣”的现有能力、内容建库方式、运行时边界、剧透安全规则和跨端技术边界。场景工具 `reader` 提供版本化资料读取、章节进度、文本/截图输入和确定性剧透门禁基础；应用预设「经典文学阅读」场景。地图、OCR、实体资料、运行时模型和原生分享入口仍属于待建设范围。
 
 阅读伴侣面向“一次专注阅读一本书”的个人使用方式。使用者可以提前确定下一本书，因此系统以**按书预分析并构建版本化资料库**为主，运行时识别和大模型交互只承担辅助、消歧和补充解释，不追求在没有准备资料的情况下完整理解所有书籍。
 
@@ -113,6 +113,27 @@
 ```
 
 资料包应采用类似现有 BWiki 预置的 staging → preview → 显式发布思路。运行时只读取已发布资料，不直接把未经检查的大模型批量结果当作正式内容。
+
+当前发布目录与命令为：
+
+- `scripts/reading/data/staging/`：版本化研究输入、来源状态、实体和事实候选。
+- `scripts/reading/data/preview/`：由 staging 生成的完整发布候选和审计元数据。
+- `npm run preview:reader`：生成 preview。
+- `npm run check:reader:preset`：比较 preview 与正式资料并在 `artifacts/reading-companion/` 生成报告。
+- `READING_PACKAGE_OVERWRITE=CONFIRM_READING_PACKAGE npm run apply:reader:preset`：显式写入正式资料包。
+- `npm run check:reader:packages`：校验运行时目录和正式资料包。
+
+资料源状态使用 `approved`、`candidate` 和 `rejected`。只有 `approved` 来源可以进入运行时资料包；候选和拒绝项只保留在 staging 与 preview 审计元数据中。
+
+### 当前资料源候选
+
+- 使用者提供的微信读书版本和版权信息是已批准来源，只用于版本、译者、ISBN 和 1–63 章结构。
+- [Library of Congress · America Reads](https://www.loc.gov/exhibits/america-reads/1900-to-1949.html#obj019) 用于候选原作书目和作品历史范围，不用于中文译文章节定位。
+- [U.S. Census Bureau · Gazetteer Files](https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.2025.html) 用于候选现代行政区、GEOID 和代表坐标；不能证明作品年代的边界或交通状况。
+- [Library of Congress · General Maps](https://www.loc.gov/collections/general-maps/about-this-collection/rights-and-access/) 用于候选历史地图。每个地图条目必须单独检查 Rights Advisory 与署名要求。
+- [OpenStreetMap](https://www.openstreetmap.org/copyright) 是互动底图候选；采用时必须显示贡献者署名、遵守 ODbL，并单独满足瓦片或地理编码服务政策。
+
+这些外部来源均不能替代指定中文译本对 `revealAt` 的章节证据。缺少对应章节文本时，实体和事实保持待审，不进入正式资料包。
 
 不得绕过微信读书鉴权、反自动化措施或私有接口批量获取作品全文。原文和参考资料的获取、保存与模型传输必须符合其授权范围；运行时只处理用户主动提供的最小必要段落。
 

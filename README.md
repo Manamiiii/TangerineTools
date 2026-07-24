@@ -12,7 +12,7 @@ TangerineTools 是一个本地优先（local-first）的个人资料管理 Web A
 - **统计视图**：从资料库或收集记录选择数据源，按字段分组并叠加数值阈值条件统计。
 - **性格推荐**：每个编号从普通形态进入，展示统一绝对刻度的六维、动态分位、完整特性和同编号全部形态差异；候选按强化维度与推荐档位展示，按进化链匹配已获得性格，并为推荐/可保留性格提供预填快速新增收集记录。
 - **孵蛋推荐**：结合收集记录、性别、异色/炫彩、性格、蛋组和繁育谱系，对可用父母组合进行排序。
-- **阅读伴侣**：按指定译本保存阅读章节，接收粘贴段落或页面截图，并以确定性规则约束资料的可揭示进度和剧透确认级别。
+- **阅读伴侣**：内置「经典文学阅读」场景，按指定译本保存阅读章节，接收粘贴段落或页面截图，并以确定性规则约束资料的可揭示进度和剧透确认级别。
 - **全量导入/导出**：在首页通过 JSON 文件手动备份或迁移全部本地数据。
 - **洛克王国预置资料**：首次启动会自动创建“洛克王国”场景，包含精灵基础资料和技能资料；当前正式预置只由版本化 BWiki staging / preview 审计产物显式发布。
 
@@ -61,6 +61,9 @@ npm run lint
 | `npm run preview` | 本地预览生产构建产物 |
 | `npm run lint` | 使用 oxlint 做静态检查 |
 | `npm run check:reader:packages` | 校验阅读资料目录、版本信息、稳定章节和事实引用 |
+| `npm run preview:reader` | 从阅读资料 staging 生成版本化发布预览 |
+| `npm run check:reader:preset` | dry-run 检查阅读资料 preview 与正式资料包差异并生成本地报告 |
+| `npm run apply:reader:preset` | 显式发布阅读资料 preview；还必须提供确认环境变量 |
 | `npm run check:nature` | 在 `artifacts/nature/` 生成本地性格推荐校准报告 |
 | `npm run sync:bwiki:staging` | 刷新 BWiki 精灵、技能、蛋和果实 staging |
 | `npm run sync:bwiki:details` | 刷新 BWiki 精灵详情 staging |
@@ -101,7 +104,12 @@ npm run lint
 │   │   ├── apply-preset.mjs              # dry-run 校验与显式发布
 │   │   ├── lib/                          # 路径和标签规则共享模块
 │   │   └── data/                         # 版本化 staging 与 preview
-│   ├── reading/validate-packages.mjs      # 阅读资料包发布结构校验
+│   ├── reading/
+│   │   ├── data/                         # 阅读资料 staging 与 preview
+│   │   ├── lib/                          # 阅读资料发布共享逻辑
+│   │   ├── build-preview.mjs             # staging 到发布候选
+│   │   ├── apply-preview.mjs             # dry-run 检查与显式发布
+│   │   └── validate-packages.mjs          # 正式阅读资料包结构校验
 │   ├── data/natureCalibrationSamples.json # 性格校准样例
 │   ├── tests/                            # node:test 纯逻辑与 fake-indexeddb 集成测试
 │   └── check-nature-recommendations.mjs  # 本地性格校准报告生成器
@@ -118,6 +126,8 @@ npm run lint
 │   │   ├── importExport.js               # JSON 校验、导出与 merge-by-id 导入
 │   │   ├── repository.js                 # 场景、表、字段和行的 CRUD
 │   │   ├── readingState.js               # meta 中的阅读进度存取
+│   │   ├── readingCompanionSeed.js        # 经典文学阅读场景播种
+│   │   ├── seed.js                       # 应用预置初始化编排
 │   │   └── rockKingdomSeed.js            # 预置播种与三方迁移
 │   ├── domain/
 │   │   ├── nature.js / naturePve.js      # 性格规则引擎 / PVE 展示判定
@@ -125,7 +135,9 @@ npm run lint
 │   │   ├── rockKingdom*.js               # 形态、展示和共享标签规则
 │   │   ├── readingCompanion.js            # 资料包校验与剧透门禁
 │   │   └── owned.js / stock.js / breeding*.js # 其他工具纯领域逻辑
-│   ├── presets/rockKingdom.js             # 场景、字段和选项定义
+│   ├── presets/
+│   │   ├── rockKingdom.js                # 洛克王国场景、字段和选项
+│   │   └── readingCompanion.js            # 经典文学阅读场景定义
 │   ├── App.jsx                            # hash 路由、工具懒加载、全局导入导出
 │   ├── db.js                              # 稳定的数据访问兼容门面
 │   ├── constants.js / utils.js            # 全局约定与通用工具
@@ -155,7 +167,14 @@ git diff --check
 - 涉及 BWiki 预置时先运行 `npm run check:bwiki:preset`；该命令只生成 `artifacts/` 审计报告，不会写入正式预置。
 - 涉及工具入口、懒加载或 Hook 时，启动 `npm run dev` 后依次切换资料库、收集记录、统计视图、性格推荐、孵蛋推荐和阅读伴侣，确认均完成渲染且没有进入错误恢复页。
 - 涉及阅读资料包时运行 `npm run check:reader:packages`，确认目录、版本、章节和事实引用全部有效。
+- 涉及阅读资料发布时依次运行 `npm run preview:reader` 和 `npm run check:reader:preset`；正式写入必须显式设置 `READING_PACKAGE_OVERWRITE=CONFIRM_READING_PACKAGE` 后运行 `npm run apply:reader:preset`。
 - 上述验证不会清空浏览器中的收集记录或统计配置；导入仍按 id 合并。
+
+## 经典文学阅读预置
+
+应用首次初始化会创建「经典文学阅读」场景，只启用阅读伴侣。用户删除该场景后不会自动重建；用户修改名称或工具组合时，初始化流程不会覆盖这些设置。
+
+运行时资料目录位于 `public/presets/reading-companion/`。《飘》资料包对应长江文艺出版社 2018 年 5 月版、ISBN `9787570202188`，章节稳定标识覆盖 1–63 章。正式实体、事实和来源只通过 `scripts/reading/data/` 下的 staging / preview / apply 流程发布；候选来源不会进入运行时资料包。
 
 ## 洛克王国预置资料
 

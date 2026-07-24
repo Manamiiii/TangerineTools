@@ -58,6 +58,8 @@ db.version(1).stores({
 ## 预置资料加载（播种）
 
 - 应用启动时 `App.jsx` 调用 `ensureSeeded()`。
+- `ensureSeeded()` 依次初始化洛克王国预置和经典文学阅读预置。阅读场景使用稳定 id `scene-reading-companion` 与标记 `meta.seededReadingCompanionScene`；首次创建时排在现有场景之后。
+- 阅读场景已存在时只写播种标记，不覆盖名称、类型、启用工具或排序。用户删除场景后播种标记仍保留，因此后续启动不会重建。
 - 该函数检查 `meta.seededRockKingdom`；未播种时写入 `src/presets/rockKingdom.js` 定义的洛克王国场景、默认资料表和字段结构。场景骨架只播种一次，不覆盖用户修改。
 - 精灵行通过 `fetch(`${BASE_URL}presets/rockKingdomRows.json`)` 加载，技能行通过 `fetch(`${BASE_URL}presets/rockKingdomSkillRows.json`)` 加载；文件位于 `public/` 且不参与 JS 打包。繁育字段包含在正式精灵行中。加载失败时保留场景、表和字段骨架，不写完成标记，并在启动流程提供重试入口。
 - 正式预置只通过 BWiki staging → preview → 显式 apply 链路维护。

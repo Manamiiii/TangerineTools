@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "packageId": "reader-package-gone-with-the-wind-zh-9787570202188",
+  "packageVersion": "1.0.0",
+  "sourceCandidates": [
+    {
+      "id": "source-weread-edition-metadata",
+      "status": "approved",
+      "kind": "user-provided-edition-metadata",
+      "label": "微信读书版本详情与版权信息",
+      "accessedAt": "2026-07-24",
+      "useFor": ["edition", "chapter_structure"],
+      "notes": "用于确认 ISBN、译者、出版社、出版时间和连续 1–63 章结构；不包含正文。"
+    },
+    {
+      "id": "candidate-loc-america-reads-gwtw",
+      "status": "candidate",
+      "kind": "library-bibliography",
+      "label": "Library of Congress · America Reads · Gone With the Wind",
+      "organization": "Library of Congress",
+      "url": "https://www.loc.gov/exhibits/america-reads/1900-to-1949.html#obj019",
+      "accessedAt": "2026-07-24",
+      "useFor": ["original_bibliography", "historical_scope"],
+      "rightsStatus": "metadata-reference-only",
+      "notes": "可核对原作作者、1936 年 Macmillan 初版和美国南北战争背景；不作为中文译文章节定位依据。"
+    },
+    {
+      "id": "candidate-census-2025-gazetteer",
+      "status": "candidate",
+      "kind": "modern-geography",
+      "label": "U.S. Census Bureau · 2025 Gazetteer Files",
+      "organization": "United States Census Bureau",
+      "url": "https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.2025.html",
+      "accessedAt": "2026-07-24",
+      "useFor": ["modern_place_names", "administrative_hierarchy", "representative_coordinates"],
+      "rightsStatus": "dataset-terms-review-required",
+      "notes": "候选用于现代真实地点的名称、GEOID、行政层级和代表坐标；历史边界需另行核对。"
+    },
+    {
+      "id": "candidate-loc-general-maps",
+      "status": "candidate",
+      "kind": "historical-map",
+      "label": "Library of Congress · General Maps",
+      "organization": "Library of Congress, Geography and Map Division",
+      "url": "https://www.loc.gov/collections/general-maps/about-this-collection/rights-and-access/",
+      "accessedAt": "2026-07-24",
+      "useFor": ["historical_map_layers", "historical_boundaries", "historical_routes"],
+      "rightsStatus": "item-level-review-required",
+      "notes": "数字馆藏通常允许使用与再利用，但每张地图仍需检查 Rights Advisory 和署名要求。"
+    },
+    {
+      "id": "candidate-openstreetmap",
+      "status": "candidate",
+      "kind": "map-basemap",
+      "label": "OpenStreetMap",
+      "organization": "OpenStreetMap Foundation and contributors",
+      "url": "https://www.openstreetmap.org/copyright",
+      "accessedAt": "2026-07-24",
+      "useFor": ["interactive_basemap", "modern_roads"],
+      "rightsStatus": "ODbL-1.0-attribution-required",
+      "notes": "如采用，界面必须显示 OpenStreetMap contributors 署名并遵守 ODbL；公共瓦片服务另受使用政策限制。"
+    }
+  ],
+  "entities": [],
+  "facts": []
+}

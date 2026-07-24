@@ -11,6 +11,7 @@ import {
   strongestSpoilerRisk,
   validateReadingPackage,
 } from '../../src/domain/readingCompanion.js'
+import { buildReadingPreview } from '../reading/lib/package-pipeline.mjs'
 
 const repoUrl = new URL('../../', import.meta.url)
 const readingPackage = JSON.parse(
@@ -101,5 +102,20 @@ test('spoiler gate requires the matching one-time authorization level', () => {
   assert.equal(
     strongestSpoilerRisk([SPOILER_RISK.SAFE, SPOILER_RISK.POTENTIAL, SPOILER_RISK.HIGH]),
     SPOILER_RISK.HIGH,
+  )
+})
+
+test('reading preview publishes only approved sources and keeps candidates pending', async () => {
+  const preview = await buildReadingPreview()
+  assert.deepEqual(validateReadingPackage(preview.package), [])
+  assert.deepEqual(preview.previewMeta.approvedSourceIds, ['source-weread-edition-metadata'])
+  assert.equal(preview.previewMeta.pendingSourceIds.length, 4)
+  assert.deepEqual(
+    preview.package.sources.map((source) => source.id),
+    ['source-weread-edition-metadata'],
+  )
+  assert.equal(
+    preview.package.sources.some((source) => source.id.startsWith('candidate-')),
+    false,
   )
 })

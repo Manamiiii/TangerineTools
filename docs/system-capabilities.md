@@ -109,11 +109,13 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 场景启用「阅读伴侣」工具后会渲染 `ReaderTool`：
 
 - 运行时从 `public/presets/reading-companion/catalog.json` 读取版本化书籍目录，并对资料包 schema、稳定章节、事实风险和引用关系做校验。
+- 应用初始化会创建稳定 id 为 `scene-reading-companion` 的「经典文学阅读」场景，默认只启用 `reader`。播种标记防止用户删除后被自动重建，已有同 id 场景的名称、工具和其他自定义值不会被覆盖。
 - 内置《飘》长江文艺出版社 2018 年 5 月版（ISBN `9787570202188`）的版本元数据和连续 1–63 章稳定标识。资料包中的实体和事实集合只接受经过来源审计的内容，当前为空。
 - 用户手动选择当前已读章节；进度以 `readerState:{sceneId}:{editionId}` 命名空间保存在 Dexie `meta` 表中，不改变 schema v1。
 - 支持粘贴当前段落和选择页面截图。段落不持久化，截图只通过临时对象 URL 在本机预览；OCR、实体识别和模型调用尚未接入。
 - 纯领域逻辑定义 `safe` / `potential` / `high` 风险、未来章节提升为潜在剧透、未知边界保守处理、单次授权等级和高风险二次确认动作。
 - `npm run check:reader:packages` 校验资料目录及所有运行时资料包。
+- 研究资料位于 `scripts/reading/data/staging/`；`preview:reader` 生成版本化 preview，`check:reader:preset` 输出 dry-run 报告，`apply:reader:preset` 仅在显式确认环境变量存在时写入正式资料包。只有 `approved` 来源进入运行时包，`candidate` 与 `rejected` 来源保留在审计数据中。
 
 ### 8. 洛克王国预置资料
 
