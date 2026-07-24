@@ -2,7 +2,7 @@
 import { createHash } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
-import { deriveSkillTags, deriveTraitTags } from './lib/rock-kingdom-tags.mjs'
+import { deriveSkillEffectTags, deriveSkillTags, deriveTraitTags } from './lib/rock-kingdom-tags.mjs'
 import { BWIKI_PATHS } from './lib/paths.mjs'
 
 const INPUTS = {
@@ -25,12 +25,17 @@ const ELEMENT_MAP = new Map([
   ['冰', 'ice'], ['龙', 'dragon'], ['电', 'electric'], ['毒', 'poison'], ['虫', 'bug'], ['武', 'fighting'],
   ['翼', 'flying'], ['萌', 'cute'], ['幽', 'ghost'], ['恶', 'dark'], ['机械', 'mech'], ['幻', 'illusion'],
 ])
+
 function hashId(prefix, value) {
   return `${prefix}-${createHash('sha1').update(String(value)).digest('hex').slice(0, 12)}`
 }
 
 function normalizeName(value) {
   return String(value ?? '').replace(/\s+/g, '').trim()
+}
+
+function baseCreatureName(value) {
+  return normalizeName(value).replace(/（[^）]*）/g, '')
 }
 
 function readValue(row, key) {
@@ -112,9 +117,25 @@ function normalizeNumber(value) {
   return Number.isFinite(Number(value)) ? Number(value) : ''
 }
 
-function deriveForm(creature, existingValues) {
+function deriveForm(creature, existingValues, detail, bossNames) {
   if (creature.formCategoryLabel === '首领形态') {
     return { value: '首领形态', strategy: 'category-boss' }
+  }
+  const evolution = Array.isArray(detail?.evolution) ? detail.evolution : []
+  const exactName = normalizeName(creature.name)
+  const creatureName = baseCreatureName(creature.name)
+  let evolutionIndex = evolution.findIndex((step) => normalizeName(step.linkName || step.name) === exactName)
+  if (evolutionIndex < 0) {
+    evolutionIndex = evolution.findIndex((step) => baseCreatureName(step.name || step.linkName) === creatureName)
+  }
+  if (evolutionIndex >= 0) {
+    const nextName = baseCreatureName(evolution[evolutionIndex + 1]?.name || evolution[evolutionIndex + 1]?.linkName)
+    if (evolutionIndex === evolution.length - 1) {
+      return { value: '最终形态', strategy: 'evolution-terminal' }
+    }
+    if (nextName && bossNames.has(nextName)) {
+      return { value: '最终形态', strategy: 'evolution-next-boss' }
+    }
   }
   const stageForm = new Map([
     ['一阶', 'Ⅰ阶'],
@@ -213,6 +234,12 @@ function countFieldChanges(previewRows, currentRows, fields) {
 
 function buildPreview({ creatures, skills, details, currentRows, currentSkills, breedingRows, syncedAt }) {
   const detailByCreature = new Map(details.map((row) => [stagedCreatureKey(row), row]))
+  const bossNames = new Set(
+    creatures
+      .filter((row) => row.formCategoryLabel === '首领形态')
+      .map((row) => baseCreatureName(row.name))
+      .filter(Boolean),
+  )
   const creatureIndexes = {
     creatureByExact: indexBy(currentRows, creatureMatchKey),
     creatureByName: indexBy(currentRows, (row) => normalizeName(readValue(row, 'name'))),
@@ -247,21 +274,26 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
     else skillIssues.newRows.push(`${skill.name} → ${id}`)
     skillMatches.set(skill.name, { id, match })
     skillNameToId.set(normalizeName(skill.name), id)
+    const values = {
+      ...existingValues,
+      image: skill.image || existingValues.image || '',
+      name: skill.name,
+      element: element.mapped,
+      category: category.mapped,
+      power: normalizeNumber(skill.power),
+      cost: normalizeNumber(skill.cost),
+      priority: existingValues.priority || '',
+      effect: skill.effect || existingValues.effect || '',
+      learnerRefs: [],
+    }
+    values.effectTags = deriveSkillEffectTags({
+      ...skill,
+      ...values,
+      effectTags: existingValues.effectTags || [],
+    })
     return {
       id,
-      values: {
-        ...existingValues,
-        image: skill.image || existingValues.image || '',
-        name: skill.name,
-        element: element.mapped,
-        category: category.mapped,
-        power: normalizeNumber(skill.power),
-        cost: normalizeNumber(skill.cost),
-        priority: existingValues.priority || '',
-        effectTags: existingValues.effectTags || [],
-        effect: skill.effect || existingValues.effect || '',
-        learnerRefs: [],
-      },
+      values,
       previewMeta: {
         source: skill.source,
         sourceUrl: skill.sourceUrl,
@@ -299,7 +331,7 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
     const detail = detailByCreature.get(stagedCreatureKey(creature))
     const breeding = findBreedingMatch(creature, breedingIndexes)
     const element = mapElements(creature.elements)
-    const form = deriveForm(creature, existingValues)
+    const form = deriveForm(creature, existingValues, detail, bossNames)
     if (element.unknown.length > 0) creatureIssues.unknownElements.push(`${creature.no} ${creature.name}：${element.unknown.join('、')}`)
 
     const statKeys = ['bst', 'hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
@@ -354,6 +386,7 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
       values: {
         ...existingValues,
         image: creature.image || existingValues.image || '',
+        shinyImage: creature.shinyImage || existingValues.shinyImage || '',
         name: creature.name,
         no: creature.no,
         element: element.mapped,
@@ -385,6 +418,7 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
         seasonLabel: creature.seasonLabel || '',
         breedingSource: breeding?.sourceUrl || '',
         imageSource: creature.image ? (creature.image.includes('patchwiki') ? 'patchwiki' : 'bwiki') : existingValues.image ? 'existing-public-preset' : 'empty',
+        shinyImageSource: creature.shinyImage ? 'patchwiki' : existingValues.shinyImage ? 'existing-public-preset' : 'empty',
       },
     }
   })
@@ -427,7 +461,7 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
   }
 
   const creatureFieldChanges = countFieldChanges(creaturePreviewRows, currentRows, [
-    'image', 'element', 'form', 'bst', 'hp', 'patk', 'matk', 'pdef', 'mdef', 'spd', 'shiny',
+    'image', 'shinyImage', 'element', 'form', 'bst', 'hp', 'patk', 'matk', 'pdef', 'mdef', 'spd', 'shiny',
     'traitName', 'traitIcon', 'traitDesc', 'skillRefs', 'eggGroups', 'speciesGroup', 'evolutionLine',
     'eggImage', 'fruitImage',
   ])
@@ -455,12 +489,19 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
 
 function renderReport({ syncedAt, inputs, outputs, creatureIssues, skillIssues, skillRelationIssues, relationConsistency, omittedCurrentCreatures, creatureFieldChanges, skillFieldChanges, duplicateCreatureIds, duplicateSkillIds }) {
   const imageCounts = countBy(outputs.creaturePreviewRows, (row) => row.previewMeta.imageSource)
+  const shinyImageCounts = countBy(outputs.creaturePreviewRows, (row) => row.previewMeta.shinyImageSource)
   const idStrategyCounts = countBy(outputs.creaturePreviewRows, (row) => row.previewMeta.idStrategy)
   const skillIdStrategyCounts = countBy(outputs.skillPreviewRows, (row) => row.previewMeta.idStrategy)
   const relationRate = skillRelationIssues.totalCards === 0 ? '0.00%' : `${((skillRelationIssues.matchedCards / skillRelationIssues.totalCards) * 100).toFixed(2)}%`
   const creaturesWithSkillRefs = outputs.creaturePreviewRows.filter((row) => row.values.skillRefs.length > 0).length
   const creaturesWithoutSkillRefs = outputs.creaturePreviewRows.length - creaturesWithSkillRefs
   const emptyImageRows = outputs.creaturePreviewRows.filter((row) => !row.values.image).map((row) => `${row.values.no} ${row.values.name}`)
+  const missingShinyImageRows = outputs.creaturePreviewRows
+    .filter((row) => row.values.shiny === 'yes' && !row.values.shinyImage)
+    .map((row) => `${row.values.no} ${row.values.name}`)
+  const unexpectedShinyImageRows = outputs.creaturePreviewRows
+    .filter((row) => row.values.shiny !== 'yes' && row.values.shinyImage)
+    .map((row) => `${row.values.no} ${row.values.name}`)
   const legacyUnmatchedRefs = inputs.details.flatMap((row) =>
     (row.legacyUnmatchedSkillNames ?? []).map((name) => `${row.no} ${row.name}：${name}`))
   const p4Blockers = [
@@ -468,6 +509,8 @@ function renderReport({ syncedAt, inputs, outputs, creatureIssues, skillIssues, 
     creaturesWithoutSkillRefs ? `仍有 ${creaturesWithoutSkillRefs} 条精灵没有技能引用` : '',
     relationConsistency.missingReverse.length || relationConsistency.missingForward.length || relationConsistency.danglingSkillRefs.length || relationConsistency.danglingLearnerRefs.length ? '技能双向关系仍不一致' : '',
     emptyImageRows.length ? `仍有 ${emptyImageRows.length} 条精灵缺少图片` : '',
+    missingShinyImageRows.length ? `仍有 ${missingShinyImageRows.length} 条“存在异色”的精灵缺少异色图片` : '',
+    unexpectedShinyImageRows.length ? `仍有 ${unexpectedShinyImageRows.length} 条“无异色”的精灵带有异色图片` : '',
   ].filter(Boolean)
 
   return `# BWiki 预置 preview 报告
@@ -615,6 +658,18 @@ ${renderCountTable(imageCounts)}
 缺少精灵图片的行：
 
 ${renderList(emptyImageRows)}
+
+| 异色图片来源 | 数量 |
+|---|---:|
+${renderCountTable(shinyImageCounts)}
+
+标记为存在异色、但缺少异色图片的行：
+
+${renderList(missingShinyImageRows)}
+
+标记为无异色、但带有异色图片的行：
+
+${renderList(unexpectedShinyImageRows)}
 
 ## 正式发布准入判断
 

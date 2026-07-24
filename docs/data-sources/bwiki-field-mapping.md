@@ -19,12 +19,13 @@
 | 现有字段 key | 字段名 | BWiki 来源 | 转换 / 合并口径 | preview 处理 |
 |---|---|---|---|---|
 | `image` | 精灵图 | 精灵筛选页头像；筛选页缺图时用精灵图鉴页同“编号 + 名称”或唯一名称卡片补齐 | 不拼接或猜测图片 URL；只接受 BWiki 页面实际解析出的 `patchwiki` 图片，记录筛选页 / 图鉴页来源 | 写入 preview；覆盖前列出图片来源变化 |
+| `shinyImage` | 异色样子 | 精灵图鉴页同“编号 + 名称”或唯一名称卡片的 `dex-pet-art-shiny` 图片层 | 只接受 BWiki 页面实际提供的 `patchwiki` 图片；无异色图片时留空，不生成、拼接或模拟 | 写入 preview；与 `shiny` 标记交叉校验覆盖率 |
 | `name` | 名称 | `creatures.rows[].name` | BWiki 名称作为目标名称；名称别名仅用于稳定 id 匹配 | 写入 preview；生成名称归一化差异表 |
 | `no` | 编号 | `creatures.rows[].no` | 保持 `NO.001` 格式；同编号多形态不合并 | 写入 preview |
 | `element` | 系别 | `creatures.rows[].elements` | 映射到现有 18 系选项；未知值进入报告，不自动新增选项 | 写入 preview |
-| `form` | 形态 | `formCategoryLabel`、`stageLabel` | 首领分类映射为 `首领形态`；一阶、二阶、三阶依次映射为 `Ⅰ阶`、`Ⅱ阶`、`最终形态`。名称括号只描述外观变体，不参与形态派生 | 写入候选并报告来源策略；缺少同步阶段时只接受已有的规范形态值 |
+| `form` | 形态 | `formCategoryLabel`、`stageLabel`、详情进化链 | 首领分类映射为 `首领形态`；普通形态位于详情进化链末端、或进化链下一项对应首领分类时映射为 `最终形态`，其他一阶、二阶、三阶依次映射为 `Ⅰ阶`、`Ⅱ阶`、`最终形态`。名称括号只描述外观变体，不参与阶段判断。 | 写入候选并报告来源策略；缺少同步阶段与进化链证据时只接受已有的规范形态值 |
 | `bst` / `hp` / `patk` / `matk` / `pdef` / `mdef` / `spd` | 种族值 / 六维 | `creatures.rows[]` 数值字段 | 直接数值映射；空值或非数字进入报告 | 写入 preview |
-| `shiny` | 异色形态 | `shinyLabel` | 只映射为当前 `yes` / `no` / `unknown` 选项；无法确认时保留 unknown | 写入 preview |
+| `shiny` | 异色形态 | `shinyLabel` | 只映射为当前 `yes` / `no` / `unknown` 选项；无法确认时保留 unknown。该字段表示是否存在异色，实际图片由 `shinyImage` 提供 | 写入 preview |
 | `traitName` | 特性 | `creatures.rows[].traitName`；详情 `trait.name` 校验 | 筛选页与详情页不一致时进入冲突报告，不自动择一 | 生成冲突清单 |
 | `traitIcon` | 特性图标 | 详情 `trait.image`，筛选页暂无稳定字段 | 有详情图标则写入 preview；无则留空或保留旧值候选 | 写入 preview 候选 |
 | `traitDesc` | 特性描述 | 详情 `trait.description` | 详情页为主；空值不覆盖旧非空值，冲突进入报告 | 写入 preview 候选 |
@@ -70,6 +71,7 @@ Preview 命令只允许生成候选数据和报告，不覆盖正式预置。报
 4. 技能关系覆盖率：精灵详情技能卡总数、成功匹配技能数、未匹配技能名。
 5. `eggGroups` / `speciesGroup` 来源和冲突清单。
 6. 图片字段来源统计：BWiki / patchwiki / 兼容 compendium / 空值。
+   `shiny === yes` 的行必须具有来自精灵图鉴实际图片层的 `shinyImage`，其他行不得携带异色图片。
 7. 明确声明 preview 未触碰 `public/presets/*`、Dexie、用户数据和 UI。
 8. 列出当前稳定 id 未进入 preview 的行，并在覆盖前明确兼容策略。
 9. 分开报告“详情技能卡名称匹配率”和 preview 全量 `skillRefs` / `learnerRefs` 双向一致性。

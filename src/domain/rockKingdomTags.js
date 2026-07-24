@@ -100,6 +100,20 @@ export function deriveSkillEffectTags(skill = {}) {
   if (/\d+\s*连击|连击/.test(text)) add('multiHit')
   if (/蓄力/.test(text)) add('charge')
   if (/天气|场地|雨|雪|沙暴|放晴/.test(text)) add('fieldEffect')
+  if (/驱散|清除.*(?:增益|减益|状态)|解除.*(?:增益|减益|状态)/.test(text)) add('dispel')
+  if (/印记|标记|萌化|寄生|蓄势|蓄电|奉献/.test(text)) add('mark')
+  if (/选择|随机|巧变/.test(text)) add('choice')
+  if (/己方队伍|全体|队友|下个入场/.test(text)) add('teamSupport')
+
+  const category = String(skill.category || skill.tp || skill.type || '')
+  const power = Number(skill.power)
+  const isAttack = category === 'physical'
+    || category === 'magical'
+    || /物攻|物理|物伤|魔攻|魔法|魔伤/.test(category)
+    || Number.isFinite(power) && power > 0
+    || /造成.*(?:伤害|物伤|魔伤)|攻击敌方/.test(text)
+  if (tags.length === 0 && isAttack) add('directDamage')
+  if (tags.length === 0) add('specialMechanic')
 
   return tags
 }

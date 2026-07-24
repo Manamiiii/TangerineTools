@@ -6,11 +6,11 @@ TangerineTools 是一个本地优先（local-first）的个人资料管理 Web A
 
 - **本地优先，无后端依赖**：数据保存在浏览器 IndexedDB 中，通过 Dexie.js 读写；应用可作为静态站点部署。
 - **场景化工具箱**：首页管理多个场景，每个场景可单独启用资料库、收集记录、统计视图、性格推荐和孵蛋推荐五种工具。
-- **可配置资料库**：支持多资料表、字段管理、搜索、排序、筛选、分页、详情弹窗、同编号形态对比，以及由字段配置控制的紧凑列宽、多行标签、摘要单元格、引用头像和图标化选项。
+- **可配置资料库**：支持多资料表、字段管理、搜索、排序、筛选、分页、详情弹窗，以及由字段配置控制的紧凑列宽、多行标签、摘要单元格、引用头像和图标化选项。
 - **引用与多引用字段**：支持单条资料引用和一对多资料引用；洛克王国精灵通过 `skillRefs` 关联技能资料，技能通过 `learnerRefs` 反向关联可学精灵。
 - **收集记录**：记录“我具体拥有哪一只 / 哪一份”，支持一对一和一对多模式；可搜索引用字段在同一个组合框中完成输入筛选和选择。
 - **统计视图**：从资料库或收集记录选择数据源，按字段分组并叠加数值阈值条件统计。
-- **性格推荐**：在单一搜索组合框中选择精灵，读取六维、特性标签、技能引用和关联首领形态；全部合法候选按强化维度与推荐档位展示，并逐项匹配收集记录中的具体性格。
+- **性格推荐**：每个编号从普通形态进入，展示统一绝对刻度的六维、动态分位、完整特性和同编号全部形态差异；候选按强化维度与推荐档位展示，按进化链匹配已获得性格，并为推荐/可保留性格提供预填快速新增收集记录。
 - **孵蛋推荐**：结合收集记录、性别、异色/炫彩、性格、蛋组和繁育谱系，对可用父母组合进行排序。
 - **全量导入/导出**：在首页通过 JSON 文件手动备份或迁移全部本地数据。
 - **洛克王国预置资料**：首次启动会自动创建“洛克王国”场景，包含精灵基础资料和技能资料；当前正式预置只由版本化 BWiki staging / preview 审计产物显式发布。
@@ -83,6 +83,8 @@ npm run lint
 │   │   ├── single-creature-template.md   # 单只精灵核对模板
 │   │   ├── confirmed-results.md          # 用户确认的回归基线
 │   │   └── open-issues.md                # 尚待确认的通用规则问题
+│   ├── reading-companion/
+│   │   └── product-and-architecture.md    # 经典文学阅读伴侣规划与剧透安全契约
 │   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
 │   └── system-capabilities.md            # 已实现能力和明确非目标
 ├── public/presets/
@@ -190,6 +192,7 @@ git diff --check
 - [`docs/nature/single-creature-template.md`](docs/nature/single-creature-template.md)：单只精灵定位与性格核对格式。
 - [`docs/nature/confirmed-results.md`](docs/nature/confirmed-results.md)：用户确认过的单只结果，用作规则回归基线。
 - [`docs/nature/open-issues.md`](docs/nature/open-issues.md)：尚未形成稳定规则的通用问题。
+- [`docs/reading-companion/product-and-architecture.md`](docs/reading-companion/product-and-architecture.md)：经典文学阅读伴侣的规划范围、按书建库、跨端入口和剧透安全契约；当前尚未实现。
 
 根 README 是项目结构、命令和维护文档的统一入口；专题文档只保存各自领域内不可由代码结构直接表达的规则与约束。
 

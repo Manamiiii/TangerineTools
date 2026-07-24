@@ -121,7 +121,7 @@ export const OWNED_NATURE_OPTIONS = [
 // ref 字段的 refTableKind/refTableName 由 ensureOwnedTable 在运行时补齐，
 // 因为它需要绑定到当前场景里的普通资料表（例如洛克王国的"精灵图鉴"）。
 export const ROCK_KINGDOM_COLLECTION_FIELDS = [
-  { key: 'ref', name: '精灵', type: 'reference', display: { referenceImageField: 'image', referenceLabelFields: ['name'], searchableReference: true, plainReference: true, breakParentheses: true, compact: true, tableWidth: 154 } },
+  { key: 'ref', name: '精灵', type: 'reference', display: { referenceImageField: 'image', referenceImageVariantField: 'shinyImage', referenceImageVariantSourceField: 'shiny', referenceImageVariantSourceValue: 'yes', referenceLabelFields: ['name'], searchableReference: true, plainReference: true, breakParentheses: true, compact: true, tableWidth: 154 } },
   { key: 'nature', name: '性格', type: 'select', options: OWNED_NATURE_OPTIONS, display: { compact: true, tableWidth: 136 } },
   { key: 'bloodline', name: '血脉', type: 'select', options: OWNED_BLOODLINE_OPTIONS, display: { compact: true, tableWidth: 104 } },
   { key: 'shiny', name: '个体异色', type: 'select', options: OWNED_SHINY_OPTIONS, display: { mode: 'icon', hiddenOptionValues: ['no'], compact: true, tableWidth: 68 } },
@@ -145,7 +145,7 @@ export function matchesOwnedSearch(row, keyword) {
 
 // 按“精灵引用 + 具体性格值”统计收集数量，供性格候选逐项匹配。
 // sources 支持多个收集表及不同字段 key，不依赖洛克王国的固定表结构。
-export function buildOwnedNatureIndex(sources = []) {
+export function buildOwnedNatureIndex(sources = [], equivalentReferenceIds = new Map()) {
   const index = new Map()
   for (const source of sources) {
     const referenceKeys = Array.isArray(source.referenceKeys) ? source.referenceKeys : []
@@ -155,9 +155,12 @@ export function buildOwnedNatureIndex(sources = []) {
       for (const referenceKey of referenceKeys) {
         const referenceValue = row.values?.[referenceKey]
         if (!referenceValue) continue
-        const counts = index.get(referenceValue) || {}
-        counts[natureValue] = (counts[natureValue] || 0) + 1
-        index.set(referenceValue, counts)
+        const equivalentIds = equivalentReferenceIds.get(referenceValue) || [referenceValue]
+        for (const equivalentId of equivalentIds) {
+          const counts = index.get(equivalentId) || {}
+          counts[natureValue] = (counts[natureValue] || 0) + 1
+          index.set(equivalentId, counts)
+        }
       }
     }
   }

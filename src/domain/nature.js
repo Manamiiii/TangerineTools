@@ -675,6 +675,21 @@ function hasBalancedDefenseWallFoundation(stats = {}, analysis = {}, traitTags =
   return defenseGap <= 5 && hasDefenseTrait && hasBulkFoundation && nearWallLine
 }
 
+function isStandoutDefenseStat(key, analysis = {}) {
+  if (!['pdef', 'mdef'].includes(key)) return false
+  const value = Number(analysis.stats?.[key]) || 0
+  const oppositeKey = key === 'pdef' ? 'mdef' : 'pdef'
+  const oppositeValue = Number(analysis.stats?.[oppositeKey]) || 0
+  const p75 = Number(STAT_PERCENTILE_BANDS[key]?.p75) || 0
+  return (
+    value >= oppositeValue &&
+    (
+      value >= p75 ||
+      (value >= p75 - 5 && value - oppositeValue >= 20)
+    )
+  )
+}
+
 
 function isSingleDefenseRaiseSoftCapped(candidate, roles = [], traitTags = [], analysis = null) {
   if (!['pdef', 'mdef'].includes(candidate.raise)) return false
@@ -700,6 +715,41 @@ function isFunctionalBalancedMixedAttack(analysis = {}, roles = [], skillProfile
   const balancedStats = Math.abs(Number(analysis.attackBias) || 0) <= 12
   const hasFunctionalRole = roles.some((role) => ['bulky', 'support', 'energyCycle', 'physicalWall', 'magicalWall'].includes(role.key))
   return balancedSkillCounts && balancedStats && hasFunctionalRole
+}
+
+function hasDecisiveFormulaRoute(candidate, formulaAssist = {}) {
+  const ratio = Number(formulaAssist.outputRatio) || 0
+  if (candidate.lower === 'matk') return ratio >= 1.5
+  if (candidate.lower === 'patk') return ratio > 0 && ratio <= (1 / 1.5)
+  return false
+}
+
+function hasUsableBalancedMixedAttackRoutes(analysis = {}, skillProfile = {}) {
+  const breakdown = skillProfile.breakdown || {}
+  const physicalCount = Number(breakdown.physicalCount) || 0
+  const magicalCount = Number(breakdown.magicalCount) || 0
+  const maxAttackStat = Math.max(
+    Number(analysis.stats?.patk) || 0,
+    Number(analysis.stats?.matk) || 0,
+  )
+  return (
+    Math.abs(Number(analysis.attackBias) || 0) <= 12 &&
+    maxAttackStat >= 70 &&
+    physicalCount >= 4 &&
+    magicalCount >= 4
+  )
+}
+
+function traitMechanismDependsOnLoweredAttack(candidate = {}, skillInfo = {}) {
+  const text = String(skillInfo?.traitText || '')
+  if (!text) return false
+  if (candidate.lower === 'patk') {
+    return /造成[^。；]*(?:物理伤害|物伤)|根据物攻|基于物攻/.test(text)
+  }
+  if (candidate.lower === 'matk') {
+    return /造成[^。；]*(?:魔法伤害|魔伤)|根据魔攻|基于魔攻/.test(text)
+  }
+  return false
 }
 
 
@@ -740,7 +790,7 @@ function isSkillProvedSingleAttackRoute(candidate, roles = [], skillProfile = {}
   if (!roles.some((role) => role.key === 'mixedAttacker')) return false
   const breakdown = skillProfile.breakdown || {}
   const routeGap = Math.abs(Number(skillProfile.routeGap) || 0)
-  const formulaSupportsRoute = formulaRouteSupportsSingleAttack(candidate, formulaAssist)
+  const formulaSupportsRoute = hasDecisiveFormulaRoute(candidate, formulaAssist)
   if (skillProfile.attackMode === 'physical' && candidate.lower === 'matk') {
     return routeGap >= 4 && (formulaSupportsRoute || breakdown.physicalShare >= 0.65 || breakdown.magicalCount <= 3)
   }
@@ -885,8 +935,13 @@ export function evaluateNatureCandidate(
     reasons.push('技能效果标签偏魔法输出，强化魔攻更贴合技能组')
   }
   const functionalBalancedMixedAttack = isFunctionalBalancedMixedAttack(analysis, roles, skillProfile)
+  const balancedUsableMixedRoutes = hasUsableBalancedMixedAttackRoutes(analysis, skillProfile)
   const lowOutputFunctionalMixedAttack = isLowOutputFunctionalMixedAttack(analysis, roles, skillProfile)
   const balancedDefenseWall = hasBalancedDefenseWallFoundation(stats, analysis, traitTags)
+  const oppositeDefense = candidate.raise === 'pdef' ? 'mdef' : candidate.raise === 'mdef' ? 'pdef' : ''
+  const raisesPronouncedDefenseShortfall =
+    oppositeDefense &&
+    stats[candidate.raise] <= stats[oppositeDefense] * 0.67
   if (balancedDefenseWall && ['hp', 'pdef', 'mdef'].includes(candidate.raise)) {
     reasons.push('生命与双防接近标准肉盾模板，强化耐久项可服务均衡双防站场')
   }
@@ -916,6 +971,15 @@ export function evaluateNatureCandidate(
   ) {
     score = Math.max(score, 32)
     reasons.push('功能站场型双攻接近，强化一攻并弱化另一攻可作为输出分支保留')
+  }
+  if (
+    functionalBalancedMixedAttack &&
+    formulaAssist?.routeHint === 'mixed' &&
+    raisesPronouncedDefenseShortfall &&
+    ATTACK_STAT_KEYS.includes(candidate.lower)
+  ) {
+    score = Math.max(score, 25)
+    reasons.push('功能站场型双攻接近，补强明显防御短板并牺牲一攻仍可作为低优先站场分支保留')
   }
   if (lowOutputFunctionalMixedAttack && ATTACK_STAT_KEYS.includes(candidate.raise)) {
     score -= 14
@@ -1037,19 +1101,65 @@ export function evaluateNatureCandidate(
 
   const topRoleKeys = new Set(roles.slice(0, 2).map((role) => role.key))
   const isMixedAttackTradeoff = ATTACK_STAT_KEYS.includes(candidate.lower) && roles.some((r) => r.key === 'mixedAttacker')
+  const balancedMixedAttackSacrifice =
+    balancedUsableMixedRoutes &&
+    !traitMechanismDependsOnLoweredAttack(candidate, skillInfo) &&
+    !(candidate.raise === 'spd' && speedProfile.concern.level === 'low') &&
+    ATTACK_STAT_KEYS.includes(candidate.lower)
+  if (balancedMixedAttackSacrifice) {
+    score = Math.max(score, 25)
+    reasons.push('双攻面板接近且两侧都有实际攻击路线；技能池差异只影响优先级，牺牲任一攻击侧都可保留对应玩法分支')
+  }
   const speedIsPrimaryCore =
     speedProfile.concern.level === 'high' &&
     (topRoleKeys.has('fastAttacker') ||
       traitTags.includes('spdLean') ||
       traitTags.includes('conditionalSpeedBoost') ||
       traitTags.includes('swiftSkill'))
-  const hardRisk =
-    (lowerCore >= 3.8 && !skillPlausibleSingleAttackRoute && !isMixedAttackTradeoff &&
+  const baseHardRisk =
+    (lowerCore >= 3.8 && !skillPlausibleSingleAttackRoute && !isMixedAttackTradeoff && !balancedMixedAttackSacrifice &&
       !(candidate.lower === 'spd' && speedProfile.concern.level === 'low')) ||
     (candidate.lower === 'spd' && speedIsPrimaryCore) ||
     (candidate.lower === 'hp' && roles.some((r) => ['bulky', 'support'].includes(r.key)) && lowerExpendable < 1)
+  const lowersStandoutDefense =
+    ['pdef', 'mdef'].includes(candidate.lower) &&
+    isStandoutDefenseStat(candidate.lower, analysis) &&
+    roles.some((role) => ['bulky', 'support', 'physicalWall', 'magicalWall'].includes(role.key))
+  const tradesWithinDurability =
+    DEFENSE_STAT_KEYS.includes(candidate.raise) &&
+    DEFENSE_STAT_KEYS.includes(candidate.lower)
+  const attackTradesDefense =
+    ATTACK_STAT_KEYS.includes(candidate.raise) &&
+    ['pdef', 'mdef'].includes(candidate.lower)
+  const speedTradesDefense =
+    candidate.raise === 'spd' &&
+    ['pdef', 'mdef'].includes(candidate.lower)
+  const invalidAttackDefenseTrade = attackTradesDefense
+  const invalidSpeedDefenseTrade = speedTradesDefense
+  const hardRisk =
+    baseHardRisk ||
+    lowersStandoutDefense ||
+    tradesWithinDurability ||
+    invalidAttackDefenseTrade ||
+    invalidSpeedDefenseTrade
   const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, traitTags, analysis)
 
+  if (lowersStandoutDefense) {
+    score -= 14
+    warnings.push(`弱化${lowerLabel}会牺牲功能/站场路线最突出的耐久项，不作为常规保留分支`)
+  }
+  if (tradesWithinDurability) {
+    score -= 24
+    warnings.push('生命、物防和魔防共同构成耐久体系；强化其中一项不应以削弱另一项为代价')
+  }
+  if (invalidAttackDefenseTrade) {
+    score -= 18
+    warnings.push('尚无稳定实战证据支持纯双攻玻璃输出；强化攻击不以牺牲单防为代价')
+  }
+  if (invalidSpeedDefenseTrade) {
+    score -= 18
+    warnings.push('强化速度应优先牺牲明确不用的攻击项；不以削弱物防或魔防换取速度')
+  }
   if (hardRisk) score -= 8
   let decision = decisionFromScore(score, hardRisk)
   if (singleDefenseSoftCap && decision === 'recommended') {
@@ -1067,12 +1177,16 @@ export function evaluateNatureCandidate(
     const lowersSkillOffRouteAttack =
       (skillProfile.attackMode === 'physical' && candidate.lower === 'matk') ||
       (skillProfile.attackMode === 'magical' && candidate.lower === 'patk')
-    const lowersSafeAttackBranch =
-      skillPlausibleSingleAttackRoute ||
-      formulaRouteSupportsSingleAttack(candidate, formulaAssist) ||
-      lowersSkillOffRouteAttack ||
-      (skillProfile.attackMode === 'mixed' && lowersAttackSide)
-    if (lowersSafeAttackBranch) {
+    const lowersSafeAttackBranch = speedProfile.concern.level === 'low'
+      ? skillProvedSingleAttackRoute || formulaRouteSupportsSingleAttack(candidate, formulaAssist)
+      : skillPlausibleSingleAttackRoute ||
+        formulaRouteSupportsSingleAttack(candidate, formulaAssist) ||
+        lowersSkillOffRouteAttack ||
+        (balancedUsableMixedRoutes && lowersAttackSide)
+    if (speedProfile.concern.level === 'low') {
+      decision = 'notRecommended'
+      warnings.push('基础速度未进入竞争圈且定位不依赖抢速；即使存在单攻分支，也不为加速牺牲攻击项')
+    } else if (lowersSafeAttackBranch) {
       decision = 'keepable'
       warnings.push('中速以下的功能/站场定位可保留低代价速度节奏分支，但不应与主攻或耐久强化同级首推')
     } else {
@@ -1118,11 +1232,19 @@ export function evaluateNatureCandidate(
       warnings.push('弱化另一攻主要服务单攻分支，但当前强化项不是主攻/速度，默认保留而非主推')
     }
   }
-  if (skillPlausibleSingleAttackRoute && decision === 'notRecommended' && score >= 35) {
+  if (
+    skillPlausibleSingleAttackRoute &&
+    decision === 'notRecommended' &&
+    score >= 35 &&
+    !(candidate.raise === 'spd' && speedProfile.concern.level === 'low')
+  ) {
     decision = 'keepable'
     warnings.push(skillProvedSingleAttackRoute
       ? '技能已证明可走单攻分支，当前组合不应直接判死，降级为可保留'
       : '技能略偏单攻分支，捕捉时可先保留等待玩法确认')
+  }
+  if (tradesWithinDurability || invalidAttackDefenseTrade || invalidSpeedDefenseTrade) {
+    decision = 'notRecommended'
   }
 
   return applyNaturePreference({
@@ -1139,6 +1261,7 @@ export function evaluateNatureCandidate(
     reasons: reasons.length ? reasons : [`强化${raiseLabel}、弱化${lowerLabel}整体收益一般`],
     warnings,
     hardRisk,
+    balancedMixedAttackSacrifice,
   }, preference)
 }
 
@@ -1168,9 +1291,19 @@ function canKeepDominatedCandidate(item, best) {
     item.reasons.some((reason) =>
       /功能站场型双攻接近|低输出功能位仍有双攻技能分支/.test(reason),
     )
+  const functionalMixedAttackSacrifice =
+    ATTACK_STAT_KEYS.includes(item.lower) &&
+    item.formulaAssist?.routeHint === 'mixed' &&
+    item.reasons.some((reason) => /功能站场型双攻接近，补强明显防御短板/.test(reason))
   if (item.decision !== 'keepable' || item.hardRisk) return false
-  if (!functionalMixedAttackTradeoff && item.score < 45) return false
-  if (shouldHardDominateWithOffRouteAttack(item, best)) return false
+  if (
+    DEFENSE_STAT_KEYS.includes(item.lower) &&
+    item.lower !== 'hp' &&
+    ATTACK_STAT_KEYS.includes(best.lower) &&
+    best.score - item.score >= 40
+  ) return false
+  if (!functionalMixedAttackTradeoff && !functionalMixedAttackSacrifice && !item.balancedMixedAttackSacrifice && item.score < 45) return false
+  if (shouldHardDominateWithOffRouteAttack(item, best) && !functionalMixedAttackSacrifice && !item.balancedMixedAttackSacrifice) return false
   if (
     item.raise === 'spd' &&
     item.speedProfile?.concern?.level === 'low' &&
@@ -1178,7 +1311,7 @@ function canKeepDominatedCandidate(item, best) {
   ) return false
   if (lowersCurrentShortDefense(item)) return false
   if (item.warnings.some((warning) => /低输出功能位不宜为了泛用强化牺牲双防/.test(warning))) return false
-  if (functionalMixedAttackTradeoff) return true
+  if (functionalMixedAttackTradeoff || functionalMixedAttackSacrifice || item.balancedMixedAttackSacrifice) return true
   const bestLowerIsSpeedForLowConcern =
     best.lower === 'spd' && best.speedProfile?.concern?.level === 'low'
   if (bestLowerIsSpeedForLowConcern && ATTACK_STAT_KEYS.includes(item.lower)) return false
@@ -1211,10 +1344,14 @@ function applyDominance(evaluations) {
       if (item.lineupKeep) continue
       if (item.score > best.score - 20) continue
       const hardDominatedByOffRouteAttack = shouldHardDominateWithOffRouteAttack(item, best)
+      const competingAttackSacrifices =
+        ATTACK_STAT_KEYS.includes(item.lower) &&
+        ATTACK_STAT_KEYS.includes(best.lower)
       if (
         item.reasons.some((reason) => /专项|速度 .*提升到/.test(reason)) &&
         !lowersCurrentShortDefense(item) &&
-        !hardDominatedByOffRouteAttack
+        !hardDominatedByOffRouteAttack &&
+        (!competingAttackSacrifices || item.balancedMixedAttackSacrifice)
       ) continue
       if (item.score >= 25 && item.reasons.some((reason) => /公式辅助输出线偏.*单攻分支/.test(reason))) continue
       const target = byKey.get(dominanceKey(item))
@@ -1390,34 +1527,32 @@ export function evaluateNatureProfiles(baseStats = {}, traitTags = [], skillInfo
   const merged = primary.map((item) => {
     const matches = byCandidate.map((items) => items.get(`${item.raise}-${item.lower}`)).filter(Boolean)
     const all = [item, ...matches]
-    const worst = all.reduce((current, candidate) =>
-      decisionRank[candidate.decision] > decisionRank[current.decision] ? candidate : current,
-    )
-    const bossWarnings = matches.flatMap((candidate) => candidate.warnings || [])
-      .filter((warning) => !(item.warnings || []).includes(warning))
-      .filter((warning, index, list) => list.indexOf(warning) === index)
-      .slice(0, 3)
-      .map((warning) => `首领形态：${warning}`)
-    const roleLabels = all.flatMap((candidate) => String(candidate.roleLabel || '').split(' / '))
-      .filter(Boolean)
-      .filter((label, index, list) => list.indexOf(label) === index)
-      .slice(0, 3)
+    const best = all.reduce((current, candidate) => {
+      const currentRank = decisionRank[current.decision]
+      const candidateRank = decisionRank[candidate.decision]
+      if (candidateRank < currentRank) return candidate
+      if (candidateRank === currentRank && candidate.score > current.score) return candidate
+      return current
+    })
     return {
-      ...item,
-      score: Math.round((all.reduce((sum, candidate) => sum + candidate.score, 0) / all.length) * 10) / 10,
-      decision: worst.decision,
-      hardRisk: all.some((candidate) => candidate.hardRisk),
-      roleTags: [...new Set(all.flatMap((candidate) => candidate.roleTags || []))],
-      roleLabel: roleLabels.join(' / '),
+      ...best,
       reasons: [
-        ...(item.reasons || []),
-        `已同时核对最终形态与 ${extraProfiles.length} 个关联首领形态的属性、特性和技能变化`,
+        ...(best.reasons || []),
+        `已分别核对 ${1 + extraProfiles.length} 个同编号形态；总体档位取各形态结果的并集`,
       ],
-      warnings: [...(item.warnings || []), ...bossWarnings],
       analysisFormCount: 1 + extraProfiles.length,
+      formDecisions: [
+        { id: preference.primaryProfileId || 'primary', label: preference.primaryProfileLabel || '当前形态', decision: item.decision, score: item.score },
+        ...matches.map((candidate, index) => ({
+          id: extraProfiles[index]?.id || `profile-${index}`,
+          label: extraProfiles[index]?.label || extraProfiles[index]?.name || `形态 ${index + 2}`,
+          decision: candidate.decision,
+          score: candidate.score,
+        })),
+      ],
     }
   })
-  return [...applyDominance(merged)].sort((a, b) =>
+  return merged.sort((a, b) =>
     decisionRank[a.decision] - decisionRank[b.decision] || b.score - a.score,
   )
 }

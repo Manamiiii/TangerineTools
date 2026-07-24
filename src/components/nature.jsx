@@ -5,33 +5,33 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { ArrowDownCircle, ArrowUpCircle, CheckCircle2, Sparkles } from 'lucide-react'
-import { db } from '../db.js'
+import { ArrowDownCircle, ArrowUpCircle, CheckCircle2, Plus, Sparkles } from 'lucide-react'
+import { db, ensureOwnedTable } from '../db.js'
 import { STATS_DIMENSIONS } from '../constants.js'
 import {
-  analyzeStats,
+  evaluateAllNatures,
   evaluateNatureProfiles,
-  explainNatureRecommendation,
   natureName,
   NATURE_DECISION_LABELS,
   STAT_LABELS,
 } from '../domain/nature.js'
 import { pveOverviewSummary, pveStarText } from '../domain/naturePve.js'
-import { buildNatureAnalysisInput, extractRowSummary } from '../domain/natureRowAdapter.js'
+import { buildNatureAnalysisInput, buildPopulationStatSummary, extractRowSummary } from '../domain/natureRowAdapter.js'
 import { buildOwnedNatureIndex } from '../domain/owned.js'
 import {
   compareRockKingdomCreatureRows,
-  isRockKingdomNatureSelectableRow,
-  relatedRockKingdomBossRows,
+  buildEvolutionReferenceGroups,
+  getSameNumberRows,
+  pairRockKingdomComparisonForms,
+  primaryRockKingdomNatureRows,
   visibleRockKingdomCreatureRows,
 } from '../domain/rockKingdom.js'
 import { TRAIT_TAG_OPTIONS } from '../presets/rockKingdom.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
-import { EmptyState, FormRow, OptionTag, SearchableSelect } from './common.jsx'
+import { EmptyState, FormRow, OptionTag, SearchableSelect, StatsChart } from './common.jsx'
+import { OwnedFormModal } from './owned.jsx'
 
 const EMPTY_STATS = Object.fromEntries(STATS_DIMENSIONS.map((d) => [d.key, '']))
-const TRAIT_TAG_LABELS = Object.fromEntries(TRAIT_TAG_OPTIONS.map((o) => [o.value, o.label]))
-
 function TraitTagList({ value }) {
   const selected = Array.isArray(value) ? value : []
   const options = TRAIT_TAG_OPTIONS.filter((option) => selected.includes(option.value))
@@ -53,11 +53,29 @@ export function NatureTool({ scene }) {
     sourceRowId: '',
     sourceMeta: null,
     ownedNatures: {},
-    bossAnalysis: null,
+    formAnalysis: null,
+    formProfiles: [],
+    populationStats: null,
+    ownedContext: null,
   }
   const [draftInput, setDraftInput] = useState(emptyInput)
   const [input, setInput] = useState(draftInput)
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [quickAddNature, setQuickAddNature] = useState(null)
+
+  function handleQuickAddSaved() {
+    if (!quickAddNature) return
+    const updateOwned = (previous) => ({
+      ...previous,
+      ownedNatures: {
+        ...previous.ownedNatures,
+        [quickAddNature.id]: (previous.ownedNatures?.[quickAddNature.id] || 0) + 1,
+      },
+    })
+    setInput(updateOwned)
+    setDraftInput(updateOwned)
+    setQuickAddNature(null)
+  }
 
   function updateStat(key, value) {
     setDraftInput((prev) => ({ ...prev, stats: { ...prev.stats, [key]: value } }))
@@ -71,17 +89,20 @@ export function NatureTool({ scene }) {
       setSelectedIndex(0)
       return
     }
-    const { name, stats, traitTags, skillInfo, analysisProfiles, sourceRowId, sourceMeta, ownedNatures, bossAnalysis } = payload
+    const { name, stats, traitTags, skillInfo, analysisProfiles, formProfiles, sourceRowId, sourceMeta, ownedNatures, formAnalysis, populationStats, ownedContext } = payload
     const next = {
       name: name || '',
       stats: { ...EMPTY_STATS, ...stats },
       traitTags: traitTags || [],
       skillInfo: skillInfo || { skills: [] },
       analysisProfiles: analysisProfiles || [],
+      formProfiles: formProfiles || [],
       sourceRowId: sourceRowId || '',
       sourceMeta: sourceMeta || null,
       ownedNatures: ownedNatures || {},
-      bossAnalysis: bossAnalysis || null,
+      formAnalysis: formAnalysis || null,
+      populationStats: populationStats || null,
+      ownedContext: ownedContext || null,
     }
     setDraftInput(next)
     setInput(next)
@@ -94,9 +115,16 @@ export function NatureTool({ scene }) {
   )
   const hasAnyStat = STATS_DIMENSIONS.some((d) => numericStats[d.key] > 0)
   const candidates = useMemo(
-    () => evaluateNatureProfiles(numericStats, input.traitTags, input.skillInfo, input.analysisProfiles),
-    [numericStats, input.traitTags, input.skillInfo, input.analysisProfiles],
+    () => evaluateNatureProfiles(numericStats, input.traitTags, input.skillInfo, input.analysisProfiles, {
+      primaryProfileId: input.sourceRowId,
+      primaryProfileLabel: [input.name, input.sourceMeta?.form].filter(Boolean).join(' · ') || '当前形态',
+    }),
+    [numericStats, input.traitTags, input.skillInfo, input.analysisProfiles, input.sourceMeta?.form, input.sourceRowId, input.name],
   )
+  const pveForms = useMemo(() => (input.formProfiles || []).map((profile) => ({
+    ...profile,
+    candidates: evaluateAllNatures(profile.stats, profile.traitTags, profile.skillInfo),
+  })), [input.formProfiles])
   // 输入变化后如果原选中下标越界（例如输入被清空、候选变少），回退到首选。
   useEffect(() => {
     if (selectedIndex >= candidates.length) setSelectedIndex(0)
@@ -105,7 +133,6 @@ export function NatureTool({ scene }) {
   const activeIndex = Math.min(selectedIndex, Math.max(candidates.length - 1, 0))
   const nature = candidates[activeIndex] || null
   const adjustedStats = nature?.adjustedStats || numericStats
-  const reasoning = explainNatureRecommendation(nature, TRAIT_TAG_LABELS)
 
   return (
     <div className="nature-tool">
@@ -127,19 +154,21 @@ export function NatureTool({ scene }) {
 
       {hasAnyStat ? (
         <>
-          <NaturePveOverview candidates={candidates} />
+          <NaturePveOverview forms={pveForms} />
+          <NatureFixedEvidence nature={candidates[0]} forms={pveForms} />
           <div className="nature-workbench">
             <NatureCandidateList
               candidates={candidates}
               activeIndex={activeIndex}
               onSelect={setSelectedIndex}
               ownedNatures={input.ownedNatures}
+              onQuickAdd={input.ownedContext ? setQuickAddNature : null}
             />
             <NatureResult
               nature={nature}
               baseStats={numericStats}
               adjustedStats={adjustedStats}
-              reasoning={reasoning}
+              populationStats={input.populationStats}
             />
           </div>
         </>
@@ -149,12 +178,32 @@ export function NatureTool({ scene }) {
           description="在上方输入框中搜索精灵；也可以展开手动输入六维。"
         />
       )}
+      {quickAddNature && input.ownedContext && (
+        <OwnedFormModal
+          table={input.ownedContext.table}
+          fields={input.ownedContext.fields.filter((field) => !field.hidden)}
+          rows={input.ownedContext.rows}
+          collectionMode={input.ownedContext.table.collectionMode || 'single'}
+          initialValues={{
+            [input.ownedContext.referenceKey]: input.sourceRowId,
+            [input.ownedContext.natureKey]: quickAddNature.id,
+          }}
+          onClose={() => setQuickAddNature(null)}
+          onSaved={handleQuickAddSaved}
+        />
+      )}
     </div>
   )
 }
 
 function CreatureAnalysisOverview({ input }) {
   const meta = input.sourceMeta || {}
+  const chartStats = STATS_DIMENSIONS.map((dimension) => ({
+    key: dimension.key,
+    label: dimension.label,
+    value: Number(input.stats[dimension.key]) || 0,
+  }))
+  const traits = uniqueFormTraits(input.formAnalysis?.forms || [])
   return (
     <section className="nature-creature-overview">
       <div className="nature-creature-identity">
@@ -162,13 +211,40 @@ function CreatureAnalysisOverview({ input }) {
         <div>
           <strong>{input.name || '未命名精灵'}</strong>
           <span>{[meta.no, meta.form].filter(Boolean).join(' · ')}</span>
-          {meta.traitName && <small>特性：{meta.traitName}</small>}
         </div>
       </div>
-      <div className="nature-overview-stats">
-        {STATS_DIMENSIONS.map((dimension) => (
-          <span key={dimension.key}><small>{dimension.label}</small><strong>{input.stats[dimension.key] || 0}</strong></span>
-        ))}
+      <div className="nature-overview-stats-panel">
+        <div className="stats-scale-note">
+          统一刻度 0–{input.populationStats?.globalMax || 0} · 最低有效值参考线 {input.populationStats?.globalMin || 0}
+        </div>
+        <StatsChart
+          stats={chartStats}
+          variant="bars"
+          size="sm"
+          scaleMax={input.populationStats?.globalMax}
+          referenceMin={input.populationStats?.globalMin}
+        />
+        <div className="nature-stat-ranks">
+          {(input.populationStats?.dimensions || []).map((dimension) => (
+            <span key={dimension.key} title={`全资料范围 ${dimension.min}–${dimension.max}`}>
+              <strong>P{dimension.percentile}</strong>
+              <small>约第 {dimension.rank}/{input.populationStats.count}</small>
+            </span>
+          ))}
+        </div>
+        {input.populationStats?.count > 0 && (
+          <details className="nature-population-baseline">
+            <summary>查看全部 {input.populationStats.count} 个可分析形态的六维统计基线</summary>
+            <div className="nature-population-grid">
+              {input.populationStats.dimensions.map((dimension) => (
+                <span key={dimension.key}>
+                  <strong>{dimension.label}</strong>
+                  <small>{dimension.min} · P25 {dimension.p25} · 中位 {dimension.p50} · P75 {dimension.p75} · {dimension.max}</small>
+                </span>
+              ))}
+            </div>
+          </details>
+        )}
       </div>
       <div className="nature-overview-evidence">
         <div>
@@ -177,9 +253,39 @@ function CreatureAnalysisOverview({ input }) {
         </div>
         <span className="nature-evidence-count">{input.skillInfo?.skills?.length || 0} 个技能参与分析</span>
       </div>
-      <BossFormAnalysis analysis={input.bossAnalysis} />
+      {traits.length > 0 && (
+        <div className="nature-form-traits">
+          {traits.map((trait) => (
+            <article key={`${trait.name}-${trait.description}`} className="nature-form-trait">
+              {trait.icon && <img src={trait.icon} alt="" />}
+              <div>
+                <strong>{trait.name}</strong>
+                <small>{trait.forms.join(' / ')}</small>
+                {trait.description && <p>{trait.description}</p>}
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+      <FormAnalysis analysis={input.formAnalysis} populationStats={input.populationStats} />
     </section>
   )
+}
+
+function uniqueFormTraits(forms = []) {
+  const byTrait = new Map()
+  for (const form of forms) {
+    const key = `${form.traitName || ''}::${form.traitDesc || ''}::${form.traitIcon || ''}`
+    const existing = byTrait.get(key) || {
+      name: form.traitName || '无特性',
+      description: form.traitDesc || '',
+      icon: form.traitIcon || '',
+      forms: [],
+    }
+    existing.forms.push([form.name, form.form].filter(Boolean).join(' · '))
+    byTrait.set(key, existing)
+  }
+  return [...byTrait.values()]
 }
 
 function ManualNatureInput({ input, onNameChange, onStatChange, onCalculate }) {
@@ -215,6 +321,10 @@ function RowImportPanel({ scene, onImport }) {
   )
   const [rowId, setRowId] = useState(null)
 
+  useEffect(() => {
+    ensureOwnedTable(scene.id)
+  }, [scene.id])
+
   const fields = useLiveQuery(
     () => db.catalogFields.where('tableId').equals(creatureTableId).sortBy('order'),
     [creatureTableId],
@@ -227,13 +337,14 @@ function RowImportPanel({ scene, onImport }) {
     () => db.catalogRows.where('tableId').equals(skillTableId).toArray(),
     [skillTableId],
   )
-  const ownedNatureIndex = useLiveQuery(async () => {
+  const ownedContext = useLiveQuery(async () => {
     const ownedTables = await db.catalogTables
       .where('sceneId')
       .equals(scene.id)
       .filter((table) => table.kind === 'owned')
       .toArray()
     const sources = []
+    let quickAddContext = null
     for (const table of ownedTables) {
       const ownedFields = await db.catalogFields.where('tableId').equals(table.id).toArray()
       const refFields = ownedFields.filter((field) => field.type === 'reference' && field.referenceTableId === creatureTableId)
@@ -245,11 +356,24 @@ function RowImportPanel({ scene, onImport }) {
         referenceKeys: refFields.map((field) => field.key),
         natureKey: natureField.key,
       })
+      if (!quickAddContext) {
+        quickAddContext = {
+          table,
+          fields: ownedFields.sort((a, b) => a.order - b.order),
+          rows: ownedRows,
+          referenceKey: refFields[0].key,
+          natureKey: natureField.key,
+        }
+      }
     }
-    return buildOwnedNatureIndex(sources)
+    const creatureRows = await db.catalogRows.where('tableId').equals(creatureTableId).toArray()
+    return {
+      index: buildOwnedNatureIndex(sources, buildEvolutionReferenceGroups(creatureRows)),
+      quickAddContext,
+    }
   }, [scene.id, creatureTableId])
 
-  if (creatureTable === undefined || !fields || !rows || !skillRows || !ownedNatureIndex) return null
+  if (creatureTable === undefined || !fields || !rows || !skillRows || !ownedContext) return null
   if (!creatureTable) {
     return (
       <div className="nature-import-panel nature-import-empty">
@@ -259,7 +383,7 @@ function RowImportPanel({ scene, onImport }) {
   }
 
   const visibleRows = visibleRockKingdomCreatureRows(rows).sort(compareRockKingdomCreatureRows)
-  const selectableRows = visibleRows.filter(isRockKingdomNatureSelectableRow)
+  const selectableRows = primaryRockKingdomNatureRows(visibleRows)
   const summaries = selectableRows.map((row) => ({ row, summary: extractRowSummary(row, fields) }))
   const options = summaries.map(({ row, summary }) => {
     const label = [summary.no, summary.name, summary.form].filter(Boolean).join(' · ')
@@ -278,17 +402,18 @@ function RowImportPanel({ scene, onImport }) {
 
   function importRow(target) {
     if (!target) return
-    const bossRows = relatedRockKingdomBossRows(target, visibleRows)
+    const sameNumberRows = getSameNumberRows(target, visibleRows, fields)
     onImport({
-      ...buildNatureAnalysisInput(target, bossRows, fields, skillRows),
+      ...buildNatureAnalysisInput(target, sameNumberRows, fields, skillRows, visibleRows),
       sourceRowId: target.id,
       sourceMeta: {
         image: target.values?.image || '',
         no: target.values?.no || '',
         form: target.values?.form || '',
-        traitName: target.values?.traitName || '',
       },
-      ownedNatures: ownedNatureIndex.get(target.id) || {},
+      populationStats: buildPopulationStatSummary(visibleRows, fields, target),
+      ownedNatures: ownedContext.index.get(target.id) || {},
+      ownedContext: ownedContext.quickAddContext,
     })
   }
 
@@ -311,35 +436,88 @@ function RowImportPanel({ scene, onImport }) {
   )
 }
 
-function BossFormAnalysis({ analysis }) {
-  if (!analysis?.forms?.length) return null
+function FormComparisonCard({ form, baseline, populationStats }) {
+  return (
+    <div className="nature-boss-form">
+      <div className="nature-form-head">
+        {form.image && <img src={form.image} alt="" />}
+        <span>
+          <strong>{form.name}</strong>
+          <small>{form.form || '默认形态'}</small>
+          <span className="nature-form-elements">
+            {form.elements.length > 0 ? form.elements.map((element) => <OptionTag key={element.value} option={element} />) : '系别未知'}
+          </span>
+        </span>
+      </div>
+      <StatsChart
+        stats={STATS_DIMENSIONS.map((dimension) => {
+          const populationDimension = form.populationStats?.dimensions?.find((item) => item.key === dimension.key)
+          const baselineDimension = baseline.find((item) => item.key === dimension.key)
+          const change = form.statChanges.find((item) => item.key === dimension.key)
+          return {
+            ...dimension,
+            value: form.stats[dimension.key] || 0,
+            context: {
+              percentile: populationDimension?.percentile || 0,
+              delta: change?.delta || 0,
+              percentileDelta: (populationDimension?.percentile || 0) - (baselineDimension?.percentile || 0),
+            },
+          }
+        })}
+        variant="bars"
+        size="sm"
+        scaleMax={populationStats?.globalMax}
+        referenceMin={populationStats?.globalMin}
+      />
+      <div className="nature-form-trait-inline">
+        {form.traitIcon && <img src={form.traitIcon} alt="" />}
+        <span><strong>{form.traitName}</strong><small>{form.traitDesc || '暂无特性说明'}</small></span>
+      </div>
+      {form.uniqueSkillNames.length > 0 && (
+        <strong className="nature-unique-skills">本形态独有：{form.uniqueSkillNames.join('、')}</strong>
+      )}
+      <details className="nature-inline-disclosure">
+        <summary>技能组（{form.skillNames.length}）</summary>
+        <span>{form.skillNames.join('、') || '暂无技能资料'}</span>
+      </details>
+    </div>
+  )
+}
+
+function FormAnalysis({ analysis, populationStats }) {
+  if (!analysis?.forms || analysis.forms.length < 2) return null
+  const baselineForm = analysis.forms[0]
+  const baseline = baselineForm?.populationStats?.dimensions || []
+  const formGroups = pairRockKingdomComparisonForms(analysis.forms)
+  const hasPairedForms = formGroups.some((group) => group.paired)
   return (
     <details className="nature-boss-analysis">
       <summary>
-        <strong>{analysis.forms.length} 个关联首领形态参与综合分析</strong>
-        {analysis.forms.length > 1 && (
-          <span className={analysis.allBossFormsEquivalent ? 'same' : 'different'}>
-            {analysis.allBossFormsEquivalent ? '分析项相同' : '存在差异'}
-          </span>
-        )}
+        <strong>同编号 {analysis.forms.length} 个形态对比</strong>
+        <span className={analysis.allFormsEquivalent ? 'same' : 'different'}>
+          {analysis.allFormsEquivalent ? '核心资料一致' : '存在明显差异'}
+        </span>
       </summary>
       <div className="nature-boss-analysis-body">
-        <p>性格推荐对象是可培养的「{analysis.targetName}」；首领形态的变化作为同一性格的风险补充。</p>
-        <div className="nature-boss-forms">
-          {analysis.forms.map((form) => (
-            <div className="nature-boss-form" key={form.id}>
-              <strong>{form.name}</strong>
-              {form.sameAsTarget ? (
-                <span>六维、特性和技能与最终形态相同</span>
-              ) : (
-                <ul>
-                  {form.statChanges.length > 0 && <li>六维：{form.statChanges.map((item) => `${item.label} ${item.delta > 0 ? '+' : ''}${item.delta}`).join('、')}</li>}
-                  {form.traitChanged && <li>特性：{form.traitChangeText}</li>}
-                  {(form.addedSkillCount > 0 || form.removedSkillCount > 0) && <li>技能：新增 {form.addedSkillCount}，减少 {form.removedSkillCount}</li>}
-                </ul>
-              )}
-            </div>
-          ))}
+        <p>
+          推荐会同时核对这些形态；六维变化以“{baselineForm.name}”为基准。
+          {hasPairedForms ? '普通形态与对应首领形态按同一样子成对展示。' : '下方列出六维、系别、特性与技能组。'}
+        </p>
+        <div className={hasPairedForms ? 'nature-form-pairs' : 'nature-boss-forms'}>
+          {hasPairedForms
+            ? formGroups.map((group) => (
+              <section className={`nature-form-pair ${group.paired ? 'paired' : ''}`} key={group.key}>
+                {group.variant && <strong className="nature-form-pair-title">{group.variant}</strong>}
+                <div>
+                  {group.forms.map((form) => (
+                    <FormComparisonCard form={form} baseline={baseline} populationStats={populationStats} key={form.id} />
+                  ))}
+                </div>
+              </section>
+            ))
+            : analysis.forms.map((form) => (
+              <FormComparisonCard form={form} baseline={baseline} populationStats={populationStats} key={form.id} />
+            ))}
         </div>
       </div>
     </details>
@@ -347,7 +525,7 @@ function BossFormAnalysis({ analysis }) {
 }
 
 // 候选清单：展示全部 30 个合法性格，先按「强化维度」分组，组内再展示推荐分档。
-function NatureCandidateList({ candidates, activeIndex, onSelect, ownedNatures = {} }) {
+function NatureCandidateList({ candidates, activeIndex, onSelect, ownedNatures = {}, onQuickAdd }) {
   if (!candidates || candidates.length === 0) return null
   const activeCandidate = candidates[activeIndex]
   const groups = groupByRaise(candidates)
@@ -382,6 +560,7 @@ function NatureCandidateList({ candidates, activeIndex, onSelect, ownedNatures =
                           activeCandidate={activeCandidate}
                           onSelect={onSelect}
                           ownedCount={ownedNatures[c.id] || 0}
+                          onQuickAdd={onQuickAdd}
                         />
                       ))}
                     </ul>
@@ -408,11 +587,27 @@ function groupByRaise(items = []) {
     .filter((group) => group.items.length > 0)
 }
 
-function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSelect, ownedCount = 0 }) {
+function formatNatureScore(value) {
+  const fixed = Number(value).toFixed(1)
+  return fixed.startsWith('-') ? `−${fixed.slice(1)}` : fixed
+}
+
+function natureScoreSummary(candidate) {
+  const scores = (candidate.formDecisions || [])
+    .map((form) => Number(form.score))
+    .filter(Number.isFinite)
+  if (scores.length === 0) return formatNatureScore(candidate.score)
+  const min = Math.min(...scores)
+  const max = Math.max(...scores)
+  return min === max ? formatNatureScore(max) : `${formatNatureScore(min)} 至 ${formatNatureScore(max)}`
+}
+
+function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSelect, ownedCount = 0, onQuickAdd }) {
   const candidateIndex = candidates.indexOf(candidate)
   const isActive = candidate === activeCandidate
+  const canQuickAdd = candidate.decision !== 'notRecommended' && ownedCount === 0 && onQuickAdd
   return (
-    <li>
+    <li className="nature-candidate-row">
       <button
         type="button"
         className={`nature-candidate ${isActive ? 'active' : ''}`}
@@ -423,21 +618,42 @@ function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSel
         </span>
         <span className="nature-candidate-name">{natureName(candidate)}</span>
         <span className="nature-candidate-role">{natureModifierSummary(candidate)}</span>
-        <span className={`nature-candidate-owned ${ownedCount > 0 ? 'acquired' : 'missing'}`}>
-          {ownedCount > 0 && <CheckCircle2 size={13} />}
-          {ownedCount > 0 ? `已获得${ownedCount > 1 ? ` ×${ownedCount}` : ''}` : '未获得'}
+        {ownedCount > 0 ? (
+          <span className="nature-candidate-owned acquired">
+            <CheckCircle2 size={13} />
+            已获得{ownedCount > 1 ? ` ×${ownedCount}` : ''}
+          </span>
+        ) : (
+          <span className="nature-candidate-owned empty" aria-hidden="true" />
+        )}
+        <span
+          className="nature-candidate-score"
+          title={(candidate.formDecisions || []).length > 1 ? '各形态评分范围' : '评分'}
+        >
+          {natureScoreSummary(candidate)}
         </span>
-        <span className="nature-candidate-score">{candidate.score.toFixed(1)}</span>
       </button>
+      {canQuickAdd && (
+        <button
+          type="button"
+          className="nature-candidate-owned missing actionable nature-candidate-owned-overlay"
+          onClick={() => onQuickAdd(candidate)}
+          title="新增收集记录"
+        >
+          <Plus size={12} /> 未获得
+        </button>
+      )}
     </li>
   )
 }
 
 
-function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
+function NatureResult({ nature, baseStats, adjustedStats, populationStats }) {
   if (!nature) return null
-  const speedProfile = nature.speedProfile
-  const highlights = natureHighlights(nature)
+  const formDecisions = nature.formDecisions || []
+  const coreReason = nature.decision === 'notRecommended'
+    ? nature.warnings[0]
+    : nature.reasons[0]
 
   return (
     <div className="nature-result">
@@ -446,7 +662,7 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
         <div className="nature-result-title-wrap">
           <span className="nature-result-title">{natureName(nature)}</span>
           <span className="nature-result-subtitle">
-            {natureModifierSummary(nature)} · 评分 {nature.score.toFixed(1)}
+            {natureModifierSummary(nature)} · {formDecisions.length > 1 ? '形态评分' : '评分'} {natureScoreSummary(nature)}
           </span>
         </div>
         <span className={`nature-candidate-tag ${nature.decision}`}>
@@ -465,40 +681,31 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
         </span>
       </div>
 
-      <p className="nature-result-reason">{reasoning}</p>
-
-      {highlights.length > 0 && (
-        <div className="nature-highlight-card">
-          <div className="nature-highlight-title">解析重点</div>
-          <ul className="nature-highlight-list">
-            {highlights.map((item) => (
-              <li key={`${item.type}-${item.text}`} className={`nature-highlight-item ${item.type}`}>
-                <span>{item.label}</span>
-                <strong>{item.text}</strong>
-              </li>
-            ))}
-          </ul>
+      <div className="nature-result-summary">
+        <div>
+          <small>定位</small>
+          <span className="nature-result-role-tags">
+            {String(nature.roleLabel || '通用培养').split(/\s*\/\s*/).slice(0, 3).map((role) => <strong key={role}>{role}</strong>)}
+          </span>
         </div>
-      )}
-
-      <NatureStatDistribution stats={baseStats} />
-
-      {nature.skillProfile && (
-        <NatureSkillInsight skillProfile={nature.skillProfile} formulaAssist={nature.formulaAssist} />
-      )}
-
-      {speedProfile && (
-        <div className={`nature-speed-note ${speedProfile.concern.level}`}>
-          <strong>速度线：{speedProfile.concern.label}</strong>
-          <span>基础速度 {speedProfile.base}（{speedProfile.baseTier}）。</span>
-          <details className="nature-inline-disclosure">
-            <summary>查看速度线解释</summary>
-            <span>
-              最近锚点 {speedProfile.nearestAnchor}。{speedProfile.concern.reason}；{speedProfile.note}
+        <div>
+          <small>核心判断</small>
+          <p><EmphasizedText text={coreReason || '暂无额外判断'} /></p>
+        </div>
+        {formDecisions.length > 1 && (
+          <div>
+            <small>形态判断</small>
+            <span className="nature-result-form-scores">
+              {formDecisions.map((form) => (
+                <span className={form.decision} key={form.id || form.label}>
+                  <strong>{form.label}</strong>
+                  <em>{NATURE_DECISION_LABELS[form.decision]} · {formatNatureScore(form.score)}</em>
+                </span>
+              ))}
             </span>
-          </details>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
 
       <details className="nature-detail-disclosure">
         <summary>查看完整推荐理由 / 风险</summary>
@@ -507,7 +714,7 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
             <div className="nature-explain-title">推荐理由</div>
             <ul className="nature-explain-list">
               {nature.reasons.map((reason) => (
-                <li key={reason}>{reason}</li>
+                <li key={reason}><EmphasizedText text={reason} /></li>
               ))}
             </ul>
           </div>
@@ -516,7 +723,7 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
             {nature.warnings.length > 0 ? (
               <ul className="nature-explain-list warning">
                 {nature.warnings.map((warning) => (
-                  <li key={warning}>{warning}</li>
+                    <li key={warning}><EmphasizedText text={warning} /></li>
                 ))}
               </ul>
             ) : (
@@ -526,9 +733,71 @@ function NatureResult({ nature, baseStats, adjustedStats, reasoning }) {
         </div>
       </details>
 
-      <NatureStatsBars nature={nature} baseStats={baseStats} adjustedStats={adjustedStats} />
+      <NatureStatsBars
+        nature={nature}
+        baseStats={baseStats}
+        adjustedStats={adjustedStats}
+        scaleMax={populationStats?.globalMax}
+      />
     </div>
   )
+}
+
+function NatureFixedEvidence({ nature, forms = [] }) {
+  if (!nature) return null
+  const formEvidence = forms.map((form) => ({ label: form.label, nature: form.candidates?.[0] })).filter((form) => form.nature)
+  const primaryNature = formEvidence[0]?.nature || nature
+  const speedProfile = primaryNature.speedProfile
+  const evidenceSignatures = new Set(formEvidence.map(({ nature: item }) => JSON.stringify({
+    speed: item.speedProfile?.base,
+    concern: item.speedProfile?.concern?.level,
+    skills: item.skillProfile?.summary,
+  })))
+  const hasFormDifferences = evidenceSignatures.size > 1
+  return (
+    <section className="nature-fixed-evidence">
+      <div className="nature-fixed-evidence-title">
+        <strong>固定分析依据</strong>
+        <span>性格切换时不变；形态差异单独列出</span>
+      </div>
+      {primaryNature.skillProfile && (
+        <NatureSkillInsight skillProfile={primaryNature.skillProfile} formulaAssist={primaryNature.formulaAssist} />
+      )}
+      {speedProfile && (
+        <div className={`nature-speed-note ${speedProfile.concern.level}`}>
+          <strong>速度线：{speedProfile.concern.label}</strong>
+          <span>基础速度 {speedProfile.base}（{speedProfile.baseTier}）。</span>
+          <details className="nature-inline-disclosure">
+            <summary>查看速度线解释</summary>
+            <span>最近锚点 {speedProfile.nearestAnchor}。{speedProfile.concern.reason}；{speedProfile.note}</span>
+          </details>
+        </div>
+      )}
+      {hasFormDifferences && (
+        <details className="nature-form-evidence">
+          <summary>不同形态的技能 / 速度依据不同（{formEvidence.length}）</summary>
+          <div>
+            {formEvidence.map(({ label, nature: item }) => (
+              <span key={label}>
+                <strong>{label}</strong>
+                <small>速度 {item.speedProfile?.base || 0} · {item.speedProfile?.concern?.label || '无速度结论'}</small>
+                <small>{item.skillProfile?.summary || '暂无技能线索'}</small>
+              </span>
+            ))}
+          </div>
+        </details>
+      )}
+    </section>
+  )
+}
+
+function EmphasizedText({ text = '' }) {
+  const pattern = /(生命|物攻|魔攻|物防|魔防|速度|核心|硬性风险|风险|低代价|短板|推荐|可保留|不推荐|主攻|耐久|先手|后手|控制|能量循环)/g
+  return String(text).split(pattern).map((part, index) => (
+    /^(生命|物攻|魔攻|物防|魔防|速度|核心|硬性风险|风险|低代价|短板|推荐|可保留|不推荐|主攻|耐久|先手|后手|控制|能量循环)$/.test(part)
+      ? <strong className="nature-text-emphasis" key={`${part}-${index}`}>{part}</strong>
+      : part
+  ))
 }
 
 
@@ -619,66 +888,33 @@ function formatPercent(value) {
   return `${Math.round(number * 100)}%`
 }
 
-function NaturePveOverview({ candidates }) {
-  const summary = pveOverviewSummary(candidates)
-
-  if (!summary) return null
-
+function NaturePveOverview({ forms = [] }) {
+  const summaries = forms.map((form) => ({ ...form, summary: pveOverviewSummary(form.candidates) })).filter((form) => form.summary)
+  if (summaries.length === 0) return null
   return (
-    <section className={`nature-pve-note ${summary.level}`} aria-label="PVE 培养投入提示">
-      <div className="nature-pve-note-header">
+    <section className="nature-pve-overview" aria-label="PVE 培养投入提示">
+      <div className="nature-pve-overview-head">
         <strong>PVE 培养投入</strong>
-        <span className="nature-pve-rating">
-          {summary.badge}
-          <span className="nature-pve-stars" aria-label={`PVE 星级：${summary.stars} / 5`}>
-            {pveStarText(summary.stars)}
-          </span>
-        </span>
+        <span>覆盖同编号全部 {summaries.length} 个可分析形态；PVP 属性平衡不计入投入。</span>
       </div>
-      <div className="nature-pve-verdict">{summary.verdict}</div>
-      {summary.tags.length > 0 && (
-        <div className="nature-pve-tags">
-          {summary.tags.map((tag) => <span key={tag}>{tag}</span>)}
-        </div>
-      )}
-      <div className="nature-pve-meta">
-        {summary.role && <span>定位：{summary.role}</span>}
-        <span>主属性：{summary.primaryStat}</span>
-        <span>主性格：{summary.capture}</span>
-        {summary.alternatives && <span>备选：{summary.alternatives}</span>}
+      <div className="nature-pve-form-grid">
+        {summaries.map(({ id, label, summary }) => (
+          <article key={id || label} className={`nature-pve-form ${summary.level}`}>
+            <div className="nature-pve-form-head">
+              <strong>{label}</strong>
+              <span className="nature-pve-stars" aria-label={`PVE 星级：${summary.stars} / 5`}>{pveStarText(summary.stars)}</span>
+            </div>
+            <div className="nature-pve-form-rating">{summary.badge} · {summary.role}</div>
+            <div className="nature-pve-form-meta">
+              <span>主属性 {summary.primaryStat}</span>
+              <span>性格 {summary.capture}</span>
+            </div>
+            {summary.tags.length > 0 && <small>{summary.tags.join(' · ')}</small>}
+          </article>
+        ))}
       </div>
-      <details className="nature-inline-disclosure nature-pve-note-footnote">
-        <summary>详细依据 / 口径</summary>
-        <span>{summary.detail || '暂无额外机制依据。'} PVP 不计培养投入；异色/炫彩是否培养，看 PVE 强度、机制和队伍需求。</span>
-      </details>
     </section>
   )
-}
-
-function natureHighlights(nature) {
-  const highlights = []
-  const push = (type, label, text) => {
-    if (!text || highlights.some((item) => item.text === text)) return
-    highlights.push({ type, label, text })
-  }
-  if (nature.dominatedBy) {
-    push('risk', '支配', `同类强化里 ${nature.dominatedBy} 代价更低`)
-  }
-  if (nature.decision === 'notRecommended') {
-    const mainWarning = nature.warnings.find((warning) => /支配|硬性|核心|短板|生命|速度|魔防|物防|冲突/.test(warning))
-    push('risk', '不推荐', mainWarning || nature.warnings[0])
-  } else if (nature.decision === 'recommended') {
-    const mainReason = nature.reasons.find((reason) => /低成本|核心|代价较低|公式辅助|技能|生命|速度/.test(reason))
-    push('good', '首选', mainReason || nature.reasons[0])
-  } else {
-    const mainReason = nature.reasons.find((reason) => /低成本|可保留|单攻|公式辅助|技能|生命|耐久/.test(reason))
-    push('good', '可留依据', mainReason || nature.reasons[0])
-    const mainWarning = nature.warnings.find((warning) => /风险|冲突|短板|核心|双攻|不应|削弱/.test(warning))
-    push('warn', '主要风险', mainWarning || nature.warnings[0])
-  }
-  const lowerWarning = nature.warnings.find((warning) => warning.includes(`弱化${STAT_LABELS[nature.lower]}`))
-  push('warn', '牺牲项', lowerWarning)
-  return highlights.slice(0, 3)
 }
 
 function natureModifierSummary(candidate) {
@@ -690,50 +926,8 @@ function natureModifierSummary(candidate) {
 }
 
 
-function percentileBandText(score) {
-  return [
-    '后10%档',
-    'P10-P25',
-    'P25-P50',
-    'P50-P75',
-    'P75-P90',
-    '前10%档',
-  ][score] || '未知档位'
-}
-
-function NatureStatDistribution({ stats }) {
-  const analysis = useMemo(() => analyzeStats(stats), [stats])
-  return (
-    <div className="nature-stats-scroll nature-stat-distribution">
-      <table className="nature-stats-table">
-        <thead>
-          <tr>
-            <th>维度</th>
-            <th>数值</th>
-            <th>分布位置</th>
-            <th>粗分位档</th>
-          </tr>
-        </thead>
-        <tbody>
-          {STATS_DIMENSIONS.map((d) => {
-            const percentile = analysis.percentiles[d.key]
-            return (
-              <tr key={d.key}>
-                <td>{d.label}</td>
-                <td>{analysis.stats[d.key] || 0}</td>
-                <td>{percentile.label}</td>
-                <td>{percentileBandText(percentile.score)}</td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
-function NatureStatsBars({ nature, baseStats, adjustedStats }) {
-  const maxValue = Math.max(1, ...STATS_DIMENSIONS.map((d) => baseStats[d.key] || 0), ...STATS_DIMENSIONS.map((d) => adjustedStats[d.key] || 0))
+function NatureStatsBars({ nature, baseStats, adjustedStats, scaleMax }) {
+  const maxValue = Math.max(Number(scaleMax) || 1, ...Object.values(adjustedStats).map(Number))
   return (
     <div className="nature-bars">
       {STATS_DIMENSIONS.map((d) => {
@@ -744,8 +938,8 @@ function NatureStatsBars({ nature, baseStats, adjustedStats }) {
           <div key={d.key} className={`nature-bar-row ${cellMarkClass(d.key, nature)}`}>
             <span className="nature-bar-label">{d.label}</span>
             <div className="nature-bar-track">
-              <span className="nature-bar-base" style={{ width: `${(base / maxValue) * 100}%` }} />
-              <span className="nature-bar-adjusted" style={{ width: `${(adjusted / maxValue) * 100}%` }} />
+              <span className="nature-bar-base" style={{ width: `${Math.min((base / maxValue) * 100, 100)}%` }} />
+              <span className="nature-bar-adjusted" style={{ width: `${Math.min((adjusted / maxValue) * 100, 100)}%` }} />
             </div>
             <span className="nature-bar-value">
               {base} → {adjusted}

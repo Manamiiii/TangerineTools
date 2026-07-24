@@ -18,10 +18,10 @@ export function sceneTypeLabel(value) {
 // 「统计视图」用于从资料库/收集记录按条件汇总；「性格推荐」和「孵蛋推荐」是洛克王国定制工具。
 export const SCENE_TOOLS = [
   { value: 'catalog', label: '资料库', ready: true },
-  { value: 'owned', label: '收集记录', ready: true },
-  { value: 'stock', label: '统计视图', ready: true },
   { value: 'nature', label: '性格推荐', ready: true },
+  { value: 'owned', label: '收集记录', ready: true },
   { value: 'breeding', label: '孵蛋推荐', ready: true },
+  { value: 'stock', label: '统计视图', ready: true },
 ]
 
 // 字段类型：资料表列的数据类型。
@@ -67,7 +67,9 @@ export const STATS_DIMENSIONS = [
 ]
 
 // 指标视图缩放使用的固定满值刻度，保证不同精灵之间的图形可比较。
-export const STATS_SCALE_MAX = 150
+// 六维图使用统一绝对刻度。当前正式资料的单项最高值为 290，向上取整到
+// 300 后，所有页面中相同数值始终得到相同长度，也为后续资料更新留出余量。
+export const STATS_SCALE_MAX = 300
 
 // 选项配色板。
 export const COLOR_PALETTE = [

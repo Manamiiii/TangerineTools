@@ -29,6 +29,23 @@ function nameVariant(name) {
   return String(name ?? '').match(/（([^）]+)）/)?.[1]?.trim() ?? ''
 }
 
+export function pairRockKingdomComparisonForms(forms = []) {
+  const groups = new Map()
+  for (const form of forms) {
+    const variant = nameVariant(form?.name)
+    const key = variant || 'base'
+    if (!groups.has(key)) groups.set(key, { key, variant, ordinary: [], bosses: [] })
+    const group = groups.get(key)
+    if (form?.form === '首领形态') group.bosses.push(form)
+    else group.ordinary.push(form)
+  }
+  return [...groups.values()].map((group) => ({
+    ...group,
+    forms: [...group.ordinary, ...group.bosses],
+    paired: group.ordinary.length === 1 && group.bosses.length === 1,
+  }))
+}
+
 export function compareRockKingdomCreatureRows(a, b) {
   const numberDiff = naturalCompare(a?.values?.no, b?.values?.no)
   if (numberDiff !== 0) return numberDiff
@@ -46,6 +63,17 @@ export function compareRockKingdomCreatureRows(a, b) {
 export function isRockKingdomNatureSelectableRow(row) {
   const form = String(row?.values?.form ?? '').trim()
   return form !== '首领形态' && stageNumber(form) == null
+}
+
+function evolutionLineEndsWithRow(row) {
+  const line = row?.values?.evolutionLine
+  const members = (Array.isArray(line) ? line : String(line ?? '').split(/→|->/))
+    .map((item) => String(item).trim().replace(/^（|）$/g, ''))
+    .filter(Boolean)
+  if (members.length === 0) return false
+  const rowName = String(row?.values?.name ?? '').replace(/（[^）]+）/g, '').trim()
+  const lastName = members.at(-1).replace(/（[^）]+）/g, '').trim()
+  return Boolean(rowName && lastName === rowName)
 }
 
 export function relatedRockKingdomBossRows(target, rows = []) {
@@ -126,6 +154,51 @@ export function visibleRockKingdomCreatureRows(rows = []) {
     seen.add(key)
     return true
   })
+}
+
+// 性格页每个编号只提供一个普通入口；地区/外观变体与首领形态仍由同编号
+// 对比和综合分析完整纳入。优先选择没有括号变体名的最终形态，缺少时取
+// 排序最靠前的可培养形态。
+export function primaryRockKingdomNatureRows(rows = []) {
+  const groups = new Map()
+  for (const row of [...rows].sort(compareRockKingdomCreatureRows)) {
+    const no = String(row?.values?.no ?? '').trim() || row.id
+    if (!groups.has(no)) groups.set(no, [])
+    groups.get(no).push(row)
+  }
+  return [...groups.values()].map((group) => {
+    const explicitCandidates = group.filter(isRockKingdomNatureSelectableRow)
+    if (explicitCandidates.length > 0) {
+      return explicitCandidates.find((row) => !nameVariant(row?.values?.name)) ||
+        [...explicitCandidates].sort((a, b) => naturalCompare(a.id, b.id))[0]
+    }
+    const ordinaryStages = group.filter((row) =>
+      row.values?.form !== '首领形态' && stageNumber(row.values?.form) != null)
+    if (ordinaryStages.length === 0) return null
+    const latestStage = Math.max(...ordinaryStages.map((row) => stageNumber(row.values?.form)))
+    const latestRows = ordinaryStages.filter((row) => stageNumber(row.values?.form) === latestStage)
+    const onlyBossesFollow = group.some((row) => row.values?.form === '首领形态')
+    if (!onlyBossesFollow && !latestRows.some(evolutionLineEndsWithRow)) return null
+    return latestRows.find((row) => !nameVariant(row?.values?.name)) ||
+      [...latestRows].sort((a, b) => naturalCompare(a.id, b.id))[0]
+  }).filter(Boolean)
+}
+
+// 同一进化链中的任一阶段都代表玩家已经拥有该物种。性格页用这张映射把
+// 非最终形态的收集记录归并到最终形态；缺少进化链资料时仍只匹配原行 id。
+export function buildEvolutionReferenceGroups(rows = []) {
+  const groups = new Map()
+  for (const row of rows) {
+    const line = String(row?.values?.evolutionLine || '').trim()
+    if (!line) continue
+    const ids = groups.get(line) || []
+    ids.push(row.id)
+    groups.set(line, ids)
+  }
+  return new Map(rows.map((row) => {
+    const line = String(row?.values?.evolutionLine || '').trim()
+    return [row.id, line && groups.get(line)?.length ? groups.get(line) : [row.id]]
+  }))
 }
 
 // 对比表格关心的数值维度：字段 key -> 展示名称，按种族值 + 六维顺序排列。

@@ -19,7 +19,7 @@ import {
   X,
   XCircle,
 } from 'lucide-react'
-import { FIELD_TYPES, isOptionFieldType, isReferenceFieldType, STATS_DIMENSIONS } from '../constants.js'
+import { FIELD_TYPES, isOptionFieldType, isReferenceFieldType, STATS_DIMENSIONS, STATS_SCALE_MAX } from '../constants.js'
 import { createField, db, deleteField, reorderFields, updateField } from '../db.js'
 import {
   isRockKingdomCreatureReference,
@@ -472,9 +472,15 @@ function ParentheticalText({ value }) {
   )
 }
 
-function ReferenceLabel({ field, row, label }) {
+function ReferenceLabel({ field, row, sourceRow, label }) {
   const imageKey = field.display?.referenceImageField
-  const image = imageKey ? row?.values?.[imageKey] || '' : ''
+  const variantImageKey = field.display?.referenceImageVariantField
+  const variantSourceField = field.display?.referenceImageVariantSourceField
+  const variantSourceValue = field.display?.referenceImageVariantSourceValue
+  const useVariant = variantImageKey && variantSourceField && sourceRow?.values?.[variantSourceField] === variantSourceValue
+  const image = useVariant
+    ? row?.values?.[variantImageKey] || row?.values?.[imageKey] || ''
+    : imageKey ? row?.values?.[imageKey] || '' : ''
   return (
     <span className={image ? 'reference-summary' : ''}>
       {image && <img src={image} alt="" />}
@@ -483,14 +489,14 @@ function ReferenceLabel({ field, row, label }) {
   )
 }
 
-function ReferenceCellContent({ field, value, onOpenReference, referenceContext }) {
+function ReferenceCellContent({ field, value, sourceRow, onOpenReference, referenceContext }) {
   const { fields, rows } = referenceContext
   if (!value) return <span className="cell-empty">—</span>
   const row = rows.find((r) => r.id === value)
   const label = row ? referenceRowLabel(fields, row, field) : value
   const plain = field.display?.plainReference
   const className = plain ? 'reference-inline' : 'reference-tag'
-  if (!row || !onOpenReference) return <span className={className}><ReferenceLabel field={field} row={row} label={label} /></span>
+  if (!row || !onOpenReference) return <span className={className}><ReferenceLabel field={field} row={row} sourceRow={sourceRow} label={label} /></span>
   return (
     <button
       type="button"
@@ -501,7 +507,7 @@ function ReferenceCellContent({ field, value, onOpenReference, referenceContext 
       }}
       title="查看引用资料"
     >
-      <ReferenceLabel field={field} row={row} label={label} />
+      <ReferenceLabel field={field} row={row} sourceRow={sourceRow} label={label} />
     </button>
   )
 }
@@ -534,7 +540,7 @@ function ReferenceListCellContent({ field, value, onOpenReference, referenceCont
   const tableLines = Number(field.display?.tableLines) || 0
   const lineStyle = tableLines > 0 ? { '--table-lines-height': `${tableLines * 23 - 4}px` } : undefined
   return (
-    <span className={`reference-list ${field.display?.stack ? 'is-stacked' : ''} ${tableLines > 0 ? 'lines-limited' : ''}`} style={lineStyle}>
+    <span className={`reference-list ${plain ? 'is-plain' : ''} ${field.display?.stack ? 'is-stacked' : ''} ${tableLines > 0 ? 'lines-limited' : ''}`} style={lineStyle}>
       {visibleIds.map((id) => {
         const row = rows.find((r) => r.id === id)
         const label = row ? referenceRowLabel(fields, row, field) : id
@@ -692,13 +698,28 @@ function SummaryCellView({ field, row, mode }) {
   )
 }
 
-export function CellView({ field, row, allFields, mode = 'table', onOpenReference }) {
+function statsReferenceScale(rows, fields, statsField) {
+  const values = []
+  for (const sourceRow of rows || []) {
+    for (const stat of getStatsValues(fields, statsField.statsMap, sourceRow.values, statsField.statsDimensions)) {
+      const value = Number(stat.value)
+      if (Number.isFinite(value) && value > 0) values.push(value)
+    }
+  }
+  return {
+    min: values.length ? Math.min(...values) : 0,
+    max: values.length ? Math.max(...values) : STATS_SCALE_MAX,
+  }
+}
+
+export function CellView({ field, row, allFields, mode = 'table', onOpenReference, referenceRows = [] }) {
   if (field.type === 'summary' || field.display?.kind === 'summary') return <SummaryCellView field={field} row={row} mode={mode} />
   if (field.display?.kind === 'chain') return <EvolutionChainView value={row.values?.[field.key]} />
 
   if (field.type === 'stats') {
     const stats = getStatsValues(allFields, field.statsMap, row.values, field.statsDimensions)
-    return <StatsChart stats={stats} variant={field.statsStyle || 'bars'} size={mode === 'detail' ? 'lg' : 'sm'} />
+    const scale = statsReferenceScale(referenceRows, allFields, field)
+    return <StatsChart stats={stats} variant={field.statsStyle || 'bars'} size={mode === 'detail' ? 'lg' : 'sm'} scaleMax={scale.max} referenceMin={scale.min} />
   }
 
   const value = row.values?.[field.key]
@@ -740,7 +761,7 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
       const tableLines = Number(field.display?.tableLines) || 0
       const lineStyle = tableLines > 0 ? { '--table-lines-height': `${tableLines * 23 - 4}px` } : undefined
       return (
-        <span className={`cell-tag-group ${field.display?.stack ? 'is-stacked' : ''} ${tableLines > 0 ? 'lines-limited' : ''}`} style={lineStyle}>
+        <span className={`cell-tag-group cell-tag-group-${field.key} ${field.display?.stack ? 'is-stacked' : ''} ${tableLines > 0 ? 'lines-limited' : ''}`} style={lineStyle}>
           {shown.map((v) => {
             const opt = field.options?.find((o) => o.value === v)
             return opt ? <OptionTag key={v} option={opt} size={mode === 'detail' ? 'md' : 'sm'} /> : null
@@ -772,7 +793,7 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
     case 'date':
       return <span>{value || '—'}</span>
     case 'reference':
-      return <ReferenceCellView field={field} value={value} onOpenReference={onOpenReference} />
+      return <ReferenceCellView field={field} value={value} sourceRow={row} onOpenReference={onOpenReference} />
     case 'references':
       return <ReferenceListCellView field={mode === 'detail' ? { ...field, __detailMode: true } : field} value={value} onOpenReference={onOpenReference} />
     default:
@@ -1045,6 +1066,7 @@ export function DataGrid({
   onEditRow,
   onDeleteRow,
   onOpenReference,
+  referenceRows = rows,
 }) {
   const visibleFields = fields.filter((f) => !f.hidden)
 
@@ -1091,6 +1113,7 @@ export function DataGrid({
                     allFields={allFields}
                     mode="table"
                     onOpenReference={onOpenReference}
+                    referenceRows={referenceRows}
                   />
                 </td>
               ))}

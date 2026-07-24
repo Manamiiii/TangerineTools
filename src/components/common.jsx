@@ -127,6 +127,7 @@ export function SearchableSelect({
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const rootRef = useRef(null)
+  const selectedOptionRef = useRef(null)
   const listboxId = useId()
   const selected = options.find((option) => option.value === value)
   const normalizedQuery = query.trim().toLowerCase()
@@ -141,6 +142,10 @@ export function SearchableSelect({
     document.addEventListener('mousedown', handlePointerDown)
     return () => document.removeEventListener('mousedown', handlePointerDown)
   }, [])
+
+  useEffect(() => {
+    if (open && !query) selectedOptionRef.current?.scrollIntoView({ block: 'nearest' })
+  }, [open, query, value])
 
   function openPicker() {
     setQuery('')
@@ -194,6 +199,7 @@ export function SearchableSelect({
               aria-selected={option.value === value}
               className={`searchable-select-option ${option.value === value ? 'selected' : ''}`}
               key={option.value}
+              ref={option.value === value ? selectedOptionRef : null}
               onClick={() => choose(option.value)}
             >
               <span className="searchable-select-option-content">{option.content || option.label}</span>
@@ -372,20 +378,33 @@ export function StatsRadarChart({ stats, size = 'sm' }) {
   )
 }
 
-export function StatsBarsChart({ stats, size = 'sm' }) {
-  const maxValue = Math.max(STATS_SCALE_MAX, ...stats.map((s) => Number(s.value) || 0))
+export function StatsBarsChart({ stats, size = 'sm', scaleMax = STATS_SCALE_MAX, referenceMin = null }) {
+  const maxValue = Math.max(Number(scaleMax) || STATS_SCALE_MAX, 1)
+  const minPosition = referenceMin > 0 ? `${clamp((Number(referenceMin) / maxValue) * 100, 0, 100)}%` : null
   return (
     <div className={`stats-bars stats-bars-${size}`}>
       {stats.map((s) => {
         const value = Number(s.value) || 0
         const width = `${clamp((value / maxValue) * 100, 0, 100)}%`
+        const tone = s.context?.delta > 0 ? 'higher' : s.context?.delta < 0 ? 'lower' : ''
         return (
-          <div key={s.key} className="stats-bar-row" title={`${s.label}：${value}`}>
+          <div key={s.key} className={`stats-bar-row ${s.context ? 'has-context' : ''} ${tone}`} title={`${s.label}：${value}；统一刻度 0–${maxValue}${referenceMin > 0 ? `，全资料最低有效值 ${referenceMin}` : ''}`}>
             <span className="stats-bar-label">{s.label}</span>
             <span className="stats-bar-track" aria-hidden="true">
+              {minPosition && <span className="stats-bar-reference-min" style={{ left: minPosition }} />}
               <span className="stats-bar-fill" style={{ width }} />
+              <span className="stats-bar-reference-max" />
             </span>
-            <span className="stats-bar-value">{value}</span>
+            <span className="stats-bar-value">
+              <strong>{value}</strong>
+              {s.context && (
+                <small>
+                  P{s.context.percentile}
+                  {s.context.delta !== 0 && <em>{s.context.delta > 0 ? ` +${s.context.delta}` : ` ${s.context.delta}`}</em>}
+                  {s.context.percentileDelta !== 0 && <i>{s.context.percentileDelta > 0 ? ` ↑${s.context.percentileDelta}` : ` ↓${Math.abs(s.context.percentileDelta)}`}</i>}
+                </small>
+              )}
+            </span>
           </div>
         )
       })}
@@ -393,9 +412,9 @@ export function StatsBarsChart({ stats, size = 'sm' }) {
   )
 }
 
-export function StatsChart({ stats, variant = 'bars', size = 'sm' }) {
+export function StatsChart({ stats, variant = 'bars', size = 'sm', scaleMax = STATS_SCALE_MAX, referenceMin = null }) {
   if (variant === 'radar') return <StatsRadarChart stats={stats} size={size} />
-  return <StatsBarsChart stats={stats} size={size} />
+  return <StatsBarsChart stats={stats} size={size} scaleMax={scaleMax} referenceMin={referenceMin} />
 }
 
 // ---------------------------------------------------------------------------

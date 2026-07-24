@@ -363,10 +363,12 @@ async function main() {
     }
     const row = matchedRows[0]
     const bossRows = relatedRockKingdomBossRows(row, rows)
-    const skillInfo = buildSkillInfo([row, ...bossRows], skillById, bossRows.length > 0)
+    const skillInfo = buildSkillInfo(row, skillById, bossRows.length > 0)
     const stats = rowStats(row)
-    const traitTags = [...new Set([row, ...bossRows].flatMap((item) => item.values?.traitTags || []))]
+    const traitTags = row.values?.traitTags || []
     const profiles = bossRows.map((bossRow) => ({
+      id: bossRow.id,
+      label: [bossRow.values?.name, bossRow.values?.form].filter(Boolean).join(' · '),
       name: bossRow.values?.name,
       stats: rowStats(bossRow),
       traitTags: bossRow.values?.traitTags || [],

@@ -42,6 +42,7 @@ db.version(1).stores({
 - 收集记录工具（`owned`）复用 `catalogTables` / `catalogFields` / `catalogRows` 三张表存储数据，通过 `catalogTables.kind === 'owned'` 与普通资料库表区分。
 - 收集记录表还可以带非索引配置 `collectionMode: 'single' | 'multiple'`：`single` 表示同一 reference 只保留一条收集记录，`multiple` 表示同一 reference 可记录多条。
 - 普通新建场景首次打开收集记录工具时，只创建空的收集记录表，不写入默认字段；洛克王国场景会补齐精灵收集字段，这是该预置场景自身的数据模板，不是全局模板。
+- 洛克王国收集记录表只补齐场景专属字段，不预置收集行。启动流程按固定测试 id 排除孵蛋调试记录；用户自行新增的记录即使备注相同也会保留。
 - 统计视图工具的内部工具值为 `stock`；它从当前场景的普通资料表和收集记录表中选择数据源，按字段分组并叠加数值阈值条件做即时统计，不创建固定字段表。
 - `kind` 和 `collectionMode` 都是非索引属性（不在 `.stores()` 的索引串里），只在按 `sceneId` 查询后用 JS 过滤/读取，因此**没有引入 Dexie schema 版本变更**。
 - 资料库工具（`CatalogTool`）的普通资料表选择器使用 `.filter((t) => !t.kind)` 排除收集记录表。性格推荐工具固定绑定洛克王国 `精灵基础资料` 表，并通过 `skillRefs` 读取技能资料。
@@ -54,8 +55,8 @@ db.version(1).stores({
 - 精灵行通过 `fetch(`${BASE_URL}presets/rockKingdomRows.json`)` 加载，技能行通过 `fetch(`${BASE_URL}presets/rockKingdomSkillRows.json`)` 加载；文件位于 `public/` 且不参与 JS 打包。繁育字段包含在正式精灵行中。加载失败时保留场景、表和字段骨架，不写完成标记，并在启动流程提供重试入口。
 - 正式预置只通过 BWiki staging → preview → 显式 apply 链路维护。
 - 完整运行时迁移按 `ROCK_KINGDOM_ROWS_VERSION` 写入 `meta.rockKingdomRuntimeMigrationVersion`；同一版本只扫描一次。导入备份会清除此标记，使三方安全合并在启动时重新执行。
-- 精灵与技能图片使用经审计的 BWiki / patchwiki URL，UI 图标使用可信静态资源。精灵图不得使用本地 SVG 或 `data:image/svg+xml`。
-- 系别字段使用 `multiselect` 类型，覆盖官方 18 个系别：普通/草/火/水/光/地/冰/龙/电/毒/虫/武/翼/萌/幽/恶/机械/幻，对应内部值为 `normal`/`grass`/`fire`/`water`/`light`/`earth`/`ice`/`dragon`/`electric`/`poison`/`bug`/`fighting`/`flying`/`cute`/`ghost`/`dark`/`mech`/`illusion`。精灵行使用 `skillRefs` 多引用指向技能行；技能行使用 `learnerRefs` 多引用反向指向可学习该技能的精灵行。技能行还包含派生的 `effectTags` 多选效果标签（先手、速度、回复、减伤、能量、强化、控制、应对、轮转等），这些标签由官方技能效果文本生成，用于资料查看与性格推荐解释；它们不是战斗模拟结果。
+- 精灵与技能图片使用经审计的 BWiki / patchwiki URL，UI 图标使用可信静态资源。精灵图不得使用本地 SVG 或 `data:image/svg+xml`。异色图片保存为精灵资料值 `shinyImage`，来源必须是 BWiki 精灵图鉴实际图片层；炫彩没有逐精灵固定图片来源，不生成模拟图。
+- 系别字段使用 `multiselect` 类型，覆盖官方 18 个系别：普通/草/火/水/光/地/冰/龙/电/毒/虫/武/翼/萌/幽/恶/机械/幻，对应内部值为 `normal`/`grass`/`fire`/`water`/`light`/`earth`/`ice`/`dragon`/`electric`/`poison`/`bug`/`fighting`/`flying`/`cute`/`ghost`/`dark`/`mech`/`illusion`。精灵行使用 `skillRefs` 多引用指向技能行；技能行使用 `learnerRefs` 多引用反向指向可学习该技能的精灵行。技能行还包含派生的 `effectTags` 多选效果标签（先手、速度、回复、减伤、能量、强化、控制、应对、轮转、印记、驱散、直接伤害等），这些标签由官方技能效果文本生成；没有命中细分类别的技能使用“特殊机制”兜底，确保资料表不存在空效果标签。标签用于资料查看与性格推荐解释，不是战斗模拟结果。
 - 资料库保存对象种类、图鉴和静态资料；收集记录保存用户与资料项的一对一或一对多关系；统计视图从两类数据中即时汇总，不创建固定字段统计表。
 - BWiki 是版本化页面快照，不是运行时查询接口。维护者先运行 `npm run check:bwiki:preset` 做 dry-run；正式发布必须显式运行 `BWIKI_PRESET_OVERWRITE=CONFIRM_BWIKI_PRESET npm run apply:bwiki:preset`。正式基线包含 592 条精灵、553 条技能和迁移清单。发布脚本只把 preview 的 `id` / `values` 写入预置，不把 `previewMeta` 带入运行时。精灵蛋和果实以 `eggImage` / `fruitImage` 字段存入精灵资料。应用启动迁移只读取仓库内预置 JSON。
 - 预置资料迁移策略：
@@ -104,6 +105,8 @@ db.version(1).stores({
 - 若导入文件中的某条记录 `id` 在本地已存在 → 本地记录被整条覆盖（不是字段级合并）。
 - 若导入文件中的某条记录 `id` 本地不存在 → 新增。
 - 若本地存在但导入文件中**没有**该 `id` 的记录 → **不会被删除**，原样保留。
+
+洛克王国正式资料行在较早备份导入后会额外执行版本化三方合并：导入流程清除运行时迁移标记，应用随即重新读取仓库内当前预置；仍匹配历史官方指纹的字段升级为当前官方值，用户自定义的非空字段保留。因此较早导出的资料行不会长期压回当前资料库，而备份中的 owned / stock 用户记录仍按稳定 id 合并保留。
 
 导入属于**增量合并**，不提供“用文件完全替换本地数据”或“清空全部数据”的入口。
 

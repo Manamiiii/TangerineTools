@@ -2,7 +2,9 @@
 
 import { db } from './core.js'
 import { OWNED_TABLE_NAME, ROCK_KINGDOM_COLLECTION_FIELDS } from '../domain/owned.js'
-import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
+import {
+  ROCK_KINGDOM_PRESET,
+} from '../presets/rockKingdom.js'
 import { deriveFieldKey, generateId, normalizeField, nowIso } from '../utils.js'
 
 // ---------------------------------------------------------------------------

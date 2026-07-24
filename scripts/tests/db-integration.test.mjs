@@ -28,6 +28,19 @@ async function resetDatabase() {
   await db.open()
 }
 
+test('official shiny creature rows have audited BWiki images', () => {
+  const shinyRows = creatures.filter((row) => row.values.shiny === 'yes')
+  assert.equal(shinyRows.length, 145)
+  assert.equal(shinyRows.filter((row) => row.values.shinyImage).length, shinyRows.length)
+  assert.equal(
+    creatures.filter((row) => row.values.shiny !== 'yes' && row.values.shinyImage).length,
+    0,
+  )
+  for (const row of shinyRows) {
+    assert.match(row.values.shinyImage, /^https:\/\/patchwiki\.biligame\.com\//)
+  }
+})
+
 test('seed migration is versioned and preserves imported custom preset values', async () => {
   await resetDatabase()
   let fetchCount = 0
@@ -50,8 +63,15 @@ test('seed migration is versioned and preserves imported custom preset values', 
 
   fetchCount = 0
   globalThis.fetch = async () => { fetchCount += 1; throw new Error('same version must not fetch presets') }
+  await db.scenes.update('scene-rock-kingdom', {
+    tools: ['catalog', 'owned', 'stock', 'nature', 'breeding'],
+  })
   await ensureSeeded()
   assert.equal(fetchCount, 0)
+  assert.deepEqual(
+    (await db.scenes.get('scene-rock-kingdom')).tools,
+    ['catalog', 'nature', 'owned', 'breeding', 'stock'],
+  )
 })
 
 test('an offline preset failure remains retryable', async () => {
@@ -64,6 +84,33 @@ test('an offline preset failure remains retryable', async () => {
   await ensureSeeded()
   assert.equal((await db.meta.get('rockKingdomRuntimeMigrationVersion'))?.value, migration.version)
   assert.equal(await db.catalogRows.where('tableId').equals('table-rock-kingdom-elf-basic').count(), creatures.length)
+})
+
+test('startup removes only retired breeding test rows from collection data', async () => {
+  await resetDatabase()
+  globalThis.fetch = async (url) => presetResponse(url)
+  await ensureSeeded()
+  const ownedTableId = 'table-owned-scene-rock-kingdom'
+  const now = new Date().toISOString()
+  await db.catalogRows.bulkPut([
+    { id: 'owned-rock-breeding-demo-1', tableId: ownedTableId, values: { note: '旧演示' }, createdAt: now, updatedAt: now },
+    { id: 'owned-rock-breeding-fixture-test', tableId: ownedTableId, values: { note: '孵蛋推荐调试预置（可删除）' }, createdAt: now, updatedAt: now },
+    { id: 'owned-user-kept', tableId: ownedTableId, values: { note: '用户记录' }, createdAt: now, updatedAt: now },
+    { id: 'owned-user-same-note', tableId: ownedTableId, values: { note: '孵蛋推荐调试预置（可删除）' }, createdAt: now, updatedAt: now },
+  ])
+  await db.meta.bulkPut([
+    { key: 'seededRockKingdomBreedingDemoOwnedRows', value: true },
+    { key: 'seededRockKingdomBreedingFixturesV1', value: true },
+  ])
+
+  await ensureSeeded()
+
+  assert.equal(await db.catalogRows.get('owned-rock-breeding-demo-1'), undefined)
+  assert.equal(await db.catalogRows.get('owned-rock-breeding-fixture-test'), undefined)
+  assert.equal((await db.catalogRows.get('owned-user-kept')).values.note, '用户记录')
+  assert.equal((await db.catalogRows.get('owned-user-same-note')).values.note, '孵蛋推荐调试预置（可删除）')
+  assert.equal(await db.meta.get('seededRockKingdomBreedingDemoOwnedRows'), undefined)
+  assert.equal(await db.meta.get('seededRockKingdomBreedingFixturesV1'), undefined)
 })
 
 test.after(async () => {
