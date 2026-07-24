@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { getReadingState, saveReadingState } from '../db/readingState.js'
 import { loadReadingPackage, loadReadingPackageCatalog } from '../data/readingPackages.js'
+import { ReadingGeoMap } from './ReadingGeoMap.jsx'
 import { generateId } from '../../../utils.js'
 import {
   SPOILER_GATE_ACTION,
@@ -28,7 +29,7 @@ import {
   canRevealRisk,
   OBSERVED_ENTITY_KIND,
   matchOnDemandEntity,
-  projectReadingPlaces,
+  readingPlaceRelations,
   scanOnDemandEntities,
   spoilerGateAction,
   unlockedOnDemandEntities,
@@ -280,9 +281,19 @@ function ReadingMapPanel({ entities, currentChapterId, chapters }) {
       .filter((entity) => entity.kind === 'place'),
     [entities, currentChapterId, chapters],
   )
-  const projectedPlaces = useMemo(() => projectReadingPlaces(places), [places])
+  const spatialPlaces = useMemo(
+    () => places.filter((place) => (
+      Number.isFinite(place.geometry?.latitude)
+      && Number.isFinite(place.geometry?.longitude)
+    )),
+    [places],
+  )
   const [selectedPlaceId, setSelectedPlaceId] = useState('')
   const selectedPlace = places.find((place) => place.id === selectedPlaceId) || places[0] || null
+  const placeRelations = useMemo(
+    () => readingPlaceRelations(places, selectedPlace?.id),
+    [places, selectedPlace?.id],
+  )
 
   useEffect(() => {
     if (selectedPlaceId && !places.some((place) => place.id === selectedPlaceId)) {
@@ -307,29 +318,19 @@ function ReadingMapPanel({ entities, currentChapterId, chapters }) {
         </div>
       ) : (
         <div className="reader-map-layout">
-          <div className="reader-map-canvas" aria-label="已读地点空间概览">
-            <span className="reader-map-axis north">北</span>
-            <span className="reader-map-axis south">南</span>
-            {projectedPlaces.map((place) => {
-              const entity = places.find((item) => item.id === place.id)
-              return (
-                <button
-                  className={`reader-map-marker ${selectedPlace?.id === place.id ? 'active' : ''}`}
-                  key={place.id}
-                  type="button"
-                  style={{ left: `${place.x}%`, top: `${place.y}%` }}
-                  onClick={() => setSelectedPlaceId(place.id)}
-                  aria-label={`查看${entity.name}`}
-                >
-                  <MapPin size={18} />
-                  <span>{entity.name}</span>
-                </button>
-              )
-            })}
-            {projectedPlaces.length === 0 && (
-              <div className="reader-map-unplaced">已出现的地点尚无可发布空间位置</div>
-            )}
-          </div>
+          {spatialPlaces.length > 0 ? (
+            <ReadingGeoMap
+              places={spatialPlaces}
+              selectedPlaceId={selectedPlaceId}
+              onSelectPlace={setSelectedPlaceId}
+            />
+          ) : (
+            <div className="reader-map-unplaced">
+              <MapPin size={22} />
+              <strong>已出现的地点没有可发布坐标</strong>
+              <span>虚构或位置不明确的地点不会被强行放到现实地图上。</span>
+            </div>
+          )}
           <div className="reader-place-list">
             {places.map((place) => (
               <button
@@ -368,6 +369,19 @@ function ReadingMapPanel({ entities, currentChapterId, chapters }) {
                 <p>资料包未发布可显示的位置。</p>
               )}
               {selectedPlace.scopeNote && <p>{selectedPlace.scopeNote}</p>}
+              {placeRelations.length > 0 && (
+                <div className="reader-place-relations">
+                  <strong>与其他已读地点</strong>
+                  {placeRelations.map((relation) => (
+                    <span key={relation.id}>
+                      {relation.name}：{relation.direction}方向 · 直线约{' '}
+                      {relation.distanceKm < 10
+                        ? relation.distanceKm.toFixed(1)
+                        : Math.round(relation.distanceKm)} 公里
+                    </span>
+                  ))}
+                </div>
+              )}
               <small>仅展示资料包中已审计的空间字段，不生成剧情解释。</small>
             </div>
           )}

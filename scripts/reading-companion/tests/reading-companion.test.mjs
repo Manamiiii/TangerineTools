@@ -9,6 +9,7 @@ import {
   matchOnDemandEntity,
   normalizeObservedEntityName,
   projectReadingPlaces,
+  readingPlaceRelations,
   readingStateKey,
   riskForDisclosure,
   scanOnDemandEntities,
@@ -38,10 +39,12 @@ test('reading companion keeps feature code and maintenance files in dedicated di
   const dedicatedPaths = [
     'src/features/reading-companion/index.js',
     'src/features/reading-companion/components/ReaderTool.jsx',
+    'src/features/reading-companion/components/ReadingGeoMap.jsx',
     'src/features/reading-companion/data/readingPackages.js',
     'src/features/reading-companion/db/readingState.js',
     'src/features/reading-companion/db/seed.js',
     'src/features/reading-companion/domain/readingCompanion.js',
+    'src/features/reading-companion/map/mapConfig.js',
     'src/features/reading-companion/preset.js',
     'scripts/reading-companion/build-preview.mjs',
     'docs/reading-companion/product-and-architecture.md',
@@ -165,6 +168,33 @@ test('entity visibility and spatial projection are deterministic system capabili
     projected.map(({ x, y }) => [x, y]),
     [[8, 8], [92, 92]],
   )
+})
+
+test('reading place relations calculate safe straight-line distance and direction', () => {
+  const places = [
+    {
+      id: 'place-atlanta',
+      name: '亚特兰大',
+      geometry: { type: 'point', latitude: 33.7628947, longitude: -84.4220844 },
+    },
+    {
+      id: 'place-jonesboro',
+      name: '琼斯伯勒',
+      geometry: { type: 'point', latitude: 33.5211498, longitude: -84.3546835 },
+    },
+    {
+      id: 'place-fictional',
+      name: '虚构地点',
+      geometry: null,
+    },
+  ]
+  const relations = readingPlaceRelations(places, 'place-atlanta')
+  assert.equal(relations.length, 1)
+  assert.equal(relations[0].id, 'place-jonesboro')
+  assert.equal(relations[0].direction, '南')
+  assert.ok(relations[0].distanceKm > 27 && relations[0].distanceKm < 28)
+  assert.deepEqual(readingPlaceRelations(places, 'place-fictional'), [])
+  assert.deepEqual(readingPlaceRelations(places, 'missing-place'), [])
 })
 
 test('formal facts require sources, known categories, and stay unavailable before reveal chapter', () => {

@@ -1,3 +1,5 @@
+@import "leaflet/dist/leaflet.css";
+
 /* 全局样式：工具化、紧凑、不做营销风格的极简界面。
    使用 CSS 变量统一配色/间距，方便后续整体调整。 */
 
@@ -4292,69 +4294,108 @@ img {
   gap: 12px;
 }
 
-.reader-map-canvas {
+.reader-interactive-map {
   position: relative;
-  min-height: 280px;
   overflow: hidden;
   border: 1px solid #ddd6fe;
   border-radius: var(--radius-lg);
-  background:
-    linear-gradient(rgb(124 58 237 / 7%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(124 58 237 / 7%) 1px, transparent 1px),
-    linear-gradient(145deg, #faf5ff, #eff6ff);
-  background-size: 32px 32px, 32px 32px, auto;
+  background: #eef2f7;
 }
 
-.reader-map-axis {
+.reader-leaflet-map {
+  width: 100%;
+  min-height: 340px;
+}
+
+.reader-map-network-state {
   position: absolute;
-  left: 10px;
-  z-index: 1;
-  color: #7c6f8f;
+  top: 10px;
+  left: 50%;
+  z-index: 500;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 3px 10px rgb(15 23 42 / 14%);
+  color: #475569;
+  font-size: 10px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.reader-map-network-state.error {
+  background: rgb(255 247 237 / 96%);
+  color: #c2410c;
+}
+
+.reader-map-legend {
+  position: absolute;
+  bottom: 22px;
+  left: 8px;
+  z-index: 500;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 5px 7px;
+  border-radius: 7px;
+  background: rgb(255 255 255 / 90%);
+  box-shadow: 0 2px 8px rgb(15 23 42 / 12%);
+}
+
+.reader-map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #475569;
+  font-size: 9px;
+}
+
+.reader-map-legend i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.reader-map-legend i.real { background: #2563eb; }
+.reader-map-legend i.prototype { background: #7c3aed; }
+.reader-map-legend i.approximate { background: #d97706; }
+
+.reader-map-tooltip {
+  padding: 3px 6px;
+  border: 0;
+  box-shadow: 0 2px 8px rgb(15 23 42 / 18%);
+  color: #1e293b;
   font-size: 10px;
   font-weight: 700;
 }
 
-.reader-map-axis.north { top: 9px; }
-.reader-map-axis.south { bottom: 9px; }
-
-.reader-map-marker {
-  position: absolute;
-  display: flex;
-  max-width: 130px;
-  align-items: center;
-  gap: 3px;
-  padding: 5px 7px;
-  border: 1px solid #c4b5fd;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 92%);
-  box-shadow: 0 4px 12px rgb(76 29 149 / 12%);
-  color: #6d28d9;
-  font-size: 10px;
-  transform: translate(-50%, -50%);
-}
-
-.reader-map-marker:hover,
-.reader-map-marker.active {
-  border-color: #7c3aed;
-  background: #7c3aed;
-  color: #fff;
-}
-
-.reader-map-marker span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.reader-interactive-map .leaflet-control-attribution {
+  font-size: 8px;
 }
 
 .reader-map-unplaced {
-  position: absolute;
-  inset: 0;
   display: grid;
+  min-height: 280px;
   place-items: center;
+  align-content: center;
+  gap: 6px;
   padding: 24px;
+  border: 1px dashed #c4b5fd;
+  border-radius: var(--radius-lg);
+  background: #faf9ff;
   color: var(--text-muted);
   font-size: 12px;
   text-align: center;
+}
+
+.reader-map-unplaced strong {
+  color: var(--text);
+  font-size: 12px;
+}
+
+.reader-map-unplaced span {
+  max-width: 340px;
+  font-size: 10px;
+  line-height: 1.55;
 }
 
 .reader-place-list {
@@ -4426,6 +4467,27 @@ img {
 .reader-place-detail .reader-place-unlock-note {
   color: #047857;
   font-weight: 650;
+}
+
+.reader-place-detail .reader-place-relations {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 3px;
+  margin: 9px 0;
+  padding: 8px 9px;
+  border-radius: 8px;
+  background: #eff6ff;
+}
+
+.reader-place-relations strong {
+  color: #1d4ed8;
+  font-size: 10px;
+}
+
+.reader-place-relations span {
+  color: #475569;
+  font-size: 10px;
 }
 
 .reader-facts-empty {
@@ -4732,6 +4794,10 @@ img {
 
   .reader-map-layout {
     grid-template-columns: 1fr;
+  }
+
+  .reader-leaflet-map {
+    min-height: 300px;
   }
 
   .reader-place-list {

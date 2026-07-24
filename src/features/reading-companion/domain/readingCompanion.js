@@ -226,6 +226,63 @@ export function projectReadingPlaces(entities) {
   }))
 }
 
+function placeCoordinates(place) {
+  const latitude = place?.geometry?.latitude
+  const longitude = place?.geometry?.longitude
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null
+  return { latitude, longitude }
+}
+
+function toRadians(degrees) {
+  return (degrees * Math.PI) / 180
+}
+
+function directionLabel(bearing) {
+  const labels = ['北', '东北', '东', '东南', '南', '西南', '西', '西北']
+  return labels[Math.round(bearing / 45) % labels.length]
+}
+
+export function readingPlaceRelations(places, selectedPlaceId) {
+  if (!Array.isArray(places) || !isNonEmptyString(selectedPlaceId)) return []
+  const selectedPlace = places.find((place) => place?.id === selectedPlaceId)
+  const origin = placeCoordinates(selectedPlace)
+  if (!origin) return []
+
+  const latitude1 = toRadians(origin.latitude)
+  return places
+    .filter((place) => place?.id !== selectedPlaceId)
+    .map((place) => {
+      const destination = placeCoordinates(place)
+      if (!destination) return null
+      const latitude2 = toRadians(destination.latitude)
+      const latitudeDelta = latitude2 - latitude1
+      const longitudeDelta = toRadians(destination.longitude - origin.longitude)
+      const haversine = (
+        Math.sin(latitudeDelta / 2) ** 2
+        + Math.cos(latitude1) * Math.cos(latitude2) * Math.sin(longitudeDelta / 2) ** 2
+      )
+      const normalizedHaversine = Math.min(1, Math.max(0, haversine))
+      const distanceKm = 6371.0088 * 2 * Math.atan2(
+        Math.sqrt(normalizedHaversine),
+        Math.sqrt(1 - normalizedHaversine),
+      )
+      const y = Math.sin(longitudeDelta) * Math.cos(latitude2)
+      const x = (
+        Math.cos(latitude1) * Math.sin(latitude2)
+        - Math.sin(latitude1) * Math.cos(latitude2) * Math.cos(longitudeDelta)
+      )
+      const bearing = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360
+      return {
+        id: place.id,
+        name: place.name,
+        distanceKm,
+        direction: directionLabel(bearing),
+      }
+    })
+    .filter(Boolean)
+    .sort((left, right) => left.distanceKm - right.distanceKm)
+}
+
 export function riskForDisclosure({ riskLevel, revealAt, currentChapterId, chapters }) {
   const normalizedRisk = VALID_RISK_LEVELS.has(riskLevel) ? riskLevel : SPOILER_RISK.POTENTIAL
   if (!isNonEmptyString(currentChapterId) || !Array.isArray(chapters) || chapters.length === 0) {
