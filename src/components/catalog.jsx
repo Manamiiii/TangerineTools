@@ -472,9 +472,15 @@ function ParentheticalText({ value }) {
   )
 }
 
-function ReferenceLabel({ field, row, label }) {
+function ReferenceLabel({ field, row, sourceRow, label }) {
   const imageKey = field.display?.referenceImageField
-  const image = imageKey ? row?.values?.[imageKey] || '' : ''
+  const variantImageKey = field.display?.referenceImageVariantField
+  const variantSourceField = field.display?.referenceImageVariantSourceField
+  const variantSourceValue = field.display?.referenceImageVariantSourceValue
+  const useVariant = variantImageKey && variantSourceField && sourceRow?.values?.[variantSourceField] === variantSourceValue
+  const image = useVariant
+    ? row?.values?.[variantImageKey] || row?.values?.[imageKey] || ''
+    : imageKey ? row?.values?.[imageKey] || '' : ''
   return (
     <span className={image ? 'reference-summary' : ''}>
       {image && <img src={image} alt="" />}
@@ -483,14 +489,14 @@ function ReferenceLabel({ field, row, label }) {
   )
 }
 
-function ReferenceCellContent({ field, value, onOpenReference, referenceContext }) {
+function ReferenceCellContent({ field, value, sourceRow, onOpenReference, referenceContext }) {
   const { fields, rows } = referenceContext
   if (!value) return <span className="cell-empty">—</span>
   const row = rows.find((r) => r.id === value)
   const label = row ? referenceRowLabel(fields, row, field) : value
   const plain = field.display?.plainReference
   const className = plain ? 'reference-inline' : 'reference-tag'
-  if (!row || !onOpenReference) return <span className={className}><ReferenceLabel field={field} row={row} label={label} /></span>
+  if (!row || !onOpenReference) return <span className={className}><ReferenceLabel field={field} row={row} sourceRow={sourceRow} label={label} /></span>
   return (
     <button
       type="button"
@@ -501,7 +507,7 @@ function ReferenceCellContent({ field, value, onOpenReference, referenceContext 
       }}
       title="查看引用资料"
     >
-      <ReferenceLabel field={field} row={row} label={label} />
+      <ReferenceLabel field={field} row={row} sourceRow={sourceRow} label={label} />
     </button>
   )
 }
@@ -787,7 +793,7 @@ export function CellView({ field, row, allFields, mode = 'table', onOpenReferenc
     case 'date':
       return <span>{value || '—'}</span>
     case 'reference':
-      return <ReferenceCellView field={field} value={value} onOpenReference={onOpenReference} />
+      return <ReferenceCellView field={field} value={value} sourceRow={row} onOpenReference={onOpenReference} />
     case 'references':
       return <ReferenceListCellView field={mode === 'detail' ? { ...field, __detailMode: true } : field} value={value} onOpenReference={onOpenReference} />
     default:

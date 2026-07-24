@@ -11,7 +11,7 @@ const SCENE_ID = 'scene-rock-kingdom'
 export const ROCK_KINGDOM_CREATURE_TABLE_ID = 'table-rock-kingdom-elf-basic'
 const TABLE_ID = ROCK_KINGDOM_CREATURE_TABLE_ID
 const SKILL_TABLE_ID = 'table-rock-kingdom-skills'
-export const ROCK_KINGDOM_ROWS_VERSION = 'bwiki-2026-07-24-2c7990a98d3181f9'
+export const ROCK_KINGDOM_ROWS_VERSION = 'bwiki-2026-07-24-4d9c47ed04b75fb8'
 
 // 系别图标使用 BWiki 精灵筛选页公开的无文字 patchwiki 小图标。
 // 覆盖当前全部 18 系；用户仍可在字段编辑中按需增删或替换自定义图标。
@@ -215,15 +215,16 @@ const fields = [
   })) }, 13),
   makeField({ key: 'speciesGroup', name: '繁育谱系', type: 'text', hidden: true }, 14),
   makeField({ key: 'shiny', name: '异色形态', type: 'select', options: SHINY_OPTIONS, hidden: true }, 15),
-  makeField({ key: 'traitIcon', name: '特性图标', type: 'image', hidden: true }, 16),
-  makeField({ key: 'traitDesc', name: '特性描述', type: 'longtext', hidden: true }, 17),
-  makeField({ key: 'hp', name: '生命', type: 'number', hidden: true }, 18),
-  makeField({ key: 'patk', name: '物攻', type: 'number', hidden: true }, 19),
-  makeField({ key: 'matk', name: '魔攻', type: 'number', hidden: true }, 20),
-  makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 21),
-  makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 22),
-  makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 23),
-  makeField({ key: 'evolutionLine', name: '进化链', type: 'longtext', hidden: true, display: { kind: 'chain' } }, 24),
+  makeField({ key: 'shinyImage', name: '异色样子', type: 'image', hidden: true }, 16),
+  makeField({ key: 'traitIcon', name: '特性图标', type: 'image', hidden: true }, 17),
+  makeField({ key: 'traitDesc', name: '特性描述', type: 'longtext', hidden: true }, 18),
+  makeField({ key: 'hp', name: '生命', type: 'number', hidden: true }, 19),
+  makeField({ key: 'patk', name: '物攻', type: 'number', hidden: true }, 20),
+  makeField({ key: 'matk', name: '魔攻', type: 'number', hidden: true }, 21),
+  makeField({ key: 'pdef', name: '物防', type: 'number', hidden: true }, 22),
+  makeField({ key: 'mdef', name: '魔防', type: 'number', hidden: true }, 23),
+  makeField({ key: 'spd', name: '速度', type: 'number', hidden: true }, 24),
+  makeField({ key: 'evolutionLine', name: '进化链', type: 'longtext', hidden: true, display: { kind: 'chain' } }, 25),
 ]
 
 const skillFields = [

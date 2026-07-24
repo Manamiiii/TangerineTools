@@ -386,6 +386,7 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
       values: {
         ...existingValues,
         image: creature.image || existingValues.image || '',
+        shinyImage: creature.shinyImage || existingValues.shinyImage || '',
         name: creature.name,
         no: creature.no,
         element: element.mapped,
@@ -417,6 +418,7 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
         seasonLabel: creature.seasonLabel || '',
         breedingSource: breeding?.sourceUrl || '',
         imageSource: creature.image ? (creature.image.includes('patchwiki') ? 'patchwiki' : 'bwiki') : existingValues.image ? 'existing-public-preset' : 'empty',
+        shinyImageSource: creature.shinyImage ? 'patchwiki' : existingValues.shinyImage ? 'existing-public-preset' : 'empty',
       },
     }
   })
@@ -459,7 +461,7 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
   }
 
   const creatureFieldChanges = countFieldChanges(creaturePreviewRows, currentRows, [
-    'image', 'element', 'form', 'bst', 'hp', 'patk', 'matk', 'pdef', 'mdef', 'spd', 'shiny',
+    'image', 'shinyImage', 'element', 'form', 'bst', 'hp', 'patk', 'matk', 'pdef', 'mdef', 'spd', 'shiny',
     'traitName', 'traitIcon', 'traitDesc', 'skillRefs', 'eggGroups', 'speciesGroup', 'evolutionLine',
     'eggImage', 'fruitImage',
   ])
@@ -487,12 +489,19 @@ function buildPreview({ creatures, skills, details, currentRows, currentSkills, 
 
 function renderReport({ syncedAt, inputs, outputs, creatureIssues, skillIssues, skillRelationIssues, relationConsistency, omittedCurrentCreatures, creatureFieldChanges, skillFieldChanges, duplicateCreatureIds, duplicateSkillIds }) {
   const imageCounts = countBy(outputs.creaturePreviewRows, (row) => row.previewMeta.imageSource)
+  const shinyImageCounts = countBy(outputs.creaturePreviewRows, (row) => row.previewMeta.shinyImageSource)
   const idStrategyCounts = countBy(outputs.creaturePreviewRows, (row) => row.previewMeta.idStrategy)
   const skillIdStrategyCounts = countBy(outputs.skillPreviewRows, (row) => row.previewMeta.idStrategy)
   const relationRate = skillRelationIssues.totalCards === 0 ? '0.00%' : `${((skillRelationIssues.matchedCards / skillRelationIssues.totalCards) * 100).toFixed(2)}%`
   const creaturesWithSkillRefs = outputs.creaturePreviewRows.filter((row) => row.values.skillRefs.length > 0).length
   const creaturesWithoutSkillRefs = outputs.creaturePreviewRows.length - creaturesWithSkillRefs
   const emptyImageRows = outputs.creaturePreviewRows.filter((row) => !row.values.image).map((row) => `${row.values.no} ${row.values.name}`)
+  const missingShinyImageRows = outputs.creaturePreviewRows
+    .filter((row) => row.values.shiny === 'yes' && !row.values.shinyImage)
+    .map((row) => `${row.values.no} ${row.values.name}`)
+  const unexpectedShinyImageRows = outputs.creaturePreviewRows
+    .filter((row) => row.values.shiny !== 'yes' && row.values.shinyImage)
+    .map((row) => `${row.values.no} ${row.values.name}`)
   const legacyUnmatchedRefs = inputs.details.flatMap((row) =>
     (row.legacyUnmatchedSkillNames ?? []).map((name) => `${row.no} ${row.name}：${name}`))
   const p4Blockers = [
@@ -500,6 +509,8 @@ function renderReport({ syncedAt, inputs, outputs, creatureIssues, skillIssues, 
     creaturesWithoutSkillRefs ? `仍有 ${creaturesWithoutSkillRefs} 条精灵没有技能引用` : '',
     relationConsistency.missingReverse.length || relationConsistency.missingForward.length || relationConsistency.danglingSkillRefs.length || relationConsistency.danglingLearnerRefs.length ? '技能双向关系仍不一致' : '',
     emptyImageRows.length ? `仍有 ${emptyImageRows.length} 条精灵缺少图片` : '',
+    missingShinyImageRows.length ? `仍有 ${missingShinyImageRows.length} 条“存在异色”的精灵缺少异色图片` : '',
+    unexpectedShinyImageRows.length ? `仍有 ${unexpectedShinyImageRows.length} 条“无异色”的精灵带有异色图片` : '',
   ].filter(Boolean)
 
   return `# BWiki 预置 preview 报告
@@ -647,6 +658,18 @@ ${renderCountTable(imageCounts)}
 缺少精灵图片的行：
 
 ${renderList(emptyImageRows)}
+
+| 异色图片来源 | 数量 |
+|---|---:|
+${renderCountTable(shinyImageCounts)}
+
+标记为存在异色、但缺少异色图片的行：
+
+${renderList(missingShinyImageRows)}
+
+标记为无异色、但带有异色图片的行：
+
+${renderList(unexpectedShinyImageRows)}
 
 ## 正式发布准入判断
 

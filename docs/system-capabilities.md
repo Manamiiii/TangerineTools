@@ -115,7 +115,7 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
   - `public/presets/rockKingdomRows.json` 包含 592 条精灵 / 形态资料。
   - `public/presets/rockKingdomSkillRows.json` 包含 553 条技能资料。
   - `public/presets/rockKingdomPresetMigration.json` 保存基线正式值 SHA-256，供浏览器做安全三方合并，不含用户数据。
-- 精灵与技能图片使用经审计的 BWiki / patchwiki URL；UI 图标使用可信静态资源。
+- 精灵与技能图片使用经审计的 BWiki / patchwiki URL；存在异色的精灵保存 BWiki 实际异色图片，收集记录和孵蛋推荐中的已拥有个体按异色状态切换头像。炫彩仍只作为个体标记和繁育概率参与展示，不生成或模拟每只精灵不同的炫彩外观。
 - 迁移策略：通过版本化基线正式值指纹做三方合并，只更新空值、无效值或匹配基线正式值的精灵 / 技能字段；用户自定义非空值、用户新增的非占位资料行、owned 收集记录和 stock 统计配置不会被覆盖或删除；不改变 Dexie schema 版本。
 
 ### 8. 全量数据导出 / 导入（仅首页）

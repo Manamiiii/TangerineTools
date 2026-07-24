@@ -28,6 +28,19 @@ async function resetDatabase() {
   await db.open()
 }
 
+test('official shiny creature rows have audited BWiki images', () => {
+  const shinyRows = creatures.filter((row) => row.values.shiny === 'yes')
+  assert.equal(shinyRows.length, 145)
+  assert.equal(shinyRows.filter((row) => row.values.shinyImage).length, shinyRows.length)
+  assert.equal(
+    creatures.filter((row) => row.values.shiny !== 'yes' && row.values.shinyImage).length,
+    0,
+  )
+  for (const row of shinyRows) {
+    assert.match(row.values.shinyImage, /^https:\/\/patchwiki\.biligame\.com\//)
+  }
+})
+
 test('seed migration is versioned and preserves imported custom preset values', async () => {
   await resetDatabase()
   let fetchCount = 0

@@ -232,12 +232,14 @@ function parseCreatureCatalogRows(html) {
       const name = subtitle && subtitle !== '首领形态' ? `${baseName}（${subtitle}）` : baseName
       const no = parseNo(block.match(/<div class="dex-card-kicker">([\s\S]*?)<span>/i)?.[1] ?? '')
       const normalArt = block.match(/<span class="dex-pet-art-layer dex-pet-art-normal">([\s\S]*?)<\/span>/i)?.[0] ?? ''
+      const shinyArt = block.match(/<span class="dex-pet-art-layer dex-pet-art-shiny">([\s\S]*?)<\/span>/i)?.[0] ?? ''
       const artBlock = normalArt || block.match(/<div class="dex-pet-art">[\s\S]*?(?=<div class="dex-card-types")/i)?.[0] || ''
       if (!name || !no) return null
       return {
         no,
         name,
         image: extractFirstImage(artBlock),
+        shinyImage: extractFirstImage(shinyArt),
       }
     })
     .filter(Boolean)
@@ -337,7 +339,9 @@ function enrichCreaturesWithCatalogImages(creatures, catalogRows) {
     return {
       ...creature,
       image: creature.image || catalog?.image || '',
-      imageSource: creature.image ? 'creature-filter' : catalog?.image ? 'creature-catalog' : 'empty',
+      shinyImage: catalog?.shinyImage || creature.shinyImage || '',
+      imageSource: creature.image ? creature.imageSource || 'creature-filter' : catalog?.image ? 'creature-catalog' : 'empty',
+      shinyImageSource: catalog?.shinyImage ? 'creature-catalog' : creature.shinyImageSource || 'empty',
     }
   })
 }
@@ -407,6 +411,7 @@ function renderReport({ syncedAt, creatures, skills, eggs, localCreatures, local
   const creatureEggAssetCounts = countBy(creatures, (row) => (row.eggImage ? '有精灵蛋图' : '缺精灵蛋图'))
   const creatureFruitAssetCounts = countBy(creatures, (row) => (row.fruitImage ? '有精灵果实图' : '缺精灵果实图'))
   const creatureImageSourceCounts = countBy(creatures, (row) => row.imageSource)
+  const creatureShinyImageSourceCounts = countBy(creatures, (row) => row.shinyImageSource)
   const formCounts = countBy(creatures, (row) => row.formCategoryLabel)
   const mainFormCounts = countBy(creatures, (row) => (row.isMainForm ? '主形态' : '非主形态/未标注'))
   const stageCounts = countBy(creatures, (row) => row.stageLabel)
@@ -468,6 +473,10 @@ ${multiNoGroups.map((group) => `| ${group.no} | ${group.count} | ${group.names.j
 | 精灵图来源 | Count |
 |---|---:|
 ${renderCountTable(creatureImageSourceCounts)}
+
+| 异色图来源 | Count |
+|---|---:|
+${renderCountTable(creatureShinyImageSourceCounts)}
 
 | 获取/来源标签 | Count |
 |---|---:|

@@ -117,6 +117,10 @@ function natureLabel(value) {
   return NATURE_LABELS[value] || value || '未知性格'
 }
 
+function creatureImage(values, shiny) {
+  return shiny ? values.shinyImage || values.image || '' : values.image || ''
+}
+
 function BreedingCreature({ gender, item, onOpen }) {
   const values = item.catalog.row.values || {}
   const trait = values.traitName || '无特性'
@@ -127,7 +131,7 @@ function BreedingCreature({ gender, item, onOpen }) {
       onClick={onOpen}
       title={`查看 ${values.name || item.name} 详情`}
     >
-      <img className="breeding-creature-avatar" src={values.image || ''} alt="" />
+      <img className="breeding-creature-avatar" src={creatureImage(values, item.shiny)} alt="" />
       <span className="breeding-creature-text">
         <strong>{values.name || item.name}</strong>
         <small>{natureLabel(item.nature)} · {trait}</small>

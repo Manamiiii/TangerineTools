@@ -121,7 +121,7 @@ export const OWNED_NATURE_OPTIONS = [
 // ref 字段的 refTableKind/refTableName 由 ensureOwnedTable 在运行时补齐，
 // 因为它需要绑定到当前场景里的普通资料表（例如洛克王国的"精灵图鉴"）。
 export const ROCK_KINGDOM_COLLECTION_FIELDS = [
-  { key: 'ref', name: '精灵', type: 'reference', display: { referenceImageField: 'image', referenceLabelFields: ['name'], searchableReference: true, plainReference: true, breakParentheses: true, compact: true, tableWidth: 154 } },
+  { key: 'ref', name: '精灵', type: 'reference', display: { referenceImageField: 'image', referenceImageVariantField: 'shinyImage', referenceImageVariantSourceField: 'shiny', referenceImageVariantSourceValue: 'yes', referenceLabelFields: ['name'], searchableReference: true, plainReference: true, breakParentheses: true, compact: true, tableWidth: 154 } },
   { key: 'nature', name: '性格', type: 'select', options: OWNED_NATURE_OPTIONS, display: { compact: true, tableWidth: 136 } },
   { key: 'bloodline', name: '血脉', type: 'select', options: OWNED_BLOODLINE_OPTIONS, display: { compact: true, tableWidth: 104 } },
   { key: 'shiny', name: '个体异色', type: 'select', options: OWNED_SHINY_OPTIONS, display: { mode: 'icon', hiddenOptionValues: ['no'], compact: true, tableWidth: 68 } },

@@ -197,7 +197,7 @@ async function migrateRockKingdomFieldOptions() {
 
 async function migrateRockKingdomFieldLayout() {
   const migrationKey = 'rockKingdomFieldLayoutVersion'
-  const targetVersion = 'catalog-layout-2026-07-24-v6'
+  const targetVersion = 'catalog-layout-2026-07-24-v7'
   const migrated = await db.meta.get(migrationKey)
   if (migrated?.value === targetVersion) return
   const presetById = new Map(ROCK_KINGDOM_PRESET.fields.map((field) => [field.id, field]))
@@ -210,7 +210,7 @@ async function migrateRockKingdomFieldLayout() {
     if (field.order !== preset.order) patch.order = preset.order
     if (field.key === 'traitName' && field.type === 'text' && field.display?.kind === 'summary') patch.type = 'summary'
     if (JSON.stringify(field.display || {}) !== JSON.stringify(preset.display || {})) patch.display = preset.display || {}
-    if (field.tableId === ROCK_KINGDOM_PRESET.tables[0].id && ['shiny', 'speciesGroup', 'traitIcon', 'traitDesc'].includes(field.key) && !field.hidden) patch.hidden = true
+    if (field.tableId === ROCK_KINGDOM_PRESET.tables[0].id && ['shiny', 'shinyImage', 'speciesGroup', 'traitIcon', 'traitDesc'].includes(field.key) && !field.hidden) patch.hidden = true
     return Object.keys(patch).length > 0 ? [{ id: field.id, patch: { ...patch, updatedAt: now } }] : []
   })
   await db.transaction('rw', db.catalogFields, db.meta, async () => {

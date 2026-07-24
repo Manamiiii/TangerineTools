@@ -1,12 +1,12 @@
 {
   "source": "bwiki-preset-migration",
-  "version": "bwiki-2026-07-24-2c7990a98d3181f9",
-  "generatedAt": "2026-07-24T03:22:42.378Z",
+  "version": "bwiki-2026-07-24-4d9c47ed04b75fb8",
+  "generatedAt": "2026-07-24T04:04:10.849Z",
   "target": {
     "creatureRows": 592,
     "skillRows": 553,
-    "creaturePreviewSha256": "2c7990a9b85ac042d418d3888951ab7c62a0a331df3c2b1127a1693f73e6860c",
-    "skillPreviewSha256": "8d3181f95721c63e1263309fd7e43f9e6fc0acdad9d55c35eb6251fe3124d497"
+    "creaturePreviewSha256": "4d9c47ed2afd2aff0db90de10fdec7e24591ef54f959f26687b061136ee7f26f",
+    "skillPreviewSha256": "04b75fb81d908785a8678371854468f159e1c8b061944a6dce71f1a00cc487b7"
   },
   "creatures": {
     "rowCount": 592,
