@@ -18,10 +18,10 @@ export function sceneTypeLabel(value) {
 // 「统计视图」用于从资料库/收集记录按条件汇总；「性格推荐」和「孵蛋推荐」是洛克王国定制工具。
 export const SCENE_TOOLS = [
   { value: 'catalog', label: '资料库', ready: true },
-  { value: 'owned', label: '收集记录', ready: true },
-  { value: 'stock', label: '统计视图', ready: true },
   { value: 'nature', label: '性格推荐', ready: true },
+  { value: 'owned', label: '收集记录', ready: true },
   { value: 'breeding', label: '孵蛋推荐', ready: true },
+  { value: 'stock', label: '统计视图', ready: true },
 ]
 
 // 字段类型：资料表列的数据类型。

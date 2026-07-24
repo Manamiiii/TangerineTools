@@ -9,7 +9,7 @@ const [creatures, skills, migration] = await Promise.all([
   readFile(new URL('public/presets/rockKingdomSkillRows.json', repoUrl), 'utf8').then(JSON.parse),
   readFile(new URL('public/presets/rockKingdomPresetMigration.json', repoUrl), 'utf8').then(JSON.parse),
 ])
-const { db, ensureSeeded, importAllData } = await import('../../src/db.js')
+const { db, ensureOwnedTable, ensureSeeded, importAllData } = await import('../../src/db.js')
 
 function presetResponse(url, failCreatureRows = false) {
   const value = String(url)
@@ -50,8 +50,15 @@ test('seed migration is versioned and preserves imported custom preset values', 
 
   fetchCount = 0
   globalThis.fetch = async () => { fetchCount += 1; throw new Error('same version must not fetch presets') }
+  await db.scenes.update('scene-rock-kingdom', {
+    tools: ['catalog', 'owned', 'stock', 'nature', 'breeding'],
+  })
   await ensureSeeded()
   assert.equal(fetchCount, 0)
+  assert.deepEqual(
+    (await db.scenes.get('scene-rock-kingdom')).tools,
+    ['catalog', 'nature', 'owned', 'breeding', 'stock'],
+  )
 })
 
 test('an offline preset failure remains retryable', async () => {
@@ -81,6 +88,37 @@ test('startup removes only retired breeding demo rows from collection data', asy
 
   assert.equal(await db.catalogRows.get('owned-rock-breeding-demo-1'), undefined)
   assert.equal((await db.catalogRows.get('owned-user-kept')).values.note, '用户记录')
+})
+
+test('owned table receives 52 removable shiny breeding fixtures only once', async () => {
+  await resetDatabase()
+  globalThis.fetch = async (url) => presetResponse(url)
+  await ensureSeeded()
+
+  const table = await ensureOwnedTable('scene-rock-kingdom')
+  const fixtureRows = (await db.catalogRows.where('tableId').equals(table.id).toArray())
+    .filter((row) => row.values?.note === '孵蛋推荐调试预置（可删除）')
+  assert.equal(fixtureRows.length, 52)
+  assert.equal(new Set(fixtureRows.map((row) => row.values.ref)).size, 52)
+  assert.equal(fixtureRows.filter((row) => row.values.gender === 'male').length, 26)
+  assert.equal(fixtureRows.filter((row) => row.values.gender === 'female').length, 26)
+
+  const creaturesById = new Map(creatures.map((row) => [row.id, row]))
+  for (const row of fixtureRows) {
+    const creature = creaturesById.get(row.values.ref)
+    assert.ok(creature)
+    assert.equal(creature.values.shiny, 'yes')
+    assert.ok(creature.values.eggGroups.some((group) => group !== '无法孵蛋'))
+  }
+
+  await db.catalogRows.delete(fixtureRows[0].id)
+  await ensureOwnedTable('scene-rock-kingdom')
+  assert.equal(await db.catalogRows.get(fixtureRows[0].id), undefined)
+  assert.equal(
+    (await db.catalogRows.where('tableId').equals(table.id).toArray())
+      .filter((row) => row.values?.note === '孵蛋推荐调试预置（可删除）').length,
+    51,
+  )
 })
 
 test.after(async () => {

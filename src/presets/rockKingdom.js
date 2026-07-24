@@ -249,7 +249,7 @@ export const ROCK_KINGDOM_PRESET = {
     id: SCENE_ID,
     name: '洛克王国',
     type: 'game',
-    tools: ['catalog', 'owned', 'stock', 'nature', 'breeding'],
+    tools: ['catalog', 'nature', 'owned', 'breeding', 'stock'],
     order: 0,
     createdAt: SEED_TIME,
     updatedAt: SEED_TIME,
