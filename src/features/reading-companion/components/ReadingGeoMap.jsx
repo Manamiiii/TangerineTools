@@ -24,6 +24,24 @@ function markerStyle(place, active = false) {
   }
 }
 
+function geometryStyle(place, active = false) {
+  const color = PLACE_COLORS[place.placeKind] || PLACE_COLORS.real
+  return {
+    color: active ? '#111827' : color,
+    fillColor: color,
+    fillOpacity: 0.18,
+    opacity: 0.92,
+    weight: active ? 6 : 4,
+  }
+}
+
+function layerStyle(place, active = false) {
+  const geoJsonType = place.geometry?.geojson?.type
+  return place.geometry?.type === 'geojson' && geoJsonType !== 'Point'
+    ? geometryStyle(place, active)
+    : markerStyle(place, active)
+}
+
 export function ReadingGeoMap({
   places,
   selectedPlaceId,
@@ -156,7 +174,7 @@ export function ReadingGeoMap({
       let marker
       if (type === 'geojson' && geojson) {
         marker = L.geoJSON(geojson, {
-          style: () => markerStyle(place),
+          style: () => layerStyle(place),
           pointToLayer: (_feature, latlng) => L.circleMarker(latlng, markerStyle(place)),
         })
       } else if (type === 'area') {
@@ -196,7 +214,7 @@ export function ReadingGeoMap({
     for (const place of spatialPlaces) {
       const marker = markersRef.current.get(place.id)
       if (!marker) continue
-      marker.setStyle(markerStyle(place, place.id === selectedPlaceId))
+      marker.setStyle(layerStyle(place, place.id === selectedPlaceId))
       if (place.id === selectedPlaceId && typeof marker.bringToFront === 'function') {
         marker.bringToFront()
       }

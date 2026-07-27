@@ -18,6 +18,50 @@ function normalizedText(value) {
   return typeof value === 'string' ? value.normalize('NFKC').trim() : ''
 }
 
+export function extractPersonalBookMetadataFromText(value) {
+  const text = normalizedText(value)
+  if (!text) return {}
+  const lines = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+  const isbn = text.match(/\b97[89][\d\s-]{9,18}\d\b/u)?.[0]
+    ?.replace(/[^\d]/g, '')
+  const published = text.match(/((?:19|20)\d{2})\s*年\s*(\d{1,2})\s*月/u)
+  const publisher = text.match(/(?:出版社|出版方|版权方)\s*[:：]?\s*([^\n，。；]{2,30}(?:出版社|出版公司))/u)?.[1]
+    || lines.find((line) => /(?:出版社|出版公司)$/u.test(line))
+  const slashLine = lines.find((line) => /[/／]/u.test(line) && /(?:译|著)/u.test(line))
+  const [authorPart = '', translatorPart = ''] = slashLine?.split(/[/／]/u) || []
+  const author = authorPart.trim()
+    .replace(/^(?:作者|著者)\s*[:：]?\s*/u, '')
+    .replace(/\s*(?:著|作者)$/u, '')
+    .trim()
+  const translators = translatorPart
+    .replace(/\s*译.*$/u, '')
+    .split(/[、,，和]/u)
+    .map((name) => name.trim())
+    .filter(Boolean)
+  const ignoredTitle = /^(?:简介|版权|目录|封面|字数|阅读|已完成|作者|译者|出版社|出版时间|ISBN)/iu
+  const title = lines.find((line) => (
+    line.length >= 1
+    && line.length <= 80
+    && !ignoredTitle.test(line)
+    && !/^\d{1,2}:\d{2}\b/u.test(line)
+    && !/[/／]/u.test(line)
+    && !/^\d+(?:\.\d+)?(?:万)?[字人]?$/u.test(line)
+  ))
+  return {
+    ...(title ? { title } : {}),
+    ...(author ? { author } : {}),
+    ...(translators.length > 0 ? { translators } : {}),
+    ...(publisher ? { publisher } : {}),
+    ...(isbn?.length === 13 ? { isbn } : {}),
+    ...(published
+      ? { publishedAt: `${published[1]}-${String(Number(published[2])).padStart(2, '0')}` }
+      : {}),
+  }
+}
+
 export function buildPersonalChapters({ chapterCount, chapterText }) {
   const pastedLabels = normalizedText(chapterText)
     .split(/\r?\n/)

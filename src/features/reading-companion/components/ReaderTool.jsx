@@ -42,8 +42,9 @@ import { searchReadingPlaces } from '../map/geocoding.js'
 import { recognizeReadingImage } from '../ocr/localOcr.js'
 import {
   READING_MODEL_STORAGE_KEYS,
+  analyzeReadingBookMetadata,
   analyzeReadingExcerpt,
-  translateReadingPlaceQuery,
+  suggestReadingPlaceQueries,
 } from '../model/modelAdapter.js'
 import {
   READING_MODEL_PROVIDER,
@@ -57,6 +58,7 @@ import {
 import {
   PERSONAL_BOOK_COVER_THEMES,
   createPersonalReadingPackage,
+  extractPersonalBookMetadataFromText,
   personalCatalogEntry,
 } from '../domain/personalBooks.js'
 import {
@@ -73,7 +75,6 @@ import {
   clearObservedPlaceLocation,
   confirmObservedPlaceApproximateArea,
   confirmObservedPlaceLocation,
-  extractLocalEntityCandidates,
   OBSERVED_ENTITY_KIND,
   OBSERVED_PLACE_KIND,
   matchOnDemandEntity,
@@ -221,7 +222,7 @@ function BookCover({ title, author = '', cover, compact = false }) {
   )
 }
 
-function PersonalBookCreator({ onCreate, onCancel }) {
+function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
   const [form, setForm] = useState({
     title: '',
     author: '',
@@ -237,6 +238,11 @@ function PersonalBookCreator({ onCreate, onCancel }) {
   })
   const [status, setStatus] = useState('')
   const [saving, setSaving] = useState(false)
+  const [metadataScan, setMetadataScan] = useState({
+    state: 'idle',
+    fileName: '',
+    progress: 0,
+  })
 
   function change(key, value) {
     setForm((current) => ({ ...current, [key]: value }))
@@ -257,6 +263,64 @@ function PersonalBookCreator({ onCreate, onCancel }) {
     }
     reader.onerror = () => setStatus('封面图片读取失败。')
     reader.readAsDataURL(file)
+  }
+
+  async function chooseMetadataScreenshot(event) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    setStatus('')
+    setMetadataScan({ state: 'working', fileName: file.name, progress: 0 })
+    try {
+      const text = await recognizeReadingImage(file, (progress) => {
+        if (Number.isFinite(progress?.progress)) {
+          setMetadataScan((current) => ({
+            ...current,
+            progress: Math.round(progress.progress * 100),
+          }))
+        }
+      })
+      if (!text) throw new Error('截图中没有识别出文字')
+      const localMetadata = extractPersonalBookMetadataFromText(text)
+      const configured = Boolean(
+        modelConfig.endpoint.trim()
+        && modelConfig.model.trim()
+        && modelConfig.apiKey.trim(),
+      )
+      const modelMetadata = configured
+        ? await analyzeReadingBookMetadata({
+            endpoint: modelConfig.endpoint,
+            model: modelConfig.model,
+            apiKey: modelConfig.apiKey,
+            temperature: modelConfig.temperature,
+            ocrText: text,
+          })
+        : {}
+      const metadata = { ...localMetadata }
+      for (const [key, value] of Object.entries(modelMetadata)) {
+        if (Array.isArray(value) ? value.length > 0 : value) metadata[key] = value
+      }
+      setForm((current) => ({
+        ...current,
+        title: metadata.title || current.title,
+        author: metadata.author || current.author,
+        translators: metadata.translators?.join('、') || current.translators,
+        publisher: metadata.publisher || current.publisher,
+        isbn: metadata.isbn || current.isbn,
+        publishedAt: metadata.publishedAt || current.publishedAt,
+        originalLanguage: metadata.originalLanguage || current.originalLanguage,
+        chapterCount: metadata.chapterCount || current.chapterCount,
+      }))
+      setMetadataScan({ state: 'done', fileName: file.name, progress: 100 })
+      setStatus(
+        configured
+          ? '已用本机 OCR 和当前模型填入识别到的书籍信息，请核对后创建。'
+          : '已用本机 OCR 填入可确定的信息；配置模型后可提高复杂页面的字段整理效果。',
+      )
+    } catch (error) {
+      setMetadataScan({ state: 'error', fileName: file.name, progress: 0 })
+      setStatus(error?.message || '书籍详情截图识别失败')
+    }
   }
 
   async function submit(event) {
@@ -283,6 +347,30 @@ function PersonalBookCreator({ onCreate, onCancel }) {
         </button>
       </div>
       <form onSubmit={submit}>
+        <div className="reader-book-metadata-scan">
+          <div>
+            <Image size={18} />
+            <span>
+              <strong>从书籍详情截图自动填入</strong>
+              <small>
+                {metadataScan.fileName || '支持类似微信读书详情、版权信息页面的截图'}
+              </small>
+            </span>
+          </div>
+          <label className="btn btn-sm">
+            <Upload size={13} />
+            {metadataScan.state === 'working'
+              ? `识别中 ${metadataScan.progress}%`
+              : '选择截图并识别'}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={chooseMetadataScreenshot}
+              disabled={metadataScan.state === 'working'}
+              hidden
+            />
+          </label>
+        </div>
         <div className="reader-cover-builder">
           <BookCover
             title={form.title}
@@ -432,7 +520,7 @@ function WindowsInstallCard() {
   )
 }
 
-function ReadingLibrary({ catalog, onSelect, onCreate, onDelete }) {
+function ReadingLibrary({ catalog, onSelect, onCreate, onDelete, modelConfig }) {
   const [creating, setCreating] = useState(false)
   return (
     <div className="reader-tool reader-library">
@@ -455,6 +543,7 @@ function ReadingLibrary({ catalog, onSelect, onCreate, onDelete }) {
           <PersonalBookCreator
             onCreate={onCreate}
             onCancel={() => setCreating(false)}
+            modelConfig={modelConfig}
           />
         )}
         {catalog.length > 0 ? (
@@ -615,7 +704,6 @@ function ModelAnalysisPanel({
                       ? ` · 模型置信度 ${Math.round(candidate.confidence * 100)}%`
                       : ''}
                   </span>
-                  {candidate.reason && <p>{candidate.reason}</p>}
                 </div>
                 <button
                   type="button"
@@ -857,40 +945,6 @@ function ReadingServiceSettings({
         </p>
       </section>
       {message && <p className="reader-settings-message" role="status">{message}</p>}
-    </div>
-  )
-}
-
-function LocalCandidateRow({
-  candidate,
-  actionFor,
-  onConfirm,
-}) {
-  const [kind, setKind] = useState(candidate.kind)
-  const action = actionFor(candidate.name, kind)
-  return (
-    <div className="reader-local-candidate">
-      <div>
-        <strong>{candidate.name}</strong>
-        <span>{candidate.reason}</span>
-      </div>
-      <select
-        aria-label={`“${candidate.name}”的类型`}
-        value={kind}
-        onChange={(event) => setKind(event.target.value)}
-      >
-        {Object.entries(OBSERVED_KIND_LABELS).map(([value, label]) => (
-          <option key={value} value={value}>{label}</option>
-        ))}
-      </select>
-      <button
-        type="button"
-        className="btn btn-sm"
-        disabled={action.type === 'recorded'}
-        onClick={() => onConfirm({ ...candidate, kind })}
-      >
-        <Plus size={13} /> {action.label}
-      </button>
     </div>
   )
 }
@@ -1346,6 +1400,8 @@ function ReadingMapPanel({
   onChangeObservedEntities,
   mapConfig,
   modelConfig,
+  bookTitle,
+  currentChapter,
   onOpenSettings,
   isActive,
 }) {
@@ -1356,6 +1412,7 @@ function ReadingMapPanel({
   const [lookupMode, setLookupMode] = useState('exact')
   const [areaRadiusKm, setAreaRadiusKm] = useState(50)
   const [translationState, setTranslationState] = useState('idle')
+  const [lookupSuggestions, setLookupSuggestions] = useState([])
   const [lookupState, setLookupState] = useState('idle')
   const [lookupResults, setLookupResults] = useState([])
   const [lookupMessage, setLookupMessage] = useState('')
@@ -1422,6 +1479,7 @@ function ReadingMapPanel({
     setLookupResults([])
     setLookupState('idle')
     setLookupMessage('')
+    setLookupSuggestions([])
   }, [providerId])
 
   useEffect(() => {
@@ -1470,25 +1528,29 @@ function ReadingMapPanel({
     setLookupQuery(nextMode === 'exact' ? place.name : '')
     setAreaRadiusKm(50)
     setTranslationState('idle')
+    setLookupSuggestions([])
     setLookupResults([])
     setLookupState('idle')
     setLookupMessage('')
   }
 
-  async function translateLookupQuery() {
+  async function suggestLookupQueries() {
     setTranslationState('working')
     setLookupMessage('')
     try {
-      const translated = await translateReadingPlaceQuery({
+      const suggestions = await suggestReadingPlaceQueries({
         endpoint: modelConfig.endpoint,
         model: modelConfig.model,
         apiKey: modelConfig.apiKey,
         temperature: modelConfig.temperature,
-        query: lookupQuery,
+        query: lookupMode === 'exact' ? lookupTarget.name : lookupQuery,
+        bookTitle,
+        chapterLabel: currentChapter?.label,
       })
-      setLookupQuery(translated)
+      setLookupSuggestions(suggestions)
+      setLookupQuery(suggestions[0])
       setTranslationState('done')
-      setLookupMessage('已生成英文地图搜索词，请核对后再搜索。')
+      setLookupMessage(`已结合《${bookTitle}》生成地图检索词，请选择或修改后搜索。`)
     } catch (error) {
       setTranslationState('error')
       setLookupMessage(error?.message || '生成英文搜索词失败')
@@ -1627,7 +1689,10 @@ function ReadingMapPanel({
                 <span>{lookupMode === 'exact' ? '现代地图搜索词' : '现实参考区域'}</span>
                 <input
                   value={lookupQuery}
-                  onChange={(event) => setLookupQuery(event.target.value)}
+                  onChange={(event) => {
+                    setLookupQuery(event.target.value)
+                    setLookupSuggestions([])
+                  }}
                   maxLength={120}
                   placeholder={lookupMode === 'exact'
                     ? '例如 Virginia, United States'
@@ -1654,7 +1719,7 @@ function ReadingMapPanel({
                     type="button"
                     className="btn btn-sm"
                     disabled={!modelConfig.apiKey || translationState === 'working'}
-                    onClick={translateLookupQuery}
+                    onClick={suggestLookupQueries}
                     title={modelConfig.apiKey ? '' : '请先在设置中配置模型'}
                   >
                     <Sparkles size={13} />
@@ -1665,6 +1730,20 @@ function ReadingMapPanel({
                 <ScanSearch size={13} /> {lookupState === 'loading' ? '搜索中…' : '搜索公网地图'}
               </button>
             </form>
+            {lookupSuggestions.length > 0 && (
+              <div className="reader-place-query-suggestions">
+                {lookupSuggestions.map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    type="button"
+                    className={lookupQuery === suggestion ? 'active' : ''}
+                    onClick={() => setLookupQuery(suggestion)}
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            )}
           </>
         )}
         {lookupResults.length > 0 && (
@@ -1949,7 +2028,6 @@ export function ReaderTool({ scene }) {
   const [excerpt, setExcerpt] = useState('')
   const [imageInput, setImageInput] = useState(null)
   const [scanResults, setScanResults] = useState([])
-  const [localCandidates, setLocalCandidates] = useState([])
   const [selectedExcerptText, setSelectedExcerptText] = useState('')
   const [scanStatus, setScanStatus] = useState('')
   const [inputStatus, setInputStatus] = useState('')
@@ -2030,7 +2108,6 @@ export function ReaderTool({ scene }) {
     const text = excerpt.trim()
     if (!text || !readingPackage) {
       setScanResults([])
-      setLocalCandidates([])
       return undefined
     }
     const timer = setTimeout(() => {
@@ -2047,11 +2124,6 @@ export function ReaderTool({ scene }) {
         return true
       })
       setScanResults(knownMatches)
-      setLocalCandidates(
-        extractLocalEntityCandidates(text).filter((candidate) => (
-          !seen.has(`${candidate.kind}:${normalizeObservedEntityName(candidate.name)}`)
-        )),
-      )
     }, 250)
     return () => clearTimeout(timer)
   }, [excerpt, observedEntities, readingPackage])
@@ -2138,7 +2210,6 @@ export function ReaderTool({ scene }) {
     setPendingChapterId('')
     setExcerpt('')
     setScanResults([])
-    setLocalCandidates([])
     setSelectedExcerptText('')
     setScanStatus('')
     setActiveTab(READER_TAB.INPUT)
@@ -2177,7 +2248,6 @@ export function ReaderTool({ scene }) {
     setPendingChapterId('')
     setExcerpt('')
     setScanResults([])
-    setLocalCandidates([])
     setSelectedExcerptText('')
     setScanStatus('')
     setActiveTab(READER_TAB.INPUT)
@@ -2247,7 +2317,6 @@ export function ReaderTool({ scene }) {
   function changeExcerpt(value) {
     setExcerpt(value)
     setScanResults([])
-    setLocalCandidates([])
     setSelectedExcerptText('')
     setScanStatus('')
     setInputStatus('')
@@ -2396,6 +2465,7 @@ export function ReaderTool({ scene }) {
         onSelect={selectBook}
         onCreate={createPersonalBook}
         onDelete={deletePersonalBook}
+        modelConfig={modelConfig}
       />
     )
   }
@@ -2545,14 +2615,14 @@ export function ReaderTool({ scene }) {
               <button type="button" className="btn" onClick={pasteFromClipboard}>
                 <ClipboardPaste size={15} /> 从剪贴板粘贴
               </button>
-              <span>粘贴后自动在本机识别，不调用模型。</span>
+              <span>本机只匹配资料包和已遇到名称；发现新名称请使用模型。</span>
             </div>
             {inputStatus && <p className="reader-input-status" role="status">{inputStatus}</p>}
-            {(scanResults.length > 0 || localCandidates.length > 0) && (
+            {scanResults.length > 0 && (
               <div className="reader-scan-results" role="status">
                 <div className="reader-scan-results-heading">
-                  <strong>本机发现</strong>
-                  <span>{scanResults.length + localCandidates.length} 个候选</span>
+                  <strong>本机已知名称匹配</strong>
+                  <span>{scanResults.length} 个</span>
                 </div>
                 {scanResults.map((result) => {
                   const action = actionForObservedName(
@@ -2584,14 +2654,6 @@ export function ReaderTool({ scene }) {
                   </div>
                   )
                 })}
-                {localCandidates.map((candidate) => (
-                  <LocalCandidateRow
-                    key={`${candidate.kind}:${candidate.name}`}
-                    candidate={candidate}
-                    actionFor={actionForObservedName}
-                    onConfirm={confirmObservedCandidate}
-                  />
-                ))}
               </div>
             )}
             {scanStatus && <p className="reader-scan-status" role="status">{scanStatus}</p>}
@@ -2676,6 +2738,8 @@ export function ReaderTool({ scene }) {
               onChangeObservedEntities={changeObservedEntities}
               mapConfig={mapConfig}
               modelConfig={modelConfig}
+              bookTitle={readingPackage.book.title}
+              currentChapter={currentChapter}
               onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
               isActive={activeTab === READER_TAB.MAP}
             />

@@ -10,7 +10,6 @@ import {
   clearObservedPlaceLocation,
   confirmObservedPlaceApproximateArea,
   confirmObservedPlaceLocation,
-  extractLocalEntityCandidates,
   isRevealedAtChapter,
   matchOnDemandEntity,
   normalizeObservedEntityName,
@@ -50,11 +49,14 @@ import {
 import {
   buildPersonalChapters,
   createPersonalReadingPackage,
+  extractPersonalBookMetadataFromText,
   personalCatalogEntry,
 } from '../../../src/features/reading-companion/domain/personalBooks.js'
 import {
+  analyzeReadingBookMetadata,
   analyzeReadingExcerpt,
   normalizeModelCandidates,
+  suggestReadingPlaceQueries,
   translateReadingPlaceQuery,
 } from '../../../src/features/reading-companion/model/modelAdapter.js'
 import {
@@ -158,6 +160,26 @@ test('personal book creation produces a valid empty local package and catalog en
     source: 'personal',
     cover: { theme: 'amber' },
   })
+})
+
+test('book detail OCR text provides deterministic metadata before optional model cleanup', () => {
+  assert.deepEqual(
+    extractPersonalBookMetadataFromText([
+      '飘（世界文学名著名译典藏）',
+      '玛格丽特·米切尔 著 / 范纯海、夏旻 译',
+      '出版社：长江文艺出版社',
+      '出版时间 2018年5月',
+      'ISBN 9787570202188',
+    ].join('\n')),
+    {
+      title: '飘(世界文学名著名译典藏)',
+      author: '玛格丽特·米切尔',
+      translators: ['范纯海', '夏旻'],
+      publisher: '长江文艺出版社',
+      isbn: '9787570202188',
+      publishedAt: '2018-05',
+    },
+  )
 })
 
 test('reading map providers keep international fallback and require a domestic browser key', () => {
@@ -732,7 +754,6 @@ test('runtime model analysis stays a reader-confirmed candidate adapter', async 
                     kind: 'place',
                     placeKind: 'real',
                     confidence: 0.92,
-                    reason: '名称原样出现在段落中',
                   },
                   {
                     name: '塔拉',
@@ -757,7 +778,36 @@ test('runtime model analysis stays a reader-confirmed candidate adapter', async 
   assert.match(body.messages[1].content, /亚特兰大/)
   assert.equal(candidates.length, 2)
   assert.equal(candidates[1].placeKind, OBSERVED_PLACE_KIND.UNKNOWN)
-  assert.equal(candidates[0].reason, '名称原样出现在段落中')
+  assert.equal('reason' in candidates[0], false)
+})
+
+test('identical model excerpt analysis reuses the temporary successful-result cache', async () => {
+  let calls = 0
+  const options = {
+    endpoint: 'https://cache-model.example/v1/chat/completions',
+    model: 'reader-cache-model',
+    apiKey: 'test-key',
+    excerpt: '缓存测试地点。',
+    bookTitle: '缓存测试书',
+    chapterLabel: '第 1 章',
+    fetchImpl: async () => {
+      calls += 1
+      return {
+        ok: true,
+        json: async () => ({
+          choices: [{
+            message: {
+              content: '{"candidates":[{"name":"缓存测试地点","kind":"place","placeKind":"unknown","confidence":0.8}]}',
+            },
+          }],
+        }),
+      }
+    },
+  }
+  const first = await analyzeReadingExcerpt(options)
+  const second = await analyzeReadingExcerpt(options)
+  assert.deepEqual(second, first)
+  assert.equal(calls, 1)
 })
 
 test('model place translation returns only a bounded map query', async () => {
@@ -780,6 +830,65 @@ test('model place translation returns only a bounded map query', async () => {
   assert.equal(translated, 'University of Virginia, United States')
 })
 
+test('model map-query suggestions include book context and preserve alternatives', async () => {
+  let requestBody
+  const suggestions = await suggestReadingPlaceQueries({
+    endpoint: 'https://suggest-model.example/v1/chat/completions',
+    model: 'reader-suggest-model',
+    apiKey: 'test-key',
+    query: '费耶特维尔女子学院',
+    bookTitle: '飘',
+    chapterLabel: '第 1 章',
+    fetchImpl: async (_url, options) => {
+      requestBody = JSON.parse(options.body)
+      return {
+        ok: true,
+        json: async () => ({
+          choices: [{
+            message: {
+              content: '{"queries":["Fayetteville Female Academy, Georgia","Fayetteville, Georgia"]}',
+            },
+          }],
+        }),
+      }
+    },
+  })
+  assert.match(requestBody.messages[1].content, /书籍：飘/)
+  assert.deepEqual(suggestions, [
+    'Fayetteville Female Academy, Georgia',
+    'Fayetteville, Georgia',
+  ])
+})
+
+test('model book metadata stays limited to OCR fields', async () => {
+  const metadata = await analyzeReadingBookMetadata({
+    endpoint: 'https://metadata-model.example/v1/chat/completions',
+    model: 'reader-metadata-model',
+    apiKey: 'test-key',
+    ocrText: '飘 ISBN 9787570202188',
+    fetchImpl: async () => ({
+      ok: true,
+      json: async () => ({
+        choices: [{
+          message: {
+            content: '{"title":"飘","author":"","translators":[],"publisher":"","isbn":"9787570202188","publishedAt":"","originalLanguage":"","chapterCount":63,"plot":"ignored"}',
+          },
+        }],
+      }),
+    }),
+  })
+  assert.deepEqual(metadata, {
+    title: '飘',
+    author: '',
+    translators: [],
+    publisher: '',
+    isbn: '9787570202188',
+    publishedAt: '',
+    originalLanguage: '',
+    chapterCount: 63,
+  })
+})
+
 test('runtime model candidates are bounded and cannot create facts', () => {
   const candidates = normalizeModelCandidates({
     candidates: [
@@ -794,14 +903,12 @@ test('runtime model candidates are bounded and cannot create facts', () => {
       name: '某人',
       kind: 'person',
       confidence: 1,
-      reason: '',
     },
     {
       name: '某地',
       kind: 'place',
       placeKind: OBSERVED_PLACE_KIND.UNKNOWN,
       confidence: 0,
-      reason: '',
     },
   ])
 })
@@ -889,61 +996,6 @@ test('local excerpt scanning only returns audited names that actually occur in t
     .map(({ entity, matchedTerm }) => [entity.id, matchedTerm]), [['place-atlanta', 'Atlanta']])
   assert.deepEqual(scanOnDemandEntities('Atlantas', onDemandEntities), [])
   assert.deepEqual(scanOnDemandEntities('这里没有任何已知名称。', onDemandEntities), [])
-})
-
-test('local candidate extraction finds strong person and place patterns without a model', () => {
-  assert.deepEqual(
-    extractLocalEntityCandidates(
-      '斯嘉丽说：“我会回到塔拉庄园。”瑞德先生问她。玛格丽特·米切尔写下这些故事。',
-    ),
-    [
-      {
-        name: '玛格丽特·米切尔',
-        kind: OBSERVED_ENTITY_KIND.PERSON,
-        reason: '带间隔点的姓名形式',
-      },
-      {
-        name: '斯嘉丽',
-        kind: OBSERVED_ENTITY_KIND.PERSON,
-        reason: '出现在称谓或说话动作前',
-      },
-      {
-        name: '瑞德',
-        kind: OBSERVED_ENTITY_KIND.PERSON,
-        reason: '出现在称谓或说话动作前',
-      },
-      {
-        name: '塔拉庄园',
-        kind: OBSERVED_ENTITY_KIND.PLACE,
-        reason: '包含常见地点后缀',
-      },
-    ],
-  )
-})
-
-test('local candidate extraction separates coordinated university names instead of saving a sentence', () => {
-  assert.deepEqual(
-    extractLocalEntityCandidates(
-      '从弗吉尼亚大学、亚拉巴马大学和南卡罗来纳大学拖了出来。',
-    ),
-    [
-      {
-        name: '弗吉尼亚大学',
-        kind: OBSERVED_ENTITY_KIND.PLACE,
-        reason: '包含常见地点后缀',
-      },
-      {
-        name: '亚拉巴马大学',
-        kind: OBSERVED_ENTITY_KIND.PLACE,
-        reason: '包含常见地点后缀',
-      },
-      {
-        name: '南卡罗来纳大学',
-        kind: OBSERVED_ENTITY_KIND.PLACE,
-        reason: '包含常见地点后缀',
-      },
-    ],
-  )
 })
 
 test('local scanning also marks names already saved by the reader', () => {
