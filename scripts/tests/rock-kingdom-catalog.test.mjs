@@ -2,8 +2,9 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import { evaluateAllNatures, evaluateNatureProfiles } from '../../src/domain/nature.js'
+import { bestSilverMirrorTarget, natureRetentionAdvice, summarizeOwnedNatureRecords } from '../../src/domain/natureRetention.js'
 import { buildFormAnalysis, buildNatureAnalysisInput, buildPopulationStatSummary } from '../../src/domain/natureRowAdapter.js'
-import { buildOwnedNatureIndex } from '../../src/domain/owned.js'
+import { buildOwnedNatureIndex, buildOwnedNatureRecordIndex } from '../../src/domain/owned.js'
 import { ROCK_KINGDOM_PRESET } from '../../src/presets/rockKingdom.js'
 import {
   compareRockKingdomCreatureRows,
@@ -49,6 +50,62 @@ test('counts a collected growth stage as acquired for its full evolution line', 
     rows: [{ values: { ref: stage.id, nature: 'adamant' } }],
   }], buildEvolutionReferenceGroups([stage, final]))
   assert.equal(index.get(final.id).adamant, 1)
+})
+
+test('keeps rarity details when indexing owned natures across an evolution line', () => {
+  const stage = { id: 'stage', values: { evolutionLine: '火花 → 焰火 → 火神' } }
+  const final = { id: 'final', values: { evolutionLine: '火花 → 焰火 → 火神' } }
+  const index = buildOwnedNatureRecordIndex([{
+    referenceKeys: ['ref'],
+    natureKey: 'nature',
+    shinyKey: 'shiny',
+    colorfulKey: 'colorful',
+    rows: [
+      { id: 'ordinary', values: { ref: stage.id, nature: 'adamant', shiny: 'no', colorful: 'no' } },
+      { id: 'rare', values: { ref: stage.id, nature: 'adamant', shiny: 'yes', colorful: 'yes' } },
+    ],
+  }], buildEvolutionReferenceGroups([stage, final]))
+
+  assert.deepEqual(index.get(final.id).adamant, [
+    { id: 'ordinary', nature: 'adamant', shiny: false, colorful: false },
+    { id: 'rare', nature: 'adamant', shiny: true, colorful: true },
+  ])
+  assert.deepEqual(summarizeOwnedNatureRecords(index.get(final.id).adamant), {
+    total: 2,
+    normal: 1,
+    rare: 1,
+    shiny: 1,
+    colorful: 1,
+  })
+})
+
+test('treats a wrong drawback as silver-mirror repairable when the raised stat has a viable target', () => {
+  const candidates = [
+    { id: 'bold', raise: 'patk', lower: 'pdef', decision: 'notRecommended', score: -2 },
+    { id: 'naughty', raise: 'patk', lower: 'mdef', decision: 'keepable', score: 2 },
+    { id: 'adamant', raise: 'patk', lower: 'matk', decision: 'recommended', score: 5 },
+    { id: 'timid', raise: 'spd', lower: 'patk', decision: 'recommended', score: 6 },
+  ]
+
+  assert.equal(bestSilverMirrorTarget(candidates[0], candidates)?.id, 'adamant')
+  assert.deepEqual(natureRetentionAdvice(candidates[0], candidates), {
+    status: 'repairRecommended',
+    normalLabel: '普通个体：优先继续刷',
+    rareLabel: '异色/炫彩：银镜可修',
+    description: '问题只在减益属性；残缺魔镜可以保留当前强化项，并替换成更合适的减益。',
+    mirrorTarget: candidates[2],
+  })
+})
+
+test('marks a rare individual as collection-only when a silver mirror cannot fix its raised stat', () => {
+  const candidates = [
+    { id: 'focused', raise: 'matk', lower: 'pdef', decision: 'notRecommended', score: -4 },
+    { id: 'paranoid', raise: 'matk', lower: 'mdef', decision: 'notRecommended', score: -5 },
+    { id: 'adamant', raise: 'patk', lower: 'matk', decision: 'recommended', score: 5 },
+  ]
+
+  assert.equal(bestSilverMirrorTarget(candidates[0], candidates), null)
+  assert.equal(natureRetentionAdvice(candidates[0], candidates).status, 'collectionOnly')
 })
 
 test('hides a superseded official row only when its replacement exists', () => {

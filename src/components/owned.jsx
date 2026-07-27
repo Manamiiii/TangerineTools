@@ -299,7 +299,7 @@ export function OwnedFormModal({ table, fields, row, rows, collectionMode, initi
       else await createRow(table.id, values)
     }
     setSaving(false)
-    onSaved?.()
+    onSaved?.({ ...values })
     onClose()
   }
 

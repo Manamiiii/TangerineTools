@@ -166,3 +166,37 @@ export function buildOwnedNatureIndex(sources = [], equivalentReferenceIds = new
   }
   return index
 }
+
+function isOwnedYes(value) {
+  return value === true || value === 'yes' || value === '是' || value === '异色' || value === '炫彩'
+}
+
+// 保留每条性格记录的异色/炫彩状态，供性格工具区分“成品性格”与“稀有个体可修”。
+// 该索引只读取既有 values 字段，不新增表、字段或 Dexie schema。
+export function buildOwnedNatureRecordIndex(sources = [], equivalentReferenceIds = new Map()) {
+  const index = new Map()
+  for (const source of sources) {
+    const referenceKeys = Array.isArray(source.referenceKeys) ? source.referenceKeys : []
+    for (const row of source.rows || []) {
+      const natureValue = String(row.values?.[source.natureKey] || '').trim()
+      if (!natureValue) continue
+      const record = {
+        id: row.id || '',
+        nature: natureValue,
+        shiny: isOwnedYes(row.values?.[source.shinyKey]),
+        colorful: isOwnedYes(row.values?.[source.colorfulKey]),
+      }
+      for (const referenceKey of referenceKeys) {
+        const referenceValue = row.values?.[referenceKey]
+        if (!referenceValue) continue
+        const equivalentIds = equivalentReferenceIds.get(referenceValue) || [referenceValue]
+        for (const equivalentId of equivalentIds) {
+          const byNature = index.get(equivalentId) || {}
+          byNature[natureValue] = [...(byNature[natureValue] || []), record]
+          index.set(equivalentId, byNature)
+        }
+      }
+    }
+  }
+  return index
+}

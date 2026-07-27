@@ -15,9 +15,10 @@ import {
   NATURE_DECISION_LABELS,
   STAT_LABELS,
 } from '../domain/nature.js'
+import { natureRetentionAdvice, summarizeOwnedNatureRecords } from '../domain/natureRetention.js'
 import { pveOverviewSummary, pveStarText } from '../domain/naturePve.js'
 import { buildNatureAnalysisInput, buildPopulationStatSummary, extractRowSummary } from '../domain/natureRowAdapter.js'
-import { buildOwnedNatureIndex } from '../domain/owned.js'
+import { buildOwnedNatureIndex, buildOwnedNatureRecordIndex } from '../domain/owned.js'
 import {
   compareRockKingdomCreatureRows,
   buildEvolutionReferenceGroups,
@@ -53,6 +54,7 @@ export function NatureTool({ scene }) {
     sourceRowId: '',
     sourceMeta: null,
     ownedNatures: {},
+    ownedNatureRecords: {},
     formAnalysis: null,
     formProfiles: [],
     populationStats: null,
@@ -63,13 +65,25 @@ export function NatureTool({ scene }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [quickAddNature, setQuickAddNature] = useState(null)
 
-  function handleQuickAddSaved() {
+  function handleQuickAddSaved(savedValues = {}) {
     if (!quickAddNature) return
     const updateOwned = (previous) => ({
       ...previous,
       ownedNatures: {
         ...previous.ownedNatures,
         [quickAddNature.id]: (previous.ownedNatures?.[quickAddNature.id] || 0) + 1,
+      },
+      ownedNatureRecords: {
+        ...previous.ownedNatureRecords,
+        [quickAddNature.id]: [
+          ...(previous.ownedNatureRecords?.[quickAddNature.id] || []),
+          {
+            id: '',
+            nature: quickAddNature.id,
+            shiny: savedValues[previous.ownedContext?.shinyKey] === 'yes',
+            colorful: savedValues[previous.ownedContext?.colorfulKey] === 'yes',
+          },
+        ],
       },
     })
     setInput(updateOwned)
@@ -89,7 +103,21 @@ export function NatureTool({ scene }) {
       setSelectedIndex(0)
       return
     }
-    const { name, stats, traitTags, skillInfo, analysisProfiles, formProfiles, sourceRowId, sourceMeta, ownedNatures, formAnalysis, populationStats, ownedContext } = payload
+    const {
+      name,
+      stats,
+      traitTags,
+      skillInfo,
+      analysisProfiles,
+      formProfiles,
+      sourceRowId,
+      sourceMeta,
+      ownedNatures,
+      ownedNatureRecords,
+      formAnalysis,
+      populationStats,
+      ownedContext,
+    } = payload
     const next = {
       name: name || '',
       stats: { ...EMPTY_STATS, ...stats },
@@ -100,6 +128,7 @@ export function NatureTool({ scene }) {
       sourceRowId: sourceRowId || '',
       sourceMeta: sourceMeta || null,
       ownedNatures: ownedNatures || {},
+      ownedNatureRecords: ownedNatureRecords || {},
       formAnalysis: formAnalysis || null,
       populationStats: populationStats || null,
       ownedContext: ownedContext || null,
@@ -162,6 +191,7 @@ export function NatureTool({ scene }) {
               activeIndex={activeIndex}
               onSelect={setSelectedIndex}
               ownedNatures={input.ownedNatures}
+              ownedNatureRecords={input.ownedNatureRecords}
               onQuickAdd={input.ownedContext ? setQuickAddNature : null}
             />
             <NatureResult
@@ -169,6 +199,7 @@ export function NatureTool({ scene }) {
               baseStats={numericStats}
               adjustedStats={adjustedStats}
               populationStats={input.populationStats}
+              candidates={candidates}
             />
           </div>
         </>
@@ -349,12 +380,16 @@ function RowImportPanel({ scene, onImport }) {
       const ownedFields = await db.catalogFields.where('tableId').equals(table.id).toArray()
       const refFields = ownedFields.filter((field) => field.type === 'reference' && field.referenceTableId === creatureTableId)
       const natureField = ownedFields.find((field) => field.key === 'nature' || field.name === '性格')
+      const shinyField = ownedFields.find((field) => field.key === 'shiny' || field.name === '个体异色')
+      const colorfulField = ownedFields.find((field) => field.key === 'colorful' || field.name === '是否炫彩')
       if (refFields.length === 0 || !natureField) continue
       const ownedRows = await db.catalogRows.where('tableId').equals(table.id).toArray()
       sources.push({
         rows: ownedRows,
         referenceKeys: refFields.map((field) => field.key),
         natureKey: natureField.key,
+        shinyKey: shinyField?.key,
+        colorfulKey: colorfulField?.key,
       })
       if (!quickAddContext) {
         quickAddContext = {
@@ -363,12 +398,16 @@ function RowImportPanel({ scene, onImport }) {
           rows: ownedRows,
           referenceKey: refFields[0].key,
           natureKey: natureField.key,
+          shinyKey: shinyField?.key,
+          colorfulKey: colorfulField?.key,
         }
       }
     }
     const creatureRows = await db.catalogRows.where('tableId').equals(creatureTableId).toArray()
+    const equivalentReferences = buildEvolutionReferenceGroups(creatureRows)
     return {
-      index: buildOwnedNatureIndex(sources, buildEvolutionReferenceGroups(creatureRows)),
+      index: buildOwnedNatureIndex(sources, equivalentReferences),
+      recordIndex: buildOwnedNatureRecordIndex(sources, equivalentReferences),
       quickAddContext,
     }
   }, [scene.id, creatureTableId])
@@ -413,6 +452,7 @@ function RowImportPanel({ scene, onImport }) {
       },
       populationStats: buildPopulationStatSummary(visibleRows, fields, target),
       ownedNatures: ownedContext.index.get(target.id) || {},
+      ownedNatureRecords: ownedContext.recordIndex.get(target.id) || {},
       ownedContext: ownedContext.quickAddContext,
     })
   }
@@ -525,7 +565,14 @@ function FormAnalysis({ analysis, populationStats }) {
 }
 
 // 候选清单：展示全部 30 个合法性格，先按「强化维度」分组，组内再展示推荐分档。
-function NatureCandidateList({ candidates, activeIndex, onSelect, ownedNatures = {}, onQuickAdd }) {
+function NatureCandidateList({
+  candidates,
+  activeIndex,
+  onSelect,
+  ownedNatures = {},
+  ownedNatureRecords = {},
+  onQuickAdd,
+}) {
   if (!candidates || candidates.length === 0) return null
   const activeCandidate = candidates[activeIndex]
   const groups = groupByRaise(candidates)
@@ -560,6 +607,7 @@ function NatureCandidateList({ candidates, activeIndex, onSelect, ownedNatures =
                           activeCandidate={activeCandidate}
                           onSelect={onSelect}
                           ownedCount={ownedNatures[c.id] || 0}
+                          ownedRecords={ownedNatureRecords[c.id] || []}
                           onQuickAdd={onQuickAdd}
                         />
                       ))}
@@ -602,10 +650,28 @@ function natureScoreSummary(candidate) {
   return min === max ? formatNatureScore(max) : `${formatNatureScore(min)} 至 ${formatNatureScore(max)}`
 }
 
-function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSelect, ownedCount = 0, onQuickAdd }) {
+function NatureCandidateListItem({
+  candidate,
+  candidates,
+  activeCandidate,
+  onSelect,
+  ownedCount = 0,
+  ownedRecords = [],
+  onQuickAdd,
+}) {
   const candidateIndex = candidates.indexOf(candidate)
   const isActive = candidate === activeCandidate
   const canQuickAdd = candidate.decision !== 'notRecommended' && ownedCount === 0 && onQuickAdd
+  const retention = natureRetentionAdvice(candidate, candidates)
+  const ownedSummary = summarizeOwnedNatureRecords(ownedRecords)
+  const ownedLabel = ownedSummary.rare > 0
+    ? [
+      `已获 ${ownedCount}`,
+      `普通 ${ownedSummary.normal}`,
+      ownedSummary.shiny > 0 ? `异色 ${ownedSummary.shiny}` : '',
+      ownedSummary.colorful > 0 ? `炫彩 ${ownedSummary.colorful}` : '',
+    ].filter(Boolean).join(' · ')
+    : `已获得${ownedCount > 1 ? ` ×${ownedCount}` : ''}`
   return (
     <li className="nature-candidate-row">
       <button
@@ -618,10 +684,15 @@ function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSel
         </span>
         <span className="nature-candidate-name">{natureName(candidate)}</span>
         <span className="nature-candidate-role">{natureModifierSummary(candidate)}</span>
+        <span className={`nature-candidate-retention ${retention.status}`}>
+          {retention.mirrorTarget
+            ? `银镜 → ${natureName(retention.mirrorTarget)}`
+            : retention.rareLabel.replace('异色/炫彩：', '')}
+        </span>
         {ownedCount > 0 ? (
           <span className="nature-candidate-owned acquired">
             <CheckCircle2 size={13} />
-            已获得{ownedCount > 1 ? ` ×${ownedCount}` : ''}
+            {ownedLabel}
           </span>
         ) : (
           <span className="nature-candidate-owned empty" aria-hidden="true" />
@@ -648,12 +719,13 @@ function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSel
 }
 
 
-function NatureResult({ nature, baseStats, adjustedStats, populationStats }) {
+function NatureResult({ nature, baseStats, adjustedStats, populationStats, candidates = [] }) {
   if (!nature) return null
   const formDecisions = nature.formDecisions || []
   const coreReason = nature.decision === 'notRecommended'
     ? nature.warnings[0]
     : nature.reasons[0]
+  const retention = natureRetentionAdvice(nature, candidates)
 
   return (
     <div className="nature-result">
@@ -680,6 +752,24 @@ function NatureResult({ nature, baseStats, adjustedStats, populationStats }) {
           弱化：{STAT_LABELS[nature.lower]}（{baseStats[nature.lower]} → {adjustedStats[nature.lower]}）
         </span>
       </div>
+
+      <section className={`nature-retention-card ${retention.status}`}>
+        <div className="nature-retention-head">
+          <strong>捕捉与残缺魔镜</strong>
+          <span>不改变上方最终性格分档</span>
+        </div>
+        <div className="nature-retention-options">
+          <span>{retention.normalLabel}</span>
+          <span>{retention.rareLabel}</span>
+        </div>
+        <p>{retention.description}</p>
+        {retention.mirrorTarget && (
+          <p className="nature-retention-target">
+            保留 +{STAT_LABELS[nature.raise]}，将 -{STAT_LABELS[nature.lower]} 改为
+            -{STAT_LABELS[retention.mirrorTarget.lower]}，目标性格：{natureName(retention.mirrorTarget)}。
+          </p>
+        )}
+      </section>
 
       <div className="nature-result-summary">
         <div>
