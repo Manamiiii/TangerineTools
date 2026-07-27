@@ -419,6 +419,26 @@ test('Gone with the Wind package preserves the confirmed edition and 63 stable c
   assert.equal(new Set(readingPackage.chapters.map((chapter) => chapter.id)).size, 63)
 })
 
+test('Gone with the Wind exact-input dictionary recognizes audited names without pre-revealing facts', () => {
+  const expectedIds = [
+    'person-scarlett-ohara',
+    'person-rhett-butler',
+    'person-ashley-wilkes',
+    'person-melanie-hamilton',
+    'place-georgia-state',
+    'place-clayton-county-georgia',
+  ]
+  assert.deepEqual(
+    scanOnDemandEntities(
+      '斯佳丽、瑞德、艾希礼和梅兰妮谈到了佐治亚州与克莱顿县。',
+      readingPackage.onDemandEntities,
+    ).map(({ entity }) => entity.id),
+    expectedIds,
+  )
+  assert.deepEqual(readingPackage.entities, [])
+  assert.deepEqual(readingPackage.facts, [])
+})
+
 test('package validation rejects duplicate chapters and unknown fact references', () => {
   const invalidPackage = structuredClone(readingPackage)
   invalidPackage.chapters[1].id = 'chapter-01'
@@ -1270,14 +1290,14 @@ test('reading preview publishes only approved sources and keeps candidates pendi
   assert.equal(catalog.packages.length, 1)
   const [preview] = previews
   assert.deepEqual(validateReadingPackage(preview.package), [])
-  assert.equal(preview.previewMeta.approvedSourceIds.length, 6)
-  assert.equal(preview.previewMeta.pendingSourceIds.length, 4)
-  assert.equal(preview.previewMeta.candidateEntityIds.length, 4)
+  assert.equal(preview.previewMeta.approvedSourceIds.length, 7)
+  assert.equal(preview.previewMeta.pendingSourceIds.length, 3)
+  assert.equal(preview.previewMeta.candidateEntityIds.length, 10)
   assert.equal(preview.previewMeta.candidateFactIds.length, 2)
-  assert.equal(preview.previewMeta.onDemandEntityIds.length, 4)
-  assert.equal(preview.researchCandidates.entities.length, 4)
+  assert.equal(preview.previewMeta.onDemandEntityIds.length, 10)
+  assert.equal(preview.researchCandidates.entities.length, 10)
   assert.equal(preview.researchCandidates.facts.length, 2)
-  assert.equal(preview.package.onDemandEntities.length, 4)
+  assert.equal(preview.package.onDemandEntities.length, 10)
   assert.deepEqual(preview.package.entities, [])
   assert.deepEqual(preview.package.facts, [])
   assert.deepEqual(

@@ -172,9 +172,9 @@
 
 ### 当前资料源候选
 
-- 使用者提供的微信读书版本和版权信息是已批准来源，只用于版本、译者、ISBN 和 1–63 章结构。
+- 使用者提供的微信读书版本、版权信息和详情页简介是已批准来源，用于版本、译者、ISBN、1–63 章结构，以及简介中明确出现的斯佳丽、瑞德、艾希礼、梅兰妮四个短名；它不包含正文，不能用于首次出现章节。
 - [Library of Congress · America Reads](https://www.loc.gov/exhibits/america-reads/1900-to-1949.html#obj019) 用于候选原作书目和作品历史范围，不用于中文译文章节定位。
-- [U.S. Census Bureau · Gazetteer Files](https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.2025.html) 用于候选现代行政区、GEOID 和代表坐标；不能证明作品年代的边界或交通状况。
+- [U.S. Census Bureau · Gazetteer Files](https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.2025.html) 是已批准的美国政府地理数据来源，用于现代行政区、GEOID 和代表坐标；代表坐标不是边界，也不能证明作品年代的边界或交通状况。
 - [U.S. Census Bureau · Georgia Incorporated Places](https://tigerweb.geo.census.gov/tigerwebmain/Files/acs25/tigerweb_acs25_incplace_ga.html) 用于核对亚特兰大和琼斯伯勒的现代代表坐标。
 - [Atlanta History Center](https://www.atlantahistorycenter.com/blog/so-red-the-rose-the-gone-with-the-wind-that-never-was/) 用于区分真实的亚特兰大地点与虚构种植园，并防止给塔拉等虚构地点伪造精确坐标。
 - [New Georgia Encyclopedia · Gone With the Wind](https://www.georgiaencyclopedia.org/articles/arts-culture/gone-with-the-wind-novel/) 与 [Clayton County](https://www.georgiaencyclopedia.org/articles/counties-cities-neighborhoods/clayton-county/) 用于候选时代范围、地点名称和地区背景。包含剧情概述的页面仅供建库审阅，不能直接成为运行时安全内容。
@@ -199,6 +199,8 @@
 - 只包含已批准来源支持的名称、真实/虚构分类、地理层级、现代代表坐标和范围说明，不包含人物关系、地点剧情意义或事件结果。
 - 解锁章节取自本地 `firstSeenChapterId`，界面明确标记为“读者确认后精确解锁”，不把它冒充指定译本的客观首次出现章节。
 - 真实地点坐标可以进入互动地图；虚构地点不伪造精确坐标。退回较早章节时，按需实体和名称一起隐藏。
+
+当前《飘》资料包包含 10 个按需精确匹配实体：简介已确认短名的斯佳丽、瑞德、艾希礼、梅兰妮，以及佐治亚州、克莱顿县、亚特兰大、琼斯伯勒、塔拉庄园、十二橡树庄园。人物只提供名称和原文名；现实地点提供明确标注为现代代表位置的坐标；虚构地点不带精确坐标。它们不会在读者输入前列出，也不包含人物关系或剧情事实。
 
 不得绕过微信读书鉴权、反自动化措施或私有接口批量获取作品全文。原文和参考资料的获取、保存与模型传输必须符合其授权范围；运行时只处理用户主动提供的最小必要段落。模型可能凭训练形成对知名作品的概括性知识，但训练语料清单、具体版本、译名和章节证据不可由运行时验证，因此模型内部知识只能生成研究候选，不能单独成为正式资料的来源、版本边界或剧透边界。
 

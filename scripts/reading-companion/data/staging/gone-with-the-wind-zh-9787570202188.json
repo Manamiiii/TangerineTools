@@ -3,7 +3,7 @@
   "slug": "gone-with-the-wind-zh-9787570202188",
   "order": 0,
   "packageId": "reader-package-gone-with-the-wind-zh-9787570202188",
-  "packageVersion": "1.1.0",
+  "packageVersion": "1.2.0",
   "basePackagePath": "public/presets/reading-companion/gone-with-the-wind-zh-9787570202188.json",
   "catalogEntry": {
     "title": "飘",
@@ -16,8 +16,8 @@
       "kind": "user-provided-edition-metadata",
       "label": "微信读书版本详情与版权信息",
       "accessedAt": "2026-07-24",
-      "useFor": ["edition", "chapter_structure"],
-      "notes": "用于确认 ISBN、译者、出版社、出版时间和连续 1–63 章结构；不包含正文。"
+      "useFor": ["edition", "chapter_structure", "book_description_names"],
+      "notes": "用于确认 ISBN、译者、出版社、出版时间、连续 1–63 章结构，以及详情页简介中出现的斯佳丽、瑞德、艾希礼、梅兰妮四个短名；不包含正文，不能用于确认首次出现章节。"
     },
     {
       "id": "candidate-loc-america-reads-gwtw",
@@ -32,16 +32,16 @@
       "notes": "可核对原作作者、1936 年 Macmillan 初版和美国南北战争背景；不作为中文译文章节定位依据。"
     },
     {
-      "id": "candidate-census-2025-gazetteer",
-      "status": "candidate",
+      "id": "source-census-2025-gazetteer",
+      "status": "approved",
       "kind": "modern-geography",
       "label": "U.S. Census Bureau · 2025 Gazetteer Files",
       "organization": "United States Census Bureau",
       "url": "https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.2025.html",
       "accessedAt": "2026-07-24",
       "useFor": ["modern_place_names", "administrative_hierarchy", "representative_coordinates"],
-      "rightsStatus": "dataset-terms-review-required",
-      "notes": "候选用于现代真实地点的名称、GEOID、行政层级和代表坐标；历史边界需另行核对。"
+      "rightsStatus": "public-government-data",
+      "notes": "用于现代真实地点的名称、GEOID、行政层级和代表坐标；代表坐标不是边界，历史边界仍需另行核对。"
     },
     {
       "id": "source-census-2025-georgia-incorporated-places",
@@ -129,6 +129,141 @@
     }
   ],
   "entityCandidates": [
+    {
+      "status": "candidate",
+      "entity": {
+        "id": "person-scarlett-ohara",
+        "name": "斯佳丽",
+        "originalName": "Scarlett O'Hara",
+        "kind": "person",
+        "aliases": ["Scarlett", "Scarlett O'Hara"],
+        "revealAt": null
+      },
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "blockers": [
+        "missing_edition_chapter_evidence",
+        "full_edition_name_not_audited"
+      ],
+      "notes": "微信读书详情页简介确认短名“斯佳丽”属于该版本；公开资料确认原文名。正式发布前仍需核对正文中的完整译名、别名和首次出现章节。"
+    },
+    {
+      "status": "candidate",
+      "entity": {
+        "id": "person-rhett-butler",
+        "name": "瑞德",
+        "originalName": "Rhett Butler",
+        "kind": "person",
+        "aliases": ["Rhett", "Rhett Butler"],
+        "revealAt": null
+      },
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "blockers": [
+        "missing_edition_chapter_evidence",
+        "full_edition_name_not_audited"
+      ],
+      "notes": "微信读书详情页简介确认短名“瑞德”属于该版本；公开资料确认原文名。正式发布前仍需核对正文中的完整译名、别名和首次出现章节。"
+    },
+    {
+      "status": "candidate",
+      "entity": {
+        "id": "person-ashley-wilkes",
+        "name": "艾希礼",
+        "originalName": "Ashley Wilkes",
+        "kind": "person",
+        "aliases": ["Ashley", "Ashley Wilkes"],
+        "revealAt": null
+      },
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "blockers": [
+        "missing_edition_chapter_evidence",
+        "full_edition_name_not_audited"
+      ],
+      "notes": "微信读书详情页简介确认短名“艾希礼”属于该版本；公开资料确认原文名。正式发布前仍需核对正文中的完整译名、别名和首次出现章节。"
+    },
+    {
+      "status": "candidate",
+      "entity": {
+        "id": "person-melanie-hamilton",
+        "name": "梅兰妮",
+        "originalName": "Melanie Hamilton",
+        "kind": "person",
+        "aliases": ["Melanie", "Melanie Hamilton"],
+        "revealAt": null
+      },
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "blockers": [
+        "missing_edition_chapter_evidence",
+        "full_edition_name_not_audited"
+      ],
+      "notes": "微信读书详情页简介确认短名“梅兰妮”属于该版本；公开资料确认原文名。正式发布前仍需核对正文中的完整译名、别名和首次出现章节。"
+    },
+    {
+      "status": "candidate",
+      "entity": {
+        "id": "place-georgia-state",
+        "name": "佐治亚州",
+        "originalName": "Georgia",
+        "kind": "place",
+        "placeKind": "real",
+        "aliases": ["Georgia"],
+        "parentLabel": "美国",
+        "revealAt": null,
+        "geometry": {
+          "type": "point",
+          "latitude": 32.629579,
+          "longitude": -83.423511
+        }
+      },
+      "sourceIds": [
+        "source-census-2025-gazetteer",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "blockers": [
+        "missing_edition_chapter_evidence",
+        "edition_aliases_not_audited"
+      ],
+      "notes": "人口普查局数据提供现代州级代表坐标，New Georgia Encyclopedia 确认作品的佐治亚州背景；正式发布前仍需核对指定译本中的名称和首次出现章节。"
+    },
+    {
+      "status": "candidate",
+      "entity": {
+        "id": "place-clayton-county-georgia",
+        "name": "克莱顿县",
+        "originalName": "Clayton County",
+        "kind": "place",
+        "placeKind": "real",
+        "aliases": ["Clayton County"],
+        "parentLabel": "佐治亚州，美国",
+        "revealAt": null,
+        "geometry": {
+          "type": "point",
+          "latitude": 33.552242,
+          "longitude": -84.412973
+        }
+      },
+      "sourceIds": [
+        "source-census-2025-gazetteer",
+        "source-new-georgia-encyclopedia-clayton-county"
+      ],
+      "blockers": [
+        "book_relevance_requires_confirmation",
+        "missing_edition_chapter_evidence",
+        "edition_aliases_not_audited"
+      ],
+      "notes": "人口普查局数据提供现代县级代表坐标，公开资料确认该县与作品创作背景的联系；不能据此断言正文直接出现该名称。"
+    },
     {
       "status": "candidate",
       "entity": {
@@ -273,6 +408,98 @@
     }
   ],
   "onDemandEntities": [
+    {
+      "id": "person-scarlett-ohara",
+      "name": "斯佳丽",
+      "originalName": "Scarlett O'Hara",
+      "aliases": ["Scarlett", "Scarlett O'Hara"],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "scopeNote": "详情页简介只确认该版本使用短名“斯佳丽”；系统不预置人物关系、命运或未读剧情。"
+    },
+    {
+      "id": "person-rhett-butler",
+      "name": "瑞德",
+      "originalName": "Rhett Butler",
+      "aliases": ["Rhett", "Rhett Butler"],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "scopeNote": "详情页简介只确认该版本使用短名“瑞德”；系统不预置人物关系、命运或未读剧情。"
+    },
+    {
+      "id": "person-ashley-wilkes",
+      "name": "艾希礼",
+      "originalName": "Ashley Wilkes",
+      "aliases": ["Ashley", "Ashley Wilkes"],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "scopeNote": "详情页简介只确认该版本使用短名“艾希礼”；系统不预置人物关系、命运或未读剧情。"
+    },
+    {
+      "id": "person-melanie-hamilton",
+      "name": "梅兰妮",
+      "originalName": "Melanie Hamilton",
+      "aliases": ["Melanie", "Melanie Hamilton"],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "scopeNote": "详情页简介只确认该版本使用短名“梅兰妮”；系统不预置人物关系、命运或未读剧情。"
+    },
+    {
+      "id": "place-georgia-state",
+      "name": "佐治亚州",
+      "originalName": "Georgia",
+      "aliases": ["Georgia"],
+      "kind": "place",
+      "placeKind": "real",
+      "activation": "exact-reader-input",
+      "parentLabel": "美国",
+      "geometry": {
+        "type": "point",
+        "latitude": 32.629579,
+        "longitude": -83.423511
+      },
+      "sourceIds": [
+        "source-census-2025-gazetteer",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "scopeNote": "坐标是现代州级代表坐标，不表示州界，也不表示作品年代的行政边界。"
+    },
+    {
+      "id": "place-clayton-county-georgia",
+      "name": "克莱顿县",
+      "originalName": "Clayton County",
+      "aliases": ["Clayton County"],
+      "kind": "place",
+      "placeKind": "real",
+      "activation": "exact-reader-input",
+      "parentLabel": "佐治亚州，美国",
+      "geometry": {
+        "type": "point",
+        "latitude": 33.552242,
+        "longitude": -84.412973
+      },
+      "sourceIds": [
+        "source-census-2025-gazetteer",
+        "source-new-georgia-encyclopedia-clayton-county"
+      ],
+      "scopeNote": "坐标是现代县级代表坐标；公开资料确认其与作品创作背景有关，但不能据此断言正文直接出现该名称。"
+    },
     {
       "id": "place-atlanta",
       "name": "亚特兰大",
