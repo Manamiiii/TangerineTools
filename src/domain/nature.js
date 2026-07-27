@@ -191,6 +191,44 @@ export function calculateStandardStats(baseStats = {}, nature = null, individual
   }))
 }
 
+export function equivalentNeutralSpeedBase(finalSpeed, individualDisplayValue = MAX_INDIVIDUAL_DISPLAY_VALUE) {
+  const target = Number(finalSpeed) || 0
+  if (target <= 0) return 0
+  let low = 0
+  let high = 500
+  while (low < high) {
+    const middle = Math.ceil((low + high) / 2)
+    if (calculateStandardStat(middle, 'spd', individualDisplayValue) <= target) low = middle
+    else high = middle - 1
+  }
+  return low
+}
+
+function projectStandardSpeedLine(baseSpeed) {
+  const base = Number(baseSpeed) || 0
+  const standard = {
+    neutral: calculateStandardStat(base, 'spd'),
+    maxIndividual: calculateStandardStat(base, 'spd', MAX_INDIVIDUAL_DISPLAY_VALUE),
+    raised: calculateStandardStat(
+      base,
+      'spd',
+      MAX_INDIVIDUAL_DISPLAY_VALUE,
+      NATURE_STAT_MULTIPLIERS.raised,
+    ),
+    lowered: calculateStandardStat(
+      base,
+      'spd',
+      MAX_INDIVIDUAL_DISPLAY_VALUE,
+      NATURE_STAT_MULTIPLIERS.lowered,
+    ),
+  }
+  return {
+    standard,
+    raisedEquivalentBase: equivalentNeutralSpeedBase(standard.raised),
+    loweredEquivalentBase: equivalentNeutralSpeedBase(standard.lowered),
+  }
+}
+
 export function nearestSpeedAnchor(value) {
   const numeric = Number(value) || 0
   return SPEED_ANCHORS.reduce((best, current) =>
@@ -412,6 +450,7 @@ export const NATURE_CANDIDATES = OWNED_NATURE_OPTIONS.map(parseNatureOption).fil
 
 export function analyzeStats(baseStats = {}) {
   const stats = numericStats(baseStats)
+  const speedProjection = projectStandardSpeedLine(stats.spd)
   const modValues = MODIFIABLE_STAT_KEYS.map((key) => stats[key]).filter((v) => v > 0)
   const average = modValues.length ? modValues.reduce((sum, v) => sum + v, 0) / modValues.length : 0
   const total = MODIFIABLE_STAT_KEYS.reduce((sum, key) => sum + stats[key], 0)
@@ -436,20 +475,21 @@ export function analyzeStats(baseStats = {}) {
     percentiles,
     speed: {
       base: stats.spd,
-      raised: Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.raised),
-      lowered: Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.lowered),
+      raised: speedProjection.raisedEquivalentBase,
+      lowered: speedProjection.loweredEquivalentBase,
       baseTier: speedTier(stats.spd),
-      raisedTier: speedTier(Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.raised)),
-      loweredTier: speedTier(Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.lowered)),
+      raisedTier: speedTier(speedProjection.raisedEquivalentBase),
+      loweredTier: speedTier(speedProjection.loweredEquivalentBase),
       nearestAnchor: nearestSpeedAnchor(stats.spd),
       raisedCrossedAnchors: crossedSpeedAnchors(
         stats.spd,
-        Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.raised),
+        speedProjection.raisedEquivalentBase,
       ),
       loweredCrossedAnchors: crossedSpeedAnchors(
-        Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.lowered),
+        speedProjection.loweredEquivalentBase,
         stats.spd,
       ),
+      standard: speedProjection.standard,
     },
   }
 }
@@ -492,28 +532,39 @@ export function analyzeFormulaAssist(baseStats = {}, skillProfile = null) {
 export function analyzeSpeedProfile(baseStats = {}, traitTags = [], roles = null, skillProfile = null) {
   const stats = numericStats(baseStats)
   const roleList = roles || inferRoles(stats, traitTags)
+  const speedTraitTags = ['spdLean', 'conditionalSpeedBoost', 'swiftSkill']
+  const hasExplicitSpeedDemand =
+    Boolean(skillProfile?.speedRequired) ||
+    traitTags.some((tag) => speedTraitTags.includes(tag))
+  const speedProjection = projectStandardSpeedLine(stats.spd)
   const speedSkillShouldRaiseConcern =
     skillProfile?.speedRequired && stats.spd >= STAT_PERCENTILE_BANDS.spd.p50
   const extraTraitTags = speedSkillShouldRaiseConcern ? [...traitTags, 'spdLean'] : traitTags
-  const speedConcern = analyzeSpeedConcern(stats, extraTraitTags, roleList)
-  const raised = Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.raised)
-  const lowered = Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.lowered)
-  const standard = {
-    neutral: calculateStandardStat(stats.spd, 'spd'),
-    maxIndividual: calculateStandardStat(stats.spd, 'spd', MAX_INDIVIDUAL_DISPLAY_VALUE),
-    raised: calculateStandardStat(
-      stats.spd,
-      'spd',
-      MAX_INDIVIDUAL_DISPLAY_VALUE,
-      NATURE_STAT_MULTIPLIERS.raised,
-    ),
-    lowered: calculateStandardStat(
-      stats.spd,
-      'spd',
-      MAX_INDIVIDUAL_DISPLAY_VALUE,
-      NATURE_STAT_MULTIPLIERS.lowered,
-    ),
+  let speedConcern = analyzeSpeedConcern(stats, extraTraitTags, roleList)
+  const formulaCrossesCompetitiveLine =
+    stats.spd >= STAT_PERCENTILE_BANDS.spd.p25 &&
+    stats.spd < STAT_PERCENTILE_BANDS.spd.p50 &&
+    speedProjection.raisedEquivalentBase >= STAT_PERCENTILE_BANDS.spd.p50
+  if (stats.spd < STAT_PERCENTILE_BANDS.spd.p50 && (!hasExplicitSpeedDemand || !formulaCrossesCompetitiveLine)) {
+    speedConcern = {
+      ...speedConcern,
+      level: 'low',
+      label: SPEED_CONCERN_LABELS.low,
+      reason: stats.spd < STAT_PERCENTILE_BANDS.spd.p25
+        ? `基础速度低于 ${STAT_PERCENTILE_BANDS.spd.p25} 的低速门槛，不为泛化速度线索保留加速方向`
+        : `基础速度尚未进入中速竞争圈，且缺少明确先手需求或加速面板未越过 ${STAT_PERCENTILE_BANDS.spd.p50} 竞争线`,
+    }
+  } else if (speedConcern.level === 'low' && hasExplicitSpeedDemand && formulaCrossesCompetitiveLine) {
+    speedConcern = {
+      ...speedConcern,
+      level: 'medium',
+      label: SPEED_CONCERN_LABELS.medium,
+      reason: `技能或特性线索明确需要先手；加速满个体面板可越过基础速度 ${STAT_PERCENTILE_BANDS.spd.p50} 的中速竞争线`,
+    }
   }
+  const raised = speedProjection.raisedEquivalentBase
+  const lowered = speedProjection.loweredEquivalentBase
+  const standard = speedProjection.standard
   return {
     base: stats.spd,
     raised,
@@ -526,9 +577,7 @@ export function analyzeSpeedProfile(baseStats = {}, traitTags = [], roles = null
     loweredCrossedAnchors: crossedSpeedAnchors(lowered, stats.spd),
     standard,
     concern: speedConcern,
-    note: standard.neutral == null
-      ? '最终速度公式已预留，当前因固定参数未确认，仍基于资料库基础速度近似估算。'
-      : '速度线已按标准固定参数计算；实战仍会受技能优先级与临场速度变化影响。',
+    note: `满速度个体最终面板：无修正 ${standard.maxIndividual}，加速 ${standard.raised}，减速 ${standard.lowered}；锚点按相同满速度个体的最终面板比较。实战仍会受技能优先级与临场速度变化影响。`,
   }
 }
 
@@ -901,7 +950,7 @@ export function evaluateNatureCandidate(
     }
     if (speedProfile.raisedTier !== speedProfile.baseTier || speedProfile.raisedCrossedAnchors.length > 0) {
       reasons.push(
-        `基础速度 ${speedProfile.base} 属于${speedProfile.baseTier}；加速近似到 ${speedProfile.raised}，可能跨过 ${speedProfile.raisedCrossedAnchors.join(' / ') || '无'} 锚点。${speedProfile.concern.reason}`,
+        `基础速度 ${speedProfile.base} 属于${speedProfile.baseTier}；加速满个体最终面板 ${speedProfile.standard.raised}，相当于无修正满个体基础速度约 ${speedProfile.raised}，可能跨过 ${speedProfile.raisedCrossedAnchors.join(' / ') || '无'} 锚点。${speedProfile.concern.reason}`,
       )
     } else if (speedProfile.concern.level === 'low') {
       warnings.push('速度未进入竞争圈，加速主要改善同档对位，通常不应优先于主攻或耐久')
@@ -911,7 +960,7 @@ export function evaluateNatureCandidate(
     const speedPenalty = { high: 14, medium: 7, low: 2 }[speedProfile.concern.level]
     score -= speedPenalty
     if (speedProfile.loweredTier !== speedProfile.baseTier || speedProfile.loweredCrossedAnchors.length > 0) {
-      const message = `基础速度 ${speedProfile.base} 属于${speedProfile.baseTier}；减速近似到 ${speedProfile.lowered}，会失去 ${speedProfile.loweredCrossedAnchors.join(' / ') || '无'} 锚点。${speedProfile.concern.reason}`
+      const message = `基础速度 ${speedProfile.base} 属于${speedProfile.baseTier}；减速满个体最终面板 ${speedProfile.standard.lowered}，相当于无修正满个体基础速度约 ${speedProfile.lowered}，会失去 ${speedProfile.loweredCrossedAnchors.join(' / ') || '无'} 锚点。${speedProfile.concern.reason}`
       if (speedProfile.concern.level === 'low') reasons.push(`${message}，可作为低速路线的牺牲项`)
       else warnings.push(message)
     }
@@ -1160,6 +1209,9 @@ export function evaluateNatureCandidate(
   const speedTradesDefense =
     candidate.raise === 'spd' &&
     ['pdef', 'mdef'].includes(candidate.lower)
+  const lowPrioritySpeedRaise =
+    candidate.raise === 'spd' &&
+    speedProfile.concern.level === 'low'
   const unsupportedSingleDefenseRaise =
     ['pdef', 'mdef'].includes(candidate.raise) &&
     !DEFENSE_STAT_KEYS.includes(candidate.lower)
@@ -1171,6 +1223,7 @@ export function evaluateNatureCandidate(
     tradesWithinDurability ||
     invalidAttackDefenseTrade ||
     invalidSpeedDefenseTrade ||
+    lowPrioritySpeedRaise ||
     unsupportedSingleDefenseRaise
 
   if (lowersStandoutDefense) {
@@ -1188,6 +1241,10 @@ export function evaluateNatureCandidate(
   if (invalidSpeedDefenseTrade) {
     score -= 18
     warnings.push('强化速度应优先牺牲明确不用的攻击项；不以削弱物防或魔防换取速度')
+  }
+  if (lowPrioritySpeedRaise) {
+    score -= 18
+    warnings.push('基础速度未满足速度竞争门槛，不把加速性格作为捕捉保留分支')
   }
   if (unsupportedSingleDefenseRaise) {
     score -= 18
@@ -1272,7 +1329,13 @@ export function evaluateNatureCandidate(
       ? '技能已证明可走单攻分支，当前组合不应直接判死，降级为可保留'
       : '技能略偏单攻分支，捕捉时可先保留等待玩法确认')
   }
-  if (tradesWithinDurability || invalidAttackDefenseTrade || invalidSpeedDefenseTrade || unsupportedSingleDefenseRaise) {
+  if (
+    tradesWithinDurability ||
+    invalidAttackDefenseTrade ||
+    invalidSpeedDefenseTrade ||
+    lowPrioritySpeedRaise ||
+    unsupportedSingleDefenseRaise
+  ) {
     decision = 'notRecommended'
   }
 

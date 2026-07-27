@@ -2,9 +2,11 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import {
+  analyzeSpeedProfile,
   applyNatureModifier,
   calculateStandardStat,
   calculateStandardStats,
+  equivalentNeutralSpeedBase,
   evaluateAllNatures,
   evaluateNatureProfiles,
 } from '../../src/domain/nature.js'
@@ -138,6 +140,49 @@ test('standard stat formula applies three editable individual bonuses and nature
     mdef: 89,
     spd: 144,
   })
+})
+
+test('speed anchors compare final panels with the same max individual value', () => {
+  const profile = analyzeSpeedProfile(
+    { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 65 },
+    [],
+    null,
+    { speedRequired: true },
+  )
+  assert.equal(profile.standard.maxIndividual, 165)
+  assert.equal(profile.standard.raised, 188)
+  assert.equal(equivalentNeutralSpeedBase(profile.standard.raised), 86)
+  assert.equal(profile.raised, 86)
+  assert.ok(profile.raisedCrossedAnchors.includes(84))
+  assert.equal(profile.concern.level, 'medium')
+})
+
+test('formula crossing only rescues the 65 to 83 speed band with explicit speed demand', () => {
+  const speedSkill = {
+    skills: [
+      { category: 'physical', power: 80, effectTags: ['speed'], effect: '行动后提升速度。' },
+    ],
+  }
+  const crossing = evaluateAllNatures(
+    { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 65 },
+    [],
+    speedSkill,
+  )
+  const belowBand = evaluateAllNatures(
+    { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 64 },
+    [],
+    speedSkill,
+  )
+  const belowBandWithSpeedTrait = evaluateAllNatures(
+    { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 64 },
+    ['spdLean'],
+  )
+  assert.notEqual(crossing.find((candidate) => candidate.name === '开朗')?.decision, 'notRecommended')
+  assert.equal(belowBand.find((candidate) => candidate.name === '开朗')?.decision, 'notRecommended')
+  assert.equal(
+    belowBandWithSpeedTrait.find((candidate) => candidate.name === '开朗')?.decision,
+    'notRecommended',
+  )
 })
 
 test('hides a superseded official row only when its replacement exists', () => {
@@ -414,15 +459,15 @@ test('close dual attacks keep both sacrifice directions despite a skill-count ga
   const forms = rows.filter((item) => item.values?.no === 'NO.051')
   const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
   const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
-  for (const name of ['固执', '平和', '开朗']) {
+  for (const name of ['固执', '平和']) {
     assert.notEqual(candidates.find((candidate) => candidate.name === name)?.decision, 'notRecommended')
   }
-  for (const name of ['天真', '害羞']) {
+  for (const name of ['开朗', '天真', '害羞']) {
     assert.equal(candidates.find((candidate) => candidate.name === name)?.decision, 'notRecommended')
   }
 })
 
-test('balanced mixed routes do not rescue low-value speed natures', () => {
+test('a confirmed speed-dependent mixed attacker can use formula-crossing speed natures', () => {
   const rows = visibleRockKingdomCreatureRows(
     JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
   )
@@ -432,8 +477,8 @@ test('balanced mixed routes do not rescue low-value speed natures', () => {
   const forms = rows.filter((item) => item.values?.no === 'NO.040')
   const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
   const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
-  assert.equal(candidates.find((candidate) => candidate.name === '开朗')?.decision, 'notRecommended')
-  assert.equal(candidates.find((candidate) => candidate.name === '胆小')?.decision, 'notRecommended')
+  assert.equal(candidates.find((candidate) => candidate.name === '开朗')?.decision, 'keepable')
+  assert.equal(candidates.find((candidate) => candidate.name === '胆小')?.decision, 'keepable')
 })
 
 test('functional forms do not sacrifice their standout defense', () => {
