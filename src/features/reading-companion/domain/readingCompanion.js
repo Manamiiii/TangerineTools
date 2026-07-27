@@ -268,6 +268,69 @@ export function scanOnDemandEntities(text, onDemandEntities) {
   return matches
 }
 
+function normalizedLocalCandidateName(value) {
+  return typeof value === 'string'
+    ? value.normalize('NFKC').trim().replace(/^[“”"'‘’《》【】（）()，。！？；：、\s]+|[“”"'‘’《》【】（）()，。！？；：、\s]+$/gu, '')
+    : ''
+}
+
+function trimLocalCandidateContext(value, kind) {
+  let candidate = normalizedLocalCandidateName(value)
+  if (kind === OBSERVED_ENTITY_KIND.PERSON) {
+    candidate = candidate
+      .replace(/(?:先生|女士|夫人|小姐|太太|医生|上校|将军|船长|牧师)$/u, '')
+      .replace(/(?:写下|说道|问道|回答|喊道|叫道|说|问|答|喊|叫|看|想|走|来|去).*$/u, '')
+  }
+  if (kind === OBSERVED_ENTITY_KIND.PLACE) {
+    let boundary = -1
+    let boundaryLength = 0
+    for (const prefix of [
+      '回到', '离开', '前往', '抵达', '经过', '来自', '住在', '从', '到', '在', '往', '向',
+    ]) {
+      const index = candidate.lastIndexOf(prefix)
+      if (index >= boundary) {
+        boundary = index
+        boundaryLength = prefix.length
+      }
+    }
+    if (boundary >= 0) candidate = candidate.slice(boundary + boundaryLength)
+  }
+  return normalizedLocalCandidateName(candidate)
+}
+
+export function extractLocalEntityCandidates(text) {
+  if (typeof text !== 'string' || !text.trim()) return []
+  const source = text.normalize('NFKC').slice(0, 12000)
+  const candidates = new Map()
+
+  function add(name, kind, reason) {
+    const normalizedName = trimLocalCandidateContext(name, kind)
+    if (normalizedName.length < 2 || normalizedName.length > 30) return
+    const key = `${kind}:${normalizeObservedEntityName(normalizedName)}`
+    if (!candidates.has(key)) {
+      candidates.set(key, { name: normalizedName, kind, reason })
+    }
+  }
+
+  for (const match of source.matchAll(
+    /[\p{Script=Han}A-Za-z]{1,12}(?:[·•][\p{Script=Han}A-Za-z]{1,12})+/gu,
+  )) {
+    add(match[0], OBSERVED_ENTITY_KIND.PERSON, '带间隔点的姓名形式')
+  }
+
+  const personContext = /(?:^|[，。！？；：“”‘’\n])([\p{Script=Han}·•]{2,10}?)(?=(?:先生|女士|夫人|小姐|太太|医生|上校|将军|船长|牧师|说|问|答|喊|叫))/gu
+  for (const match of source.matchAll(personContext)) {
+    add(match[1], OBSERVED_ENTITY_KIND.PERSON, '出现在称谓或说话动作前')
+  }
+
+  const placeContext = /(?:^|[，。！？；：“”‘’\n]|回到|离开|前往|抵达|经过|来自|住在|从|到|在|往|向)([\p{Script=Han}A-Za-z·•]{2,16}?(?:庄园|农场|大街|街道|广场|城市|省|州|县|镇|村|河|江|湖|山|岭|谷|湾|岛|港|街|路|堡|城))/gu
+  for (const match of source.matchAll(placeContext)) {
+    add(match[1], OBSERVED_ENTITY_KIND.PLACE, '包含常见地点后缀')
+  }
+
+  return [...candidates.values()].slice(0, 12)
+}
+
 export function unlockedOnDemandEntities(
   onDemandEntities,
   observedEntities,

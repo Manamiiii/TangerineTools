@@ -70,9 +70,11 @@ import {
   canRevealRisk,
   clearObservedPlaceLocation,
   confirmObservedPlaceLocation,
+  extractLocalEntityCandidates,
   OBSERVED_ENTITY_KIND,
   OBSERVED_PLACE_KIND,
   matchOnDemandEntity,
+  normalizeObservedEntityName,
   readingPlaceRelations,
   readerConfirmedMapEntities,
   scanOnDemandEntities,
@@ -114,6 +116,36 @@ const READER_TAB = Object.freeze({
   FACTS: 'facts',
   SETTINGS: 'settings',
 })
+
+function observedRecordAction(observedEntities, name, kind, currentChapterId, chapters) {
+  const existing = observedEntities.find((item) => (
+    item.kind === kind
+    && normalizeObservedEntityName(item.name) === normalizeObservedEntityName(name)
+  ))
+  const currentIndex = chapters.findIndex((item) => item.id === currentChapterId)
+  if (!existing) {
+    return {
+      type: 'add',
+      label: `记在${chapters[currentIndex]?.label || '当前章'}`,
+    }
+  }
+  const existingIndex = chapters.findIndex((item) => item.id === existing.firstSeenChapterId)
+  const existingChapter = chapters[existingIndex]
+  if (existingIndex > currentIndex) {
+    return {
+      type: 'move-earlier',
+      label: `提前到${chapters[currentIndex]?.label || '当前章'}`,
+      existing,
+      existingChapter,
+    }
+  }
+  return {
+    type: 'recorded',
+    label: `已记于${existingChapter?.label || '较早章节'}`,
+    existing,
+    existingChapter,
+  }
+}
 
 function loadStoredReadingModelConfig(providerId = '', allowLegacy = true) {
   const legacyEndpoint = window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.endpoint) || ''
@@ -325,7 +357,6 @@ function ReadingLibrary({ catalog, onSelect, onCreate, onDelete }) {
       <section className="reader-library-hero">
         <span className="reader-eyebrow"><LibraryBig size={15} /> 经典文学阅读伴侣</span>
         <h2>选择一本书</h2>
-        <p>每本书拥有独立的版本资料、阅读进度和已遇到名称。</p>
       </section>
       <WindowsInstallCard />
       <section className="reader-library-panel">
@@ -357,7 +388,9 @@ function ReadingLibrary({ catalog, onSelect, onCreate, onDelete }) {
                   <span className="reader-book-copy">
                     <strong>{entry.title}</strong>
                     <small>{entry.editionLabel}</small>
-                    {entry.source === 'personal' && <em>个人书籍</em>}
+                    <em className={entry.source === 'personal' ? 'personal' : 'built-in'}>
+                      {entry.source === 'personal' ? '个人书籍' : '内置书籍 · 不可删除'}
+                    </em>
                     <b>开始阅读</b>
                   </span>
                 </button>
@@ -378,16 +411,6 @@ function ReadingLibrary({ catalog, onSelect, onCreate, onDelete }) {
           <div className="reader-observed-empty">还没有已发布的书籍资料包。</div>
         )}
       </section>
-      <details className="reader-library-guide">
-        <summary>
-          <span><ShieldCheck size={14} /> 使用说明</span>
-          <small>不需要上传整本书，也不需要配置模型</small>
-        </summary>
-        <div>
-          <p>选书后设置已读章节，粘贴一小段或放入截图，先扫描资料包中的已知名称；没有命中时也可以直接记录刚遇到的人物或地点。</p>
-          <p>原文只在当前页面处理。地图和资料只展示已经由你确认、或由正式资料包审计过的内容。</p>
-        </div>
-      </details>
     </div>
   )
 }
@@ -457,7 +480,6 @@ function ModelAnalysisPanel({
           <Sparkles size={19} />
           <div>
             <strong>模型识别 · 可选外部能力</strong>
-            <p>只发送当前段落，识别名称候选；不会自动写入资料库或生成剧情解释。</p>
           </div>
         </div>
         <button type="button" className="btn btn-sm" onClick={onOpenSettings}>
@@ -737,6 +759,40 @@ function ReadingServiceSettings({
   )
 }
 
+function LocalCandidateRow({
+  candidate,
+  actionFor,
+  onConfirm,
+}) {
+  const [kind, setKind] = useState(candidate.kind)
+  const action = actionFor(candidate.name, kind)
+  return (
+    <div className="reader-local-candidate">
+      <div>
+        <strong>{candidate.name}</strong>
+        <span>{candidate.reason}</span>
+      </div>
+      <select
+        aria-label={`“${candidate.name}”的类型`}
+        value={kind}
+        onChange={(event) => setKind(event.target.value)}
+      >
+        {Object.entries(OBSERVED_KIND_LABELS).map(([value, label]) => (
+          <option key={value} value={value}>{label}</option>
+        ))}
+      </select>
+      <button
+        type="button"
+        className="btn btn-sm"
+        disabled={action.type === 'recorded'}
+        onClick={() => onConfirm({ ...candidate, kind })}
+      >
+        <Plus size={13} /> {action.label}
+      </button>
+    </div>
+  )
+}
+
 function QuickObservedEntityForm({
   observedEntities,
   currentChapterId,
@@ -781,10 +837,7 @@ function QuickObservedEntityForm({
   return (
     <div className="reader-quick-add">
       <div className="reader-quick-add-heading">
-        <div>
-          <strong>资料包没有？直接记录</strong>
-          <span>把刚遇到的名称记在当前章节，不需要切换到“已遇到”。</span>
-        </div>
+        <strong>快速记录</strong>
         <span className="reader-local-chip"><Lock size={13} /> 个人记录</span>
       </div>
       <form
@@ -919,9 +972,6 @@ function ObservedEntitiesPanel({
         </div>
         <span className="reader-local-chip"><Lock size={13} /> 用户确认</span>
       </div>
-      <p className="reader-help reader-observed-intro">
-        这里汇总当前进度以前由你确认的名称，并保留它们第一次遇到的章节。不会自动补充人物关系或剧情。
-      </p>
       <form className="reader-observed-form" onSubmit={addObservedEntity}>
         <label>
           <span>名称</span>
@@ -1303,11 +1353,7 @@ function ReadingMapPanel({
         {places.length === 0 ? (
           <div className="reader-map-background-card">
             <MapPin size={20} />
-            <strong>宽泛背景底图</strong>
-            <p>当前进度还没有已确认的可定位地点。底图只提供现代地理背景，不代表故事地点，也不证明任何位置关系。</p>
-            {onDemandEntities.length > 0 && (
-              <small>资料包另有 {onDemandEntities.length} 个按需地点；只有你在阅读中精确输入并确认后才会显示，不在这里提前列出名称。</small>
-            )}
+            <strong>当前还没有可定位地点</strong>
           </div>
         ) : (
           <div className="reader-place-list">
@@ -1529,7 +1575,8 @@ export function ReaderTool({ scene }) {
   const [excerpt, setExcerpt] = useState('')
   const [imageInput, setImageInput] = useState(null)
   const [scanResults, setScanResults] = useState([])
-  const [scanPerformed, setScanPerformed] = useState(false)
+  const [localCandidates, setLocalCandidates] = useState([])
+  const [selectedExcerptText, setSelectedExcerptText] = useState('')
   const [scanStatus, setScanStatus] = useState('')
   const [inputStatus, setInputStatus] = useState('')
   const [ocrState, setOcrState] = useState('idle')
@@ -1581,6 +1628,31 @@ export function ReaderTool({ scene }) {
   useEffect(() => {
     if (activeTab === READER_TAB.MAP) setMapMounted(true)
   }, [activeTab])
+
+  useEffect(() => {
+    const text = excerpt.trim()
+    if (!text || !readingPackage) {
+      setScanResults([])
+      setLocalCandidates([])
+      return undefined
+    }
+    const timer = setTimeout(() => {
+      const knownMatches = scanOnDemandEntities(
+        text,
+        readingPackage.onDemandEntities || [],
+      )
+      const knownNames = new Set(knownMatches.map((item) => (
+        normalizeObservedEntityName(item.matchedTerm)
+      )))
+      setScanResults(knownMatches)
+      setLocalCandidates(
+        extractLocalEntityCandidates(text).filter((candidate) => (
+          !knownNames.has(normalizeObservedEntityName(candidate.name))
+        )),
+      )
+    }, 250)
+    return () => clearTimeout(timer)
+  }, [excerpt, readingPackage])
 
   const editionId = readingPackage?.edition.id || ''
   const savedState = useLiveQuery(
@@ -1668,7 +1740,8 @@ export function ReaderTool({ scene }) {
     setPendingChapterId('')
     setExcerpt('')
     setScanResults([])
-    setScanPerformed(false)
+    setLocalCandidates([])
+    setSelectedExcerptText('')
     setScanStatus('')
     setActiveTab(READER_TAB.INPUT)
     setMapMounted(false)
@@ -1706,7 +1779,8 @@ export function ReaderTool({ scene }) {
     setPendingChapterId('')
     setExcerpt('')
     setScanResults([])
-    setScanPerformed(false)
+    setLocalCandidates([])
+    setSelectedExcerptText('')
     setScanStatus('')
     setActiveTab(READER_TAB.INPUT)
     setMapMounted(false)
@@ -1775,7 +1849,8 @@ export function ReaderTool({ scene }) {
   function changeExcerpt(value) {
     setExcerpt(value)
     setScanResults([])
-    setScanPerformed(false)
+    setLocalCandidates([])
+    setSelectedExcerptText('')
     setScanStatus('')
     setInputStatus('')
   }
@@ -1799,30 +1874,60 @@ export function ReaderTool({ scene }) {
     }
   }
 
-  function scanExcerpt() {
-    setScanResults(scanOnDemandEntities(excerpt, readingPackage.onDemandEntities || []))
-    setScanPerformed(true)
-    setScanStatus('')
+  function actionForObservedName(name, kind) {
+    return observedRecordAction(
+      observedEntities,
+      name,
+      kind,
+      currentChapterId,
+      readingPackage.chapters,
+    )
   }
 
-  async function confirmScannedEntity({ entity, matchedTerm }) {
+  async function confirmObservedCandidate({ name, kind, placeKind }) {
     setScanStatus('')
     try {
+      const action = actionForObservedName(name, kind)
       const next = upsertObservedEntity(observedEntities, {
         id: generateId('observed'),
-        name: matchedTerm,
-        kind: entity.kind,
+        name,
+        kind,
+        placeKind,
         firstSeenChapterId: currentChapterId,
       }, readingPackage.chapters)
       if (next === observedEntities) {
-        setScanStatus(`“${matchedTerm}”已经记录在当前章或更早章节。`)
+        setScanStatus(`“${name}”${action.label}。`)
         return
       }
       await changeObservedEntities(next)
-      setScanStatus(`已确认“${matchedTerm}”出现在${currentChapter?.label || '当前章'}。`)
+      setSelectedExcerptText('')
+      setScanStatus(
+        action.type === 'move-earlier'
+          ? `已把“${name}”的首次记录从${action.existingChapter?.label || '较后章节'}提前到${currentChapter?.label || '当前章'}。`
+          : `已把“${name}”记在${currentChapter?.label || '当前章'}。`,
+      )
     } catch (error) {
-      setScanStatus(error?.message || '保存扫描结果失败')
+      setScanStatus(error?.message || '保存候选失败')
     }
+  }
+
+  async function confirmScannedEntity({ entity, matchedTerm }) {
+    await confirmObservedCandidate({
+      name: matchedTerm,
+      kind: entity.kind,
+      placeKind: entity.placeKind,
+    })
+  }
+
+  function captureExcerptSelection(event) {
+    const start = event.currentTarget.selectionStart
+    const end = event.currentTarget.selectionEnd
+    const selected = event.currentTarget.value.slice(start, end).trim()
+    setSelectedExcerptText(
+      selected.length >= 2 && selected.length <= 120 && !selected.includes('\n')
+        ? selected
+        : '',
+    )
   }
 
   async function confirmModelCandidate(candidate) {
@@ -1964,14 +2069,6 @@ export function ReaderTool({ scene }) {
         </div>
       </section>
 
-      <section className="reader-overview-strip" aria-label="当前资料包概况">
-        <span><b>{readingPackage.chapters.length}</b> 章节</span>
-        <span><b>{readingPackage.onDemandEntities?.length || 0}</b> 按需名称</span>
-        <span><b>{readingPackage.entities.length}</b> 正式实体</span>
-        <span><b>{readingPackage.facts.length}</b> 正式事实</span>
-        <small>资料包 {readingPackage.packageVersion}</small>
-      </section>
-
       <nav className="reader-tabs" role="tablist" aria-label="阅读伴侣功能">
         {readerTabs.map((tab) => {
           const Icon = tab.icon
@@ -2016,28 +2113,55 @@ export function ReaderTool({ scene }) {
                 className="textarea"
                 value={excerpt}
                 onChange={(event) => changeExcerpt(event.target.value)}
+                onSelect={captureExcerptSelection}
                 placeholder="从微信读书复制一小段文字，本机可以扫描其中已审计的名称…"
                 rows={7}
               />
               <small>{excerpt.length} 字 · 当前不会上传或持久化这段文字</small>
             </label>
+            {selectedExcerptText && (
+              <div className="reader-selection-add">
+                <strong>记录“{selectedExcerptText}”</strong>
+                {Object.entries(OBSERVED_KIND_LABELS).map(([kind, label]) => {
+                  const action = actionForObservedName(selectedExcerptText, kind)
+                  return (
+                    <button
+                      key={kind}
+                      type="button"
+                      disabled={action.type === 'recorded'}
+                      onClick={() => confirmObservedCandidate({
+                        name: selectedExcerptText,
+                        kind,
+                        placeKind: kind === OBSERVED_ENTITY_KIND.PLACE
+                          ? OBSERVED_PLACE_KIND.UNKNOWN
+                          : undefined,
+                      })}
+                    >
+                      {label} · {action.label}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
             <div className="reader-scan-actions">
               <button type="button" className="btn" onClick={pasteFromClipboard}>
                 <ClipboardPaste size={15} /> 从剪贴板粘贴
               </button>
-              <button type="button" className="btn" onClick={scanExcerpt} disabled={!excerpt.trim()}>
-                <ScanSearch size={15} /> 本机扫描已知名称
-              </button>
-              <span>只查找段落中实际出现的资料包名称，不会显示候选清单。</span>
+              <span>粘贴后自动在本机识别，不调用模型。</span>
             </div>
             {inputStatus && <p className="reader-input-status" role="status">{inputStatus}</p>}
-            {scanPerformed && (
+            {(scanResults.length > 0 || localCandidates.length > 0) && (
               <div className="reader-scan-results" role="status">
                 <div className="reader-scan-results-heading">
-                  <strong>扫描结果</strong>
-                  <span>{scanResults.length} 个精确命中</span>
+                  <strong>本机发现</strong>
+                  <span>{scanResults.length + localCandidates.length} 个候选</span>
                 </div>
-                {scanResults.length > 0 ? scanResults.map((result) => (
+                {scanResults.map((result) => {
+                  const action = actionForObservedName(
+                    result.matchedTerm,
+                    result.entity.kind,
+                  )
+                  return (
                   <div className="reader-scan-result" key={result.entity.id}>
                     <div>
                       <strong>{result.matchedTerm}</strong>
@@ -2051,17 +2175,25 @@ export function ReaderTool({ scene }) {
                     <button
                       type="button"
                       className="btn btn-sm"
+                      disabled={action.type === 'recorded'}
                       onClick={() => confirmScannedEntity(result)}
                     >
-                      <Plus size={13} /> 确认记在{currentChapter?.label || '当前章'}
+                      <Plus size={13} /> {action.label}
                     </button>
                   </div>
-                )) : (
-                  <p>当前段落没有命中资料包内已审计名称。系统不会据此猜测人物、地点或剧情。</p>
-                )}
-                {scanStatus && <p className="reader-scan-status">{scanStatus}</p>}
+                  )
+                })}
+                {localCandidates.map((candidate) => (
+                  <LocalCandidateRow
+                    key={`${candidate.kind}:${candidate.name}`}
+                    candidate={candidate}
+                    actionFor={actionForObservedName}
+                    onConfirm={confirmObservedCandidate}
+                  />
+                ))}
               </div>
             )}
+            {scanStatus && <p className="reader-scan-status" role="status">{scanStatus}</p>}
 
             <QuickObservedEntityForm
               observedEntities={observedEntities}
@@ -2076,10 +2208,7 @@ export function ReaderTool({ scene }) {
             <div className="reader-upload">
               <div className="reader-upload-copy">
                 <Image size={20} />
-                <div>
-                  <strong>也可以放入页面截图</strong>
-                  <span>截图和 OCR 都在当前设备处理；识别文字不会自动保存。</span>
-                </div>
+                <strong>从页面截图提取文字</strong>
               </div>
               <label className="btn">
                 <Upload size={15} />

@@ -2,12 +2,14 @@ import assert from 'node:assert/strict'
 import { access, readFile } from 'node:fs/promises'
 import test from 'node:test'
 import {
+  OBSERVED_ENTITY_KIND,
   OBSERVED_PLACE_KIND,
   SPOILER_GATE_ACTION,
   SPOILER_RISK,
   canRevealRisk,
   clearObservedPlaceLocation,
   confirmObservedPlaceLocation,
+  extractLocalEntityCandidates,
   isRevealedAtChapter,
   matchOnDemandEntity,
   normalizeObservedEntityName,
@@ -798,6 +800,36 @@ test('local excerpt scanning only returns audited names that actually occur in t
     .map(({ entity, matchedTerm }) => [entity.id, matchedTerm]), [['place-atlanta', 'Atlanta']])
   assert.deepEqual(scanOnDemandEntities('Atlantas', onDemandEntities), [])
   assert.deepEqual(scanOnDemandEntities('这里没有任何已知名称。', onDemandEntities), [])
+})
+
+test('local candidate extraction finds strong person and place patterns without a model', () => {
+  assert.deepEqual(
+    extractLocalEntityCandidates(
+      '斯嘉丽说：“我会回到塔拉庄园。”瑞德先生问她。玛格丽特·米切尔写下这些故事。',
+    ),
+    [
+      {
+        name: '玛格丽特·米切尔',
+        kind: OBSERVED_ENTITY_KIND.PERSON,
+        reason: '带间隔点的姓名形式',
+      },
+      {
+        name: '斯嘉丽',
+        kind: OBSERVED_ENTITY_KIND.PERSON,
+        reason: '出现在称谓或说话动作前',
+      },
+      {
+        name: '瑞德',
+        kind: OBSERVED_ENTITY_KIND.PERSON,
+        reason: '出现在称谓或说话动作前',
+      },
+      {
+        name: '塔拉庄园',
+        kind: OBSERVED_ENTITY_KIND.PLACE,
+        reason: '包含常见地点后缀',
+      },
+    ],
+  )
 })
 
 test('spoiler risk defaults unknown boundaries to potential and preserves high risk', () => {
