@@ -1,7 +1,5 @@
 export const READING_MODEL_PROVIDER = Object.freeze({
   ZHIPU: 'zhipu',
-  SILICONFLOW: 'siliconflow',
-  ALIYUN: 'aliyun',
   DEEPSEEK: 'deepseek',
   MINIMAX: 'minimax',
   OPENAI: 'openai',
@@ -21,34 +19,6 @@ export const READING_MODEL_PROVIDERS = Object.freeze({
     temperature: 0,
     consoleUrl: 'https://bigmodel.cn/usercenter/proj-mgmt/apikeys',
     docsUrl: 'https://docs.bigmodel.cn/cn/guide/models/free/glm-4-flash-250414',
-  }),
-  [READING_MODEL_PROVIDER.SILICONFLOW]: Object.freeze({
-    id: READING_MODEL_PROVIDER.SILICONFLOW,
-    label: '硅基流动',
-    description: '国内模型聚合平台 · 免费模型以模型广场标记为准',
-    endpoint: 'https://api.siliconflow.cn/v1/chat/completions',
-    defaultModel: 'Qwen/Qwen3-8B',
-    models: Object.freeze([
-      Object.freeze({ id: 'Qwen/Qwen3-8B', label: 'Qwen3-8B · 免费模型候选' }),
-      Object.freeze({ id: 'THUDM/GLM-4-9B-0414', label: 'GLM-4-9B-0414 · 免费模型候选' }),
-    ]),
-    temperature: 0,
-    consoleUrl: 'https://cloud.siliconflow.cn/account/ak',
-    docsUrl: 'https://docs.siliconflow.cn/cn/userguide/rate-limits/rate-limit-and-upgradation',
-  }),
-  [READING_MODEL_PROVIDER.ALIYUN]: Object.freeze({
-    id: READING_MODEL_PROVIDER.ALIYUN,
-    label: '阿里云百炼',
-    description: '国内直连 · 新人模型额度通常在开通后 90 天内有效',
-    endpoint: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-    defaultModel: 'qwen-flash',
-    models: Object.freeze([
-      Object.freeze({ id: 'qwen-flash', label: '通义千问 Flash · 轻量' }),
-      Object.freeze({ id: 'qwen-plus', label: '通义千问 Plus' }),
-    ]),
-    temperature: 0,
-    consoleUrl: 'https://bailian.console.aliyun.com/',
-    docsUrl: 'https://help.aliyun.com/zh/model-studio/new-free-quota/',
   }),
   [READING_MODEL_PROVIDER.DEEPSEEK]: Object.freeze({
     id: READING_MODEL_PROVIDER.DEEPSEEK,
@@ -111,10 +81,6 @@ export function normalizeReadingModelProvider(providerId) {
 export function inferReadingModelProvider(endpoint) {
   const value = typeof endpoint === 'string' ? endpoint.toLowerCase() : ''
   if (value.includes('open.bigmodel.cn')) return READING_MODEL_PROVIDER.ZHIPU
-  if (value.includes('siliconflow.cn')) return READING_MODEL_PROVIDER.SILICONFLOW
-  if (value.includes('aliyuncs.com') || value.includes('dashscope')) {
-    return READING_MODEL_PROVIDER.ALIYUN
-  }
   if (value.includes('deepseek.com')) return READING_MODEL_PROVIDER.DEEPSEEK
   if (value.includes('minimaxi.com') || value.includes('minimax.chat')) {
     return READING_MODEL_PROVIDER.MINIMAX

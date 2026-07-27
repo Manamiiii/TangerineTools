@@ -12,7 +12,7 @@ TangerineTools 是一个本地优先（local-first）的个人资料管理 Web A
 - **统计视图**：从资料库或收集记录选择数据源，按字段分组并叠加数值阈值条件统计。
 - **性格推荐**：每个编号从普通形态进入，展示统一绝对刻度的六维、动态分位、完整特性和同编号全部形态差异；候选按强化维度与推荐档位展示，按进化链匹配已获得性格，并为推荐/可保留性格提供预填快速新增收集记录。
 - **孵蛋推荐**：结合收集记录、性别、异色/炫彩、性格、蛋组和繁育谱系，对可用父母组合进行排序。
-- **阅读伴侣**：Windows 首版可安装为 PWA，从书架选择正式资料包或凭版本信息和目录建立个人书籍；书内固定提供阅读输入、已遇到、地图和设置，存在正式事实时才显示背景与注释。章节在书籍页右上角选择，输入页可直接记录未命中名称。支持剪贴板和设备端中英文截图 OCR，并可在智谱、硅基流动、阿里云百炼、DeepSeek、MiniMax、OpenAI 与自定义兼容接口之间切换，识别当前段落里的名称候选；真实地点可经国内/国际公网地图搜索并以点、路径或范围加入可全屏的个人地图。设置页集中管理模型和地图 Key、数据边界与接入教程，同时以确定性规则约束资料的可揭示进度和剧透确认级别。
+- **阅读伴侣**：Windows 首版可安装为 PWA，从书架选择正式资料包或凭版本信息和目录建立个人书籍；书内固定提供阅读输入、已遇到、地图和设置，存在正式事实时才显示背景与注释。章节在书籍页右上角选择，输入页可直接记录未命中名称。支持剪贴板和设备端中英文截图 OCR，并可在智谱、DeepSeek、MiniMax、OpenAI 与自定义兼容接口之间切换，识别当前段落里的名称候选；真实地点可经国内/国际公网地图搜索并以点、路径或范围加入可全屏的个人地图。设置页集中管理模型和地图 Key、数据边界与接入教程，同时以确定性规则约束资料的可揭示进度和剧透确认级别。
 - **全量导入/导出**：在首页通过 JSON 文件手动备份或迁移全部本地数据。
 - **洛克王国预置资料**：首次启动会自动创建“洛克王国”场景，包含精灵基础资料和技能资料；当前正式预置只由版本化 BWiki staging / preview 审计产物显式发布。
 
@@ -232,7 +232,7 @@ git diff --check
 - [`docs/nature/confirmed-results.md`](docs/nature/confirmed-results.md)：用户确认过的单只结果，用作规则回归基线。
 - [`docs/nature/open-issues.md`](docs/nature/open-issues.md)：尚未形成稳定规则的通用问题。
 - [`docs/reading-companion/product-and-architecture.md`](docs/reading-companion/product-and-architecture.md)：经典文学阅读伴侣的已实现范围、按书建库、跨端入口和剧透安全契约。
-- [`docs/reading-companion/model-provider-setup.md`](docs/reading-companion/model-provider-setup.md)：智谱、硅基流动、百炼、DeepSeek、MiniMax、OpenAI 和自定义模型的配置与测试方法。
+- [`docs/reading-companion/model-provider-setup.md`](docs/reading-companion/model-provider-setup.md)：智谱、DeepSeek、MiniMax、OpenAI 和自定义模型的配置与测试方法。
 - [`docs/reading-companion/trial-guide.md`](docs/reading-companion/trial-guide.md)：阅读伴侣当前可试用范围、启动步骤和反馈重点。
 
 根 README 是项目结构、命令和维护文档的统一入口；专题文档只保存各自领域内不可由代码结构直接表达的规则与约束。

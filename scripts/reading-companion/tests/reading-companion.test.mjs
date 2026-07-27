@@ -53,6 +53,7 @@ import {
 } from '../../../src/features/reading-companion/model/modelAdapter.js'
 import {
   READING_MODEL_PROVIDER,
+  READING_MODEL_PROVIDERS,
   inferReadingModelProvider,
   readingModelApiKeyStorageKey,
   readingModelProviderDefaults,
@@ -597,6 +598,10 @@ test('reader-confirmed rivers and regions preserve safe GeoJSON geometry', () =>
 })
 
 test('reading model presets support domestic switching without sharing session keys', () => {
+  assert.deepEqual(
+    Object.keys(READING_MODEL_PROVIDERS),
+    ['zhipu', 'deepseek', 'minimax', 'openai', 'custom'],
+  )
   assert.equal(
     inferReadingModelProvider('https://open.bigmodel.cn/api/paas/v4/chat/completions'),
     READING_MODEL_PROVIDER.ZHIPU,
