@@ -52,13 +52,19 @@ import {
   createPersonalReadingPackage,
   extractPersonalBookMetadataDetails,
   extractPersonalBookMetadataFromText,
+  mergePersonalBookKnowledge,
   mergePersonalBookMetadata,
   personalCatalogEntry,
 } from '../../../src/features/reading-companion/domain/personalBooks.js'
 import {
   analyzeReadingBookMetadata,
   analyzeReadingExcerpt,
+  answerReadingQuestion,
   normalizeModelCandidates,
+  normalizePersonalBookKnowledge,
+  preparePersonalBookKnowledge,
+  readingAnswerLooksForward,
+  readingQuestionLooksForward,
   suggestReadingPlaceQueries,
   translateReadingPlaceQuery,
 } from '../../../src/features/reading-companion/model/modelAdapter.js'
@@ -172,6 +178,47 @@ test('personal book creation produces a valid empty local package and catalog en
     source: 'personal',
     cover: { theme: 'amber' },
   })
+})
+
+test('personal book AI knowledge becomes a hidden exact-match dictionary without facts', () => {
+  const pkg = createPersonalReadingPackage({
+    packageId: 'reader-package-personal-ai-test',
+    bookId: 'reader-book-personal-ai-test',
+    editionId: 'reader-edition-personal-ai-test',
+    title: '测试个人书籍',
+    author: '测试作者',
+    chapterCount: 2,
+  })
+  let id = 0
+  const prepared = mergePersonalBookKnowledge(pkg, [
+    {
+      name: '测试人物',
+      originalName: 'Test Person',
+      aliases: ['人物别名'],
+      kind: 'person',
+      plot: 'ignored',
+    },
+    {
+      name: '测试地点',
+      aliases: [],
+      kind: 'place',
+      placeKind: 'fictional',
+      latitude: 1,
+      longitude: 2,
+    },
+  ], () => `personal-ai-${id += 1}`)
+  assert.equal(prepared.addedCount, 2)
+  assert.deepEqual(validateReadingPackage(prepared.package), [])
+  assert.equal(prepared.package.onDemandEntities[0].activation, 'exact-reader-input')
+  assert.equal('plot' in prepared.package.onDemandEntities[0], false)
+  assert.equal('geometry' in prepared.package.onDemandEntities[1], false)
+  assert.deepEqual(prepared.package.facts, [])
+  const repeated = mergePersonalBookKnowledge(
+    prepared.package,
+    [{ name: '测试人物', kind: 'person', aliases: [] }],
+    () => 'unused',
+  )
+  assert.equal(repeated.addedCount, 0)
 })
 
 test('book detail OCR text provides deterministic metadata before optional model cleanup', () => {
@@ -945,6 +992,95 @@ test('runtime model analysis stays a reader-confirmed candidate adapter', async 
   assert.equal(candidates.length, 2)
   assert.equal(candidates[1].placeKind, OBSERVED_PLACE_KIND.UNKNOWN)
   assert.equal('reason' in candidates[0], false)
+})
+
+test('personal book preparation returns only bounded names and no generated facts', async () => {
+  let requestBody
+  const candidates = await preparePersonalBookKnowledge({
+    endpoint: 'https://prepare-model.example/v1/chat/completions',
+    model: 'reader-prepare-model',
+    apiKey: 'test-key',
+    book: { title: '测试书', author: '测试作者', originalLanguage: 'en' },
+    edition: { translators: ['测试译者'], publisher: '测试出版社', isbn: '123' },
+    fetchImpl: async (_url, options) => {
+      requestBody = JSON.parse(options.body)
+      return {
+        ok: true,
+        json: async () => ({
+          choices: [{
+            message: {
+              content: JSON.stringify({
+                candidates: [
+                  {
+                    name: '测试人物',
+                    kind: 'person',
+                    originalName: 'Test Person',
+                    aliases: ['人物别名'],
+                    relationship: 'ignored',
+                  },
+                  {
+                    name: '测试地点',
+                    kind: 'place',
+                    placeKind: 'not-valid',
+                    coordinates: [1, 2],
+                  },
+                ],
+                facts: [{ content: 'ignored' }],
+              }),
+            },
+          }],
+        }),
+      }
+    },
+  })
+  assert.match(requestBody.messages[0].content, /不要返回人物关系/)
+  assert.equal(candidates.length, 2)
+  assert.equal(candidates[1].placeKind, OBSERVED_PLACE_KIND.UNKNOWN)
+  assert.equal('relationship' in candidates[0], false)
+  assert.equal('coordinates' in candidates[1], false)
+  assert.deepEqual(normalizePersonalBookKnowledge({ facts: [{}] }), [])
+})
+
+test('current-reading questions answer concepts and block obvious future-plot questions', async () => {
+  assert.equal(readingQuestionLooksForward('这个制度是什么意思？'), false)
+  assert.equal(readingQuestionLooksForward('这个人物最后怎么样？'), true)
+  assert.equal(readingAnswerLooksForward('这是一个历史时期。'), false)
+  assert.equal(readingAnswerLooksForward('后来他和某人结婚。'), true)
+  let requestBody
+  const result = await answerReadingQuestion({
+    endpoint: 'https://question-model.example/v1/chat/completions',
+    model: 'reader-question-model',
+    apiKey: 'test-key',
+    question: '重建时期是什么意思？',
+    excerpt: '当前段落提到了重建时期。',
+    bookTitle: '测试书',
+    chapterLabel: '第 2 章',
+    fetchImpl: async (_url, options) => {
+      requestBody = JSON.parse(options.body)
+      return {
+        ok: true,
+        json: async () => ({
+          choices: [{
+            message: {
+              content: '{"answer":"这是一个历史时期。","uncertain":false,"futurePlot":"ignored"}',
+            },
+          }],
+        }),
+      }
+    },
+  })
+  assert.match(requestBody.messages[0].content, /不得补充后续章节/)
+  assert.match(requestBody.messages[1].content, /当前段落提到了重建时期/)
+  assert.deepEqual(result, { answer: '这是一个历史时期。', uncertain: false })
+  await assert.rejects(
+    answerReadingQuestion({
+      endpoint: 'https://question-model.example/v1/chat/completions',
+      model: 'reader-question-model',
+      apiKey: 'test-key',
+      question: '这个人物最后怎么样？',
+    }),
+    /不回答后续剧情/,
+  )
 })
 
 test('identical model excerpt analysis reuses the temporary successful-result cache', async () => {

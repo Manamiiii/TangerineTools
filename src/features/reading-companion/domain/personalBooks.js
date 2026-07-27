@@ -5,6 +5,14 @@ import {
 
 const MAX_PERSONAL_CHAPTERS = 1000
 const MAX_COVER_DATA_URL_LENGTH = 3_000_000
+const PERSONAL_MODEL_SOURCE_ID = 'source-personal-model-preparation'
+const PERSONAL_PLACE_KINDS = new Set([
+  'unknown',
+  'real',
+  'fictional',
+  'prototype',
+  'approximate',
+])
 
 export const PERSONAL_BOOK_COVER_THEMES = Object.freeze([
   'amber',
@@ -236,6 +244,78 @@ export function createPersonalReadingPackage(input) {
     sources: [],
   }
   return assertReadingPackage(pkg)
+}
+
+export function mergePersonalBookKnowledge(pkg, candidates, createId) {
+  const currentPackage = assertReadingPackage(pkg)
+  if (!currentPackage.personal) throw new Error('只有个人书籍可以准备个人基础资料')
+  if (!Array.isArray(candidates) || typeof createId !== 'function') {
+    throw new Error('模型基础资料格式无效')
+  }
+  const existingKeys = new Set((currentPackage.onDemandEntities || []).map((entity) => (
+    `${entity.kind}:${normalizedText(entity.name).toLocaleLowerCase()}`
+  )))
+  const additions = []
+  for (const candidate of candidates) {
+    const name = normalizedText(candidate?.name)
+    const kind = ['person', 'place', 'concept', 'event'].includes(candidate?.kind)
+      ? candidate.kind
+      : ''
+    const key = `${kind}:${name.toLocaleLowerCase()}`
+    if (!name || !kind || existingKeys.has(key)) continue
+    existingKeys.add(key)
+    const originalName = normalizedText(candidate?.originalName)
+    const aliases = (Array.isArray(candidate?.aliases) ? candidate.aliases : [])
+      .map(normalizedText)
+      .filter((alias, index, all) => (
+        alias
+        && alias !== name
+        && alias !== originalName
+        && all.indexOf(alias) === index
+      ))
+      .slice(0, 8)
+    additions.push({
+      id: createId(),
+      name,
+      ...(originalName ? { originalName } : {}),
+      aliases,
+      kind,
+      ...(kind === 'place'
+        ? {
+            placeKind: PERSONAL_PLACE_KINDS.has(candidate.placeKind)
+              ? candidate.placeKind
+              : 'unknown',
+          }
+        : {}),
+      activation: 'exact-reader-input',
+      sourceIds: [PERSONAL_MODEL_SOURCE_ID],
+      scopeNote: '由读者主动运行模型准备，只在当前原文精确出现同名内容后使用；不包含人物关系或后续剧情。',
+    })
+  }
+  if (additions.length === 0) {
+    return { package: currentPackage, addedCount: 0 }
+  }
+  const sources = currentPackage.sources.some((source) => source.id === PERSONAL_MODEL_SOURCE_ID)
+    ? currentPackage.sources
+    : [
+        ...currentPackage.sources,
+        {
+          id: PERSONAL_MODEL_SOURCE_ID,
+          kind: 'reader-requested-model-preparation',
+          label: '个人书籍 AI 基础资料',
+          notes: '模型生成的隐藏名称词典，只在读者当前原文精确命中后使用；不是正式资料来源或章节证据。',
+        },
+      ]
+  const nextPackage = assertReadingPackage({
+    ...currentPackage,
+    packageVersion: '1.1.0-personal',
+    sources,
+    onDemandEntities: [
+      ...(currentPackage.onDemandEntities || []),
+      ...additions,
+    ],
+  })
+  return { package: nextPackage, addedCount: additions.length }
 }
 
 export function personalCatalogEntry(pkg) {

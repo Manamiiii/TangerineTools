@@ -148,6 +148,196 @@ export function normalizeModelCandidates(payload) {
   })
 }
 
+export function normalizePersonalBookKnowledge(payload) {
+  const candidates = Array.isArray(payload?.candidates) ? payload.candidates : []
+  const seen = new Set()
+  return candidates.slice(0, 60).flatMap((candidate) => {
+    const name = typeof candidate?.name === 'string'
+      ? candidate.name.normalize('NFKC').trim()
+      : ''
+    const kind = VALID_KINDS.has(candidate?.kind)
+      ? candidate.kind
+      : OBSERVED_ENTITY_KIND.CONCEPT
+    const normalizedName = name.toLocaleLowerCase()
+    if (!name || name.length > 80 || seen.has(`${kind}:${normalizedName}`)) return []
+    seen.add(`${kind}:${normalizedName}`)
+    const originalName = typeof candidate?.originalName === 'string'
+      ? candidate.originalName.normalize('NFKC').trim().slice(0, 120)
+      : ''
+    const aliases = (Array.isArray(candidate?.aliases) ? candidate.aliases : [])
+      .map((alias) => (typeof alias === 'string' ? alias.normalize('NFKC').trim() : ''))
+      .filter((alias, index, all) => (
+        alias
+        && alias.length <= 80
+        && alias !== name
+        && alias !== originalName
+        && all.indexOf(alias) === index
+      ))
+      .slice(0, 8)
+    return [{
+      name,
+      kind,
+      ...(originalName ? { originalName } : {}),
+      aliases,
+      ...(kind === OBSERVED_ENTITY_KIND.PLACE
+        ? {
+            placeKind: VALID_PLACE_KINDS.has(candidate?.placeKind)
+              ? candidate.placeKind
+              : OBSERVED_PLACE_KIND.UNKNOWN,
+          }
+        : {}),
+    }]
+  })
+}
+
+export async function preparePersonalBookKnowledge({
+  endpoint,
+  model,
+  apiKey,
+  temperature = 0,
+  book,
+  edition,
+  fetchImpl = globalThis.fetch,
+}) {
+  const url = normalizeEndpoint(endpoint)
+  const modelName = requiredText(model, '请填写模型名称')
+  const key = requiredText(apiKey, '请填写 API Key')
+  const title = requiredText(book?.title, '书籍缺少书名')
+  if (typeof fetchImpl !== 'function') throw new Error('当前环境无法调用模型接口')
+  const bookContext = {
+    title,
+    author: book?.author || '',
+    originalLanguage: book?.originalLanguage || '',
+    translators: edition?.translators || [],
+    publisher: edition?.publisher || '',
+    publishedAt: edition?.publishedAt || '',
+    isbn: String(edition?.isbn || '').startsWith('personal-') ? '' : edition?.isbn || '',
+  }
+  const cacheKey = modelCacheKey('personal-book-knowledge-v1', [
+    url,
+    modelName,
+    bookContext,
+  ])
+  const cached = cachedModelResult(cacheKey)
+  if (cached) return cached
+  const payload = await requestModelJson({
+    url,
+    modelName,
+    key,
+    temperature,
+    fetchImpl,
+    messages: [
+      {
+        role: 'system',
+        content: [
+          '你为个人阅读工具准备一个无剧透的名称词典。',
+          '只返回你有较高把握属于该书的人物、地点、历史文化概念和事件名称，以及常见原文名和别名。',
+          '不要返回人物关系、身份秘密、命运、结局、剧情摘要、章节号、解释文字或坐标。',
+          '无法确认具体中文译名时，使用最常见名称并把其他常见译名放入 aliases；不要编造。',
+          '地点只有在明显属于现实地点或明显属于作品虚构地点时才标 real 或 fictional，否则标 unknown。',
+          '数量以实用为准，最多 50 项；冷门或不确定项目宁可省略。',
+          '只返回 JSON：{"candidates":[{"name":"","kind":"person|place|concept|event","originalName":"","aliases":[],"placeKind":"unknown|real|fictional|prototype|approximate"}]}。',
+        ].join('\n'),
+      },
+      {
+        role: 'user',
+        content: [
+          '书籍信息：',
+          JSON.stringify(bookContext),
+        ].join('\n'),
+      },
+    ],
+  })
+  const result = normalizePersonalBookKnowledge(payload)
+  if (result.length === 0) throw new Error('模型没有准备出可用的基础名称')
+  return storeModelResult(cacheKey, result)
+}
+
+export function readingQuestionLooksForward(value) {
+  const text = typeof value === 'string' ? value.normalize('NFKC').trim() : ''
+  return /(?:后来|以后|接下来|下一章|最终|最后|结局|会不会|是否会|怎么死|谁死|真相|身份秘密)/u
+    .test(text)
+}
+
+export function readingAnswerLooksForward(value) {
+  const text = typeof value === 'string' ? value.normalize('NFKC').trim() : ''
+  return /(?:第\s*\d+\s*章|最终|结局|身份其实|真相是|后来.{0,30}(?:去世|死亡|结婚|成为|发现|揭示))/u
+    .test(text)
+}
+
+export async function answerReadingQuestion({
+  endpoint,
+  model,
+  apiKey,
+  temperature = 0,
+  question,
+  excerpt = '',
+  bookTitle = '',
+  chapterLabel = '',
+  fetchImpl = globalThis.fetch,
+}) {
+  const url = normalizeEndpoint(endpoint)
+  const modelName = requiredText(model, '请填写模型名称')
+  const key = requiredText(apiKey, '请填写 API Key')
+  const text = requiredText(question, '请输入想了解的概念或当前段落问题')
+  if (text.length > 500) throw new Error('单次问题最多 500 个字符')
+  if (readingQuestionLooksForward(text)) {
+    throw new Error('这里先只解释概念和当前段落，不回答后续剧情或结局')
+  }
+  const currentExcerpt = typeof excerpt === 'string' ? excerpt.trim().slice(0, 6000) : ''
+  if (typeof fetchImpl !== 'function') throw new Error('当前环境无法调用模型接口')
+  const cacheKey = modelCacheKey('reading-question-v1', [
+    url,
+    modelName,
+    text,
+    currentExcerpt,
+    bookTitle,
+    chapterLabel,
+  ])
+  const cached = cachedModelResult(cacheKey)
+  if (cached) return cached
+  const payload = await requestModelJson({
+    url,
+    modelName,
+    key,
+    temperature,
+    fetchImpl,
+    messages: [
+      {
+        role: 'system',
+        content: [
+          '你是阅读伴侣中的无剧透概念解释助手。',
+          '只解释用户询问的词语、历史文化背景、语言含义，或用户当前提供段落中已经出现的内容。',
+          '不得补充后续章节、人物未来关系、身份秘密、命运、结局或当前段落之外的剧情。',
+          '如果问题必须依赖后续剧情才能回答，请明确说“这涉及后续剧情，这里先不展开”。',
+          '回答使用简洁中文，优先让普通读者一遍看懂；不确定时明确说明。',
+          '只返回 JSON：{"answer":"回答","uncertain":false}。',
+        ].join('\n'),
+      },
+      {
+        role: 'user',
+        content: [
+          `书籍：${bookTitle || '未知'}`,
+          `当前阅读位置：${chapterLabel || '未知章节'}`,
+          `问题：${text}`,
+          currentExcerpt ? `当前段落：\n${currentExcerpt}` : '当前段落：未提供',
+        ].join('\n'),
+      },
+    ],
+  })
+  const answer = typeof payload?.answer === 'string'
+    ? payload.answer.normalize('NFKC').trim().slice(0, 4000)
+    : ''
+  if (!answer) throw new Error('模型没有返回可用的解释')
+  if (readingAnswerLooksForward(answer)) {
+    throw new Error('模型回答可能涉及后续剧情，已停止显示')
+  }
+  return storeModelResult(cacheKey, {
+    answer,
+    uncertain: payload?.uncertain === true,
+  })
+}
+
 export async function analyzeReadingExcerpt({
   endpoint,
   model,

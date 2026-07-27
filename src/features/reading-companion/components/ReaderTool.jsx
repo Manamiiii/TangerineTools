@@ -47,6 +47,8 @@ import {
   READING_MODEL_STORAGE_KEYS,
   analyzeReadingBookMetadata,
   analyzeReadingExcerpt,
+  answerReadingQuestion,
+  preparePersonalBookKnowledge,
   suggestReadingPlaceQueries,
 } from '../model/modelAdapter.js'
 import {
@@ -62,6 +64,7 @@ import {
   PERSONAL_BOOK_COVER_THEMES,
   createPersonalReadingPackage,
   extractPersonalBookMetadataDetails,
+  mergePersonalBookKnowledge,
   mergePersonalBookMetadata,
   personalCatalogEntry,
 } from '../domain/personalBooks.js'
@@ -240,6 +243,7 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
     chapterText: '',
     coverTheme: 'amber',
     coverImage: '',
+    prepareWithModel: true,
   })
   const [status, setStatus] = useState('')
   const [saving, setSaving] = useState(false)
@@ -408,7 +412,7 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
       <div className="reader-personal-book-heading">
         <div>
           <strong>添加个人书籍</strong>
-          <span>只创建书目、版本和章节；稍后仍可导入正式资料包。</span>
+          <span>填好书目和章节即可；模型可以自动准备阅读时会用到的基础名称。</span>
         </div>
         <button type="button" className="icon-btn" onClick={onCancel} aria-label="关闭添加书籍">
           <X size={15} />
@@ -553,6 +557,19 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
             placeholder={'1\n2\n3\n…\n也可以粘贴“第一章 某某”等完整标题'}
           />
           <small>粘贴目录后以非空行数为准；纯数字会自动显示为“第 N 章”。</small>
+        </label>
+        <label className="reader-personal-ai-option">
+          <input
+            type="checkbox"
+            checked={form.prepareWithModel}
+            onChange={(event) => change('prepareWithModel', event.target.checked)}
+          />
+          <span>
+            <strong>创建后用 AI 准备基础资料</strong>
+            <small>
+              自动建立隐藏名称词典，不需要提前读过本书或逐条审核；名称以后在原文中出现时才会显示。
+            </small>
+          </span>
         </label>
         {status && <p className="reader-observed-status" role="alert">{status}</p>}
         <div className="reader-personal-book-actions">
@@ -720,8 +737,8 @@ function ModelAnalysisPanel({
       setRequestState('done')
       setMessage(
         results.length > 0
-          ? '模型结果只是候选；请逐项核对原文后确认。'
-          : '模型没有返回符合约束的名称候选。',
+          ? '发现了这段里的新名称。看到确实出现的名称时，直接记在本章即可。'
+          : '这次没有发现新的名称。',
       )
     } catch (error) {
       setRequestState('error')
@@ -750,7 +767,7 @@ function ModelAnalysisPanel({
         <div>
           <Sparkles size={19} />
           <div>
-            <strong>模型识别 · 可选外部能力</strong>
+            <strong>发现这段里的新名称</strong>
           </div>
         </div>
         <button type="button" className="btn btn-sm" onClick={onOpenSettings}>
@@ -769,7 +786,7 @@ function ModelAnalysisPanel({
         disabled={!configured || !excerpt.trim() || requestState === 'working'}
       >
         <Sparkles size={15} />
-        {requestState === 'working' ? '正在识别当前段落…' : '用模型识别名称候选'}
+        {requestState === 'working' ? '正在识别当前段落…' : '用模型发现新名称'}
       </button>
       {message && <p className="reader-model-message" role="status">{message}</p>}
       {candidates.length > 0 && (
@@ -804,6 +821,178 @@ function ModelAnalysisPanel({
               </div>
             )
           })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function PersonalBookPreparationPanel({
+  readingPackage,
+  modelConfig,
+  onPrepared,
+  onOpenSettings,
+}) {
+  const [requestState, setRequestState] = useState('idle')
+  const [message, setMessage] = useState('')
+  const configured = Boolean(
+    modelConfig.endpoint.trim()
+    && modelConfig.model.trim()
+    && modelConfig.apiKey.trim(),
+  )
+  const preparedCount = (readingPackage.onDemandEntities || [])
+    .filter((entity) => entity.sourceIds?.includes('source-personal-model-preparation'))
+    .length
+
+  async function prepare() {
+    setRequestState('working')
+    setMessage('')
+    try {
+      const candidates = await preparePersonalBookKnowledge({
+        endpoint: modelConfig.endpoint,
+        model: modelConfig.model,
+        apiKey: modelConfig.apiKey,
+        temperature: modelConfig.temperature,
+        book: readingPackage.book,
+        edition: readingPackage.edition,
+      })
+      const addedCount = await onPrepared(candidates)
+      setRequestState('done')
+      setMessage(
+        addedCount > 0
+          ? `已准备 ${addedCount} 个基础名称。以后它们在当前原文中出现时，系统会自动发现。`
+          : '这次没有发现新的基础名称，现有资料已经保留。',
+      )
+    } catch (error) {
+      setRequestState('error')
+      setMessage(error?.message || '基础资料准备失败')
+    }
+  }
+
+  return (
+    <div className="reader-preparation-panel">
+      <div>
+        <Sparkles size={19} />
+        <span>
+          <strong>AI 准备这本书</strong>
+          <small>
+            {preparedCount > 0
+              ? `已经准备 ${preparedCount} 个名称；重新运行只会补充，不会清空阅读记录。`
+              : '自动准备人物、地点和概念名称，不需要你提前了解或逐条审核。'}
+          </small>
+        </span>
+      </div>
+      <div className="reader-preparation-actions">
+        <button
+          type="button"
+          className="btn btn-sm"
+          onClick={prepare}
+          disabled={!configured || requestState === 'working'}
+        >
+          <Sparkles size={13} />
+          {requestState === 'working'
+            ? '正在准备…'
+            : preparedCount > 0
+              ? '补充基础资料'
+              : '准备基础资料'}
+        </button>
+        {!configured && (
+          <button type="button" className="btn btn-sm" onClick={onOpenSettings}>
+            <Settings2 size={13} /> 配置模型
+          </button>
+        )}
+      </div>
+      {message && <p className="reader-model-message" role="status">{message}</p>}
+    </div>
+  )
+}
+
+function ReadingQuestionPanel({
+  excerpt,
+  selectedText,
+  bookTitle,
+  currentChapter,
+  modelConfig,
+  onOpenSettings,
+}) {
+  const [question, setQuestion] = useState('')
+  const [requestState, setRequestState] = useState('idle')
+  const [message, setMessage] = useState('')
+  const [result, setResult] = useState(null)
+  const configured = Boolean(
+    modelConfig.endpoint.trim()
+    && modelConfig.model.trim()
+    && modelConfig.apiKey.trim(),
+  )
+
+  useEffect(() => {
+    if (selectedText) setQuestion(`“${selectedText}”是什么意思？`)
+  }, [selectedText])
+
+  async function ask(event) {
+    event.preventDefault()
+    setRequestState('working')
+    setMessage('')
+    setResult(null)
+    try {
+      const answer = await answerReadingQuestion({
+        endpoint: modelConfig.endpoint,
+        model: modelConfig.model,
+        apiKey: modelConfig.apiKey,
+        temperature: modelConfig.temperature,
+        question,
+        excerpt,
+        bookTitle,
+        chapterLabel: currentChapter?.label,
+      })
+      setResult(answer)
+      setRequestState('done')
+    } catch (error) {
+      setRequestState('error')
+      setMessage(error?.message || '当前内容答疑失败')
+    }
+  }
+
+  return (
+    <div className="reader-question-panel">
+      <div className="reader-model-heading">
+        <div>
+          <Sparkles size={19} />
+          <div>
+            <strong>问问当前内容</strong>
+            <p>解释概念、时代背景或眼前这段话；不展开后续剧情。</p>
+          </div>
+        </div>
+        {!configured && (
+          <button type="button" className="btn btn-sm" onClick={onOpenSettings}>
+            <Settings2 size={13} /> 配置模型
+          </button>
+        )}
+      </div>
+      <form className="reader-question-form" onSubmit={ask}>
+        <input
+          value={question}
+          onChange={(event) => {
+            setQuestion(event.target.value)
+            setMessage('')
+            setResult(null)
+          }}
+          placeholder="例如：重建时期是什么意思？这句话为什么这样表达？"
+        />
+        <button
+          type="submit"
+          className="btn btn-sm"
+          disabled={!configured || !question.trim() || requestState === 'working'}
+        >
+          {requestState === 'working' ? '解释中…' : '解释'}
+        </button>
+      </form>
+      {message && <p className="reader-model-message" role="status">{message}</p>}
+      {result && (
+        <div className="reader-question-answer" role="status">
+          <strong>{result.uncertain ? '可能的解释' : '解释'}</strong>
+          <p>{result.answer}</p>
+          <small>临时回答，不会自动写入资料库。</small>
         </div>
       )}
     </div>
@@ -862,8 +1051,8 @@ function ReadingServiceSettings({
           <span className="reader-system-chip">可选</span>
         </div>
         <p className="reader-settings-intro">
-          当前只用于从你主动放入的一小段文字中提取人物、地点、概念和事件名称候选。
-          候选必须由你确认，模型不能直接写入正式资料包。
+          用于准备个人书的隐藏名称、发现当前段落里的新名称、解释当前内容，以及整理书目和地图搜索词。
+          模型不能直接写入正式资料或生成坐标。
         </p>
         <form className="reader-settings-form" onSubmit={saveModel}>
           <label>
@@ -957,7 +1146,7 @@ function ReadingServiceSettings({
         </details>
         <p className="reader-settings-storage">
           每个供应商的地址和模型名分别保存在本机 localStorage；各家 Key 分别存在 sessionStorage，关闭浏览器会话后失效。
-          调用时会把当前段落、书名和章节标签发送给你配置的服务商。
+          不同功能会发送书目信息，或当前问题、段落、书名和章节标签；只有点击功能或创建时保留 AI 准备选项才会调用。
         </p>
       </section>
 
@@ -2394,19 +2583,62 @@ export function ReaderTool({ scene }) {
   }
 
   async function createPersonalBook(form) {
-    const pkg = createPersonalReadingPackage({
+    let pkg = createPersonalReadingPackage({
       ...form,
       packageId: generateId('reader-package-personal'),
       bookId: generateId('reader-book-personal'),
       editionId: generateId('reader-edition-personal'),
     })
     await savePersonalReadingPackage(pkg)
+    let preparationStatus = ''
+    const modelConfigured = Boolean(
+      modelConfig.endpoint.trim()
+      && modelConfig.model.trim()
+      && modelConfig.apiKey.trim(),
+    )
+    if (form.prepareWithModel && modelConfigured) {
+      try {
+        const candidates = await preparePersonalBookKnowledge({
+          endpoint: modelConfig.endpoint,
+          model: modelConfig.model,
+          apiKey: modelConfig.apiKey,
+          temperature: modelConfig.temperature,
+          book: pkg.book,
+          edition: pkg.edition,
+        })
+        const prepared = mergePersonalBookKnowledge(
+          pkg,
+          candidates,
+          () => generateId('personal-ai-entity'),
+        )
+        pkg = prepared.package
+        await savePersonalReadingPackage(pkg)
+        preparationStatus = `书籍已创建，并自动准备了 ${prepared.addedCount} 个基础名称。`
+      } catch (error) {
+        preparationStatus = `书籍已创建；AI 基础资料暂时没有准备成功：${error?.message || '模型请求失败'}`
+      }
+    } else if (form.prepareWithModel) {
+      preparationStatus = '书籍已创建。配置模型后，可在阅读页一键准备基础资料。'
+    }
     const entry = personalCatalogEntry(pkg)
     setCatalog((current) => [
       ...(current || []).filter((item) => item.id !== entry.id),
       entry,
     ])
     selectBook(pkg.id)
+    setInputStatus(preparationStatus)
+  }
+
+  async function preparePersonalBook(candidates) {
+    const prepared = mergePersonalBookKnowledge(
+      readingPackage,
+      candidates,
+      () => generateId('personal-ai-entity'),
+    )
+    if (prepared.addedCount === 0) return 0
+    await savePersonalReadingPackage(prepared.package)
+    setReadingPackage(prepared.package)
+    return prepared.addedCount
   }
 
   async function deletePersonalBook(entry) {
@@ -2751,6 +2983,14 @@ export function ReaderTool({ scene }) {
               </div>
               <span className="reader-local-chip"><Lock size={13} /> 仅在本机</span>
             </div>
+            {readingPackage.personal && (
+              <PersonalBookPreparationPanel
+                readingPackage={readingPackage}
+                modelConfig={modelConfig}
+                onPrepared={preparePersonalBook}
+                onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
+              />
+            )}
             <label className="reader-excerpt-field">
               <span>粘贴当前段落</span>
               <textarea
@@ -2833,6 +3073,15 @@ export function ReaderTool({ scene }) {
               </div>
             )}
             {scanStatus && <p className="reader-scan-status" role="status">{scanStatus}</p>}
+
+            <ReadingQuestionPanel
+              excerpt={excerpt}
+              selectedText={selectedExcerptText}
+              bookTitle={readingPackage.book.title}
+              currentChapter={currentChapter}
+              modelConfig={modelConfig}
+              onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
+            />
 
             <ModelAnalysisPanel
               excerpt={excerpt}
