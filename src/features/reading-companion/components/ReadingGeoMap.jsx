@@ -30,6 +30,7 @@ export function ReadingGeoMap({
   onSelectPlace,
   providerId,
   tiandituToken,
+  isActive = true,
 }) {
   const containerRef = useRef(null)
   const mapRef = useRef(null)
@@ -38,6 +39,7 @@ export function ReadingGeoMap({
   const markersRef = useRef(new Map())
   const onSelectPlaceRef = useRef(onSelectPlace)
   const [tileState, setTileState] = useState('loading')
+  const [tileUsage, setTileUsage] = useState({ base: 0, labels: 0 })
   const spatialPlaces = useMemo(
     () => places.filter((place) => (
       Number.isFinite(place.geometry?.latitude)
@@ -85,6 +87,14 @@ export function ReadingGeoMap({
   }, [])
 
   useEffect(() => {
+    if (!isActive || !mapRef.current) return undefined
+    const resizeFrame = requestAnimationFrame(() => {
+      mapRef.current?.invalidateSize({ animate: false })
+    })
+    return () => cancelAnimationFrame(resizeFrame)
+  }, [isActive])
+
+  useEffect(() => {
     const map = mapRef.current
     if (!map) return undefined
 
@@ -97,6 +107,7 @@ export function ReadingGeoMap({
     }
 
     setTileState('loading')
+    setTileUsage({ base: 0, labels: 0 })
     let loadedLayerCount = 0
     let hasTileError = false
     const layers = sources.map((source) => {
@@ -108,6 +119,12 @@ export function ReadingGeoMap({
       layer.on('tileerror', () => {
         hasTileError = true
         setTileState('error')
+      })
+      layer.on('tileloadstart', () => {
+        setTileUsage((current) => ({
+          ...current,
+          [source.usageKind]: current[source.usageKind] + 1,
+        }))
       })
       return layer.addTo(map)
     })
@@ -162,6 +179,7 @@ export function ReadingGeoMap({
       markersRef.current.set(place.id, marker)
     }
 
+    if (!isActive) return
     if (spatialPlaces.length === 0) {
       map.setView(READING_MAP_DEFAULT_VIEW.center, READING_MAP_DEFAULT_VIEW.zoom)
     } else if (spatialPlaces.length === 1 && spatialPlaces[0].geometry.type === 'point') {
@@ -171,10 +189,10 @@ export function ReadingGeoMap({
       const bounds = markerLayer.getBounds()
       if (bounds.isValid()) map.fitBounds(bounds, { maxZoom: 10, padding: [36, 36] })
     }
-  }, [spatialPlaces])
+  }, [isActive, spatialPlaces])
 
   useEffect(() => {
-    if (!selectedPlaceId) return
+    if (!isActive || !selectedPlaceId) return
     for (const place of spatialPlaces) {
       const marker = markersRef.current.get(place.id)
       if (!marker) continue
@@ -193,7 +211,7 @@ export function ReadingGeoMap({
           : [selectedPlace.geometry.latitude, selectedPlace.geometry.longitude],
       )
     }
-  }, [selectedPlaceId, spatialPlaces])
+  }, [isActive, selectedPlaceId, spatialPlaces])
 
   return (
     <div className="reader-interactive-map">
@@ -213,6 +231,15 @@ export function ReadingGeoMap({
       {tileState === 'missing-key' && (
         <span className="reader-map-network-state error">
           请填写天地图浏览器端 Key；Key 只保存在当前浏览器。
+        </span>
+      )}
+      {tileUsage.base + tileUsage.labels > 0 && (
+        <span
+          className="reader-map-tile-usage"
+          title="本地瓦片加载计数，用于估算；浏览器缓存可能使服务商实际计量更少"
+        >
+          本次加载：底图 {tileUsage.base}
+          {tileUsage.labels > 0 && ` · 注记 ${tileUsage.labels}`} 块
         </span>
       )}
       <div className="reader-map-legend" aria-label="地点类型图例">

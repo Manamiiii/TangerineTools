@@ -158,6 +158,18 @@ test('reading map providers keep international fallback and require a domestic b
   const internationalSources = readingMapTileSources(READING_MAP_PROVIDER.INTERNATIONAL)
   assert.equal(internationalSources.length, 1)
   assert.match(internationalSources[0].url, /openstreetmap/)
+  assert.deepEqual(
+    {
+      updateWhenIdle: internationalSources[0].options.updateWhenIdle,
+      updateWhenZooming: internationalSources[0].options.updateWhenZooming,
+      keepBuffer: internationalSources[0].options.keepBuffer,
+    },
+    {
+      updateWhenIdle: true,
+      updateWhenZooming: false,
+      keepBuffer: 1,
+    },
+  )
 
   assert.deepEqual(readingMapTileSources(READING_MAP_PROVIDER.DOMESTIC), [])
   const domesticSources = readingMapTileSources(
@@ -167,6 +179,7 @@ test('reading map providers keep international fallback and require a domestic b
   assert.equal(domesticSources.length, 2)
   assert.match(domesticSources[0].url, /vec_w\/wmts/)
   assert.match(domesticSources[1].url, /cva_w\/wmts/)
+  assert.deepEqual(domesticSources.map((source) => source.usageKind), ['base', 'labels'])
   assert.ok(domesticSources.every((source) => source.url.includes('tk=key%20with%20spaces')))
 })
 

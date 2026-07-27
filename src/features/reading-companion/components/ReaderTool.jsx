@@ -1037,8 +1037,10 @@ function ReadingMapPanel({
   onChangeObservedEntities,
   mapConfig,
   onOpenSettings,
+  isActive,
 }) {
   const { providerId, tiandituToken } = mapConfig
+  const [renderedMapConfig, setRenderedMapConfig] = useState(mapConfig)
   const [lookupTargetId, setLookupTargetId] = useState('')
   const [lookupQuery, setLookupQuery] = useState('')
   const [lookupState, setLookupState] = useState('idle')
@@ -1080,6 +1082,10 @@ function ReadingMapPanel({
     () => readingPlaceRelations(places, selectedPlace?.id),
     [places, selectedPlace?.id],
   )
+
+  useEffect(() => {
+    if (isActive) setRenderedMapConfig(mapConfig)
+  }, [isActive, mapConfig])
 
   useEffect(() => {
     if (selectedPlaceId && !places.some((place) => place.id === selectedPlaceId)) {
@@ -1290,8 +1296,9 @@ function ReadingMapPanel({
           places={spatialPlaces}
           selectedPlaceId={selectedPlaceId}
           onSelectPlace={setSelectedPlaceId}
-          providerId={providerId}
-          tiandituToken={tiandituToken}
+          providerId={renderedMapConfig.providerId}
+          tiandituToken={renderedMapConfig.tiandituToken}
+          isActive={isActive}
         />
         {places.length === 0 ? (
           <div className="reader-map-background-card">
@@ -1528,6 +1535,7 @@ export function ReaderTool({ scene }) {
   const [ocrState, setOcrState] = useState('idle')
   const [ocrProgress, setOcrProgress] = useState(0)
   const [activeTab, setActiveTab] = useState(READER_TAB.INPUT)
+  const [mapMounted, setMapMounted] = useState(false)
   const [modelConfig, setModelConfig] = useState(() => loadStoredReadingModelConfig())
   const [mapConfig, setMapConfig] = useState(() => ({
     providerId: normalizeReadingMapProvider(
@@ -1569,6 +1577,10 @@ export function ReaderTool({ scene }) {
   useEffect(() => () => {
     if (imageInput?.url) URL.revokeObjectURL(imageInput.url)
   }, [imageInput])
+
+  useEffect(() => {
+    if (activeTab === READER_TAB.MAP) setMapMounted(true)
+  }, [activeTab])
 
   const editionId = readingPackage?.edition.id || ''
   const savedState = useLiveQuery(
@@ -1659,6 +1671,7 @@ export function ReaderTool({ scene }) {
     setScanPerformed(false)
     setScanStatus('')
     setActiveTab(READER_TAB.INPUT)
+    setMapMounted(false)
     clearImage()
   }
 
@@ -1696,6 +1709,7 @@ export function ReaderTool({ scene }) {
     setScanPerformed(false)
     setScanStatus('')
     setActiveTab(READER_TAB.INPUT)
+    setMapMounted(false)
     clearImage()
   }
 
@@ -2119,17 +2133,20 @@ export function ReaderTool({ scene }) {
           />
         )}
 
-        {activeTab === READER_TAB.MAP && (
-          <ReadingMapPanel
-            entities={visibleMapEntities}
-            observedEntities={observedEntities}
-            onDemandEntities={readingPackage.onDemandEntities || []}
-            currentChapterId={currentChapterId}
-            chapters={readingPackage.chapters}
-            onChangeObservedEntities={changeObservedEntities}
-            mapConfig={mapConfig}
-            onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
-          />
+        {mapMounted && (
+          <div hidden={activeTab !== READER_TAB.MAP}>
+            <ReadingMapPanel
+              entities={visibleMapEntities}
+              observedEntities={observedEntities}
+              onDemandEntities={readingPackage.onDemandEntities || []}
+              currentChapterId={currentChapterId}
+              chapters={readingPackage.chapters}
+              onChangeObservedEntities={changeObservedEntities}
+              mapConfig={mapConfig}
+              onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
+              isActive={activeTab === READER_TAB.MAP}
+            />
+          </div>
         )}
 
         {activeTab === READER_TAB.FACTS && (
