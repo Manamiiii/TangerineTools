@@ -516,18 +516,18 @@ test('life is preferred over ordinary single-defense raises with the same sacrif
   assert.equal(candidates.find((candidate) => candidate.name === '害羞')?.decision, 'notRecommended')
 })
 
-test('an extreme one-sided wall may keep its already strong defense as an exception', () => {
+test('an extreme one-sided wall still rejects single-defense raises', () => {
   const candidates = evaluateAllNatures(
     { hp: 120, patk: 90, matk: 45, pdef: 125, mdef: 45, spd: 80 },
     ['defense'],
     { skills: [{ category: '物理', power: 80 }] },
   )
-  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'keepable')
+  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'notRecommended')
   assert.match(
-    candidates.find((candidate) => candidate.name === '天真')?.reasons.join('；') || '',
-    /极端专项承伤/,
+    candidates.find((candidate) => candidate.name === '天真')?.warnings.join('；') || '',
+    /单侧强化不作为捕捉保留分支/,
   )
-  assert.notEqual(candidates.find((candidate) => candidate.name === '害羞')?.decision, 'recommended')
+  assert.equal(candidates.find((candidate) => candidate.name === '害羞')?.decision, 'notRecommended')
 })
 
 test('confirmed bulky creatures prefer life and reject ordinary single-defense branches', () => {

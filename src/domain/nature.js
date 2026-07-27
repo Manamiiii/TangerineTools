@@ -733,22 +733,6 @@ function isStandoutDefenseStat(key, analysis = {}) {
 }
 
 
-function isExtremeSingleDefenseSpecialization(candidate, roles = [], analysis = null) {
-  if (!['pdef', 'mdef'].includes(candidate.raise)) return false
-  if (!analysis?.stats) return false
-  const oppositeDefense = candidate.raise === 'pdef' ? 'mdef' : 'pdef'
-  const raisedValue = Number(analysis.stats[candidate.raise]) || 0
-  const oppositeValue = Number(analysis.stats[oppositeDefense]) || 0
-  const topRoles = roles.slice(0, 2)
-  const topRolesNeedDefense = topRoles.some((role) => (ROLE_DEFINITIONS[role.key]?.core?.[candidate.raise] || 0) > 0)
-  return (
-    topRolesNeedDefense &&
-    raisedValue >= STAT_PERCENTILE_BANDS[candidate.raise].p75 &&
-    oppositeValue <= STAT_PERCENTILE_BANDS[oppositeDefense].p25 &&
-    raisedValue >= oppositeValue * 1.45
-  )
-}
-
 function isFunctionalBalancedMixedAttack(analysis = {}, roles = [], skillProfile = {}) {
   const breakdown = skillProfile.breakdown || {}
   const physicalShare = Number(breakdown.physicalShare)
@@ -1176,11 +1160,8 @@ export function evaluateNatureCandidate(
   const speedTradesDefense =
     candidate.raise === 'spd' &&
     ['pdef', 'mdef'].includes(candidate.lower)
-  const singleDefenseRaise = ['pdef', 'mdef'].includes(candidate.raise)
-  const extremeSingleDefense = isExtremeSingleDefenseSpecialization(candidate, roles, analysis)
-  const ordinarySingleDefense =
-    singleDefenseRaise &&
-    !extremeSingleDefense &&
+  const unsupportedSingleDefenseRaise =
+    ['pdef', 'mdef'].includes(candidate.raise) &&
     !DEFENSE_STAT_KEYS.includes(candidate.lower)
   const invalidAttackDefenseTrade = attackTradesDefense
   const invalidSpeedDefenseTrade = speedTradesDefense
@@ -1190,7 +1171,7 @@ export function evaluateNatureCandidate(
     tradesWithinDurability ||
     invalidAttackDefenseTrade ||
     invalidSpeedDefenseTrade ||
-    ordinarySingleDefense
+    unsupportedSingleDefenseRaise
 
   if (lowersStandoutDefense) {
     score -= 14
@@ -1208,16 +1189,12 @@ export function evaluateNatureCandidate(
     score -= 18
     warnings.push('强化速度应优先牺牲明确不用的攻击项；不以削弱物防或魔防换取速度')
   }
-  if (ordinarySingleDefense) {
+  if (unsupportedSingleDefenseRaise) {
     score -= 18
-    warnings.push('相同牺牲项下，生命强化能同时覆盖两侧承伤；缺少具体对位阈值时，普通单防强化不作为捕捉保留分支')
+    warnings.push('生命强化能同时覆盖两侧承伤；物防或魔防的单侧强化不作为捕捉保留分支')
   }
   if (hardRisk) score -= 8
   let decision = decisionFromScore(score, hardRisk)
-  if (extremeSingleDefense) {
-    reasons.push('强侧防御突出、另一侧防御已处于底部区间，可作为极端专项承伤分支')
-    warnings.push('该分支只服务特定承伤对位，不代表普通培养优先级')
-  }
   const midSpeedFunctionalTempo =
     candidate.raise === 'spd' &&
     decision !== 'notRecommended' &&
@@ -1295,10 +1272,8 @@ export function evaluateNatureCandidate(
       ? '技能已证明可走单攻分支，当前组合不应直接判死，降级为可保留'
       : '技能略偏单攻分支，捕捉时可先保留等待玩法确认')
   }
-  if (tradesWithinDurability || invalidAttackDefenseTrade || invalidSpeedDefenseTrade || ordinarySingleDefense) {
+  if (tradesWithinDurability || invalidAttackDefenseTrade || invalidSpeedDefenseTrade || unsupportedSingleDefenseRaise) {
     decision = 'notRecommended'
-  } else if (extremeSingleDefense && decision === 'recommended') {
-    decision = 'keepable'
   }
 
   return applyNaturePreference({
