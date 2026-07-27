@@ -1,6 +1,21 @@
 let workerPromise = null
 let progressListener = null
 
+function cleanOcrLine(value) {
+  let line = value
+  let previous = ''
+  while (line !== previous) {
+    previous = line
+    line = line
+      .replace(/([\p{Script=Han}，。！？；：、“”‘’（）《》【】])\s+(?=[\p{Script=Han}，。！？；：、“”‘’（）《》【】])/gu, '$1')
+      .replace(/\s+([，。！？；：、”’）》】])/gu, '$1')
+      .replace(/([“‘（《【])\s+/gu, '$1')
+  }
+  return line
+    .replace(/([\p{Script=Han}])\s*[.·]\s*(?=[\p{Script=Han}])/gu, '$1·')
+    .replace(/[ \t]{2,}/g, ' ')
+}
+
 export function normalizeReadingOcrText(value, { preserveLines = false } = {}) {
   if (typeof value !== 'string') return ''
   const lines = value
@@ -10,11 +25,7 @@ export function normalizeReadingOcrText(value, { preserveLines = false } = {}) {
     .map((line) => line.trim())
     .filter(Boolean)
   const cleaned = lines
-    .map((line) => line
-      .replace(/([\p{Script=Han}，。！？；：、“”‘’（）《》【】])\s+(?=[\p{Script=Han}，。！？；：、“”‘’（）《》【】])/gu, '$1')
-      .replace(/\s+([，。！？；：、”’）》】])/gu, '$1')
-      .replace(/([“‘（《【])\s+/gu, '$1')
-      .replace(/[ \t]{2,}/g, ' '))
+    .map(cleanOcrLine)
     .join(preserveLines ? '\n' : ' ')
   return (preserveLines
     ? cleaned

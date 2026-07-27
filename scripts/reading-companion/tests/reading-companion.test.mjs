@@ -51,6 +51,7 @@ import {
   buildPersonalChapters,
   createPersonalReadingPackage,
   extractPersonalBookMetadataFromText,
+  mergePersonalBookMetadata,
   personalCatalogEntry,
 } from '../../../src/features/reading-companion/domain/personalBooks.js'
 import {
@@ -215,6 +216,30 @@ test('book metadata parsing recovers labels even when OCR merged all rows', () =
       translators: ['范纯海', '夏旻'],
       publisher: '长江文艺出版社',
       isbn: '9787570202188',
+    },
+  )
+})
+
+test('structured local title and translators reject noisy model overrides', () => {
+  assert.deepEqual(
+    mergePersonalBookMetadata(
+      {
+        title: '傲慢与偏见',
+        author: '简·奥斯本',
+        translators: ['孙致礼'],
+      },
+      {
+        title: 'FE:傲慢与偏见',
+        author: '简·奥斯丁',
+        translators: [],
+        publisher: '译林出版社',
+      },
+    ),
+    {
+      title: '傲慢与偏见',
+      author: '简·奥斯丁',
+      translators: ['孙致礼'],
+      publisher: '译林出版社',
     },
   )
 })
@@ -1105,6 +1130,28 @@ test('book metadata OCR cleanup preserves labeled field boundaries', () => {
       '出版社:长江文艺出版社',
     ].join('\n'),
   )
+})
+
+test('book metadata OCR cleans repeated Chinese spaces from a real copyright page shape', () => {
+  const normalized = normalizeReadingOcrText([
+    'Tose as 四 ;',
+    '版 权 信 息',
+    '书 名 : 傲慢 与 偏见',
+    '作者 : 简 . 奥 斯 本',
+    '译 者 : 孙 致 礼',
+    '出 版 社 : 译 林 出 版 社',
+    '出 版 时 间 : 2010-06-01',
+    'ISBN: 9787544711302',
+    '品牌 方 : 江苏 译 林 出 版 社 有 限 公司',
+  ].join('\n'), { preserveLines: true })
+  assert.deepEqual(extractPersonalBookMetadataFromText(normalized), {
+    title: '傲慢与偏见',
+    author: '简·奥斯本',
+    translators: ['孙致礼'],
+    publisher: '译林出版社',
+    isbn: '9787544711302',
+    publishedAt: '2010-06',
+  })
 })
 
 test('spoiler risk defaults unknown boundaries to potential and preserves high risk', () => {

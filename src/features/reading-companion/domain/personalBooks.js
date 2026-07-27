@@ -53,7 +53,7 @@ export function extractPersonalBookMetadataFromText(value) {
   }
   const isbn = text.match(/\b97[89][\d\s-]{9,18}\d\b/u)?.[0]
     ?.replace(/[^\d]/g, '')
-  const published = text.match(/((?:19|20)\d{2})\s*年\s*(\d{1,2})\s*月/u)
+  const published = text.match(/((?:19|20)\d{2})\s*(?:年|-)\s*(\d{1,2})(?:\s*月|-\d{1,2})?/u)
   const publisher = labeledValue('出版社', '出版方', '版权方')
     || text.match(/(?:出版社|出版方|版权方)\s*[:：]?\s*([^\n，。；]{2,30}(?:出版社|出版公司))/u)?.[1]
     || lines.find((line) => /(?:出版社|出版公司)$/u.test(line))
@@ -93,6 +93,19 @@ export function extractPersonalBookMetadataFromText(value) {
       ? { publishedAt: `${published[1]}-${String(Number(published[2])).padStart(2, '0')}` }
       : {}),
   }
+}
+
+export function mergePersonalBookMetadata(localMetadata = {}, modelMetadata = {}) {
+  const metadata = { ...localMetadata }
+  for (const [key, value] of Object.entries(modelMetadata)) {
+    const modelHasValue = Array.isArray(value) ? value.length > 0 : Boolean(value)
+    const localStructuredField = ['title', 'translators'].includes(key)
+      && (Array.isArray(localMetadata[key])
+        ? localMetadata[key].length > 0
+        : Boolean(localMetadata[key]))
+    if (modelHasValue && !localStructuredField) metadata[key] = value
+  }
+  return metadata
 }
 
 export function buildPersonalChapters({ chapterCount, chapterText }) {

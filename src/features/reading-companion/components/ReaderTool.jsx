@@ -59,6 +59,7 @@ import {
   PERSONAL_BOOK_COVER_THEMES,
   createPersonalReadingPackage,
   extractPersonalBookMetadataFromText,
+  mergePersonalBookMetadata,
   personalCatalogEntry,
 } from '../domain/personalBooks.js'
 import {
@@ -301,10 +302,7 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
             ocrText: text,
           })
         : {}
-      const metadata = { ...localMetadata }
-      for (const [key, value] of Object.entries(modelMetadata)) {
-        if (Array.isArray(value) ? value.length > 0 : value) metadata[key] = value
-      }
+      const metadata = mergePersonalBookMetadata(localMetadata, modelMetadata)
       setForm((current) => ({
         ...current,
         title: metadata.title || current.title,

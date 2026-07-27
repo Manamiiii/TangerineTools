@@ -299,6 +299,8 @@ export async function analyzeReadingBookMetadata({
         role: 'system',
         content: [
           '你只从书籍详情页 OCR 文字中整理书目信息，不得凭常识补写截图里没有的信息。',
+          '优先读取书名、作者、译者、出版社等明确字段标签后的值；忽略状态栏、页码、按钮、乱码和版权说明。',
+          '字段值不得带回字段标签，也不得在书名前添加无法确认的字母、符号或 OCR 噪声。',
           '日期使用 YYYY-MM；译者使用字符串数组；没有的字段返回空值。',
           '只返回 JSON：{"title":"","author":"","translators":[],"publisher":"","isbn":"","publishedAt":"","originalLanguage":"","chapterCount":null}。',
         ].join('\n'),
