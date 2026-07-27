@@ -9,8 +9,11 @@ import { ArrowDownCircle, ArrowUpCircle, CheckCircle2, Plus, Sparkles } from 'lu
 import { db, ensureOwnedTable } from '../db.js'
 import { STATS_DIMENSIONS } from '../constants.js'
 import {
+  calculateStandardStats,
   evaluateAllNatures,
   evaluateNatureProfiles,
+  MAX_INDIVIDUAL_STAT_COUNT,
+  MAX_INDIVIDUAL_DISPLAY_VALUE,
   natureName,
   NATURE_DECISION_LABELS,
   STAT_LABELS,
@@ -33,6 +36,7 @@ import { EmptyState, FormRow, OptionTag, SearchableSelect, StatsChart } from './
 import { OwnedFormModal } from './owned.jsx'
 
 const EMPTY_STATS = Object.fromEntries(STATS_DIMENSIONS.map((d) => [d.key, '']))
+const EMPTY_INDIVIDUAL_STATS = Object.fromEntries(STATS_DIMENSIONS.map((d) => [d.key, 0]))
 function TraitTagList({ value }) {
   const selected = Array.isArray(value) ? value : []
   const options = TRAIT_TAG_OPTIONS.filter((option) => selected.includes(option.value))
@@ -48,6 +52,7 @@ export function NatureTool({ scene }) {
   const emptyInput = {
     name: '',
     stats: { ...EMPTY_STATS },
+    individualStats: { ...EMPTY_INDIVIDUAL_STATS },
     traitTags: [],
     skillInfo: { skills: [] },
     analysisProfiles: [],
@@ -95,9 +100,32 @@ export function NatureTool({ scene }) {
     setDraftInput((prev) => ({ ...prev, stats: { ...prev.stats, [key]: value } }))
   }
 
+  function toggleIndividualStat(key) {
+    const update = (previous) => {
+      const current = Number(previous.individualStats?.[key]) || 0
+      const selectedCount = Object.values(previous.individualStats || {}).filter((value) => Number(value) > 0).length
+      if (current === 0 && selectedCount >= MAX_INDIVIDUAL_STAT_COUNT) return previous
+      return {
+        ...previous,
+        individualStats: {
+          ...EMPTY_INDIVIDUAL_STATS,
+          ...previous.individualStats,
+          [key]: current > 0 ? 0 : MAX_INDIVIDUAL_DISPLAY_VALUE,
+        },
+      }
+    }
+    setDraftInput(update)
+    setInput(update)
+  }
+
   function handleImport(payload) {
     if (!payload) {
-      const next = { ...emptyInput, stats: { ...EMPTY_STATS }, skillInfo: { skills: [] } }
+      const next = {
+        ...emptyInput,
+        stats: { ...EMPTY_STATS },
+        individualStats: { ...EMPTY_INDIVIDUAL_STATS },
+        skillInfo: { skills: [] },
+      }
       setDraftInput(next)
       setInput(next)
       setSelectedIndex(0)
@@ -121,6 +149,7 @@ export function NatureTool({ scene }) {
     const next = {
       name: name || '',
       stats: { ...EMPTY_STATS, ...stats },
+      individualStats: { ...EMPTY_INDIVIDUAL_STATS },
       traitTags: traitTags || [],
       skillInfo: skillInfo || { skills: [] },
       analysisProfiles: analysisProfiles || [],
@@ -161,7 +190,14 @@ export function NatureTool({ scene }) {
 
   const activeIndex = Math.min(selectedIndex, Math.max(candidates.length - 1, 0))
   const nature = candidates[activeIndex] || null
-  const adjustedStats = nature?.adjustedStats || numericStats
+  const formulaBaseStats = useMemo(
+    () => calculateStandardStats(numericStats, null, input.individualStats),
+    [numericStats, input.individualStats],
+  )
+  const adjustedStats = useMemo(
+    () => calculateStandardStats(numericStats, nature, input.individualStats),
+    [numericStats, nature, input.individualStats],
+  )
 
   return (
     <div className="nature-tool">
@@ -183,6 +219,10 @@ export function NatureTool({ scene }) {
 
       {hasAnyStat ? (
         <>
+          <IndividualStatSelector
+            value={input.individualStats}
+            onToggle={toggleIndividualStat}
+          />
           <NaturePveOverview forms={pveForms} />
           <NatureFixedEvidence nature={candidates[0]} forms={pveForms} />
           <div className="nature-workbench">
@@ -196,9 +236,8 @@ export function NatureTool({ scene }) {
             />
             <NatureResult
               nature={nature}
-              baseStats={numericStats}
+              baseStats={formulaBaseStats}
               adjustedStats={adjustedStats}
-              populationStats={input.populationStats}
               candidates={candidates}
             />
           </div>
@@ -338,6 +377,39 @@ function ManualNatureInput({ input, onNameChange, onStatChange, onCalculate }) {
         <button type="button" className="btn btn-primary" onClick={onCalculate}>计算推荐</button>
       </div>
     </details>
+  )
+}
+
+function IndividualStatSelector({ value = {}, onToggle }) {
+  const selectedCount = STATS_DIMENSIONS.filter((dimension) => Number(value[dimension.key]) > 0).length
+  return (
+    <section className="nature-individual-panel">
+      <div>
+        <strong>个体加成</strong>
+        <span>任选 3 项 +{MAX_INDIVIDUAL_DISPLAY_VALUE}；可随时修改 · 已选 {selectedCount}/{MAX_INDIVIDUAL_STAT_COUNT}</span>
+      </div>
+      <div className="nature-individual-options">
+        {STATS_DIMENSIONS.map((dimension) => {
+          const selected = Number(value[dimension.key]) > 0
+          const disabled = !selected && selectedCount >= MAX_INDIVIDUAL_STAT_COUNT
+          return (
+            <button
+              type="button"
+              className={selected ? 'selected' : ''}
+              disabled={disabled}
+              key={dimension.key}
+              onClick={() => onToggle(dimension.key)}
+            >
+              {dimension.label}
+              <small>{selected ? `+${MAX_INDIVIDUAL_DISPLAY_VALUE}` : '+0'}</small>
+            </button>
+          )
+        })}
+      </div>
+      <small className="nature-individual-note">
+        面板按游戏显示值换算：个体 +10 对应公式内部 IV 60；性格强化 ×1.2，弱化 ×0.9。
+      </small>
+    </section>
   )
 }
 
@@ -719,7 +791,7 @@ function NatureCandidateListItem({
 }
 
 
-function NatureResult({ nature, baseStats, adjustedStats, populationStats, candidates = [] }) {
+function NatureResult({ nature, baseStats, adjustedStats, candidates = [] }) {
   if (!nature) return null
   const formDecisions = nature.formDecisions || []
   const coreReason = nature.decision === 'notRecommended'
@@ -827,7 +899,6 @@ function NatureResult({ nature, baseStats, adjustedStats, populationStats, candi
         nature={nature}
         baseStats={baseStats}
         adjustedStats={adjustedStats}
-        scaleMax={populationStats?.globalMax}
       />
     </div>
   )
@@ -1008,18 +1079,15 @@ function NaturePveOverview({ forms = [] }) {
 }
 
 function natureModifierSummary(candidate) {
-  const raiseDelta = candidate.deltas?.[candidate.raise] || 0
-  const lowerDelta = candidate.deltas?.[candidate.lower] || 0
-  const raiseText = `${STAT_LABELS[candidate.raise]} ${raiseDelta > 0 ? `+${raiseDelta}` : raiseDelta}`
-  const lowerText = `${STAT_LABELS[candidate.lower]} ${lowerDelta}`
-  return `${raiseText} / ${lowerText}`
+  return `${STAT_LABELS[candidate.raise]} +20% / ${STAT_LABELS[candidate.lower]} -10%`
 }
 
 
-function NatureStatsBars({ nature, baseStats, adjustedStats, scaleMax }) {
-  const maxValue = Math.max(Number(scaleMax) || 1, ...Object.values(adjustedStats).map(Number))
+function NatureStatsBars({ nature, baseStats, adjustedStats }) {
+  const maxValue = Math.max(1, ...Object.values(baseStats).map(Number), ...Object.values(adjustedStats).map(Number))
   return (
     <div className="nature-bars">
+      <div className="nature-formula-caption">公式面板（已计入所选个体与当前性格）</div>
       {STATS_DIMENSIONS.map((d) => {
         const base = baseStats[d.key] || 0
         const adjusted = adjustedStats[d.key] || 0

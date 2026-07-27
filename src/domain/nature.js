@@ -48,14 +48,15 @@ export const SPEED_CONCERN_LABELS = {
   high: '高关注',
 }
 
-// 最终面板公式预留位：当前不写死未知的洛克王国世界公式。
-// 后续确认等级、个体、成长/努力等固定参数后，只需补齐这里并启用 calculateStandardStat。
-export const STANDARD_STAT_FORMULA_PLACEHOLDER = {
-  level: null,
-  individual: null,
-  growth: null,
-  flatBonus: 5,
+export const NATURE_STAT_MULTIPLIERS = {
+  raised: 1.2,
+  neutral: 1,
+  lowered: 0.9,
 }
+
+export const MAX_INDIVIDUAL_DISPLAY_VALUE = 10
+export const MAX_INDIVIDUAL_STAT_COUNT = 3
+const INDIVIDUAL_INTERNAL_MULTIPLIER = 6
 
 // 预置资料的速度并非连续分布，而是集中在一批固定/半固定速度点上。
 // 速度线展示时使用这些锚点，避免只按连续百分位误判“刚好跨线”的价值。
@@ -159,11 +160,35 @@ function percentileLabel(key, value) {
   return ['极低', '偏低', '中低', '中高', '较高', '顶级'][score]
 }
 
-export function calculateStandardStat(baseValue, natureModifier = 1, formula = STANDARD_STAT_FORMULA_PLACEHOLDER) {
-  const { level, individual, growth, flatBonus } = formula
-  if ([baseValue, level, individual, growth, flatBonus].some((value) => value == null)) return null
-  const raw = (((Number(baseValue) * 2 + Number(individual) + Number(growth)) * Number(level)) / 100) + Number(flatBonus)
-  return Math.floor(raw * natureModifier)
+function normalizedIndividualDisplayValue(value) {
+  return Math.max(0, Math.min(MAX_INDIVIDUAL_DISPLAY_VALUE, Number(value) || 0))
+}
+
+export function calculateStandardStat(baseValue, statKey, individualDisplayValue = 0, natureModifier = 1) {
+  const base = Number(baseValue) || 0
+  if (base <= 0 || !MODIFIABLE_STAT_KEYS.includes(statKey)) return 0
+  const individual = normalizedIndividualDisplayValue(individualDisplayValue) * INDIVIDUAL_INTERNAL_MULTIPLIER
+  const isHp = statKey === 'hp'
+  const scaled = Math.round(
+    base * (isHp ? 1.7 : 1.1) +
+    individual * (isHp ? 0.85 : 0.55) +
+    (isHp ? 70 : 10),
+  )
+  return Math.round(scaled * Number(natureModifier || 1) + (isHp ? 100 : 50))
+}
+
+export function calculateStandardStats(baseStats = {}, nature = null, individualStats = {}) {
+  return Object.fromEntries(MODIFIABLE_STAT_KEYS.map((key) => {
+    const natureModifier = key === nature?.raise
+      ? NATURE_STAT_MULTIPLIERS.raised
+      : key === nature?.lower
+        ? NATURE_STAT_MULTIPLIERS.lowered
+        : NATURE_STAT_MULTIPLIERS.neutral
+    return [
+      key,
+      calculateStandardStat(baseStats[key], key, individualStats[key], natureModifier),
+    ]
+  }))
 }
 
 export function nearestSpeedAnchor(value) {
@@ -411,14 +436,20 @@ export function analyzeStats(baseStats = {}) {
     percentiles,
     speed: {
       base: stats.spd,
-      raised: Math.round(stats.spd * 1.1),
-      lowered: Math.round(stats.spd * 0.9),
+      raised: Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.raised),
+      lowered: Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.lowered),
       baseTier: speedTier(stats.spd),
-      raisedTier: speedTier(Math.round(stats.spd * 1.1)),
-      loweredTier: speedTier(Math.round(stats.spd * 0.9)),
+      raisedTier: speedTier(Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.raised)),
+      loweredTier: speedTier(Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.lowered)),
       nearestAnchor: nearestSpeedAnchor(stats.spd),
-      raisedCrossedAnchors: crossedSpeedAnchors(stats.spd, Math.round(stats.spd * 1.1)),
-      loweredCrossedAnchors: crossedSpeedAnchors(Math.round(stats.spd * 0.9), stats.spd),
+      raisedCrossedAnchors: crossedSpeedAnchors(
+        stats.spd,
+        Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.raised),
+      ),
+      loweredCrossedAnchors: crossedSpeedAnchors(
+        Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.lowered),
+        stats.spd,
+      ),
     },
   }
 }
@@ -465,12 +496,23 @@ export function analyzeSpeedProfile(baseStats = {}, traitTags = [], roles = null
     skillProfile?.speedRequired && stats.spd >= STAT_PERCENTILE_BANDS.spd.p50
   const extraTraitTags = speedSkillShouldRaiseConcern ? [...traitTags, 'spdLean'] : traitTags
   const speedConcern = analyzeSpeedConcern(stats, extraTraitTags, roleList)
-  const raised = Math.round(stats.spd * 1.1)
-  const lowered = Math.round(stats.spd * 0.9)
+  const raised = Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.raised)
+  const lowered = Math.round(stats.spd * NATURE_STAT_MULTIPLIERS.lowered)
   const standard = {
-    neutral: calculateStandardStat(stats.spd, 1),
-    raised: calculateStandardStat(stats.spd, 1.1),
-    lowered: calculateStandardStat(stats.spd, 0.9),
+    neutral: calculateStandardStat(stats.spd, 'spd'),
+    maxIndividual: calculateStandardStat(stats.spd, 'spd', MAX_INDIVIDUAL_DISPLAY_VALUE),
+    raised: calculateStandardStat(
+      stats.spd,
+      'spd',
+      MAX_INDIVIDUAL_DISPLAY_VALUE,
+      NATURE_STAT_MULTIPLIERS.raised,
+    ),
+    lowered: calculateStandardStat(
+      stats.spd,
+      'spd',
+      MAX_INDIVIDUAL_DISPLAY_VALUE,
+      NATURE_STAT_MULTIPLIERS.lowered,
+    ),
   }
   return {
     base: stats.spd,
@@ -1569,14 +1611,18 @@ export function evaluateNatureProfiles(baseStats = {}, traitTags = [], skillInfo
   )
 }
 
-// 对原始六维应用性格加成：强化项 ×1.1、弱化项 ×0.9，四舍五入取整；
+// 对原始六维应用性格方向倍率：强化项 ×1.2、弱化项 ×0.9，四舍五入取整；
 // 其余维度保持不变。
 export function applyNatureModifier(baseStats = {}, nature) {
   const stats = numericStats(baseStats)
   const result = { ...stats }
   if (!nature || nature.raise == null || nature.lower == null) return result
-  if (result[nature.raise] != null) result[nature.raise] = Math.round(result[nature.raise] * 1.1)
-  if (result[nature.lower] != null) result[nature.lower] = Math.round(result[nature.lower] * 0.9)
+  if (result[nature.raise] != null) {
+    result[nature.raise] = Math.round(result[nature.raise] * NATURE_STAT_MULTIPLIERS.raised)
+  }
+  if (result[nature.lower] != null) {
+    result[nature.lower] = Math.round(result[nature.lower] * NATURE_STAT_MULTIPLIERS.lowered)
+  }
   return result
 }
 

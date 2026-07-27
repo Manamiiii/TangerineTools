@@ -1,7 +1,13 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
-import { evaluateAllNatures, evaluateNatureProfiles } from '../../src/domain/nature.js'
+import {
+  applyNatureModifier,
+  calculateStandardStat,
+  calculateStandardStats,
+  evaluateAllNatures,
+  evaluateNatureProfiles,
+} from '../../src/domain/nature.js'
 import { bestSilverMirrorTarget, natureRetentionAdvice, summarizeOwnedNatureRecords } from '../../src/domain/natureRetention.js'
 import { buildFormAnalysis, buildNatureAnalysisInput, buildPopulationStatSummary } from '../../src/domain/natureRowAdapter.js'
 import { buildOwnedNatureIndex, buildOwnedNatureRecordIndex } from '../../src/domain/owned.js'
@@ -106,6 +112,32 @@ test('marks a rare individual as collection-only when a silver mirror cannot fix
 
   assert.equal(bestSilverMirrorTarget(candidates[0], candidates), null)
   assert.equal(natureRetentionAdvice(candidates[0], candidates).status, 'collectionOnly')
+})
+
+test('standard stat formula reproduces the verified max-speed Kakabird panel', () => {
+  assert.equal(calculateStandardStat(120, 'spd', 10, 1.2), 260)
+  assert.equal(calculateStandardStat(130, 'spd', 10, 1.2), 273)
+  assert.equal(calculateStandardStat(120, 'spd', 0, 1), 192)
+})
+
+test('standard stat formula applies three editable individual bonuses and nature multipliers', () => {
+  const baseStats = { hp: 97, patk: 114, matk: 110, pdef: 101, mdef: 89, spd: 120 }
+  const individualStats = { hp: 10, patk: 10, matk: 0, pdef: 0, mdef: 0, spd: 10 }
+  const neutral = calculateStandardStats(baseStats, null, individualStats)
+  const jolly = calculateStandardStats(baseStats, { raise: 'spd', lower: 'matk' }, individualStats)
+
+  assert.equal(neutral.spd, 225)
+  assert.equal(jolly.spd, 260)
+  assert.equal(jolly.matk, calculateStandardStat(110, 'matk', 0, 0.9))
+  assert.equal(jolly.hp, neutral.hp)
+  assert.deepEqual(applyNatureModifier(baseStats, { raise: 'spd', lower: 'matk' }), {
+    hp: 97,
+    patk: 114,
+    matk: 99,
+    pdef: 101,
+    mdef: 89,
+    spd: 144,
+  })
 })
 
 test('hides a superseded official row only when its replacement exists', () => {
