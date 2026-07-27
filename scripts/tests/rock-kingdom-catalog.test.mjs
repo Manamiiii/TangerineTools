@@ -470,6 +470,57 @@ test('speed raises do not trade away either defense', () => {
   }
 })
 
+test('life is preferred over ordinary single-defense raises with the same sacrifice', () => {
+  const candidates = evaluateAllNatures(
+    { hp: 120, patk: 90, matk: 45, pdef: 110, mdef: 110, spd: 80 },
+    ['defense'],
+    { skills: [{ category: '物理', power: 80 }] },
+  )
+  assert.equal(candidates.find((candidate) => candidate.name === '平和')?.decision, 'recommended')
+  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'keepable')
+  assert.equal(candidates.find((candidate) => candidate.name === '害羞')?.decision, 'keepable')
+})
+
+test('an extreme one-sided wall may still recommend its already strong defense', () => {
+  const candidates = evaluateAllNatures(
+    { hp: 120, patk: 90, matk: 45, pdef: 125, mdef: 45, spd: 80 },
+    ['defense'],
+    { skills: [{ category: '物理', power: 80 }] },
+  )
+  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'recommended')
+  assert.match(
+    candidates.find((candidate) => candidate.name === '天真')?.reasons.join('；') || '',
+    /极端专项承伤/,
+  )
+  assert.notEqual(candidates.find((candidate) => candidate.name === '害羞')?.decision, 'recommended')
+})
+
+test('confirmed bulky creatures prefer life and keep ordinary single-defense branches secondary', () => {
+  const rows = visibleRockKingdomCreatureRows(
+    JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
+  )
+  const skillRows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomSkillRows.json', import.meta.url), 'utf8'))
+  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const fields = ROCK_KINGDOM_PRESET.fields.filter((field) => field.tableId === creatureTableId)
+  const cases = [
+    { no: 'NO.010', life: '沉默', defenses: ['稳重', '警惕'] },
+    { no: 'NO.014', life: '沉默', defenses: ['稳重', '警惕'] },
+    { no: 'NO.029', life: '平和', defenses: ['天真', '害羞'] },
+    { no: 'NO.051', life: '沉默', defenses: ['稳重', '警惕'] },
+    { no: 'NO.062', life: '平和', defenses: ['天真', '害羞'] },
+  ]
+
+  for (const item of cases) {
+    const forms = rows.filter((row) => row.values?.no === item.no)
+    const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
+    const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
+    assert.equal(candidates.find((candidate) => candidate.name === item.life)?.decision, 'recommended')
+    for (const nature of item.defenses) {
+      assert.equal(candidates.find((candidate) => candidate.name === nature)?.decision, 'keepable')
+    }
+  }
+})
+
 test('a weaker attack sacrifice does not bypass same-raise dominance as a defense specialty', () => {
   const rows = visibleRockKingdomCreatureRows(
     JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),

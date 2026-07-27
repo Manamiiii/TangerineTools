@@ -691,18 +691,25 @@ function isStandoutDefenseStat(key, analysis = {}) {
 }
 
 
-function isSingleDefenseRaiseSoftCapped(candidate, roles = [], traitTags = [], analysis = null) {
+function isExtremeSingleDefenseSpecialization(candidate, roles = [], analysis = null) {
   if (!['pdef', 'mdef'].includes(candidate.raise)) return false
+  if (!analysis?.stats) return false
+  const oppositeDefense = candidate.raise === 'pdef' ? 'mdef' : 'pdef'
+  const raisedValue = Number(analysis.stats[candidate.raise]) || 0
+  const oppositeValue = Number(analysis.stats[oppositeDefense]) || 0
   const topRoles = roles.slice(0, 2)
   const topRolesNeedDefense = topRoles.some((role) => (ROLE_DEFINITIONS[role.key]?.core?.[candidate.raise] || 0) > 0)
-  const hasMechanicDefenseTrait = traitTags.includes('shieldReduce')
-  const hasBulkFoundation =
-    analysis &&
-    ((analysis.bulkScore >= BULK_PERCENTILE_BANDS.p75 && analysis.stats.hp >= STAT_PERCENTILE_BANDS.hp.p50) ||
-      analysis.stats.hp >= STAT_PERCENTILE_BANDS.hp.p75)
-  if (topRolesNeedDefense && (hasMechanicDefenseTrait || hasBulkFoundation)) return false
-  if (hasMechanicDefenseTrait) return false
-  return roles.some((role) => (ROLE_DEFINITIONS[role.key]?.core?.[candidate.raise] || 0) > 0)
+  return (
+    topRolesNeedDefense &&
+    raisedValue >= STAT_PERCENTILE_BANDS[candidate.raise].p75 &&
+    oppositeValue <= STAT_PERCENTILE_BANDS[oppositeDefense].p25 &&
+    raisedValue >= oppositeValue * 1.45
+  )
+}
+
+function isSingleDefenseRaiseSoftCapped(candidate, roles = [], analysis = null) {
+  if (!['pdef', 'mdef'].includes(candidate.raise)) return false
+  return !isExtremeSingleDefenseSpecialization(candidate, roles, analysis)
 }
 
 
@@ -1142,7 +1149,7 @@ export function evaluateNatureCandidate(
     tradesWithinDurability ||
     invalidAttackDefenseTrade ||
     invalidSpeedDefenseTrade
-  const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, traitTags, analysis)
+  const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, analysis)
 
   if (lowersStandoutDefense) {
     score -= 14
@@ -1164,7 +1171,12 @@ export function evaluateNatureCandidate(
   let decision = decisionFromScore(score, hardRisk)
   if (singleDefenseSoftCap && decision === 'recommended') {
     decision = 'keepable'
-    warnings.push('单防强化需要生命/双防综合基础或明确护盾减伤机制支撑；当前证据不足，默认降为可保留')
+    warnings.push('相同牺牲项下，生命强化能同时覆盖两侧承伤，单防通常不具备足够的泛用优势；默认降为可保留')
+  } else if (
+    ['pdef', 'mdef'].includes(candidate.raise) &&
+    isExtremeSingleDefenseSpecialization(candidate, roles, analysis)
+  ) {
+    reasons.push('强侧防御突出、另一侧防御已处于底部区间，可作为极端专项承伤分支')
   }
   const midSpeedFunctionalTempo =
     candidate.raise === 'spd' &&
@@ -1277,7 +1289,7 @@ function lowersOffRouteAttack(item) {
 function shouldHardDominateWithOffRouteAttack(item, best) {
   if (!lowersOffRouteAttack(best) || lowersOffRouteAttack(item)) return false
   const bestBlockingWarnings = best.warnings.filter((warning) =>
-    !/单防强化需要生命\/双防综合基础/.test(warning),
+    !/生命强化能同时覆盖两侧承伤/.test(warning),
   )
   if (best.hardRisk || bestBlockingWarnings.length > 0) return false
   if (item.lower === best.raise) return false
