@@ -25,24 +25,39 @@ export function extractPersonalBookMetadataFromText(value) {
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean)
+  const labeledValue = (...labels) => {
+    const acceptedLabels = new Set(labels.map((label) => label.replace(/\s/gu, '')))
+    return lines.map((line) => {
+      const match = line.match(/^([^:：]{1,16})\s*[:：]\s*(.+)$/u)
+      if (!match || !acceptedLabels.has(match[1].replace(/\s/gu, ''))) return ''
+      return match[2].trim()
+    }).find(Boolean) || ''
+  }
   const isbn = text.match(/\b97[89][\d\s-]{9,18}\d\b/u)?.[0]
     ?.replace(/[^\d]/g, '')
   const published = text.match(/((?:19|20)\d{2})\s*年\s*(\d{1,2})\s*月/u)
-  const publisher = text.match(/(?:出版社|出版方|版权方)\s*[:：]?\s*([^\n，。；]{2,30}(?:出版社|出版公司))/u)?.[1]
+  const publisher = labeledValue('出版社', '出版方', '版权方')
+    || text.match(/(?:出版社|出版方|版权方)\s*[:：]?\s*([^\n，。；]{2,30}(?:出版社|出版公司))/u)?.[1]
     || lines.find((line) => /(?:出版社|出版公司)$/u.test(line))
   const slashLine = lines.find((line) => /[/／]/u.test(line) && /(?:译|著)/u.test(line))
   const [authorPart = '', translatorPart = ''] = slashLine?.split(/[/／]/u) || []
-  const author = authorPart.trim()
+  const author = (
+    labeledValue('作者', '著者')
+    || authorPart
+  ).trim()
     .replace(/^(?:作者|著者)\s*[:：]?\s*/u, '')
     .replace(/\s*(?:著|作者)$/u, '')
     .trim()
-  const translators = translatorPart
+  const translatorText = labeledValue('译者', '翻译', '译')
+    || translatorPart
+  const translators = translatorText
     .replace(/\s*译.*$/u, '')
     .split(/[、,，和]/u)
     .map((name) => name.trim())
     .filter(Boolean)
   const ignoredTitle = /^(?:简介|版权|目录|封面|字数|阅读|已完成|作者|译者|出版社|出版时间|ISBN)/iu
-  const title = lines.find((line) => (
+  const title = labeledValue('书名', '书籍名称', '作品名', '作品名称', '图书名称', '标题')
+    || lines.find((line) => (
     line.length >= 1
     && line.length <= 80
     && !ignoredTitle.test(line)

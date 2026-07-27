@@ -232,6 +232,55 @@ export function confirmObservedPlaceApproximateArea(
   ))
 }
 
+export function confirmObservedRealPlaceFallbackArea(
+  observedEntities,
+  observedEntityId,
+  location,
+  radiusKm = 20,
+) {
+  if (!Array.isArray(observedEntities)) throw new Error('已遇到名称记录无效')
+  const index = observedEntities.findIndex((item) => item?.id === observedEntityId)
+  if (index < 0) throw new Error('找不到要标记参考区域的地点记录')
+  const observed = observedEntities[index]
+  if (
+    observed.kind !== OBSERVED_ENTITY_KIND.PLACE
+    || observed.placeKind !== OBSERVED_PLACE_KIND.REAL
+  ) {
+    throw new Error('只有搜索不到精确位置的现实地点可以使用区域兜底')
+  }
+  const latitude = Number(location?.latitude)
+  const longitude = Number(location?.longitude)
+  const normalizedRadius = Number(radiusKm)
+  if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+    throw new Error('参考区域纬度无效')
+  }
+  if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+    throw new Error('参考区域经度无效')
+  }
+  if (!Number.isFinite(normalizedRadius) || normalizedRadius < 5 || normalizedRadius > 1000) {
+    throw new Error('参考区域半径必须是 5–1000 公里')
+  }
+  if (!isNonEmptyString(location?.label) || !isNonEmptyString(location?.providerId)) {
+    throw new Error('参考区域缺少来源或名称')
+  }
+  return observedEntities.map((item, itemIndex) => (
+    itemIndex === index
+      ? {
+          ...item,
+          mapLocation: {
+            mode: 'fallback-area',
+            resultId: String(location.id || ''),
+            label: location.label.trim(),
+            providerId: location.providerId,
+            latitude,
+            longitude,
+            radiusKm: normalizedRadius,
+          },
+        }
+      : item
+  ))
+}
+
 export function clearObservedPlaceLocation(observedEntities, observedEntityId) {
   if (!Array.isArray(observedEntities)) throw new Error('已遇到名称记录无效')
   const index = observedEntities.findIndex((item) => item?.id === observedEntityId)
@@ -251,6 +300,7 @@ export function readerConfirmedMapEntities(observedEntities, currentChapterId, c
       && (
         item.placeKind === OBSERVED_PLACE_KIND.REAL
         || item.mapLocation?.mode === 'approximate-area'
+        || item.mapLocation?.mode === 'fallback-area'
         || (!item.placeKind && item.mapLocation)
       )
       && Number.isFinite(item.mapLocation?.latitude)
@@ -260,33 +310,37 @@ export function readerConfirmedMapEntities(observedEntities, currentChapterId, c
       id: `reader-map:${item.id}`,
       name: item.name,
       kind: 'place',
-      placeKind: item.mapLocation.mode === 'approximate-area'
+      placeKind: ['approximate-area', 'fallback-area'].includes(item.mapLocation.mode)
         ? item.placeKind
         : 'real',
       aliases: [],
       parentLabel: item.mapLocation.label,
       revealAt: { chapterId: item.firstSeenChapterId },
       geometry: {
-        type: item.mapLocation.mode === 'approximate-area'
+        type: ['approximate-area', 'fallback-area'].includes(item.mapLocation.mode)
           ? 'area'
           : item.mapLocation.geometry
             ? 'geojson'
             : 'point',
         latitude: item.mapLocation.latitude,
         longitude: item.mapLocation.longitude,
-        ...(item.mapLocation.mode === 'approximate-area'
+        ...(['approximate-area', 'fallback-area'].includes(item.mapLocation.mode)
           ? { radiusKm: item.mapLocation.radiusKm }
           : {}),
         ...(item.mapLocation.geometry ? { geojson: item.mapLocation.geometry } : {}),
       },
-      accessMode: item.mapLocation.mode === 'approximate-area'
-        ? 'reader-confirmed-approximate-area'
-        : 'reader-confirmed-geocoder',
+      accessMode: item.mapLocation.mode === 'fallback-area'
+        ? 'reader-confirmed-fallback-area'
+        : item.mapLocation.mode === 'approximate-area'
+          ? 'reader-confirmed-approximate-area'
+          : 'reader-confirmed-geocoder',
       readerConfirmedName: item.name,
       geocodingProviderId: item.mapLocation.providerId,
-      scopeNote: item.mapLocation.mode === 'approximate-area'
-        ? '由读者选择现实区域作为宽泛参考，不代表虚构地点的精确位置。'
-        : '由读者从公网地图搜索结果中选择，仅代表个人确认的现代现实位置。',
+      scopeNote: item.mapLocation.mode === 'fallback-area'
+        ? '精确地点未被地图服务收录；由读者选择相关现实区域作为兜底，不代表该地点的精确坐标。'
+        : item.mapLocation.mode === 'approximate-area'
+          ? '由读者选择现实区域作为宽泛参考，不代表虚构地点的精确位置。'
+          : '由读者从公网地图搜索结果中选择，仅代表个人确认的现代现实位置。',
     }))
 }
 

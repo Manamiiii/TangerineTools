@@ -10,6 +10,7 @@ import {
   clearObservedPlaceLocation,
   confirmObservedPlaceApproximateArea,
   confirmObservedPlaceLocation,
+  confirmObservedRealPlaceFallbackArea,
   isRevealedAtChapter,
   matchOnDemandEntity,
   normalizeObservedEntityName,
@@ -170,6 +171,27 @@ test('book detail OCR text provides deterministic metadata before optional model
       '出版社：长江文艺出版社',
       '出版时间 2018年5月',
       'ISBN 9787570202188',
+    ].join('\n')),
+    {
+      title: '飘(世界文学名著名译典藏)',
+      author: '玛格丽特·米切尔',
+      translators: ['范纯海', '夏旻'],
+      publisher: '长江文艺出版社',
+      isbn: '9787570202188',
+      publishedAt: '2018-05',
+    },
+  )
+})
+
+test('book detail OCR prefers colon-labeled title and translators', () => {
+  assert.deepEqual(
+    extractPersonalBookMetadataFromText([
+      '书 名 ：飘（世界文学名著名译典藏）',
+      '作者：玛格丽特·米切尔',
+      '译者：范纯海、夏旻',
+      '出版社：长江文艺出版社',
+      '出版时间：2018年5月',
+      'ISBN：9787570202188',
     ].join('\n')),
     {
       title: '飘(世界文学名著名译典藏)',
@@ -662,6 +684,38 @@ test('fictional places may use a reader-confirmed broad reference area without a
     }, 1),
     /5–1000/,
   )
+})
+
+test('a real historical place may fall back to a clearly marked reference area', () => {
+  const observed = [{
+    id: 'observed-historical-school',
+    name: '费耶特维尔女子学院',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-01',
+    placeKind: OBSERVED_PLACE_KIND.REAL,
+  }]
+  const located = confirmObservedRealPlaceFallbackArea(
+    observed,
+    observed[0].id,
+    {
+      id: 'region-fayetteville',
+      label: 'Fayetteville, Georgia, United States',
+      providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+      latitude: 33.4487,
+      longitude: -84.4549,
+    },
+    20,
+  )
+  const [mapEntity] = readerConfirmedMapEntities(
+    located,
+    'chapter-01',
+    readingPackage.chapters,
+  )
+  assert.equal(located[0].mapLocation.mode, 'fallback-area')
+  assert.equal(mapEntity.placeKind, OBSERVED_PLACE_KIND.REAL)
+  assert.equal(mapEntity.accessMode, 'reader-confirmed-fallback-area')
+  assert.equal(mapEntity.geometry.type, 'area')
+  assert.match(mapEntity.scopeNote, /不代表该地点的精确坐标/)
 })
 
 test('reader-confirmed rivers and regions preserve safe GeoJSON geometry', () => {

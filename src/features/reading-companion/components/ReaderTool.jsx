@@ -75,6 +75,7 @@ import {
   clearObservedPlaceLocation,
   confirmObservedPlaceApproximateArea,
   confirmObservedPlaceLocation,
+  confirmObservedRealPlaceFallbackArea,
   OBSERVED_ENTITY_KIND,
   OBSERVED_PLACE_KIND,
   matchOnDemandEntity,
@@ -1309,17 +1310,6 @@ function ObservedEntitiesPanel({
                 <div>
                   <strong>{entity.name}</strong>
                   <span>{OBSERVED_KIND_LABELS[entity.kind]} · 首次记录于{chapter?.label || '未知章节'}</span>
-                  {match && (
-                    <div className="reader-observed-match">
-                      <b>已精确匹配公开候选</b>
-                      <span>
-                        {match.name !== entity.name ? `资料名：${match.name} · ` : ''}
-                        {match.kind === 'place' ? PLACE_KIND_LABELS[match.placeKind] : OBSERVED_KIND_LABELS[match.kind]}
-                      </span>
-                      {match.parentLabel && <span>{match.parentLabel}</span>}
-                      {match.scopeNote && <small>{match.scopeNote}</small>}
-                    </div>
-                  )}
                   {!match && entity.kind === OBSERVED_ENTITY_KIND.PLACE && (
                     <label className="reader-observed-place-kind">
                       <span>地点性质</span>
@@ -1333,25 +1323,55 @@ function ObservedEntitiesPanel({
                       </select>
                     </label>
                   )}
-                  {entity.mapLocation && (
-                    <div className="reader-observed-match">
-                      <b>
-                        {entity.mapLocation.mode === 'approximate-area'
-                          ? '个人设置的参考区域'
-                          : '个人确认的现实位置'}
-                      </b>
-                      <span>{entity.mapLocation.label}</span>
-                      {entity.mapLocation.mode === 'approximate-area' && (
-                        <span>半径约 {entity.mapLocation.radiusKm} 公里 · 非精确位置</span>
-                      )}
-                      <button
-                        type="button"
-                        className="reader-observed-unlink"
-                        onClick={() => removeObservedMapLocation(entity.id)}
-                      >
-                        清除地图位置并重新选择
-                      </button>
-                    </div>
+                  {(match || entity.mapLocation) && (
+                    <>
+                      <div className="reader-observed-badges">
+                        {match && <span>资料已匹配</span>}
+                        {entity.mapLocation && (
+                          <span>
+                            {entity.mapLocation.mode === 'exact' ? '精确地图位置' : '参考区域'}
+                          </span>
+                        )}
+                      </div>
+                      <details className="reader-observed-details">
+                        <summary>查看详情</summary>
+                        {match && (
+                          <div className="reader-observed-detail-section">
+                            <b>匹配资料</b>
+                            <span>
+                              {match.name !== entity.name ? `资料名：${match.name} · ` : ''}
+                              {match.kind === 'place'
+                                ? PLACE_KIND_LABELS[match.placeKind]
+                                : OBSERVED_KIND_LABELS[match.kind]}
+                            </span>
+                            {match.parentLabel && <span>{match.parentLabel}</span>}
+                            {match.scopeNote && <small>{match.scopeNote}</small>}
+                          </div>
+                        )}
+                        {entity.mapLocation && (
+                          <div className="reader-observed-detail-section">
+                            <b>
+                              {entity.mapLocation.mode === 'exact'
+                                ? '个人确认的现实位置'
+                                : '个人设置的参考区域'}
+                            </b>
+                            <span>{entity.mapLocation.label}</span>
+                            {entity.mapLocation.mode !== 'exact' && (
+                              <span>
+                                半径约 {entity.mapLocation.radiusKm} 公里 · 非精确位置
+                              </span>
+                            )}
+                            <button
+                              type="button"
+                              className="reader-observed-unlink"
+                              onClick={() => removeObservedMapLocation(entity.id)}
+                            >
+                              清除地图位置并重新选择
+                            </button>
+                          </div>
+                        )}
+                      </details>
+                    </>
                   )}
                 </div>
                 <button
@@ -1543,7 +1563,7 @@ function ReadingMapPanel({
         model: modelConfig.model,
         apiKey: modelConfig.apiKey,
         temperature: modelConfig.temperature,
-        query: lookupMode === 'exact' ? lookupTarget.name : lookupQuery,
+        query: lookupMode === 'approximate-area' ? lookupQuery : lookupTarget.name,
         bookTitle,
         chapterLabel: currentChapter?.label,
       })
@@ -1554,6 +1574,40 @@ function ReadingMapPanel({
     } catch (error) {
       setTranslationState('error')
       setLookupMessage(error?.message || '生成英文搜索词失败')
+    }
+  }
+
+  async function activateLookupFallback() {
+    setTranslationState('working')
+    setLookupResults([])
+    setLookupState('idle')
+    try {
+      let suggestions = lookupSuggestions
+      if (suggestions.length === 0 && modelConfig.apiKey) {
+        suggestions = await suggestReadingPlaceQueries({
+          endpoint: modelConfig.endpoint,
+          model: modelConfig.model,
+          apiKey: modelConfig.apiKey,
+          temperature: modelConfig.temperature,
+          query: lookupTarget.name,
+          bookTitle,
+          chapterLabel: currentChapter?.label,
+        })
+        setLookupSuggestions(suggestions)
+      }
+      const broadQuery = suggestions.at(-1) || lookupQuery
+      setLookupMode('fallback-area')
+      setAreaRadiusKm(20)
+      setLookupQuery(broadQuery)
+      setTranslationState('done')
+      setLookupMessage(
+        suggestions.length > 0
+          ? '已切换为参考区域兜底，并选用最宽泛的地区候选。请搜索并确认所在城市或地区；结果不会保存为精确坐标。'
+          : '已切换为参考区域兜底。请把搜索词改成所在城市、州或地区；结果不会保存为精确坐标。',
+      )
+    } catch (error) {
+      setTranslationState('error')
+      setLookupMessage(error?.message || '生成参考区域搜索词失败')
     }
   }
 
@@ -1592,6 +1646,13 @@ function ReadingMapPanel({
             result,
             areaRadiusKm,
           )
+        : lookupMode === 'fallback-area'
+          ? confirmObservedRealPlaceFallbackArea(
+              observedEntities,
+              lookupTarget.id,
+              result,
+              areaRadiusKm,
+            )
         : confirmObservedPlaceLocation(
             observedEntities,
             lookupTarget.id,
@@ -1603,7 +1664,7 @@ function ReadingMapPanel({
       setLookupResults([])
       setLookupState('idle')
       setLookupMessage(
-        lookupMode === 'approximate-area'
+        lookupMode !== 'exact'
           ? `已把“${lookupTarget.name}”标在参考区域内；圆圈不代表精确位置。`
           : `已把“${lookupTarget.name}”作为个人确认的现实地点加入地图。`,
       )
@@ -1676,12 +1737,20 @@ function ReadingMapPanel({
         {lookupTarget && (
           <>
             <div className="reader-place-name-context">
-              <span>{lookupMode === 'exact' ? '作品名称' : '虚构或模糊地点'}</span>
+              <span>
+                {lookupMode === 'exact'
+                  ? '作品名称'
+                  : lookupMode === 'fallback-area'
+                    ? '精确位置未收录'
+                    : '虚构或模糊地点'}
+              </span>
               <strong>{lookupTarget.name}</strong>
               <small>
                 {lookupMode === 'exact'
                   ? '请核对现代地图名称。'
-                  : '请输入它可能所在的现实国家、州、省或地区，不要搜索虚构名称本身。'}
+                  : lookupMode === 'fallback-area'
+                    ? '只选择它所在的现实城市或地区，不把结果当作该地点的精确坐标。'
+                    : '请输入它可能所在的现实国家、州、省或地区，不要搜索虚构名称本身。'}
               </small>
             </div>
             <form className="reader-place-lookup-form" onSubmit={submitLookup}>
@@ -1699,7 +1768,7 @@ function ReadingMapPanel({
                     : '例如 Georgia, United States'}
                 />
               </label>
-              {lookupMode === 'approximate-area' && (
+              {lookupMode !== 'exact' && (
                 <label className="reader-place-radius">
                   <span>区域半径</span>
                   <select
@@ -1744,6 +1813,20 @@ function ReadingMapPanel({
                 ))}
               </div>
             )}
+            {lookupMode === 'exact'
+              && lookupState === 'ready'
+              && lookupResults.length === 0
+              && (
+                <button
+                  type="button"
+                  className="btn btn-sm reader-place-fallback"
+                  disabled={translationState === 'working'}
+                  onClick={activateLookupFallback}
+                >
+                  <MapPin size={13} />
+                  找不到精确地点，改用参考区域
+                </button>
+              )}
           </>
         )}
         {lookupResults.length > 0 && (
@@ -1761,14 +1844,14 @@ function ReadingMapPanel({
                   </span>
                 </div>
                 <button type="button" onClick={() => confirmLookupResult(result)}>
-                  {lookupMode === 'approximate-area'
+                  {lookupMode !== 'exact'
                     ? '用作宽泛参考区域'
                     : `确认“${lookupTarget?.name}”是这里`}
                 </button>
               </article>
             ))}
             <small>
-              {lookupMode === 'approximate-area'
+              {lookupMode !== 'exact'
                 ? '将显示半透明圆圈，不会标成精确地点。'
                 : '现代地图候选需要你确认，不代表作品年代边界。'}
             </small>
@@ -1830,6 +1913,11 @@ function ReadingMapPanel({
                   个人设置的宽泛参考区域，不是精确位置
                 </p>
               )}
+              {selectedPlace.accessMode === 'reader-confirmed-fallback-area' && (
+                <p className="reader-place-unlock-note">
+                  地图未收录精确地点；这里仅展示个人确认的相关区域
+                </p>
+              )}
               <dl className="reader-place-meta">
                 {selectedPlace.parentLabel && (
                   <div><dt>区域</dt><dd>{selectedPlace.parentLabel}</dd></div>
@@ -1879,7 +1967,8 @@ function ReadingMapPanel({
               <small>
                 {selectedPlace.accessMode === 'reader-confirmed-geocoder'
                   ? '个人确认位置只用于当前阅读地图，不会写回正式资料包。'
-                  : selectedPlace.accessMode === 'reader-confirmed-approximate-area'
+                  : ['reader-confirmed-approximate-area', 'reader-confirmed-fallback-area']
+                    .includes(selectedPlace.accessMode)
                     ? '参考区域只表示大致背景，不参与精确距离判断。'
                   : '仅展示资料包中已审计的空间字段，不生成剧情解释。'}
               </small>
