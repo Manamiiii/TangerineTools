@@ -39,7 +39,10 @@ import {
   subscribeInstallPrompt,
 } from '../../../pwaInstall.js'
 import { searchReadingPlaces } from '../map/geocoding.js'
-import { recognizeReadingImage } from '../ocr/localOcr.js'
+import {
+  recognizeReadingImage,
+  recognizeReadingMetadataImage,
+} from '../ocr/localOcr.js'
 import {
   READING_MODEL_STORAGE_KEYS,
   analyzeReadingBookMetadata,
@@ -58,7 +61,7 @@ import {
 import {
   PERSONAL_BOOK_COVER_THEMES,
   createPersonalReadingPackage,
-  extractPersonalBookMetadataFromText,
+  extractPersonalBookMetadataDetails,
   mergePersonalBookMetadata,
   personalCatalogEntry,
 } from '../domain/personalBooks.js'
@@ -282,7 +285,7 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
       ocrText: '',
     })
     try {
-      const text = await recognizeReadingImage(
+      let text = await recognizeReadingImage(
         file,
         (progress) => {
           if (Number.isFinite(progress?.progress)) {
@@ -295,7 +298,33 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
         { preserveLines: true },
       )
       if (!text) throw new Error('截图中没有识别出文字')
-      const localMetadata = extractPersonalBookMetadataFromText(text)
+      let localDetails = extractPersonalBookMetadataDetails(text)
+      if (
+        !localDetails.metadata.title
+        || !localDetails.metadata.translators?.length
+        || localDetails.uncertainFields.length > 0
+      ) {
+        const retryText = await recognizeReadingMetadataImage(file, (progress) => {
+          if (Number.isFinite(progress?.progress)) {
+            setMetadataScan((current) => ({
+              ...current,
+              progress: Math.round(progress.progress * 100),
+            }))
+          }
+        })
+        const retryDetails = extractPersonalBookMetadataDetails(retryText)
+        const quality = (details) => (
+          Object.keys(details.metadata).length * 2
+          - details.uncertainFields.length * 3
+          + (details.metadata.title ? 2 : 0)
+          + (details.metadata.translators?.length ? 2 : 0)
+        )
+        if (quality(retryDetails) > quality(localDetails)) {
+          text = retryText
+          localDetails = retryDetails
+        }
+      }
+      const localMetadata = localDetails.metadata
       const configured = Boolean(
         modelConfig.endpoint.trim()
         && modelConfig.model.trim()
@@ -310,7 +339,11 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
             ocrText: text,
           })
         : {}
-      const metadata = mergePersonalBookMetadata(localMetadata, modelMetadata)
+      const metadata = mergePersonalBookMetadata(
+        localMetadata,
+        modelMetadata,
+        localDetails.uncertainFields,
+      )
       setForm((current) => ({
         ...current,
         title: metadata.title || current.title,
@@ -397,7 +430,7 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
         {metadataScan.result && (
           <div className="reader-book-metadata-result">
             <div>
-              <strong>识别器 v3</strong>
+              <strong>识别器 v4</strong>
               <span>
                 书名：{metadataScan.result.title || '未识别'}
                 {' · '}

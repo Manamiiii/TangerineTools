@@ -1,4 +1,5 @@
 let workerPromise = null
+let metadataWorkerPromise = null
 let progressListener = null
 
 function cleanOcrLine(value) {
@@ -47,6 +48,12 @@ async function createReadingOcrWorker() {
   })
 }
 
+async function createReadingMetadataOcrWorker() {
+  const worker = await createReadingOcrWorker()
+  await worker.setParameters({ tessedit_pageseg_mode: '6' })
+  return worker
+}
+
 export async function recognizeReadingImage(image, onProgress, options) {
   if (!image) throw new Error('请先选择一张截图')
   progressListener = onProgress
@@ -60,6 +67,24 @@ export async function recognizeReadingImage(image, onProgress, options) {
     const worker = await workerPromise
     const result = await worker.recognize(image)
     return normalizeReadingOcrText(result?.data?.text, options)
+  } finally {
+    progressListener = null
+  }
+}
+
+export async function recognizeReadingMetadataImage(image, onProgress) {
+  if (!image) throw new Error('请先选择一张截图')
+  progressListener = onProgress
+  if (!metadataWorkerPromise) {
+    metadataWorkerPromise = createReadingMetadataOcrWorker().catch((error) => {
+      metadataWorkerPromise = null
+      throw error
+    })
+  }
+  try {
+    const worker = await metadataWorkerPromise
+    const result = await worker.recognize(image)
+    return normalizeReadingOcrText(result?.data?.text, { preserveLines: true })
   } finally {
     progressListener = null
   }

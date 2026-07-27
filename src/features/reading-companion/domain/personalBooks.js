@@ -18,10 +18,10 @@ function normalizedText(value) {
   return typeof value === 'string' ? value.normalize('NFKC').trim() : ''
 }
 
-export function extractPersonalBookMetadataFromText(value) {
-  const text = normalizedText(value)
-  if (!text) return {}
-  const lines = text
+export function extractPersonalBookMetadataDetails(value) {
+  const sourceText = normalizedText(value)
+  if (!sourceText) return { metadata: {}, uncertainFields: [] }
+  const lines = sourceText
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean)
@@ -30,6 +30,43 @@ export function extractPersonalBookMetadataFromText(value) {
     '作者', '著者', '译者', '翻译', '译',
     '出版社', '出版方', '版权方', '出版时间', 'ISBN',
   ]
+  const titleLabels = new Set(['书名', '书籍名称', '作品名', '作品名称', '图书名称', '标题'])
+  const translatorLabels = new Set(['译者', '翻译', '译'])
+  const normalizedLabel = (label) => label.replace(/\s/gu, '').toLocaleUpperCase()
+  const splitLabeledLine = (line) => {
+    const match = line.match(/^([^:：]{1,16})\s*[:：]\s*(.+)$/u)
+    return match
+      ? { label: normalizedLabel(match[1]), value: match[2].trim() }
+      : null
+  }
+  const uncertainFields = []
+  const authorIndex = lines.findIndex((line) => ['作者', '著者']
+    .includes(splitLabeledLine(line)?.label))
+  const publisherIndex = lines.findIndex((line) => ['出版社', '出版方', '版权方']
+    .includes(splitLabeledLine(line)?.label))
+  const hasTitleLabel = lines.some((line) => titleLabels.has(splitLabeledLine(line)?.label))
+  if (!hasTitleLabel && authorIndex > 0) {
+    for (let index = authorIndex - 1; index >= 0; index -= 1) {
+      const candidate = splitLabeledLine(lines[index])
+      if (!candidate || allLabels.map(normalizedLabel).includes(candidate.label)) continue
+      lines[index] = `书名:${candidate.value}`
+      uncertainFields.push('title')
+      break
+    }
+  }
+  const hasTranslatorLabel = lines.some((line) => (
+    translatorLabels.has(splitLabeledLine(line)?.label)
+  ))
+  if (!hasTranslatorLabel && authorIndex >= 0 && publisherIndex > authorIndex + 1) {
+    for (let index = authorIndex + 1; index < publisherIndex; index += 1) {
+      const candidate = splitLabeledLine(lines[index])
+      if (!candidate || allLabels.map(normalizedLabel).includes(candidate.label)) continue
+      lines[index] = `译者:${candidate.value}`
+      uncertainFields.push('translators')
+      break
+    }
+  }
+  const text = lines.join('\n')
   const escapedLabel = (label) => [...label]
     .map((character) => character.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'))
     .join('\\s*')
@@ -83,7 +120,7 @@ export function extractPersonalBookMetadataFromText(value) {
     && !/[/／]/u.test(line)
     && !/^\d+(?:\.\d+)?(?:万)?[字人]?$/u.test(line)
   ))
-  return {
+  const metadata = {
     ...(title ? { title } : {}),
     ...(author ? { author } : {}),
     ...(translators.length > 0 ? { translators } : {}),
@@ -93,13 +130,24 @@ export function extractPersonalBookMetadataFromText(value) {
       ? { publishedAt: `${published[1]}-${String(Number(published[2])).padStart(2, '0')}` }
       : {}),
   }
+  return { metadata, uncertainFields }
 }
 
-export function mergePersonalBookMetadata(localMetadata = {}, modelMetadata = {}) {
+export function extractPersonalBookMetadataFromText(value) {
+  return extractPersonalBookMetadataDetails(value).metadata
+}
+
+export function mergePersonalBookMetadata(
+  localMetadata = {},
+  modelMetadata = {},
+  uncertainFields = [],
+) {
+  const uncertain = new Set(uncertainFields)
   const metadata = { ...localMetadata }
   for (const [key, value] of Object.entries(modelMetadata)) {
     const modelHasValue = Array.isArray(value) ? value.length > 0 : Boolean(value)
     const localStructuredField = ['title', 'translators'].includes(key)
+      && !uncertain.has(key)
       && (Array.isArray(localMetadata[key])
         ? localMetadata[key].length > 0
         : Boolean(localMetadata[key]))

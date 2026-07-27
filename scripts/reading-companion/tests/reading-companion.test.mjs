@@ -50,6 +50,7 @@ import {
 import {
   buildPersonalChapters,
   createPersonalReadingPackage,
+  extractPersonalBookMetadataDetails,
   extractPersonalBookMetadataFromText,
   mergePersonalBookMetadata,
   personalCatalogEntry,
@@ -122,8 +123,8 @@ test('PWA registration and static cache use the same update generation', async (
     readFile(new URL('index.html', repoUrl), 'utf8'),
     readFile(new URL('public/sw.js', repoUrl), 'utf8'),
   ])
-  assert.match(html, /sw\.js\?v=3/)
-  assert.match(serviceWorker, /tangerine-static-v3/)
+  assert.match(html, /sw\.js\?v=4/)
+  assert.match(serviceWorker, /tangerine-static-v4/)
 })
 
 test('personal books accept a chapter count or pasted numeric directory', () => {
@@ -249,6 +250,48 @@ test('structured local title and translators reject noisy model overrides', () =
       author: '简·奥斯丁',
       translators: ['孙致礼'],
       publisher: '译林出版社',
+    },
+  )
+})
+
+test('damaged FE and BE labels become model-correctable low-confidence fields', () => {
+  const details = extractPersonalBookMetadataDetails([
+    '版权信息',
+    'FE: 做慢与俩见',
+    '作者 : 简 - 奥斯本',
+    'BE: HEAL',
+    '出版社 : 译林出版社',
+    '出版时间 : 2010-06-01',
+    'ISBN: 9787544711302',
+  ].join('\n'))
+  assert.deepEqual(details, {
+    metadata: {
+      title: '做慢与俩见',
+      author: '简 - 奥斯本',
+      translators: ['HEAL'],
+      publisher: '译林出版社',
+      isbn: '9787544711302',
+      publishedAt: '2010-06',
+    },
+    uncertainFields: ['title', 'translators'],
+  })
+  assert.deepEqual(
+    mergePersonalBookMetadata(
+      details.metadata,
+      {
+        title: '傲慢与偏见',
+        author: '简·奥斯丁',
+        translators: ['孙致礼'],
+      },
+      details.uncertainFields,
+    ),
+    {
+      title: '傲慢与偏见',
+      author: '简·奥斯丁',
+      translators: ['孙致礼'],
+      publisher: '译林出版社',
+      isbn: '9787544711302',
+      publishedAt: '2010-06',
     },
   )
 })

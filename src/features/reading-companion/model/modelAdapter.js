@@ -285,7 +285,7 @@ export async function analyzeReadingBookMetadata({
   const text = requiredText(ocrText, '截图没有识别出文字')
   if (text.length > 12000) throw new Error('单次书籍信息识别最多发送 12000 个字符')
   if (typeof fetchImpl !== 'function') throw new Error('当前环境无法调用模型接口')
-  const cacheKey = modelCacheKey('book-metadata-v2', [url, modelName, text])
+  const cacheKey = modelCacheKey('book-metadata-v3', [url, modelName, text])
   const cached = cachedModelResult(cacheKey)
   if (cached) return cached
   const payload = await requestModelJson({
@@ -298,8 +298,10 @@ export async function analyzeReadingBookMetadata({
       {
         role: 'system',
         content: [
-          '你只从书籍详情页 OCR 文字中整理书目信息，不得凭常识补写截图里没有的信息。',
+          '你负责修复书籍版权页 OCR 并整理书目信息，不得生成剧情或无关内容。',
           '优先读取书名、作者、译者、出版社等明确字段标签后的值；忽略状态栏、页码、按钮、乱码和版权说明。',
+          'OCR 可能把“书名”“译者”等标签识别成 FE、BE 等短字母，也可能把中文值识别成形近字或拉丁字母；请利用字段顺序、作者、出版社、ISBN 和同页其他书目信息交叉纠正。',
+          '只有交叉信息足以确定时才纠错；无法确定的字段返回空值。',
           '字段值不得带回字段标签，也不得在书名前添加无法确认的字母、符号或 OCR 噪声。',
           '日期使用 YYYY-MM；译者使用字符串数组；没有的字段返回空值。',
           '只返回 JSON：{"title":"","author":"","translators":[],"publisher":"","isbn":"","publishedAt":"","originalLanguage":"","chapterCount":null}。',
