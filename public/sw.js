@@ -1,4 +1,4 @@
-const STATIC_CACHE = 'tangerine-static-v2'
+const STATIC_CACHE = 'tangerine-static-v3'
 const ENABLE_RUNTIME_CACHE = self.location.protocol === 'https:'
 
 self.addEventListener('install', () => {

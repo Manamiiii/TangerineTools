@@ -128,7 +128,7 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 - 纯领域逻辑定义 `safe` / `potential` / `high` 风险、未来章节提升为潜在剧透、未知边界保守处理、单次授权等级和高风险二次确认动作。
 - `npm run check:reader:packages` 校验资料目录及所有运行时资料包。
 - 阅读伴侣专用运行时代码位于 `src/features/reading-companion/`，其中 `map/` 保存底图供应商与默认视野配置；研究、发布脚本及其领域测试位于 `scripts/reading-companion/`。公共目录只保留工具懒加载、Dexie 实例、播种编排和兼容导出等集成边界。
-- Windows 首版复用现有 Web App Manifest 和 service worker 安装为 PWA；生产环境按需缓存同源静态资源及 OCR 语言数据，不缓存版本化预置资料或跨域地图/模型请求。移动端原生分享和原生截图入口不在当前范围。
+- Windows 首版复用现有 Web App Manifest 和 service worker 安装为 PWA；生产环境按需缓存同源静态资源及 OCR 语言数据，不缓存版本化预置资料或跨域地图/模型请求。缓存使用版本化名称，升级时删除旧静态缓存；service worker 注册地址带同步版本参数，避免已安装 PWA 长期停留在旧识别逻辑。移动端原生分享和原生截图入口不在当前范围。
 - 项目样式仍按全局约定集中在 `src/styles.css`，阅读伴侣专用选择器统一使用 `reader-` 前缀，避免引入第二套样式入口。
 - 研究资料位于 `scripts/reading-companion/data/staging/`；管线自动发现全部 staging，逐书生成版本化 preview，并派生统一运行时 catalog。新书 staging 携带完整 `package`，已有书可用 `basePackagePath` 复用正式包，不需要修改脚本。`check:reader:preset` 输出 dry-run 报告，`apply:reader:preset` 仅在显式确认环境变量存在时写入正式资料包。只有 `approved` 来源进入运行时包；资料源、实体和事实候选均保留在审计数据中，候选必须记录引用来源与阻塞项，且不会被隐式发布。
 - Codex 或其他模型在开发期间凭公开资料或模型内部知识生成的研究结果属于建库候选，不是运行时模型能力，也不能单独充当来源、指定译本证据或章节剧透边界；测试夹具也不是正式资料。只有仓库内可重复执行的代码、校验、发布流程和已批准资料包属于当前系统能力。
@@ -157,7 +157,7 @@ TangerineTools 是一个**本地优先（local-first）**的个人资料管理 W
 
 - 站点提供 Web App Manifest、`theme-color`、192/512 SVG 图标和 `display: standalone` 配置。
 - Manifest 的 `start_url`、`scope` 和图标路径使用相对路径，配合 Vite `base: './'` 兼容 GitHub Pages 仓库子路径部署。
-- 提供一个极简 service worker 用于满足 Android Chrome 安装条件；它在安装/激活后接管页面，不预缓存资源、不返回自定义缓存响应、不读写 IndexedDB，避免影响用户本地数据或造成运行时缓存滞留。
+- 提供一个极简 service worker 用于满足 Android Chrome 安装条件；它在安装/激活后接管页面，HTTPS 生产环境采用导航网络优先、同源静态资源缓存优先策略，并在版本升级时删除旧静态缓存。它不缓存版本化预置资料、跨域地图或模型请求，也不读写 IndexedDB。
 
 ## 明确排除在范围外的能力
 

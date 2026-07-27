@@ -117,6 +117,15 @@ test('reading companion keeps feature code and maintenance files in dedicated di
   }
 })
 
+test('PWA registration and static cache use the same update generation', async () => {
+  const [html, serviceWorker] = await Promise.all([
+    readFile(new URL('index.html', repoUrl), 'utf8'),
+    readFile(new URL('public/sw.js', repoUrl), 'utf8'),
+  ])
+  assert.match(html, /sw\.js\?v=3/)
+  assert.match(serviceWorker, /tangerine-static-v3/)
+})
+
 test('personal books accept a chapter count or pasted numeric directory', () => {
   assert.deepEqual(buildPersonalChapters({ chapterCount: 3, chapterText: '' }), [
     { id: 'chapter-01', number: 1, label: '第 1 章' },

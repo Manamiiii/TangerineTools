@@ -244,6 +244,8 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
     state: 'idle',
     fileName: '',
     progress: 0,
+    result: null,
+    ocrText: '',
   })
 
   function change(key, value) {
@@ -272,7 +274,13 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
     event.target.value = ''
     if (!file) return
     setStatus('')
-    setMetadataScan({ state: 'working', fileName: file.name, progress: 0 })
+    setMetadataScan({
+      state: 'working',
+      fileName: file.name,
+      progress: 0,
+      result: null,
+      ocrText: '',
+    })
     try {
       const text = await recognizeReadingImage(
         file,
@@ -314,14 +322,26 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
         originalLanguage: metadata.originalLanguage || current.originalLanguage,
         chapterCount: metadata.chapterCount || current.chapterCount,
       }))
-      setMetadataScan({ state: 'done', fileName: file.name, progress: 100 })
+      setMetadataScan({
+        state: 'done',
+        fileName: file.name,
+        progress: 100,
+        result: metadata,
+        ocrText: text,
+      })
       setStatus(
         configured
           ? '已用本机 OCR 和当前模型填入识别到的书籍信息，请核对后创建。'
           : '已用本机 OCR 填入可确定的信息；配置模型后可提高复杂页面的字段整理效果。',
       )
     } catch (error) {
-      setMetadataScan({ state: 'error', fileName: file.name, progress: 0 })
+      setMetadataScan({
+        state: 'error',
+        fileName: file.name,
+        progress: 0,
+        result: null,
+        ocrText: '',
+      })
       setStatus(error?.message || '书籍详情截图识别失败')
     }
   }
@@ -374,6 +394,22 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
             />
           </label>
         </div>
+        {metadataScan.result && (
+          <div className="reader-book-metadata-result">
+            <div>
+              <strong>识别器 v3</strong>
+              <span>
+                书名：{metadataScan.result.title || '未识别'}
+                {' · '}
+                译者：{metadataScan.result.translators?.join('、') || '未识别'}
+              </span>
+            </div>
+            <details>
+              <summary>查看 OCR 文字</summary>
+              <pre>{metadataScan.ocrText}</pre>
+            </details>
+          </div>
+        )}
         <div className="reader-cover-builder">
           <BookCover
             title={form.title}

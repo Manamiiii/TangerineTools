@@ -285,7 +285,7 @@ export async function analyzeReadingBookMetadata({
   const text = requiredText(ocrText, '截图没有识别出文字')
   if (text.length > 12000) throw new Error('单次书籍信息识别最多发送 12000 个字符')
   if (typeof fetchImpl !== 'function') throw new Error('当前环境无法调用模型接口')
-  const cacheKey = modelCacheKey('book-metadata', [url, modelName, text])
+  const cacheKey = modelCacheKey('book-metadata-v2', [url, modelName, text])
   const cached = cachedModelResult(cacheKey)
   if (cached) return cached
   const payload = await requestModelJson({

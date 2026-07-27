@@ -3667,6 +3667,52 @@ img {
   white-space: nowrap;
 }
 
+.reader-book-metadata-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid #dbeafe;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 10px;
+}
+
+.reader-book-metadata-result > div {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.reader-book-metadata-result strong {
+  color: #1d4ed8;
+}
+
+.reader-book-metadata-result details {
+  flex: 0 0 auto;
+}
+
+.reader-book-metadata-result summary {
+  color: #2563eb;
+  cursor: pointer;
+}
+
+.reader-book-metadata-result pre {
+  max-width: min(680px, 75vw);
+  max-height: 220px;
+  margin: 8px 0 0;
+  padding: 8px;
+  overflow: auto;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #e2e8f0;
+  font: 10px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+  white-space: pre-wrap;
+}
+
 .reader-cover-builder {
   display: grid;
   grid-template-columns: 104px minmax(0, 1fr);
@@ -5965,6 +6011,15 @@ img {
 
   .reader-book-metadata-scan .btn {
     justify-content: center;
+  }
+
+  .reader-book-metadata-result {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .reader-book-metadata-result pre {
+    max-width: calc(100vw - 72px);
   }
 
   .reader-cover-builder .reader-visual-cover {
