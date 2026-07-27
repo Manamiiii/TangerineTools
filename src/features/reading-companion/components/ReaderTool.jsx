@@ -45,6 +45,15 @@ import {
   analyzeReadingExcerpt,
 } from '../model/modelAdapter.js'
 import {
+  READING_MODEL_PROVIDER,
+  READING_MODEL_PROVIDERS,
+  inferReadingModelProvider,
+  normalizeReadingModelProvider,
+  readingModelApiKeyStorageKey,
+  readingModelProfileStorageKey,
+  readingModelProviderDefaults,
+} from '../model/modelProviders.js'
+import {
   createPersonalReadingPackage,
   personalCatalogEntry,
 } from '../domain/personalBooks.js'
@@ -105,6 +114,36 @@ const READER_TAB = Object.freeze({
   FACTS: 'facts',
   SETTINGS: 'settings',
 })
+
+function loadStoredReadingModelConfig(providerId = '', allowLegacy = true) {
+  const legacyEndpoint = window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.endpoint) || ''
+  const storedProviderId = window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.provider) || ''
+  const selectedProviderId = providerId
+    ? normalizeReadingModelProvider(providerId)
+    : storedProviderId
+      ? normalizeReadingModelProvider(storedProviderId)
+      : legacyEndpoint
+        ? inferReadingModelProvider(legacyEndpoint)
+        : READING_MODEL_PROVIDER.ZHIPU
+  const defaults = readingModelProviderDefaults(selectedProviderId)
+  const legacyMatchesProvider = inferReadingModelProvider(legacyEndpoint) === selectedProviderId
+  return {
+    ...defaults,
+    endpoint: window.localStorage.getItem(
+      readingModelProfileStorageKey(selectedProviderId, 'endpoint'),
+    ) || (allowLegacy && legacyMatchesProvider ? legacyEndpoint : '') || defaults.endpoint,
+    model: window.localStorage.getItem(
+      readingModelProfileStorageKey(selectedProviderId, 'model'),
+    ) || (allowLegacy && legacyMatchesProvider
+      ? window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.model) || ''
+      : '') || defaults.model,
+    apiKey: window.sessionStorage.getItem(
+      readingModelApiKeyStorageKey(selectedProviderId),
+    ) || (allowLegacy && legacyMatchesProvider
+      ? window.sessionStorage.getItem(READING_MODEL_STORAGE_KEYS.apiKey) || ''
+      : ''),
+  }
+}
 
 function LoadingPanel({ message }) {
   return <div className="reader-loading">{message}</div>
@@ -379,6 +418,7 @@ function ModelAnalysisPanel({
         endpoint: modelConfig.endpoint,
         model: modelConfig.model,
         apiKey: modelConfig.apiKey,
+        temperature: modelConfig.temperature,
         excerpt,
         bookTitle,
         chapterLabel: currentChapter?.label,
@@ -426,7 +466,7 @@ function ModelAnalysisPanel({
       </div>
       <p className={`reader-service-status ${configured ? 'ready' : ''}`}>
         {configured
-          ? `已配置 ${modelConfig.model}；点击识别才会发送当前段落。`
+          ? `已配置 ${READING_MODEL_PROVIDERS[modelConfig.providerId]?.label || '自定义服务'} · ${modelConfig.model}；点击识别才会发送当前段落。`
           : '尚未完成模型配置。本机扫描和 OCR 不受影响。'}
       </p>
       <button
@@ -473,6 +513,7 @@ function ModelAnalysisPanel({
 function ReadingServiceSettings({
   modelConfig,
   mapConfig,
+  onLoadModelProvider,
   onSaveModel,
   onSaveMap,
 }) {
@@ -483,12 +524,20 @@ function ReadingServiceSettings({
   useEffect(() => setModelDraft(modelConfig), [modelConfig])
   useEffect(() => setMapDraft(mapConfig), [mapConfig])
 
+  const selectedModelProvider = READING_MODEL_PROVIDERS[modelDraft.providerId]
+    || READING_MODEL_PROVIDERS[READING_MODEL_PROVIDER.CUSTOM]
+
+  function changeModelProvider(providerId) {
+    setModelDraft(onLoadModelProvider(providerId))
+    setMessage('')
+  }
+
   function saveModel(event) {
     event.preventDefault()
     onSaveModel(modelDraft)
     setMessage(
       modelDraft.apiKey.trim()
-        ? '模型配置已保存。请回到“阅读输入”，用当前段落验证。'
+        ? `已切换到${selectedModelProvider.label}，请回到“阅读输入”用当前段落验证。`
         : '模型地址和名称已保存，API Key 已清除。',
     )
   }
@@ -518,6 +567,18 @@ function ReadingServiceSettings({
         </p>
         <form className="reader-settings-form" onSubmit={saveModel}>
           <label>
+            <span>模型供应商</span>
+            <select
+              value={modelDraft.providerId}
+              onChange={(event) => changeModelProvider(event.target.value)}
+            >
+              {Object.values(READING_MODEL_PROVIDERS).map((provider) => (
+                <option key={provider.id} value={provider.id}>{provider.label}</option>
+              ))}
+            </select>
+            <small>{selectedModelProvider.description}</small>
+          </label>
+          <label>
             <span>Chat Completions 兼容地址</span>
             <input
               value={modelDraft.endpoint}
@@ -531,6 +592,7 @@ function ReadingServiceSettings({
           <label>
             <span>模型 ID</span>
             <input
+              list="reader-model-options"
               value={modelDraft.model}
               onChange={(event) => setModelDraft((current) => ({
                 ...current,
@@ -538,6 +600,14 @@ function ReadingServiceSettings({
               }))}
               placeholder="按服务商文档填写"
             />
+            <datalist id="reader-model-options">
+              {selectedModelProvider.models.map((model) => (
+                <option key={model.id} value={model.id}>{model.label}</option>
+              ))}
+            </datalist>
+            {selectedModelProvider.models.length > 0 && (
+              <small>可从建议模型中选择，也可以手动填写服务商当前支持的模型 ID。</small>
+            )}
           </label>
           <label>
             <span>API Key</span>
@@ -553,7 +623,7 @@ function ReadingServiceSettings({
             />
           </label>
           <div className="reader-settings-actions">
-            <button type="submit" className="btn">保存模型配置</button>
+            <button type="submit" className="btn">保存并切换到此模型</button>
             <button
               type="button"
               className="btn"
@@ -564,29 +634,29 @@ function ReadingServiceSettings({
           </div>
         </form>
         <details className="reader-service-guide">
-          <summary>OpenAI 配置教程</summary>
+          <summary>{selectedModelProvider.label}配置提示</summary>
           <ol>
-            <li>
-              在 OpenAI 平台创建 API Key；ChatGPT 订阅和 API 额度不是同一项。
-            </li>
-            <li>
-              地址填写 <code>https://api.openai.com/v1/chat/completions</code>。
-            </li>
-            <li>
-              模型 ID 从官方模型目录选择；保存后到“阅读输入”放入短段落测试。
-            </li>
+            <li>在服务商控制台创建 API Key；网页会员或聊天订阅通常不等于 API 额度。</li>
+            <li>确认完整接口地址以 <code>/chat/completions</code> 结尾，并核对模型 ID。</li>
+            <li>保存后回到“阅读输入”，只放入不敏感的短段落进行测试。</li>
           </ol>
-          <div className="reader-guide-links">
-            <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">
-              创建 API Key <ExternalLink size={12} />
-            </a>
-            <a href="https://developers.openai.com/api/docs/models" target="_blank" rel="noreferrer">
-              查看模型目录 <ExternalLink size={12} />
-            </a>
-          </div>
+          {(selectedModelProvider.consoleUrl || selectedModelProvider.docsUrl) && (
+            <div className="reader-guide-links">
+              {selectedModelProvider.consoleUrl && (
+                <a href={selectedModelProvider.consoleUrl} target="_blank" rel="noreferrer">
+                  打开服务商控制台 <ExternalLink size={12} />
+                </a>
+              )}
+              {selectedModelProvider.docsUrl && (
+                <a href={selectedModelProvider.docsUrl} target="_blank" rel="noreferrer">
+                  查看官方文档 <ExternalLink size={12} />
+                </a>
+              )}
+            </div>
+          )}
         </details>
         <p className="reader-settings-storage">
-          地址和模型名保存在本机 localStorage；Key 仅存在 sessionStorage，关闭浏览器会话后失效。
+          每个供应商的地址和模型名分别保存在本机 localStorage；各家 Key 分别存在 sessionStorage，关闭浏览器会话后失效。
           调用时会把当前段落、书名和章节标签发送给你配置的服务商。
         </p>
       </section>
@@ -1458,12 +1528,7 @@ export function ReaderTool({ scene }) {
   const [ocrState, setOcrState] = useState('idle')
   const [ocrProgress, setOcrProgress] = useState(0)
   const [activeTab, setActiveTab] = useState(READER_TAB.INPUT)
-  const [modelConfig, setModelConfig] = useState(() => ({
-    endpoint: window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.endpoint)
-      || 'https://api.openai.com/v1/chat/completions',
-    model: window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.model) || '',
-    apiKey: window.sessionStorage.getItem(READING_MODEL_STORAGE_KEYS.apiKey) || '',
-  }))
+  const [modelConfig, setModelConfig] = useState(() => loadStoredReadingModelConfig())
   const [mapConfig, setMapConfig] = useState(() => ({
     providerId: normalizeReadingMapProvider(
       window.localStorage.getItem(READING_MAP_STORAGE_KEYS.provider),
@@ -1635,11 +1700,24 @@ export function ReaderTool({ scene }) {
   }
 
   function saveModelConfig(nextConfig) {
+    const providerId = normalizeReadingModelProvider(nextConfig.providerId)
+    const provider = READING_MODEL_PROVIDERS[providerId]
     const normalized = {
+      providerId,
       endpoint: nextConfig.endpoint.trim(),
       model: nextConfig.model.trim(),
       apiKey: nextConfig.apiKey.trim(),
+      temperature: provider.temperature,
     }
+    window.localStorage.setItem(READING_MODEL_STORAGE_KEYS.provider, providerId)
+    window.localStorage.setItem(
+      readingModelProfileStorageKey(providerId, 'endpoint'),
+      normalized.endpoint,
+    )
+    window.localStorage.setItem(
+      readingModelProfileStorageKey(providerId, 'model'),
+      normalized.model,
+    )
     if (normalized.endpoint) {
       window.localStorage.setItem(READING_MODEL_STORAGE_KEYS.endpoint, normalized.endpoint)
     } else {
@@ -1651,8 +1729,13 @@ export function ReaderTool({ scene }) {
       window.localStorage.removeItem(READING_MODEL_STORAGE_KEYS.model)
     }
     if (normalized.apiKey) {
+      window.sessionStorage.setItem(
+        readingModelApiKeyStorageKey(providerId),
+        normalized.apiKey,
+      )
       window.sessionStorage.setItem(READING_MODEL_STORAGE_KEYS.apiKey, normalized.apiKey)
     } else {
+      window.sessionStorage.removeItem(readingModelApiKeyStorageKey(providerId))
       window.sessionStorage.removeItem(READING_MODEL_STORAGE_KEYS.apiKey)
     }
     setModelConfig(normalized)
@@ -2064,6 +2147,7 @@ export function ReaderTool({ scene }) {
           <ReadingServiceSettings
             modelConfig={modelConfig}
             mapConfig={mapConfig}
+            onLoadModelProvider={(providerId) => loadStoredReadingModelConfig(providerId, false)}
             onSaveModel={saveModelConfig}
             onSaveMap={saveMapConfig}
           />

@@ -51,6 +51,12 @@ import {
   analyzeReadingExcerpt,
   normalizeModelCandidates,
 } from '../../../src/features/reading-companion/model/modelAdapter.js'
+import {
+  READING_MODEL_PROVIDER,
+  inferReadingModelProvider,
+  readingModelApiKeyStorageKey,
+  readingModelProviderDefaults,
+} from '../../../src/features/reading-companion/model/modelProviders.js'
 
 const repoUrl = new URL('../../../', import.meta.url)
 const readingPackage = JSON.parse(
@@ -74,9 +80,11 @@ test('reading companion keeps feature code and maintenance files in dedicated di
     'src/features/reading-companion/map/geocoding.js',
     'src/features/reading-companion/map/mapConfig.js',
     'src/features/reading-companion/model/modelAdapter.js',
+    'src/features/reading-companion/model/modelProviders.js',
     'src/features/reading-companion/ocr/localOcr.js',
     'src/features/reading-companion/preset.js',
     'scripts/reading-companion/build-preview.mjs',
+    'docs/reading-companion/model-provider-setup.md',
     'docs/reading-companion/product-and-architecture.md',
   ]
   await Promise.all(dedicatedPaths.map((file) => access(new URL(file, repoUrl))))
@@ -588,12 +596,36 @@ test('reader-confirmed rivers and regions preserve safe GeoJSON geometry', () =>
   })
 })
 
+test('reading model presets support domestic switching without sharing session keys', () => {
+  assert.equal(
+    inferReadingModelProvider('https://open.bigmodel.cn/api/paas/v4/chat/completions'),
+    READING_MODEL_PROVIDER.ZHIPU,
+  )
+  assert.equal(
+    inferReadingModelProvider('https://api.deepseek.com/chat/completions'),
+    READING_MODEL_PROVIDER.DEEPSEEK,
+  )
+  assert.equal(
+    readingModelProviderDefaults(READING_MODEL_PROVIDER.ZHIPU).model,
+    'glm-4-flash-250414',
+  )
+  assert.equal(
+    readingModelProviderDefaults(READING_MODEL_PROVIDER.MINIMAX).temperature,
+    0.1,
+  )
+  assert.notEqual(
+    readingModelApiKeyStorageKey(READING_MODEL_PROVIDER.ZHIPU),
+    readingModelApiKeyStorageKey(READING_MODEL_PROVIDER.DEEPSEEK),
+  )
+})
+
 test('runtime model analysis stays a reader-confirmed candidate adapter', async () => {
   let request
   const candidates = await analyzeReadingExcerpt({
     endpoint: 'https://model.example/v1/chat/completions',
     model: 'reader-test-model',
     apiKey: 'test-key',
+    temperature: 0.1,
     excerpt: '她从亚特兰大回到了塔拉。',
     bookTitle: '测试书',
     chapterLabel: '第 1 章',
@@ -632,6 +664,7 @@ test('runtime model analysis stays a reader-confirmed candidate adapter', async 
   assert.equal(request.options.headers.Authorization, 'Bearer test-key')
   const body = JSON.parse(request.options.body)
   assert.equal(body.model, 'reader-test-model')
+  assert.equal(body.temperature, 0.1)
   assert.match(body.messages[1].content, /亚特兰大/)
   assert.equal(candidates.length, 2)
   assert.equal(candidates[1].placeKind, OBSERVED_PLACE_KIND.UNKNOWN)

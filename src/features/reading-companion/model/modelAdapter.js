@@ -7,6 +7,7 @@ const VALID_KINDS = new Set(Object.values(OBSERVED_ENTITY_KIND))
 const VALID_PLACE_KINDS = new Set(Object.values(OBSERVED_PLACE_KIND))
 
 export const READING_MODEL_STORAGE_KEYS = {
+  provider: 'readerModelProvider',
   endpoint: 'readerModelEndpoint',
   model: 'readerModelName',
   apiKey: 'readerModelApiKey',
@@ -85,6 +86,7 @@ export async function analyzeReadingExcerpt({
   endpoint,
   model,
   apiKey,
+  temperature = 0,
   excerpt,
   bookTitle,
   chapterLabel,
@@ -109,7 +111,9 @@ export async function analyzeReadingExcerpt({
       },
       body: JSON.stringify({
         model: modelName,
-        temperature: 0,
+        temperature: Number.isFinite(temperature)
+          ? Math.max(0, Math.min(2, temperature))
+          : 0,
         messages: [
           {
             role: 'system',
