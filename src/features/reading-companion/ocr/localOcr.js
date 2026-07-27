@@ -1,6 +1,22 @@
 let workerPromise = null
 let progressListener = null
 
+export function normalizeReadingOcrText(value) {
+  if (typeof value !== 'string') return ''
+  return value
+    .normalize('NFKC')
+    .replace(/\r/g, '\n')
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join(' ')
+    .replace(/([\p{Script=Han}，。！？；：、“”‘’（）《》【】])\s+(?=[\p{Script=Han}，。！？；：、“”‘’（）《》【】])/gu, '$1')
+    .replace(/\s+([，。！？；：、”’）》】])/gu, '$1')
+    .replace(/([“‘（《【])\s+/gu, '$1')
+    .replace(/[ \t]{2,}/g, ' ')
+    .trim()
+}
+
 function localLanguagePath() {
   return new URL('reader-ocr/', document.baseURI).href.replace(/\/$/, '')
 }
@@ -27,7 +43,7 @@ export async function recognizeReadingImage(image, onProgress) {
   try {
     const worker = await workerPromise
     const result = await worker.recognize(image)
-    return result?.data?.text?.trim() || ''
+    return normalizeReadingOcrText(result?.data?.text)
   } finally {
     progressListener = null
   }

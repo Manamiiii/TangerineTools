@@ -159,3 +159,64 @@ export async function analyzeReadingExcerpt({
   const content = body?.choices?.[0]?.message?.content
   return normalizeModelCandidates(parseJsonObject(content))
 }
+
+export async function translateReadingPlaceQuery({
+  endpoint,
+  model,
+  apiKey,
+  temperature = 0,
+  query,
+  fetchImpl = globalThis.fetch,
+}) {
+  const url = normalizeEndpoint(endpoint)
+  const modelName = requiredText(model, '请填写模型名称')
+  const key = requiredText(apiKey, '请填写 API Key')
+  const text = requiredText(query, '请先填写地点搜索词')
+  if (text.length > 120) throw new Error('地点搜索词不能超过 120 个字符')
+  if (typeof fetchImpl !== 'function') throw new Error('当前环境无法调用模型接口')
+
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 45000)
+  let response
+  try {
+    response = await fetchImpl(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: modelName,
+        temperature: Number.isFinite(temperature)
+          ? Math.max(0, Math.min(2, temperature))
+          : 0,
+        messages: [
+          {
+            role: 'system',
+            content: [
+              '你只把地点搜索词转换为适合国际地图检索的现代英文名称。',
+              '保留用户已经给出的州、省、国家等消歧信息，不补充未经用户提供的剧情或地点判断。',
+              '只返回 JSON：{"query":"英文地图搜索词"}。',
+            ].join('\n'),
+          },
+          {
+            role: 'user',
+            content: text,
+          },
+        ],
+      }),
+      signal: controller.signal,
+    })
+  } catch (error) {
+    if (error?.name === 'AbortError') throw new Error('模型请求超时')
+    throw new Error(`模型请求失败：${error?.message || '网络不可用或接口不允许浏览器访问'}`)
+  } finally {
+    clearTimeout(timeout)
+  }
+  if (!response.ok) throw new Error(`模型接口返回 ${response.status}`)
+  const body = await response.json()
+  const payload = parseJsonObject(body?.choices?.[0]?.message?.content)
+  const translated = requiredText(payload?.query, '模型没有返回英文搜索词')
+  if (translated.length > 120) throw new Error('模型返回的搜索词过长')
+  return translated
+}

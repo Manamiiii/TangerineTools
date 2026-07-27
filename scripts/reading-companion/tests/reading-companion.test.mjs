@@ -8,6 +8,7 @@ import {
   SPOILER_RISK,
   canRevealRisk,
   clearObservedPlaceLocation,
+  confirmObservedPlaceApproximateArea,
   confirmObservedPlaceLocation,
   extractLocalEntityCandidates,
   isRevealedAtChapter,
@@ -19,6 +20,7 @@ import {
   readingStateKey,
   riskForDisclosure,
   scanOnDemandEntities,
+  scanObservedEntities,
   spoilerGateAction,
   strongestSpoilerRisk,
   unlockedOnDemandEntities,
@@ -34,6 +36,7 @@ import {
   buildReadingPreviews,
 } from '../lib/package-pipeline.mjs'
 import {
+  READING_MAP_DEFAULT_VIEW,
   READING_MAP_PROVIDER,
   normalizeReadingMapProvider,
   readingMapTileSources,
@@ -52,7 +55,11 @@ import {
 import {
   analyzeReadingExcerpt,
   normalizeModelCandidates,
+  translateReadingPlaceQuery,
 } from '../../../src/features/reading-companion/model/modelAdapter.js'
+import {
+  normalizeReadingOcrText,
+} from '../../../src/features/reading-companion/ocr/localOcr.js'
 import {
   READING_MODEL_PROVIDER,
   READING_MODEL_PROVIDERS,
@@ -149,10 +156,12 @@ test('personal book creation produces a valid empty local package and catalog en
     title: '测试个人书籍',
     editionLabel: '测试出版社 · 2026-07',
     source: 'personal',
+    cover: { theme: 'amber' },
   })
 })
 
 test('reading map providers keep international fallback and require a domestic browser key', () => {
+  assert.deepEqual(READING_MAP_DEFAULT_VIEW, { center: [20, 0], zoom: 2 })
   assert.equal(
     normalizeReadingMapProvider('unknown-provider'),
     READING_MAP_PROVIDER.INTERNATIONAL,
@@ -237,6 +246,8 @@ test('map search adapters normalize international and domestic results without g
   })
   assert.match(requestedUrl, /^https:\/\/nominatim\.openstreetmap\.org\/search\?/)
   assert.match(requestedUrl, /q=Atlanta/)
+  assert.match(requestedUrl, /accept-language=zh-CN/)
+  assert.match(requestedUrl, /namedetails=1/)
   assert.equal(results[0].label, 'Atlanta, Georgia')
   await assert.rejects(
     searchReadingPlaces({
@@ -245,6 +256,20 @@ test('map search adapters normalize international and domestic results without g
       fetchImpl: async () => ({ ok: true, json: async () => ({}) }),
     }),
     /浏览器端 Key/,
+  )
+})
+
+test('international map results prefer an available Chinese name', () => {
+  const [result] = normalizeNominatimResults([{
+    place_id: 88,
+    display_name: 'University of Virginia, Virginia, United States',
+    namedetails: { 'name:zh': '弗吉尼亚大学' },
+    lat: '38.0336',
+    lon: '-78.5080',
+  }])
+  assert.equal(
+    result.label,
+    '弗吉尼亚大学 · University of Virginia, Virginia, United States',
   )
 })
 
@@ -573,6 +598,50 @@ test('unknown or fictional places never go to the public map until the reader ma
   assert.equal(fictional[0].mapLocation, undefined)
 })
 
+test('fictional places may use a reader-confirmed broad reference area without a fake point', () => {
+  const observed = [{
+    id: 'observed-fictional-place',
+    name: '虚构庄园',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-01',
+    placeKind: OBSERVED_PLACE_KIND.FICTIONAL,
+  }]
+  const located = confirmObservedPlaceApproximateArea(
+    observed,
+    observed[0].id,
+    {
+      id: 'region-georgia',
+      label: 'Georgia, United States',
+      providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+      latitude: 32.7,
+      longitude: -83.3,
+    },
+    100,
+  )
+  const [mapEntity] = readerConfirmedMapEntities(
+    located,
+    'chapter-01',
+    readingPackage.chapters,
+  )
+  assert.equal(mapEntity.placeKind, OBSERVED_PLACE_KIND.FICTIONAL)
+  assert.equal(mapEntity.accessMode, 'reader-confirmed-approximate-area')
+  assert.deepEqual(mapEntity.geometry, {
+    type: 'area',
+    latitude: 32.7,
+    longitude: -83.3,
+    radiusKm: 100,
+  })
+  assert.throws(
+    () => confirmObservedPlaceApproximateArea(observed, observed[0].id, {
+      label: 'Georgia',
+      providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+      latitude: 32.7,
+      longitude: -83.3,
+    }, 1),
+    /5–1000/,
+  )
+})
+
 test('reader-confirmed rivers and regions preserve safe GeoJSON geometry', () => {
   const line = {
     type: 'LineString',
@@ -689,6 +758,26 @@ test('runtime model analysis stays a reader-confirmed candidate adapter', async 
   assert.equal(candidates.length, 2)
   assert.equal(candidates[1].placeKind, OBSERVED_PLACE_KIND.UNKNOWN)
   assert.equal(candidates[0].reason, '名称原样出现在段落中')
+})
+
+test('model place translation returns only a bounded map query', async () => {
+  const translated = await translateReadingPlaceQuery({
+    endpoint: 'https://model.example/v1/chat/completions',
+    model: 'reader-test-model',
+    apiKey: 'test-key',
+    query: '弗吉尼亚大学，美国',
+    fetchImpl: async () => ({
+      ok: true,
+      json: async () => ({
+        choices: [{
+          message: {
+            content: '{"query":"University of Virginia, United States"}',
+          },
+        }],
+      }),
+    }),
+  })
+  assert.equal(translated, 'University of Virginia, United States')
 })
 
 test('runtime model candidates are bounded and cannot create facts', () => {
@@ -829,6 +918,56 @@ test('local candidate extraction finds strong person and place patterns without 
         reason: '包含常见地点后缀',
       },
     ],
+  )
+})
+
+test('local candidate extraction separates coordinated university names instead of saving a sentence', () => {
+  assert.deepEqual(
+    extractLocalEntityCandidates(
+      '从弗吉尼亚大学、亚拉巴马大学和南卡罗来纳大学拖了出来。',
+    ),
+    [
+      {
+        name: '弗吉尼亚大学',
+        kind: OBSERVED_ENTITY_KIND.PLACE,
+        reason: '包含常见地点后缀',
+      },
+      {
+        name: '亚拉巴马大学',
+        kind: OBSERVED_ENTITY_KIND.PLACE,
+        reason: '包含常见地点后缀',
+      },
+      {
+        name: '南卡罗来纳大学',
+        kind: OBSERVED_ENTITY_KIND.PLACE,
+        reason: '包含常见地点后缀',
+      },
+    ],
+  )
+})
+
+test('local scanning also marks names already saved by the reader', () => {
+  const observed = [{
+    id: 'observed-uva',
+    name: '弗吉尼亚大学',
+    kind: OBSERVED_ENTITY_KIND.PLACE,
+    placeKind: OBSERVED_PLACE_KIND.REAL,
+    firstSeenChapterId: 'chapter-01',
+  }]
+  assert.deepEqual(
+    scanObservedEntities('她从弗吉尼亚大学离开。', observed),
+    [{
+      entity: observed[0],
+      matchedTerm: '弗吉尼亚大学',
+      source: 'observed',
+    }],
+  )
+})
+
+test('OCR cleanup joins Chinese line wraps while preserving English word spaces', () => {
+  assert.equal(
+    normalizeReadingOcrText('从 弗 吉 尼 亚 大 学\n拖 了 出 来。\nUniversity of\nVirginia'),
+    '从弗吉尼亚大学拖了出来。 University of Virginia',
   )
 })
 

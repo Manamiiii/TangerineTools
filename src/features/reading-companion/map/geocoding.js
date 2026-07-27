@@ -84,15 +84,26 @@ function normalizedResult({
 export function normalizeNominatimResults(payload) {
   if (!Array.isArray(payload)) return []
   return payload
-    .map((item) => normalizedResult({
-      id: item?.place_id,
-      label: item?.display_name,
-      latitude: item?.lat,
-      longitude: item?.lon,
-      providerId: READING_MAP_PROVIDER.INTERNATIONAL,
-      geometry: item?.geojson,
-      category: [item?.category || item?.class, item?.type].filter(Boolean).join('/'),
-    }))
+    .map((item) => {
+      const names = item?.namedetails || {}
+      const chineseName = names['name:zh-Hans']
+        || names['name:zh_CN']
+        || names['name:zh']
+        || ''
+      const displayName = String(item?.display_name || '')
+      const label = chineseName && !displayName.includes(chineseName)
+        ? `${chineseName} · ${displayName}`
+        : displayName
+      return normalizedResult({
+        id: item?.place_id,
+        label,
+        latitude: item?.lat,
+        longitude: item?.lon,
+        providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+        geometry: item?.geojson,
+        category: [item?.category || item?.class, item?.type].filter(Boolean).join('/'),
+      })
+    })
     .filter(Boolean)
 }
 
@@ -179,7 +190,9 @@ export async function searchReadingPlaces({
     const parameters = new URLSearchParams({
       q: searchQuery,
       format: 'jsonv2',
+      'accept-language': 'zh-CN,zh-Hans,zh,en',
       addressdetails: '1',
+      namedetails: '1',
       polygon_geojson: '1',
       polygon_threshold: '0.002',
       limit: '5',

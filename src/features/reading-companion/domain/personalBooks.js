@@ -4,6 +4,15 @@ import {
 } from './readingCompanion.js'
 
 const MAX_PERSONAL_CHAPTERS = 1000
+const MAX_COVER_DATA_URL_LENGTH = 3_000_000
+
+export const PERSONAL_BOOK_COVER_THEMES = Object.freeze([
+  'amber',
+  'violet',
+  'ocean',
+  'forest',
+  'ink',
+])
 
 function normalizedText(value) {
   return typeof value === 'string' ? value.normalize('NFKC').trim() : ''
@@ -50,6 +59,14 @@ export function createPersonalReadingPackage(input) {
     .split(/[、,，]/)
     .map((name) => name.trim())
     .filter(Boolean)
+  const coverTheme = PERSONAL_BOOK_COVER_THEMES.includes(input?.coverTheme)
+    ? input.coverTheme
+    : PERSONAL_BOOK_COVER_THEMES[0]
+  const coverImage = typeof input?.coverImage === 'string'
+    && /^data:image\/(?:png|jpeg|webp);base64,/i.test(input.coverImage)
+    && input.coverImage.length <= MAX_COVER_DATA_URL_LENGTH
+    ? input.coverImage
+    : ''
   const pkg = {
     schemaVersion: READING_PACKAGE_SCHEMA_VERSION,
     packageVersion: '1.0.0-personal',
@@ -60,6 +77,10 @@ export function createPersonalReadingPackage(input) {
       title,
       author,
       originalLanguage: normalizedText(input?.originalLanguage) || 'unknown',
+      cover: {
+        theme: coverTheme,
+        ...(coverImage ? { image: coverImage } : {}),
+      },
     },
     edition: {
       id: ids.editionId,
@@ -88,5 +109,6 @@ export function personalCatalogEntry(pkg) {
       pkg.edition.publishedAt,
     ].filter((value) => value && value !== '未知').join(' · ') || '个人书籍',
     source: 'personal',
+    cover: pkg.book.cover || { theme: PERSONAL_BOOK_COVER_THEMES[0] },
   }
 }

@@ -246,6 +246,7 @@ export function ReadingGeoMap({
         <span><i className="real" />真实地点</span>
         <span><i className="prototype" />原型地点</span>
         <span><i className="approximate" />模糊区域</span>
+        <span><i className="fictional" />虚构参考区域</span>
       </div>
     </div>
   )

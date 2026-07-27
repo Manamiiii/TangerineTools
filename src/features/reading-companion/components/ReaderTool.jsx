@@ -43,6 +43,7 @@ import { recognizeReadingImage } from '../ocr/localOcr.js'
 import {
   READING_MODEL_STORAGE_KEYS,
   analyzeReadingExcerpt,
+  translateReadingPlaceQuery,
 } from '../model/modelAdapter.js'
 import {
   READING_MODEL_PROVIDER,
@@ -54,6 +55,7 @@ import {
   readingModelProviderDefaults,
 } from '../model/modelProviders.js'
 import {
+  PERSONAL_BOOK_COVER_THEMES,
   createPersonalReadingPackage,
   personalCatalogEntry,
 } from '../domain/personalBooks.js'
@@ -69,6 +71,7 @@ import {
   SPOILER_RISK,
   canRevealRisk,
   clearObservedPlaceLocation,
+  confirmObservedPlaceApproximateArea,
   confirmObservedPlaceLocation,
   extractLocalEntityCandidates,
   OBSERVED_ENTITY_KIND,
@@ -78,6 +81,7 @@ import {
   readingPlaceRelations,
   readerConfirmedMapEntities,
   scanOnDemandEntities,
+  scanObservedEntities,
   spoilerGateAction,
   unlockedOnDemandEntities,
   upsertObservedEntity,
@@ -116,6 +120,14 @@ const READER_TAB = Object.freeze({
   FACTS: 'facts',
   SETTINGS: 'settings',
 })
+
+const BOOK_COVER_THEME_LABELS = {
+  amber: '暖金',
+  violet: '紫罗兰',
+  ocean: '深海',
+  forest: '森林',
+  ink: '墨色',
+}
 
 function observedRecordAction(observedEntities, name, kind, currentChapterId, chapters) {
   const existing = observedEntities.find((item) => (
@@ -190,6 +202,25 @@ function ReaderError({ message }) {
   )
 }
 
+function BookCover({ title, author = '', cover, compact = false }) {
+  const theme = PERSONAL_BOOK_COVER_THEMES.includes(cover?.theme)
+    ? cover.theme
+    : 'amber'
+  return (
+    <span className={`reader-visual-cover theme-${theme}${compact ? ' compact' : ''}`}>
+      {cover?.image ? (
+        <img src={cover.image} alt="" />
+      ) : (
+        <>
+          <i aria-hidden="true" />
+          <strong>{title || '书名'}</strong>
+          {author && <small>{author}</small>}
+        </>
+      )}
+    </span>
+  )
+}
+
 function PersonalBookCreator({ onCreate, onCancel }) {
   const [form, setForm] = useState({
     title: '',
@@ -201,6 +232,8 @@ function PersonalBookCreator({ onCreate, onCancel }) {
     originalLanguage: '',
     chapterCount: 1,
     chapterText: '',
+    coverTheme: 'amber',
+    coverImage: '',
   })
   const [status, setStatus] = useState('')
   const [saving, setSaving] = useState(false)
@@ -208,6 +241,22 @@ function PersonalBookCreator({ onCreate, onCancel }) {
   function change(key, value) {
     setForm((current) => ({ ...current, [key]: value }))
     setStatus('')
+  }
+
+  function chooseCover(event) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    if (file.size > 1_500_000) {
+      setStatus('封面图片不能超过 1.5 MB。')
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => {
+      change('coverImage', typeof reader.result === 'string' ? reader.result : '')
+    }
+    reader.onerror = () => setStatus('封面图片读取失败。')
+    reader.readAsDataURL(file)
   }
 
   async function submit(event) {
@@ -234,6 +283,39 @@ function PersonalBookCreator({ onCreate, onCancel }) {
         </button>
       </div>
       <form onSubmit={submit}>
+        <div className="reader-cover-builder">
+          <BookCover
+            title={form.title}
+            author={form.author}
+            cover={{ theme: form.coverTheme, image: form.coverImage }}
+          />
+          <div>
+            <strong>书架封面</strong>
+            <div className="reader-cover-themes" aria-label="封面配色">
+              {PERSONAL_BOOK_COVER_THEMES.map((theme) => (
+                <button
+                  key={theme}
+                  type="button"
+                  className={`theme-${theme}${form.coverTheme === theme ? ' active' : ''}`}
+                  onClick={() => change('coverTheme', theme)}
+                >
+                  {BOOK_COVER_THEME_LABELS[theme]}
+                </button>
+              ))}
+            </div>
+            <div className="reader-cover-image-actions">
+              <label className="btn btn-sm">
+                <Image size={13} /> 使用封面图片
+                <input type="file" accept="image/png,image/jpeg,image/webp" onChange={chooseCover} hidden />
+              </label>
+              {form.coverImage && (
+                <button type="button" className="btn btn-sm" onClick={() => change('coverImage', '')}>
+                  恢复文字封面
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
         <div className="reader-personal-book-grid">
           <label>
             <span>书名 *</span>
@@ -384,7 +466,11 @@ function ReadingLibrary({ catalog, onSelect, onCreate, onDelete }) {
                   type="button"
                   onClick={() => onSelect(entry.id)}
                 >
-                  <span className="reader-book-cover"><BookOpen size={26} /></span>
+                  <BookCover
+                    title={entry.title}
+                    cover={entry.cover}
+                    compact
+                  />
                   <span className="reader-book-copy">
                     <strong>{entry.title}</strong>
                     <small>{entry.editionLabel}</small>
@@ -420,6 +506,7 @@ function ModelAnalysisPanel({
   bookTitle,
   currentChapter,
   onConfirmCandidate,
+  actionFor,
   modelConfig,
   onOpenSettings,
 }) {
@@ -431,6 +518,12 @@ function ModelAnalysisPanel({
     && modelConfig.model.trim()
     && modelConfig.apiKey.trim(),
   )
+
+  useEffect(() => {
+    setCandidates([])
+    setMessage('')
+    setRequestState('idle')
+  }, [excerpt])
 
   async function analyze() {
     setRequestState('working')
@@ -461,12 +554,13 @@ function ModelAnalysisPanel({
 
   async function confirm(candidate) {
     try {
-      const saved = await onConfirmCandidate(candidate)
+      const action = actionFor(candidate.name, candidate.kind)
+      await onConfirmCandidate(candidate)
       setCandidates((current) => current.filter((item) => item !== candidate))
       setMessage(
-        saved
-          ? `已把“${candidate.name}”记在${currentChapter?.label || '当前章'}。`
-          : `“${candidate.name}”已经记录在当前章或更早章节。`,
+        action.type === 'move-earlier'
+          ? `已把“${candidate.name}”从${action.existingChapter?.label || '较后章节'}提前到${currentChapter?.label || '当前章'}。`
+          : `已把“${candidate.name}”记在${currentChapter?.label || '当前章'}。`,
       )
     } catch (error) {
       setMessage(error?.message || '保存模型候选失败')
@@ -503,29 +597,37 @@ function ModelAnalysisPanel({
       {message && <p className="reader-model-message" role="status">{message}</p>}
       {candidates.length > 0 && (
         <div className="reader-model-candidates">
-          {candidates.map((candidate) => (
-            <div
-              className="reader-model-candidate"
-              key={`${candidate.kind}:${candidate.name}`}
-            >
-              <div>
-                <strong>{candidate.name}</strong>
-                <span>
-                  {OBSERVED_KIND_LABELS[candidate.kind]}
-                  {candidate.kind === OBSERVED_ENTITY_KIND.PLACE
-                    ? ` · ${OBSERVED_PLACE_KIND_LABELS[candidate.placeKind]}`
-                    : ''}
-                  {candidate.confidence !== null
-                    ? ` · 模型置信度 ${Math.round(candidate.confidence * 100)}%`
-                    : ''}
-                </span>
-                {candidate.reason && <p>{candidate.reason}</p>}
+          {candidates.map((candidate) => {
+            const action = actionFor(candidate.name, candidate.kind)
+            return (
+              <div
+                className="reader-model-candidate"
+                key={`${candidate.kind}:${candidate.name}`}
+              >
+                <div>
+                  <strong>{candidate.name}</strong>
+                  <span>
+                    {OBSERVED_KIND_LABELS[candidate.kind]}
+                    {candidate.kind === OBSERVED_ENTITY_KIND.PLACE
+                      ? ` · ${OBSERVED_PLACE_KIND_LABELS[candidate.placeKind]}`
+                      : ''}
+                    {candidate.confidence !== null
+                      ? ` · 模型置信度 ${Math.round(candidate.confidence * 100)}%`
+                      : ''}
+                  </span>
+                  {candidate.reason && <p>{candidate.reason}</p>}
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-sm"
+                  disabled={action.type === 'recorded'}
+                  onClick={() => confirm(candidate)}
+                >
+                  <Plus size={13} /> {action.label}
+                </button>
               </div>
-              <button type="button" className="btn btn-sm" onClick={() => confirm(candidate)}>
-                <Plus size={13} /> 核对后确认
-              </button>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>
@@ -807,6 +909,13 @@ function QuickObservedEntityForm({
   const [placeKind, setPlaceKind] = useState(OBSERVED_PLACE_KIND.UNKNOWN)
   const [status, setStatus] = useState('')
   const [lastSavedKind, setLastSavedKind] = useState('')
+  const currentAction = observedRecordAction(
+    observedEntities,
+    name,
+    kind,
+    currentChapterId,
+    chapters,
+  )
 
   async function addObservedEntity(event) {
     event.preventDefault()
@@ -821,14 +930,18 @@ function QuickObservedEntityForm({
         firstSeenChapterId: currentChapterId,
       }, chapters)
       if (next === observedEntities) {
-        setStatus('这个名称已经记录在当前章或更早章节。')
+        setStatus(`这个名称${currentAction.label}。`)
         return
       }
       await onChange(next)
       setLastSavedKind(kind)
       setName('')
       setPlaceKind(OBSERVED_PLACE_KIND.UNKNOWN)
-      setStatus(`已记在${currentChapter?.label || '当前章'}，现在可以继续阅读。`)
+      setStatus(
+        currentAction.type === 'move-earlier'
+          ? `已从${currentAction.existingChapter?.label || '较后章节'}提前到${currentChapter?.label || '当前章'}。`
+          : `已记在${currentChapter?.label || '当前章'}，现在可以继续阅读。`,
+      )
     } catch (error) {
       setStatus(error?.message || '保存失败')
     }
@@ -871,8 +984,12 @@ function QuickObservedEntityForm({
             </select>
           </label>
         )}
-        <button type="submit" className="btn btn-sm" disabled={!name.trim()}>
-          <Plus size={13} /> 记在{currentChapter?.label || '当前章'}
+        <button
+          type="submit"
+          className="btn btn-sm"
+          disabled={!name.trim() || currentAction.type === 'recorded'}
+        >
+          <Plus size={13} /> {currentAction.label}
         </button>
       </form>
       {status && (
@@ -884,6 +1001,43 @@ function QuickObservedEntityForm({
           )}
         </div>
       )}
+    </div>
+  )
+}
+
+function ObservedPagination({
+  page,
+  pageSize,
+  totalPages,
+  totalItems,
+  onPageChange,
+  onPageSizeChange,
+}) {
+  return (
+    <div className="reader-observed-pagination">
+      <span>共 {totalItems} 条</span>
+      <label>
+        每页
+        <select value={pageSize} onChange={(event) => onPageSizeChange(Number(event.target.value))}>
+          {[10, 20, 50].map((size) => <option key={size} value={size}>{size}</option>)}
+        </select>
+      </label>
+      <button type="button" disabled={page <= 1} onClick={() => onPageChange(1)}>首页</button>
+      <button type="button" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>上一页</button>
+      <label>
+        第
+        <input
+          type="number"
+          min="1"
+          max={totalPages}
+          value={page}
+          onChange={(event) => onPageChange(Number(event.target.value))}
+          aria-label="跳转到指定页"
+        />
+        / {totalPages} 页
+      </label>
+      <button type="button" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>下一页</button>
+      <button type="button" disabled={page >= totalPages} onClick={() => onPageChange(totalPages)}>末页</button>
     </div>
   )
 }
@@ -900,11 +1054,57 @@ function ObservedEntitiesPanel({
   const [kind, setKind] = useState(OBSERVED_ENTITY_KIND.PLACE)
   const [placeKind, setPlaceKind] = useState(OBSERVED_PLACE_KIND.UNKNOWN)
   const [status, setStatus] = useState('')
+  const [kindFilter, setKindFilter] = useState('all')
+  const [pageSize, setPageSize] = useState(10)
+  const [page, setPage] = useState(1)
+  const currentAction = observedRecordAction(
+    observedEntities,
+    name,
+    kind,
+    currentChapterId,
+    chapters,
+  )
   const visibleEntities = useMemo(
     () => visibleObservedEntities(observedEntities, currentChapterId, chapters),
     [observedEntities, currentChapterId, chapters],
   )
   const hiddenCount = observedEntities.length - visibleEntities.length
+  const filteredEntities = useMemo(
+    () => visibleEntities
+      .filter((entity) => kindFilter === 'all' || entity.kind === kindFilter)
+      .sort((left, right) => {
+        const leftChapter = chapters.findIndex((item) => item.id === left.firstSeenChapterId)
+        const rightChapter = chapters.findIndex((item) => item.id === right.firstSeenChapterId)
+        return leftChapter - rightChapter || left.name.localeCompare(right.name, 'zh-CN')
+      }),
+    [visibleEntities, kindFilter, chapters],
+  )
+  const totalPages = Math.max(1, Math.ceil(filteredEntities.length / pageSize))
+  const safePage = Math.min(Math.max(1, page), totalPages)
+  const pageEntities = filteredEntities.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize,
+  )
+  const groupedPageEntities = Object.entries(OBSERVED_KIND_LABELS)
+    .map(([groupKind, label]) => ({
+      kind: groupKind,
+      label,
+      entities: pageEntities.filter((entity) => entity.kind === groupKind),
+    }))
+    .filter((group) => group.entities.length > 0)
+
+  useEffect(() => {
+    setPage(1)
+  }, [kindFilter, pageSize])
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages)
+  }, [page, totalPages])
+
+  function changePage(nextPage) {
+    if (!Number.isFinite(nextPage)) return
+    setPage(Math.min(Math.max(1, Math.trunc(nextPage)), totalPages))
+  }
 
   async function addObservedEntity(event) {
     event.preventDefault()
@@ -918,13 +1118,17 @@ function ObservedEntitiesPanel({
         firstSeenChapterId: currentChapterId,
       }, chapters)
       if (next === observedEntities) {
-        setStatus('这个名称已经记录在当前章或更早章节。')
+        setStatus(`这个名称${currentAction.label}。`)
         return
       }
       await onChange(next)
       setName('')
       setPlaceKind(OBSERVED_PLACE_KIND.UNKNOWN)
-      setStatus(`已把首次遇到位置记在${currentChapter?.label || '当前章'}。`)
+      setStatus(
+        currentAction.type === 'move-earlier'
+          ? `已从${currentAction.existingChapter?.label || '较后章节'}提前到${currentChapter?.label || '当前章'}。`
+          : `已把首次遇到位置记在${currentChapter?.label || '当前章'}。`,
+      )
     } catch (error) {
       setStatus(error?.message || '保存失败')
     }
@@ -1000,14 +1204,49 @@ function ObservedEntitiesPanel({
             ))}
           </select>
         </label>
-        <button type="submit" className="btn reader-observed-add" disabled={!name.trim()}>
-          <Plus size={15} /> 记在{currentChapter?.label || '当前章'}
+        <button
+          type="submit"
+          className="btn reader-observed-add"
+          disabled={!name.trim() || currentAction.type === 'recorded'}
+        >
+          <Plus size={15} /> {currentAction.label}
         </button>
       </form>
       {status && <p className="reader-observed-status" role="status">{status}</p>}
-      {visibleEntities.length > 0 ? (
-        <div className="reader-observed-list">
-          {visibleEntities.map((entity) => {
+      <div className="reader-observed-toolbar">
+        <div className="reader-observed-filters" aria-label="按类型筛选">
+          {[['all', '全部'], ...Object.entries(OBSERVED_KIND_LABELS)].map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              className={kindFilter === value ? 'active' : ''}
+              onClick={() => setKindFilter(value)}
+            >
+              {label}
+              <span>
+                {value === 'all'
+                  ? visibleEntities.length
+                  : visibleEntities.filter((entity) => entity.kind === value).length}
+              </span>
+            </button>
+          ))}
+        </div>
+        <ObservedPagination
+          page={safePage}
+          pageSize={pageSize}
+          totalPages={totalPages}
+          totalItems={filteredEntities.length}
+          onPageChange={changePage}
+          onPageSizeChange={setPageSize}
+        />
+      </div>
+      {pageEntities.length > 0 ? (
+        <div className="reader-observed-groups">
+          {groupedPageEntities.map((group) => (
+            <section className="reader-observed-group" key={group.kind}>
+              <h4>{group.label}<span>{group.entities.length}</span></h4>
+              <div className="reader-observed-list">
+          {group.entities.map((entity) => {
             const chapter = chapters.find((item) => item.id === entity.firstSeenChapterId)
             const match = matchOnDemandEntity(onDemandEntities, entity.name, entity.kind)
             return (
@@ -1042,8 +1281,15 @@ function ObservedEntitiesPanel({
                   )}
                   {entity.mapLocation && (
                     <div className="reader-observed-match">
-                      <b>个人确认的现实位置</b>
+                      <b>
+                        {entity.mapLocation.mode === 'approximate-area'
+                          ? '个人设置的参考区域'
+                          : '个人确认的现实位置'}
+                      </b>
                       <span>{entity.mapLocation.label}</span>
+                      {entity.mapLocation.mode === 'approximate-area' && (
+                        <span>半径约 {entity.mapLocation.radiusKm} 公里 · 非精确位置</span>
+                      )}
                       <button
                         type="button"
                         className="reader-observed-unlink"
@@ -1065,9 +1311,22 @@ function ObservedEntitiesPanel({
               </div>
             )
           })}
+              </div>
+            </section>
+          ))}
+          <ObservedPagination
+            page={safePage}
+            pageSize={pageSize}
+            totalPages={totalPages}
+            totalItems={filteredEntities.length}
+            onPageChange={changePage}
+            onPageSizeChange={setPageSize}
+          />
         </div>
       ) : (
-        <div className="reader-observed-empty">当前章及之前还没有手动记录的名称。</div>
+        <div className="reader-observed-empty">
+          {visibleEntities.length > 0 ? '当前筛选下没有记录。' : '当前章及之前还没有手动记录的名称。'}
+        </div>
       )}
       {hiddenCount > 0 && (
         <p className="reader-observed-hidden">
@@ -1086,6 +1345,7 @@ function ReadingMapPanel({
   chapters,
   onChangeObservedEntities,
   mapConfig,
+  modelConfig,
   onOpenSettings,
   isActive,
 }) {
@@ -1093,6 +1353,9 @@ function ReadingMapPanel({
   const [renderedMapConfig, setRenderedMapConfig] = useState(mapConfig)
   const [lookupTargetId, setLookupTargetId] = useState('')
   const [lookupQuery, setLookupQuery] = useState('')
+  const [lookupMode, setLookupMode] = useState('exact')
+  const [areaRadiusKm, setAreaRadiusKm] = useState(50)
+  const [translationState, setTranslationState] = useState('idle')
   const [lookupState, setLookupState] = useState('idle')
   const [lookupResults, setLookupResults] = useState([])
   const [lookupMessage, setLookupMessage] = useState('')
@@ -1120,8 +1383,17 @@ function ReadingMapPanel({
   const searchableObservedPlaces = useMemo(
     () => visibleObservedPlaces.filter((entity) => (
       !entity.mapLocation
-      && entity.placeKind === OBSERVED_PLACE_KIND.REAL
-      && !matchOnDemandEntity(onDemandEntities, entity.name, entity.kind)
+      && (
+        (
+          entity.placeKind === OBSERVED_PLACE_KIND.REAL
+          && !matchOnDemandEntity(onDemandEntities, entity.name, entity.kind)
+        )
+        || [
+          OBSERVED_PLACE_KIND.FICTIONAL,
+          OBSERVED_PLACE_KIND.PROTOTYPE,
+          OBSERVED_PLACE_KIND.APPROXIMATE,
+        ].includes(entity.placeKind)
+      )
     )),
     [visibleObservedPlaces, onDemandEntities],
   )
@@ -1129,7 +1401,10 @@ function ReadingMapPanel({
   const [selectedPlaceId, setSelectedPlaceId] = useState('')
   const selectedPlace = places.find((place) => place.id === selectedPlaceId) || places[0] || null
   const placeRelations = useMemo(
-    () => readingPlaceRelations(places, selectedPlace?.id),
+    () => readingPlaceRelations(
+      places.filter((place) => place.geometry?.type !== 'area'),
+      selectedPlace?.id,
+    ),
     [places, selectedPlace?.id],
   )
 
@@ -1190,10 +1465,34 @@ function ReadingMapPanel({
 
   function beginLookup(place) {
     setLookupTargetId(place.id)
-    setLookupQuery(place.name)
+    const nextMode = place.placeKind === OBSERVED_PLACE_KIND.REAL ? 'exact' : 'approximate-area'
+    setLookupMode(nextMode)
+    setLookupQuery(nextMode === 'exact' ? place.name : '')
+    setAreaRadiusKm(50)
+    setTranslationState('idle')
     setLookupResults([])
     setLookupState('idle')
     setLookupMessage('')
+  }
+
+  async function translateLookupQuery() {
+    setTranslationState('working')
+    setLookupMessage('')
+    try {
+      const translated = await translateReadingPlaceQuery({
+        endpoint: modelConfig.endpoint,
+        model: modelConfig.model,
+        apiKey: modelConfig.apiKey,
+        temperature: modelConfig.temperature,
+        query: lookupQuery,
+      })
+      setLookupQuery(translated)
+      setTranslationState('done')
+      setLookupMessage('已生成英文地图搜索词，请核对后再搜索。')
+    } catch (error) {
+      setTranslationState('error')
+      setLookupMessage(error?.message || '生成英文搜索词失败')
+    }
   }
 
   async function submitLookup(event) {
@@ -1224,17 +1523,28 @@ function ReadingMapPanel({
     if (!lookupTarget) return
     setLookupMessage('')
     try {
-      const next = confirmObservedPlaceLocation(
-        observedEntities,
-        lookupTarget.id,
-        result,
-      )
+      const next = lookupMode === 'approximate-area'
+        ? confirmObservedPlaceApproximateArea(
+            observedEntities,
+            lookupTarget.id,
+            result,
+            areaRadiusKm,
+          )
+        : confirmObservedPlaceLocation(
+            observedEntities,
+            lookupTarget.id,
+            result,
+          )
       await onChangeObservedEntities(next)
       setLookupTargetId('')
       setLookupQuery('')
       setLookupResults([])
       setLookupState('idle')
-      setLookupMessage(`已把“${lookupTarget.name}”作为个人确认的现实地点加入地图。`)
+      setLookupMessage(
+        lookupMode === 'approximate-area'
+          ? `已把“${lookupTarget.name}”标在参考区域内；圆圈不代表精确位置。`
+          : `已把“${lookupTarget.name}”作为个人确认的现实地点加入地图。`,
+      )
     } catch (error) {
       setLookupMessage(error?.message || '保存地图位置失败')
     }
@@ -1265,7 +1575,11 @@ function ReadingMapPanel({
       </div>
       <div className="reader-map-provider-panel">
         <strong>{READING_MAP_PROVIDERS[providerId].label}</strong>
-        <span>{READING_MAP_PROVIDERS[providerId].description}</span>
+        <span>
+          {providerId === READING_MAP_PROVIDER.INTERNATIONAL
+            ? '搜索结果优先显示中文；底图文字由 OpenStreetMap 数据决定。'
+            : READING_MAP_PROVIDERS[providerId].description}
+        </span>
         {providerId === READING_MAP_PROVIDER.DOMESTIC && !tiandituToken && (
           <button type="button" onClick={onOpenSettings}>填写天地图 Key</button>
         )}
@@ -1273,10 +1587,10 @@ function ReadingMapPanel({
       <div className="reader-place-lookup">
         <div className="reader-place-lookup-heading">
           <div>
-            <strong>资料包外地点</strong>
-            <span>只搜索你已经记录、但资料包尚未收录的地点。</span>
+            <strong>补充地图位置</strong>
+            <span>现实地点可确认位置；虚构或模糊地点只能设置宽泛参考区域。</span>
           </div>
-          <small>点击搜索后，搜索词会发送给所选地图服务。</small>
+          <small>仅在点击搜索后外发搜索词</small>
         </div>
         {searchableObservedPlaces.length > 0 ? (
           <div className="reader-place-lookup-targets">
@@ -1287,30 +1601,66 @@ function ReadingMapPanel({
                 type="button"
                 onClick={() => beginLookup(place)}
               >
-                <MapPin size={13} /> 为“{place.name}”查找现实位置
+                <MapPin size={13} />
+                {place.placeKind === OBSERVED_PLACE_KIND.REAL
+                  ? `定位“${place.name}”`
+                  : `设置“${place.name}”的参考区域`}
               </button>
             ))}
           </div>
         ) : (
-          <p>只有明确标记为“现实地点”的资料包外名称才会出现在这里；虚构或不确定地点不会发送给公网地图。</p>
+          <p>没有等待定位的地点。</p>
         )}
         {lookupTarget && (
           <>
             <div className="reader-place-name-context">
-              <span>作品中的名称</span>
+              <span>{lookupMode === 'exact' ? '作品名称' : '虚构或模糊地点'}</span>
               <strong>{lookupTarget.name}</strong>
-              <small>公网地图主要收录现代名称。历史名称或旧译名可能无法直接命中，系统不会自行猜测对应关系。</small>
+              <small>
+                {lookupMode === 'exact'
+                  ? '请核对现代地图名称。'
+                  : '请输入它可能所在的现实国家、州、省或地区，不要搜索虚构名称本身。'}
+              </small>
             </div>
             <form className="reader-place-lookup-form" onSubmit={submitLookup}>
               <label>
-                <span>现代地图搜索词</span>
+                <span>{lookupMode === 'exact' ? '现代地图搜索词' : '现实参考区域'}</span>
                 <input
                   value={lookupQuery}
                   onChange={(event) => setLookupQuery(event.target.value)}
                   maxLength={120}
-                  placeholder="可手动补充英文名、州或国家"
+                  placeholder={lookupMode === 'exact'
+                    ? '例如 Virginia, United States'
+                    : '例如 Georgia, United States'}
                 />
               </label>
+              {lookupMode === 'approximate-area' && (
+                <label className="reader-place-radius">
+                  <span>区域半径</span>
+                  <select
+                    value={areaRadiusKm}
+                    onChange={(event) => setAreaRadiusKm(Number(event.target.value))}
+                  >
+                    {[20, 50, 100, 200, 500].map((radius) => (
+                      <option key={radius} value={radius}>{radius} 公里</option>
+                    ))}
+                  </select>
+                </label>
+              )}
+              {providerId === READING_MAP_PROVIDER.INTERNATIONAL
+                && /[\p{Script=Han}]/u.test(lookupQuery)
+                && (
+                  <button
+                    type="button"
+                    className="btn btn-sm"
+                    disabled={!modelConfig.apiKey || translationState === 'working'}
+                    onClick={translateLookupQuery}
+                    title={modelConfig.apiKey ? '' : '请先在设置中配置模型'}
+                  >
+                    <Sparkles size={13} />
+                    {translationState === 'working' ? '翻译中…' : '生成英文搜索词'}
+                  </button>
+                )}
               <button type="submit" className="btn btn-sm" disabled={!lookupQuery.trim() || lookupState === 'loading'}>
                 <ScanSearch size={13} /> {lookupState === 'loading' ? '搜索中…' : '搜索公网地图'}
               </button>
@@ -1332,11 +1682,17 @@ function ReadingMapPanel({
                   </span>
                 </div>
                 <button type="button" onClick={() => confirmLookupResult(result)}>
-                  确认“{lookupTarget?.name}”是这个现实地点
+                  {lookupMode === 'approximate-area'
+                    ? '用作宽泛参考区域'
+                    : `确认“${lookupTarget?.name}”是这里`}
                 </button>
               </article>
             ))}
-            <small>这些只是现代地图候选，不证明它与作品年代中的名称、边界或位置关系相同；不确定时保持未定位。</small>
+            <small>
+              {lookupMode === 'approximate-area'
+                ? '将显示半透明圆圈，不会标成精确地点。'
+                : '现代地图候选需要你确认，不代表作品年代边界。'}
+            </small>
           </div>
         )}
         {lookupMessage && <p className="reader-place-lookup-message" role="status">{lookupMessage}</p>}
@@ -1354,6 +1710,7 @@ function ReadingMapPanel({
           <div className="reader-map-background-card">
             <MapPin size={20} />
             <strong>当前还没有可定位地点</strong>
+            <span>先显示世界视图；加入地点后会自动缩放到相关区域。</span>
           </div>
         ) : (
           <div className="reader-place-list">
@@ -1381,37 +1738,52 @@ function ReadingMapPanel({
               )}
               {selectedPlace.accessMode === 'reader-confirmed-exact-match' && (
                 <p className="reader-place-unlock-note">
-                  由你输入“{selectedPlace.readerConfirmedName}”后精确解锁，不是系统预判的出现章节。
+                  由你在阅读中确认后显示
                 </p>
               )}
               {selectedPlace.accessMode === 'reader-confirmed-geocoder' && (
                 <p className="reader-place-unlock-note">
-                  这是你从公网地图候选中确认的现代现实位置，不是正式书籍资料。
+                  个人确认的现代现实位置
                 </p>
               )}
-              {selectedPlace.geocodingProviderId && (
-                <p>
-                  位置候选来源：
-                  {selectedPlace.geocodingProviderId === READING_MAP_PROVIDER.DOMESTIC
-                    ? '天地图'
-                    : 'OpenStreetMap Nominatim'}
+              {selectedPlace.accessMode === 'reader-confirmed-approximate-area' && (
+                <p className="reader-place-unlock-note">
+                  个人设置的宽泛参考区域，不是精确位置
                 </p>
               )}
-              {selectedPlace.parentLabel && <p>地理层级：{selectedPlace.parentLabel}</p>}
-              {selectedPlace.geometry ? (
-                <p>
-                  {selectedPlace.geometry.type === 'area'
-                    ? '区域中心约 '
-                    : selectedPlace.geometry.type === 'geojson'
-                      ? `${selectedPlace.geometry.geojson?.type || '路径'}代表位置约 `
-                      : ''}
-                  {selectedPlace.geometry.latitude.toFixed(4)}, {selectedPlace.geometry.longitude.toFixed(4)}
-                  {selectedPlace.geometry.type === 'area' && ` · 半径约 ${selectedPlace.geometry.radiusKm} km`}
-                </p>
-              ) : (
-                <p>资料包未发布可显示的位置。</p>
+              <dl className="reader-place-meta">
+                {selectedPlace.parentLabel && (
+                  <div><dt>区域</dt><dd>{selectedPlace.parentLabel}</dd></div>
+                )}
+                {selectedPlace.geocodingProviderId && (
+                  <div>
+                    <dt>来源</dt>
+                    <dd>
+                      {selectedPlace.geocodingProviderId === READING_MAP_PROVIDER.DOMESTIC
+                        ? '天地图'
+                        : 'OpenStreetMap Nominatim'}
+                    </dd>
+                  </div>
+                )}
+                <div>
+                  <dt>位置</dt>
+                  <dd>
+                    {selectedPlace.geometry
+                      ? [
+                          `${selectedPlace.geometry.latitude.toFixed(4)}, ${selectedPlace.geometry.longitude.toFixed(4)}`,
+                          selectedPlace.geometry.type === 'area'
+                            ? `半径约 ${selectedPlace.geometry.radiusKm} km`
+                            : selectedPlace.geometry.type === 'geojson'
+                              ? selectedPlace.geometry.geojson?.type || '路径或范围'
+                              : null,
+                        ].filter(Boolean).join(' · ')
+                      : '未发布可显示的位置'}
+                  </dd>
+                </div>
+              </dl>
+              {selectedPlace.scopeNote && (
+                <p className="reader-place-scope-note">{selectedPlace.scopeNote}</p>
               )}
-              {selectedPlace.scopeNote && <p>{selectedPlace.scopeNote}</p>}
               {placeRelations.length > 0 && (
                 <div className="reader-place-relations">
                   <strong>与其他已读地点</strong>
@@ -1428,6 +1800,8 @@ function ReadingMapPanel({
               <small>
                 {selectedPlace.accessMode === 'reader-confirmed-geocoder'
                   ? '个人确认位置只用于当前阅读地图，不会写回正式资料包。'
+                  : selectedPlace.accessMode === 'reader-confirmed-approximate-area'
+                    ? '参考区域只表示大致背景，不参与精确距离判断。'
                   : '仅展示资料包中已审计的空间字段，不生成剧情解释。'}
               </small>
           </div>
@@ -1629,31 +2003,6 @@ export function ReaderTool({ scene }) {
     if (activeTab === READER_TAB.MAP) setMapMounted(true)
   }, [activeTab])
 
-  useEffect(() => {
-    const text = excerpt.trim()
-    if (!text || !readingPackage) {
-      setScanResults([])
-      setLocalCandidates([])
-      return undefined
-    }
-    const timer = setTimeout(() => {
-      const knownMatches = scanOnDemandEntities(
-        text,
-        readingPackage.onDemandEntities || [],
-      )
-      const knownNames = new Set(knownMatches.map((item) => (
-        normalizeObservedEntityName(item.matchedTerm)
-      )))
-      setScanResults(knownMatches)
-      setLocalCandidates(
-        extractLocalEntityCandidates(text).filter((candidate) => (
-          !knownNames.has(normalizeObservedEntityName(candidate.name))
-        )),
-      )
-    }, 250)
-    return () => clearTimeout(timer)
-  }, [excerpt, readingPackage])
-
   const editionId = readingPackage?.edition.id || ''
   const savedState = useLiveQuery(
     () => (editionId ? getReadingState(scene.id, editionId) : null),
@@ -1676,6 +2025,37 @@ export function ReaderTool({ scene }) {
     ].filter(Boolean).join(' · ')
   }, [readingPackage])
   const observedEntities = savedState?.observedEntities || []
+
+  useEffect(() => {
+    const text = excerpt.trim()
+    if (!text || !readingPackage) {
+      setScanResults([])
+      setLocalCandidates([])
+      return undefined
+    }
+    const timer = setTimeout(() => {
+      const packageMatches = scanOnDemandEntities(
+        text,
+        readingPackage.onDemandEntities || [],
+      ).map((match) => ({ ...match, source: 'package' }))
+      const observedMatches = scanObservedEntities(text, observedEntities)
+      const seen = new Set()
+      const knownMatches = [...packageMatches, ...observedMatches].filter((match) => {
+        const key = `${match.entity.kind}:${normalizeObservedEntityName(match.matchedTerm)}`
+        if (seen.has(key)) return false
+        seen.add(key)
+        return true
+      })
+      setScanResults(knownMatches)
+      setLocalCandidates(
+        extractLocalEntityCandidates(text).filter((candidate) => (
+          !seen.has(`${candidate.kind}:${normalizeObservedEntityName(candidate.name)}`)
+        )),
+      )
+    }, 250)
+    return () => clearTimeout(timer)
+  }, [excerpt, observedEntities, readingPackage])
+
   const unlockedEntities = useMemo(
     () => unlockedOnDemandEntities(
       readingPackage?.onDemandEntities,
@@ -1699,7 +2079,25 @@ export function ReaderTool({ scene }) {
     [observedEntities, currentChapterId, readingPackage?.chapters],
   )
   const visibleMapEntities = useMemo(
-    () => [...(readingPackage?.entities || []), ...unlockedEntities, ...personalMapEntities],
+    () => {
+      const merged = new Map()
+      for (const entity of [
+        ...(readingPackage?.entities || []),
+        ...unlockedEntities,
+        ...personalMapEntities,
+      ]) {
+        const key = `${entity.kind}:${normalizeObservedEntityName(entity.name)}`
+        const existing = merged.get(key)
+        merged.set(key, existing && entity.geometry
+          ? {
+              ...existing,
+              ...entity,
+              aliases: [...new Set([...(existing.aliases || []), ...(entity.aliases || [])])],
+            }
+          : existing || entity)
+      }
+      return [...merged.values()]
+    },
     [readingPackage?.entities, unlockedEntities, personalMapEntities],
   )
 
@@ -2167,9 +2565,12 @@ export function ReaderTool({ scene }) {
                       <strong>{result.matchedTerm}</strong>
                       <span>
                         {result.entity.kind === OBSERVED_ENTITY_KIND.PLACE
-                          ? PLACE_KIND_LABELS[result.entity.placeKind]
+                          ? (PLACE_KIND_LABELS[result.entity.placeKind]
+                            || OBSERVED_PLACE_KIND_LABELS[result.entity.placeKind]
+                            || '地点')
                           : OBSERVED_KIND_LABELS[result.entity.kind]}
                         {result.entity.name !== result.matchedTerm ? ` · 资料名 ${result.entity.name}` : ''}
+                        {result.source === 'observed' ? ' · 已遇到名称' : ''}
                       </span>
                     </div>
                     <button
@@ -2194,6 +2595,16 @@ export function ReaderTool({ scene }) {
               </div>
             )}
             {scanStatus && <p className="reader-scan-status" role="status">{scanStatus}</p>}
+
+            <ModelAnalysisPanel
+              excerpt={excerpt}
+              bookTitle={readingPackage.book.title}
+              currentChapter={currentChapter}
+              onConfirmCandidate={confirmModelCandidate}
+              actionFor={actionForObservedName}
+              modelConfig={modelConfig}
+              onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
+            />
 
             <QuickObservedEntityForm
               observedEntities={observedEntities}
@@ -2239,14 +2650,6 @@ export function ReaderTool({ scene }) {
               </div>
             )}
 
-            <ModelAnalysisPanel
-              excerpt={excerpt}
-              bookTitle={readingPackage.book.title}
-              currentChapter={currentChapter}
-              onConfirmCandidate={confirmModelCandidate}
-              modelConfig={modelConfig}
-              onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
-            />
           </section>
           </div>
         )}
@@ -2272,6 +2675,7 @@ export function ReaderTool({ scene }) {
               chapters={readingPackage.chapters}
               onChangeObservedEntities={changeObservedEntities}
               mapConfig={mapConfig}
+              modelConfig={modelConfig}
               onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
               isActive={activeTab === READER_TAB.MAP}
             />
