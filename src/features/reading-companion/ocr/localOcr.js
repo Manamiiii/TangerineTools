@@ -1,19 +1,24 @@
 let workerPromise = null
 let progressListener = null
 
-export function normalizeReadingOcrText(value) {
+export function normalizeReadingOcrText(value, { preserveLines = false } = {}) {
   if (typeof value !== 'string') return ''
-  return value
+  const lines = value
     .normalize('NFKC')
     .replace(/\r/g, '\n')
     .split(/\n+/)
     .map((line) => line.trim())
     .filter(Boolean)
-    .join(' ')
-    .replace(/([\p{Script=Han}，。！？；：、“”‘’（）《》【】])\s+(?=[\p{Script=Han}，。！？；：、“”‘’（）《》【】])/gu, '$1')
-    .replace(/\s+([，。！？；：、”’）》】])/gu, '$1')
-    .replace(/([“‘（《【])\s+/gu, '$1')
-    .replace(/[ \t]{2,}/g, ' ')
+  const cleaned = lines
+    .map((line) => line
+      .replace(/([\p{Script=Han}，。！？；：、“”‘’（）《》【】])\s+(?=[\p{Script=Han}，。！？；：、“”‘’（）《》【】])/gu, '$1')
+      .replace(/\s+([，。！？；：、”’）》】])/gu, '$1')
+      .replace(/([“‘（《【])\s+/gu, '$1')
+      .replace(/[ \t]{2,}/g, ' '))
+    .join(preserveLines ? '\n' : ' ')
+  return (preserveLines
+    ? cleaned
+    : cleaned.replace(/([\p{Script=Han}，。！？；：、“”‘’（）《》【】])\s+(?=[\p{Script=Han}，。！？；：、“”‘’（）《》【】])/gu, '$1'))
     .trim()
 }
 
@@ -31,7 +36,7 @@ async function createReadingOcrWorker() {
   })
 }
 
-export async function recognizeReadingImage(image, onProgress) {
+export async function recognizeReadingImage(image, onProgress, options) {
   if (!image) throw new Error('请先选择一张截图')
   progressListener = onProgress
   if (!workerPromise) {
@@ -43,7 +48,7 @@ export async function recognizeReadingImage(image, onProgress) {
   try {
     const worker = await workerPromise
     const result = await worker.recognize(image)
-    return normalizeReadingOcrText(result?.data?.text)
+    return normalizeReadingOcrText(result?.data?.text, options)
   } finally {
     progressListener = null
   }

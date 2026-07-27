@@ -204,6 +204,21 @@ test('book detail OCR prefers colon-labeled title and translators', () => {
   )
 })
 
+test('book metadata parsing recovers labels even when OCR merged all rows', () => {
+  assert.deepEqual(
+    extractPersonalBookMetadataFromText(
+      '书名:飘 作者:(美)玛格丽特·米切尔 译者:范纯海、夏旻 出版社:长江文艺出版社 ISBN:9787570202188',
+    ),
+    {
+      title: '飘',
+      author: '(美)玛格丽特·米切尔',
+      translators: ['范纯海', '夏旻'],
+      publisher: '长江文艺出版社',
+      isbn: '9787570202188',
+    },
+  )
+})
+
 test('reading map providers keep international fallback and require a domestic browser key', () => {
   assert.deepEqual(READING_MAP_DEFAULT_VIEW, { center: [20, 0], zoom: 2 })
   assert.equal(
@@ -1074,6 +1089,21 @@ test('OCR cleanup joins Chinese line wraps while preserving English word spaces'
   assert.equal(
     normalizeReadingOcrText('从 弗 吉 尼 亚 大 学\n拖 了 出 来。\nUniversity of\nVirginia'),
     '从弗吉尼亚大学拖了出来。 University of Virginia',
+  )
+})
+
+test('book metadata OCR cleanup preserves labeled field boundaries', () => {
+  assert.equal(
+    normalizeReadingOcrText([
+      '作者：玛格丽特·米切尔',
+      '译者：范纯海、夏旻',
+      '出版社：长江文艺出版社',
+    ].join('\n'), { preserveLines: true }),
+    [
+      '作者:玛格丽特·米切尔',
+      '译者:范纯海、夏旻',
+      '出版社:长江文艺出版社',
+    ].join('\n'),
   )
 })
 

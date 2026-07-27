@@ -25,13 +25,31 @@ export function extractPersonalBookMetadataFromText(value) {
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean)
+  const allLabels = [
+    '书名', '书籍名称', '作品名', '作品名称', '图书名称', '标题',
+    '作者', '著者', '译者', '翻译', '译',
+    '出版社', '出版方', '版权方', '出版时间', 'ISBN',
+  ]
+  const escapedLabel = (label) => [...label]
+    .map((character) => character.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'))
+    .join('\\s*')
   const labeledValue = (...labels) => {
     const acceptedLabels = new Set(labels.map((label) => label.replace(/\s/gu, '')))
-    return lines.map((line) => {
+    const lineValue = lines.map((line) => {
       const match = line.match(/^([^:：]{1,16})\s*[:：]\s*(.+)$/u)
       if (!match || !acceptedLabels.has(match[1].replace(/\s/gu, ''))) return ''
       return match[2].trim()
-    }).find(Boolean) || ''
+    }).find(Boolean)
+    if (lineValue && !allLabels.some((label) => (
+      new RegExp(`\\s${escapedLabel(label)}\\s*[:：]`, 'iu').test(lineValue)
+    ))) return lineValue
+    const requestedPattern = labels.map(escapedLabel).join('|')
+    const nextLabelPattern = allLabels.map(escapedLabel).join('|')
+    const mergedMatch = text.match(new RegExp(
+      `(?:^|\\s)(?:${requestedPattern})\\s*[:：]\\s*(.*?)(?=\\s+(?:${nextLabelPattern})\\s*[:：]|$)`,
+      'iu',
+    ))
+    return mergedMatch?.[1]?.trim() || lineValue || ''
   }
   const isbn = text.match(/\b97[89][\d\s-]{9,18}\d\b/u)?.[0]
     ?.replace(/[^\d]/g, '')

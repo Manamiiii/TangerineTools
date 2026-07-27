@@ -273,14 +273,18 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
     setStatus('')
     setMetadataScan({ state: 'working', fileName: file.name, progress: 0 })
     try {
-      const text = await recognizeReadingImage(file, (progress) => {
-        if (Number.isFinite(progress?.progress)) {
-          setMetadataScan((current) => ({
-            ...current,
-            progress: Math.round(progress.progress * 100),
-          }))
-        }
-      })
+      const text = await recognizeReadingImage(
+        file,
+        (progress) => {
+          if (Number.isFinite(progress?.progress)) {
+            setMetadataScan((current) => ({
+              ...current,
+              progress: Math.round(progress.progress * 100),
+            }))
+          }
+        },
+        { preserveLines: true },
+      )
       if (!text) throw new Error('截图中没有识别出文字')
       const localMetadata = extractPersonalBookMetadataFromText(text)
       const configured = Boolean(
