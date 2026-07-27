@@ -123,8 +123,8 @@ test('PWA registration and static cache use the same update generation', async (
     readFile(new URL('index.html', repoUrl), 'utf8'),
     readFile(new URL('public/sw.js', repoUrl), 'utf8'),
   ])
-  assert.match(html, /sw\.js\?v=4/)
-  assert.match(serviceWorker, /tangerine-static-v4/)
+  assert.match(html, /sw\.js\?v=5/)
+  assert.match(serviceWorker, /tangerine-static-v5/)
 })
 
 test('personal books accept a chapter count or pasted numeric directory', () => {
@@ -1007,22 +1007,30 @@ test('model map-query suggestions include book context and preserve alternatives
 })
 
 test('model book metadata stays limited to OCR fields', async () => {
+  let requestBody
   const metadata = await analyzeReadingBookMetadata({
     endpoint: 'https://metadata-model.example/v1/chat/completions',
     model: 'reader-metadata-model',
     apiKey: 'test-key',
     ocrText: '飘 ISBN 9787570202188',
-    fetchImpl: async () => ({
-      ok: true,
-      json: async () => ({
-        choices: [{
-          message: {
-            content: '{"title":"飘","author":"","translators":[],"publisher":"","isbn":"9787570202188","publishedAt":"","originalLanguage":"","chapterCount":63,"plot":"ignored"}',
-          },
-        }],
-      }),
-    }),
+    localMetadata: { title: '票', isbn: '9787570202188' },
+    uncertainFields: ['title'],
+    fetchImpl: async (_url, options) => {
+      requestBody = JSON.parse(options.body)
+      return {
+        ok: true,
+        json: async () => ({
+          choices: [{
+            message: {
+              content: '{"title":"飘","author":"","translators":[],"publisher":"","isbn":"9787570202188","publishedAt":"","originalLanguage":"","chapterCount":63,"plot":"ignored"}',
+            },
+          }],
+        }),
+      }
+    },
   })
+  assert.match(requestBody.messages[1].content, /"title":"票"/)
+  assert.match(requestBody.messages[1].content, /低置信字段：\["title"\]/)
   assert.deepEqual(metadata, {
     title: '飘',
     author: '',

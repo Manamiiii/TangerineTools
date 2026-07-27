@@ -38,9 +38,9 @@ function localLanguagePath() {
   return new URL('reader-ocr/', document.baseURI).href.replace(/\/$/, '')
 }
 
-async function createReadingOcrWorker() {
+async function createReadingOcrWorker(languages = ['chi_sim', 'eng']) {
   const { createWorker, OEM } = await import('tesseract.js')
-  return createWorker(['chi_sim', 'eng'], OEM.LSTM, {
+  return createWorker(languages, OEM.LSTM, {
     langPath: localLanguagePath(),
     logger: (message) => {
       if (typeof progressListener === 'function') progressListener(message)
@@ -49,7 +49,7 @@ async function createReadingOcrWorker() {
 }
 
 async function createReadingMetadataOcrWorker() {
-  const worker = await createReadingOcrWorker()
+  const worker = await createReadingOcrWorker(['chi_sim'])
   await worker.setParameters({ tessedit_pageseg_mode: '6' })
   return worker
 }

@@ -249,6 +249,7 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
     progress: 0,
     result: null,
     ocrText: '',
+    correctedFields: [],
   })
 
   function change(key, value) {
@@ -283,6 +284,7 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
       progress: 0,
       result: null,
       ocrText: '',
+      correctedFields: [],
     })
     try {
       let text = await recognizeReadingImage(
@@ -337,6 +339,8 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
             apiKey: modelConfig.apiKey,
             temperature: modelConfig.temperature,
             ocrText: text,
+            localMetadata,
+            uncertainFields: localDetails.uncertainFields,
           })
         : {}
       const metadata = mergePersonalBookMetadata(
@@ -344,6 +348,12 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
         modelMetadata,
         localDetails.uncertainFields,
       )
+      const correctedFields = Object.keys(metadata).filter((key) => {
+        const localValue = localMetadata[key]
+        const finalValue = metadata[key]
+        return JSON.stringify(localValue ?? null) !== JSON.stringify(finalValue ?? null)
+          && finalValue
+      })
       setForm((current) => ({
         ...current,
         title: metadata.title || current.title,
@@ -361,6 +371,7 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
         progress: 100,
         result: metadata,
         ocrText: text,
+        correctedFields,
       })
       setStatus(
         configured
@@ -374,6 +385,7 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
         progress: 0,
         result: null,
         ocrText: '',
+        correctedFields: [],
       })
       setStatus(error?.message || '书籍详情截图识别失败')
     }
@@ -430,11 +442,15 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
         {metadataScan.result && (
           <div className="reader-book-metadata-result">
             <div>
-              <strong>识别器 v4</strong>
+              <strong>识别器 v5</strong>
               <span>
                 书名：{metadataScan.result.title || '未识别'}
                 {' · '}
+                作者：{metadataScan.result.author || '未识别'}
+                {metadataScan.correctedFields.includes('author') && '（模型校对）'}
+                {' · '}
                 译者：{metadataScan.result.translators?.join('、') || '未识别'}
+                {metadataScan.correctedFields.includes('translators') && '（模型校对）'}
               </span>
             </div>
             <details>
