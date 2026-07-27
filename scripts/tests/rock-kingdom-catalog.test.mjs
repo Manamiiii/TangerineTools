@@ -332,7 +332,7 @@ test('nature analysis keeps each form trait and skill evidence independent', () 
   assert.deepEqual(input.analysisProfiles[0].skillInfo.skills.map((skill) => skill.name), ['魔法技能'])
 })
 
-test('balanced functional mixed attackers keep a supported short-defense branch despite minor skill drift', () => {
+test('balanced functional mixed attackers do not rescue an ordinary single-defense branch', () => {
   const rows = visibleRockKingdomCreatureRows(
     JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
   )
@@ -347,8 +347,8 @@ test('balanced functional mixed attackers keep a supported short-defense branch 
         .find((candidate) => candidate.name === '稳重')
       return [form.values.name, steady.decision]
     }))
-  assert.equal(decisions['魔力猫'], 'keepable')
-  assert.equal(decisions['叶冕魔力猫'], 'keepable')
+  assert.equal(decisions['魔力猫'], 'notRecommended')
+  assert.equal(decisions['叶冕魔力猫'], 'notRecommended')
   assert.equal(decisions['武斗酷猫'], 'notRecommended')
 })
 
@@ -369,7 +369,7 @@ test('balanced mixed attackers keep both routes when skill counts remain close',
   assert.equal(decisionFor('NO.023', '胆小'), 'keepable')
   assert.equal(decisionFor('NO.038', '开朗'), 'keepable')
   assert.equal(decisionFor('NO.038', '胆小'), 'keepable')
-  assert.equal(decisionFor('NO.038', '天真'), 'keepable')
+  assert.equal(decisionFor('NO.038', '天真'), 'notRecommended')
 })
 
 test('close dual attacks keep both sacrifice directions despite a skill-count gap', () => {
@@ -382,8 +382,11 @@ test('close dual attacks keep both sacrifice directions despite a skill-count ga
   const forms = rows.filter((item) => item.values?.no === 'NO.051')
   const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
   const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
-  for (const name of ['固执', '平和', '开朗', '天真', '害羞']) {
+  for (const name of ['固执', '平和', '开朗']) {
     assert.notEqual(candidates.find((candidate) => candidate.name === name)?.decision, 'notRecommended')
+  }
+  for (const name of ['天真', '害羞']) {
+    assert.equal(candidates.find((candidate) => candidate.name === name)?.decision, 'notRecommended')
   }
 })
 
@@ -477,17 +480,17 @@ test('life is preferred over ordinary single-defense raises with the same sacrif
     { skills: [{ category: '物理', power: 80 }] },
   )
   assert.equal(candidates.find((candidate) => candidate.name === '平和')?.decision, 'recommended')
-  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'keepable')
-  assert.equal(candidates.find((candidate) => candidate.name === '害羞')?.decision, 'keepable')
+  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'notRecommended')
+  assert.equal(candidates.find((candidate) => candidate.name === '害羞')?.decision, 'notRecommended')
 })
 
-test('an extreme one-sided wall may still recommend its already strong defense', () => {
+test('an extreme one-sided wall may keep its already strong defense as an exception', () => {
   const candidates = evaluateAllNatures(
     { hp: 120, patk: 90, matk: 45, pdef: 125, mdef: 45, spd: 80 },
     ['defense'],
     { skills: [{ category: '物理', power: 80 }] },
   )
-  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'recommended')
+  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'keepable')
   assert.match(
     candidates.find((candidate) => candidate.name === '天真')?.reasons.join('；') || '',
     /极端专项承伤/,
@@ -495,7 +498,7 @@ test('an extreme one-sided wall may still recommend its already strong defense',
   assert.notEqual(candidates.find((candidate) => candidate.name === '害羞')?.decision, 'recommended')
 })
 
-test('confirmed bulky creatures prefer life and keep ordinary single-defense branches secondary', () => {
+test('confirmed bulky creatures prefer life and reject ordinary single-defense branches', () => {
   const rows = visibleRockKingdomCreatureRows(
     JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
   )
@@ -516,12 +519,12 @@ test('confirmed bulky creatures prefer life and keep ordinary single-defense bra
     const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
     assert.equal(candidates.find((candidate) => candidate.name === item.life)?.decision, 'recommended')
     for (const nature of item.defenses) {
-      assert.equal(candidates.find((candidate) => candidate.name === nature)?.decision, 'keepable')
+      assert.equal(candidates.find((candidate) => candidate.name === nature)?.decision, 'notRecommended')
     }
   }
 })
 
-test('a weaker attack sacrifice does not bypass same-raise dominance as a defense specialty', () => {
+test('an ordinary defense specialty does not bypass life with the same sacrifice', () => {
   const rows = visibleRockKingdomCreatureRows(
     JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
   )
@@ -531,7 +534,7 @@ test('a weaker attack sacrifice does not bypass same-raise dominance as a defens
   const forms = rows.filter((item) => item.values?.no === 'NO.026')
   const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
   const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
-  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'keepable')
+  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'notRecommended')
   assert.equal(candidates.find((candidate) => candidate.name === '稳重')?.decision, 'notRecommended')
 })
 

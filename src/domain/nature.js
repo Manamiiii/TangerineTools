@@ -707,13 +707,6 @@ function isExtremeSingleDefenseSpecialization(candidate, roles = [], analysis = 
   )
 }
 
-function isSingleDefenseRaiseSoftCapped(candidate, roles = [], analysis = null) {
-  if (!['pdef', 'mdef'].includes(candidate.raise)) return false
-  return !isExtremeSingleDefenseSpecialization(candidate, roles, analysis)
-}
-
-
-
 function isFunctionalBalancedMixedAttack(analysis = {}, roles = [], skillProfile = {}) {
   const breakdown = skillProfile.breakdown || {}
   const physicalShare = Number(breakdown.physicalShare)
@@ -1141,6 +1134,12 @@ export function evaluateNatureCandidate(
   const speedTradesDefense =
     candidate.raise === 'spd' &&
     ['pdef', 'mdef'].includes(candidate.lower)
+  const singleDefenseRaise = ['pdef', 'mdef'].includes(candidate.raise)
+  const extremeSingleDefense = isExtremeSingleDefenseSpecialization(candidate, roles, analysis)
+  const ordinarySingleDefense =
+    singleDefenseRaise &&
+    !extremeSingleDefense &&
+    !DEFENSE_STAT_KEYS.includes(candidate.lower)
   const invalidAttackDefenseTrade = attackTradesDefense
   const invalidSpeedDefenseTrade = speedTradesDefense
   const hardRisk =
@@ -1148,8 +1147,8 @@ export function evaluateNatureCandidate(
     lowersStandoutDefense ||
     tradesWithinDurability ||
     invalidAttackDefenseTrade ||
-    invalidSpeedDefenseTrade
-  const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, analysis)
+    invalidSpeedDefenseTrade ||
+    ordinarySingleDefense
 
   if (lowersStandoutDefense) {
     score -= 14
@@ -1167,16 +1166,15 @@ export function evaluateNatureCandidate(
     score -= 18
     warnings.push('强化速度应优先牺牲明确不用的攻击项；不以削弱物防或魔防换取速度')
   }
+  if (ordinarySingleDefense) {
+    score -= 18
+    warnings.push('相同牺牲项下，生命强化能同时覆盖两侧承伤；缺少具体对位阈值时，普通单防强化不作为捕捉保留分支')
+  }
   if (hardRisk) score -= 8
   let decision = decisionFromScore(score, hardRisk)
-  if (singleDefenseSoftCap && decision === 'recommended') {
-    decision = 'keepable'
-    warnings.push('相同牺牲项下，生命强化能同时覆盖两侧承伤，单防通常不具备足够的泛用优势；默认降为可保留')
-  } else if (
-    ['pdef', 'mdef'].includes(candidate.raise) &&
-    isExtremeSingleDefenseSpecialization(candidate, roles, analysis)
-  ) {
+  if (extremeSingleDefense) {
     reasons.push('强侧防御突出、另一侧防御已处于底部区间，可作为极端专项承伤分支')
+    warnings.push('该分支只服务特定承伤对位，不代表普通培养优先级')
   }
   const midSpeedFunctionalTempo =
     candidate.raise === 'spd' &&
@@ -1255,8 +1253,10 @@ export function evaluateNatureCandidate(
       ? '技能已证明可走单攻分支，当前组合不应直接判死，降级为可保留'
       : '技能略偏单攻分支，捕捉时可先保留等待玩法确认')
   }
-  if (tradesWithinDurability || invalidAttackDefenseTrade || invalidSpeedDefenseTrade) {
+  if (tradesWithinDurability || invalidAttackDefenseTrade || invalidSpeedDefenseTrade || ordinarySingleDefense) {
     decision = 'notRecommended'
+  } else if (extremeSingleDefense && decision === 'recommended') {
+    decision = 'keepable'
   }
 
   return applyNaturePreference({
