@@ -40,6 +40,10 @@ import {
   buildReadingPreviews,
 } from '../lib/package-pipeline.mjs'
 import {
+  auditReadingPackageQuality,
+  checkReadingSourceLinks,
+} from '../lib/quality-audit.mjs'
+import {
   READING_MAP_DEFAULT_VIEW,
   READING_MAP_PROVIDER,
   normalizeReadingMapProvider,
@@ -86,6 +90,10 @@ import {
   READING_PROMPT_IDS,
   personalBookKnowledgeMessages,
 } from '../../../src/features/reading-companion/model/promptCatalog.js'
+import {
+  READING_FEEDBACK_KIND,
+  createReadingFeedbackBundle,
+} from '../../../src/features/reading-companion/domain/feedbackBundle.js'
 
 const repoUrl = new URL('../../../', import.meta.url)
 const readingPackage = JSON.parse(
@@ -105,6 +113,7 @@ test('reading companion keeps feature code and maintenance files in dedicated di
     'src/features/reading-companion/db/readingState.js',
     'src/features/reading-companion/db/seed.js',
     'src/features/reading-companion/domain/personalBooks.js',
+    'src/features/reading-companion/domain/feedbackBundle.js',
     'src/features/reading-companion/domain/readingCompanion.js',
     'src/features/reading-companion/map/geocoding.js',
     'src/features/reading-companion/map/mapConfig.js',
@@ -113,6 +122,8 @@ test('reading companion keeps feature code and maintenance files in dedicated di
     'src/features/reading-companion/ocr/localOcr.js',
     'src/features/reading-companion/preset.js',
     'scripts/reading-companion/build-preview.mjs',
+    'scripts/reading-companion/audit-quality.mjs',
+    'scripts/reading-companion/lib/quality-audit.mjs',
     'docs/reading-companion/model-provider-setup.md',
     'docs/reading-companion/product-and-architecture.md',
   ]
@@ -1610,6 +1621,110 @@ test('reading preview publishes only approved sources and keeps candidates pendi
     preview.package.sources.some((source) => source.id.startsWith('candidate-')),
     false,
   )
+})
+
+test('single-book feedback exports only whitelisted reading data', () => {
+  const payload = createReadingFeedbackBundle({
+    appVersion: '0.1.0',
+    appBuild: 'abc1234',
+    scene: {
+      id: 'scene-reading',
+      name: '经典文学阅读',
+      tools: ['reader'],
+      unrelatedSecret: 'ignored',
+    },
+    readingPackage,
+    currentChapterId: 'chapter-04',
+    readingState: {
+      currentChapterId: 'chapter-03',
+      updatedAt: '2026-07-28T10:00:00.000Z',
+      excerpt: '不应导出的原文',
+      screenshot: 'data:image/png;base64,ignored',
+      apiKey: 'secret',
+      observedEntities: [{
+        id: 'observed-atlanta',
+        name: '亚特兰大',
+        kind: 'place',
+        placeKind: 'real',
+        firstSeenChapterId: 'chapter-02',
+        encounterChapterIds: ['chapter-02', 'chapter-04'],
+        note: '个人备注',
+        transientModelResult: 'ignored',
+        mapLocation: {
+          mode: 'exact',
+          resultId: 'map-result',
+          label: 'Atlanta, Georgia',
+          providerId: 'international',
+          latitude: 33.75,
+          longitude: -84.39,
+          rawProviderResponse: { ignored: true },
+        },
+      }],
+    },
+    exportedAt: '2026-07-28T12:00:00.000Z',
+  })
+  assert.equal(payload.kind, READING_FEEDBACK_KIND)
+  assert.deepEqual(payload.app, { version: '0.1.0', build: 'abc1234' })
+  assert.equal(payload.book.packageVersion, readingPackage.packageVersion)
+  assert.equal(payload.reading.currentChapterId, 'chapter-04')
+  assert.equal(payload.reading.currentChapterLabel, '第 4 章')
+  assert.deepEqual(payload.summary, {
+    observedCount: 1,
+    noteCount: 1,
+    mappedPlaceCount: 1,
+    personCount: 0,
+    placeCount: 1,
+    conceptCount: 0,
+    eventCount: 0,
+  })
+  assert.deepEqual(payload.reading.observedEntities[0].mapLocation, {
+    mode: 'exact',
+    resultId: 'map-result',
+    label: 'Atlanta, Georgia',
+    providerId: 'international',
+    latitude: 33.75,
+    longitude: -84.39,
+  })
+  const serialized = JSON.stringify(payload)
+  for (const forbidden of [
+    '不应导出的原文',
+    'data:image/png',
+    'secret',
+    'transientModelResult',
+    'rawProviderResponse',
+    'unrelatedSecret',
+  ]) {
+    assert.equal(serialized.includes(forbidden), false)
+  }
+})
+
+test('reading package quality audit keeps gaps and blockers inspectable', async () => {
+  const { previews } = await buildReadingPreviews()
+  const audit = auditReadingPackageQuality(previews[0])
+  assert.equal(audit.summary.onDemandEntityCount, 23)
+  assert.ok(audit.backgroundGaps.some((item) => item.id === 'place-tara'))
+  assert.ok(audit.placeGeometryGaps.some((item) => item.id === 'place-american-south'))
+  assert.ok(
+    audit.candidateTranslationGaps.some((item) => item.id === 'person-gerald-ohara'),
+  )
+  assert.equal(audit.blockerCounts.missing_edition_chapter_evidence, 32)
+  assert.deepEqual(audit.pendingSourceIds, [
+    'candidate-loc-america-reads-gwtw',
+    'candidate-loc-general-maps',
+    'candidate-openstreetmap',
+  ])
+  const linkResults = await checkReadingSourceLinks([
+    { id: 'ok', label: '可访问', url: 'https://example.com/ok' },
+    { id: 'restricted', label: '限制访问', url: 'https://example.com/restricted' },
+  ], {
+    fetchImpl: async (url) => new Response('', {
+      status: url.endsWith('/ok') ? 200 : 403,
+    }),
+  })
+  assert.deepEqual(linkResults.map(({ id, status }) => ({ id, status })), [
+    { id: 'ok', status: 'reachable' },
+    { id: 'restricted', status: 'restricted' },
+  ])
 })
 
 test('a new book can build its first preview from staging without pipeline code changes', () => {

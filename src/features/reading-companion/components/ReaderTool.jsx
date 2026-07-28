@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   BookOpen,
   ClipboardPaste,
+  Download,
   ExternalLink,
   Eye,
   EyeOff,
@@ -34,6 +35,7 @@ import { loadReadingPackage, loadReadingPackageCatalog } from '../data/readingPa
 import { ReadingGeoMap } from './ReadingGeoMap.jsx'
 import { generateId } from '../../../utils.js'
 import { Modal } from '../../../components/common.jsx'
+import packageMetadata from '../../../../package.json'
 import {
   requestAppInstall,
   subscribeInstallPrompt,
@@ -68,6 +70,12 @@ import {
   mergePersonalBookMetadata,
   personalCatalogEntry,
 } from '../domain/personalBooks.js'
+import {
+  createReadingFeedbackBundle,
+  summarizeReadingFeedback,
+} from '../domain/feedbackBundle.js'
+
+const APP_BUILD = String(import.meta.env.VITE_APP_BUILD || 'local').slice(0, 7)
 import {
   READING_MAP_PROVIDER,
   READING_MAP_PROVIDERS,
@@ -1094,6 +1102,10 @@ function ReadingQuestionPanel({
 function ReadingServiceSettings({
   modelConfig,
   mapConfig,
+  scene,
+  readingPackage,
+  readingState,
+  currentChapterId,
   onLoadModelProvider,
   onSaveModel,
   onSaveMap,
@@ -1107,6 +1119,35 @@ function ReadingServiceSettings({
 
   const selectedModelProvider = READING_MODEL_PROVIDERS[modelDraft.providerId]
     || READING_MODEL_PROVIDERS[READING_MODEL_PROVIDER.CUSTOM]
+  const feedbackSummary = summarizeReadingFeedback(readingState?.observedEntities)
+  const feedbackChapter = readingPackage?.chapters
+    ?.find((chapter) => chapter.id === currentChapterId)
+
+  function exportReadingFeedback() {
+    try {
+      const payload = createReadingFeedbackBundle({
+        appVersion: packageMetadata.version,
+        appBuild: APP_BUILD,
+        scene,
+        readingPackage,
+        readingState,
+        currentChapterId,
+      })
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: 'application/json',
+      })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      const editionKey = readingPackage.edition.isbn || readingPackage.edition.id
+      link.href = url
+      link.download = `reading-feedback-${editionKey}-${payload.exportedAt.slice(0, 10)}.json`
+      link.click()
+      URL.revokeObjectURL(url)
+      setMessage('阅读反馈包已导出。')
+    } catch (error) {
+      setMessage(error?.message || '阅读反馈包导出失败。')
+    }
+  }
 
   function changeModelProvider(providerId) {
     setModelDraft(onLoadModelProvider(providerId))
@@ -1306,6 +1347,28 @@ function ReadingServiceSettings({
           </div>
         </details>
         <p className="reader-settings-storage">天地图 Key 保存在当前浏览器。</p>
+      </section>
+      <section className="reader-panel reader-settings-card reader-feedback-card">
+        <div className="reader-panel-heading">
+          <div><Download size={20} /><h3>试用反馈</h3></div>
+          <span className="reader-system-chip">单书</span>
+        </div>
+        <div className="reader-feedback-summary">
+          <div><span>当前进度</span><strong>{feedbackChapter?.label || '尚未记录'}</strong></div>
+          <div><span>已遇到</span><strong>{feedbackSummary.observedCount}</strong></div>
+          <div><span>个人备注</span><strong>{feedbackSummary.noteCount}</strong></div>
+          <div><span>地图确认</span><strong>{feedbackSummary.mappedPlaceCount}</strong></div>
+        </div>
+        <p className="reader-settings-intro">
+          只导出当前书的版本、进度、已遇到记录、备注和地图确认。不包含 API Key、段落、截图或其他场景数据。
+        </p>
+        <button type="button" className="btn reader-feedback-export" onClick={exportReadingFeedback}>
+          <Download size={14} />
+          导出当前书反馈
+        </button>
+        <p className="reader-settings-storage">
+          应用 {packageMetadata.version} ({APP_BUILD}) · 资料包 {readingPackage?.packageVersion || '未知'}
+        </p>
       </section>
       {message && <p className="reader-settings-message" role="status">{message}</p>}
     </div>
@@ -3616,6 +3679,10 @@ export function ReaderTool({ scene }) {
           <ReadingServiceSettings
             modelConfig={modelConfig}
             mapConfig={mapConfig}
+            scene={scene}
+            readingPackage={readingPackage}
+            readingState={savedState}
+            currentChapterId={currentChapterId}
             onLoadModelProvider={(providerId) => loadStoredReadingModelConfig(providerId, false)}
             onSaveModel={saveModelConfig}
             onSaveMap={saveMapConfig}
