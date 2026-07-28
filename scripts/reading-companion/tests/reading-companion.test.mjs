@@ -488,6 +488,24 @@ test('Gone with the Wind exact-input dictionary recognizes audited names without
   )
   assert.deepEqual(readingPackage.entities, [])
   assert.deepEqual(readingPackage.facts, [])
+  const institutionMatches = scanOnDemandEntities(
+    '他们提到弗吉尼亚大学、亚拉巴马大学、南卡罗来纳大学和费耶特维尔女子学院。',
+    readingPackage.onDemandEntities,
+  )
+  assert.deepEqual(
+    institutionMatches.map(({ entity }) => entity.id),
+    [
+      'place-university-of-virginia',
+      'place-university-of-alabama',
+      'place-university-of-south-carolina',
+      'place-fayetteville-female-academy',
+    ],
+  )
+  assert.equal(institutionMatches[0].entity.placeKind, OBSERVED_PLACE_KIND.REAL)
+  assert.equal(
+    institutionMatches.at(-1).entity.placeKind,
+    OBSERVED_PLACE_KIND.PROTOTYPE,
+  )
 })
 
 test('package validation rejects duplicate chapters and unknown fact references', () => {
@@ -1443,14 +1461,14 @@ test('reading preview publishes only approved sources and keeps candidates pendi
   assert.equal(catalog.packages.length, 1)
   const [preview] = previews
   assert.deepEqual(validateReadingPackage(preview.package), [])
-  assert.equal(preview.previewMeta.approvedSourceIds.length, 7)
+  assert.equal(preview.previewMeta.approvedSourceIds.length, 16)
   assert.equal(preview.previewMeta.pendingSourceIds.length, 3)
-  assert.equal(preview.previewMeta.candidateEntityIds.length, 10)
+  assert.equal(preview.previewMeta.candidateEntityIds.length, 26)
   assert.equal(preview.previewMeta.candidateFactIds.length, 2)
-  assert.equal(preview.previewMeta.onDemandEntityIds.length, 10)
-  assert.equal(preview.researchCandidates.entities.length, 10)
+  assert.equal(preview.previewMeta.onDemandEntityIds.length, 14)
+  assert.equal(preview.researchCandidates.entities.length, 26)
   assert.equal(preview.researchCandidates.facts.length, 2)
-  assert.equal(preview.package.onDemandEntities.length, 10)
+  assert.equal(preview.package.onDemandEntities.length, 14)
   assert.deepEqual(preview.package.entities, [])
   assert.deepEqual(preview.package.facts, [])
   assert.deepEqual(
