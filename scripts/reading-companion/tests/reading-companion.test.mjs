@@ -531,11 +531,15 @@ test('Gone with the Wind exact-input dictionary recognizes audited names without
   )
   assert.equal(contextMatches[0].entity.placeKind, OBSERVED_PLACE_KIND.APPROXIMATE)
   assert.equal(contextMatches[0].entity.geometry, undefined)
+  assert.match(contextMatches[1].entity.safeNote, /大规模农业用地/)
+  assert.match(contextMatches[2].entity.safeNote, /美国第 16 任总统/)
+  assert.match(contextMatches[3].entity.safeNote, /1861–1865 年/)
 })
 
 test('package validation rejects duplicate chapters and unknown fact references', () => {
   const invalidPackage = structuredClone(readingPackage)
   invalidPackage.chapters[1].id = 'chapter-01'
+  invalidPackage.onDemandEntities[0].safeNote = ' '.repeat(401)
   invalidPackage.facts = [{
     id: 'fact-invalid',
     entityIds: ['missing-entity'],
@@ -547,6 +551,7 @@ test('package validation rejects duplicate chapters and unknown fact references'
   assert.ok(errors.some((error) => error.includes('riskLevel')))
   assert.ok(errors.some((error) => error.includes('已知章节')))
   assert.ok(errors.some((error) => error.includes('未知实体')))
+  assert.ok(errors.some((error) => error.includes('safeNote')))
 })
 
 test('package validation requires auditable place boundaries and avoids fabricated fictional points', () => {
@@ -1083,7 +1088,7 @@ test('personal book preparation returns only bounded names and no generated fact
   assert.equal(READING_PROMPT_IDS.personalBookKnowledge, 'personal-book-knowledge-v1')
   assert.equal(
     READING_PROMPT_IDS.formalPackageCandidates,
-    'formal-reading-package-candidates-v1',
+    'formal-reading-package-candidates-v2',
   )
   assert.match(
     personalBookKnowledgeMessages({ title: '测试书' })[0].content,
@@ -1486,7 +1491,7 @@ test('reading preview publishes only approved sources and keeps candidates pendi
   assert.equal(catalog.packages.length, 1)
   const [preview] = previews
   assert.deepEqual(validateReadingPackage(preview.package), [])
-  assert.equal(preview.previewMeta.approvedSourceIds.length, 16)
+  assert.equal(preview.previewMeta.approvedSourceIds.length, 19)
   assert.equal(preview.previewMeta.pendingSourceIds.length, 3)
   assert.equal(preview.previewMeta.candidateEntityIds.length, 30)
   assert.equal(preview.previewMeta.candidateFactIds.length, 2)
@@ -1503,7 +1508,7 @@ test('reading preview publishes only approved sources and keeps candidates pendi
     concept: 1,
     event: 1,
     factCount: 0,
-    sourceCount: 16,
+    sourceCount: 19,
   })
   assert.deepEqual(
     preview.package.sources.map((source) => source.id),
@@ -1640,6 +1645,12 @@ test('research candidates require provenance and blockers and never publish impl
   )
 
   staging.entityCandidates[0].blockers = ['missing_edition_chapter_evidence']
+  staging.entityCandidates[0].entity.safeNote = ' '
+  assert.throws(
+    () => buildReadingPreviewFromStaging(staging),
+    /safeNote 必须是 1–400 字符的非空字符串/,
+  )
+  delete staging.entityCandidates[0].entity.safeNote
   staging.factCandidates = [{
     status: 'candidate',
     fact: {

@@ -5287,6 +5287,31 @@ img {
   color: #3f6659;
 }
 
+.reader-observed-safe-note,
+.reader-place-safe-note {
+  display: grid;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 9px 10px;
+  border-left: 3px solid #7c3aed;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: #faf5ff;
+}
+
+.reader-observed-safe-note b,
+.reader-place-safe-note strong {
+  color: #6d28d9;
+  font-size: 11px;
+}
+
+.reader-observed-safe-note p,
+.reader-place-safe-note p {
+  margin: 0;
+  color: #334155;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
 .reader-observed-unlink {
   width: fit-content;
   margin-top: 2px;

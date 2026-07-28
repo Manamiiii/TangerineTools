@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "1.5.0",
+  "packageVersion": "1.6.0",
   "id": "reader-package-gone-with-the-wind-zh-9787570202188",
   "book": {
     "id": "gone-with-the-wind",
@@ -369,6 +369,48 @@
       "notes": "读者曾提供包含“弗吉尼亚大学、亚拉巴马大学和南卡罗来纳大学”的当前译本文字，并单独确认同一早期阅读内容使用“费耶特维尔女子学院”；只用于确认四个中文名称确实属于该版本，不保存上下文、不推断客观首次出现章节。"
     },
     {
+      "id": "source-nps-colonial-plantation-system",
+      "kind": "public-history",
+      "label": "U.S. National Park Service · Rise of the Colonial Plantation System",
+      "organization": "U.S. National Park Service",
+      "url": "https://home.nps.gov/articles/plantationsystem.htm",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_concept_note",
+        "plantation_definition"
+      ],
+      "rightsStatus": "public-government-reference",
+      "notes": "用于概括 plantation 作为大面积农业用地及其劳动制度背景；不采用页面内容推断作品情节、具体庄园或章节位置。"
+    },
+    {
+      "id": "source-loc-abraham-lincoln-biography",
+      "kind": "public-history",
+      "label": "Library of Congress · Abraham Lincoln Biography",
+      "organization": "Library of Congress",
+      "url": "https://www.loc.gov/exhibits/civil-war-in-america/biographies/abraham-lincoln.html",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_person_note",
+        "historical_identity"
+      ],
+      "rightsStatus": "public-government-reference",
+      "notes": "用于确认林肯的生卒年、总统身份和任内经历美国内战；不把历史人物资料与作品人物或后续剧情关联。"
+    },
+    {
+      "id": "source-nps-civil-war-overview",
+      "kind": "public-history",
+      "label": "U.S. National Park Service · The Civil War Overview",
+      "organization": "U.S. National Park Service",
+      "url": "https://www.nps.gov/civilwar/index.htm",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_event_note",
+        "historical_dates"
+      ],
+      "rightsStatus": "public-government-reference",
+      "notes": "用于确认美国内战发生于 1861–1865 年及其涉及联邦存续、奴隶制和公民权的广义历史背景；不用于作品章节或剧情解释。"
+    },
+    {
       "id": "source-university-of-virginia-official",
       "kind": "institution-official",
       "label": "University of Virginia · Official Contact and Rotunda History",
@@ -681,8 +723,10 @@
       "kind": "concept",
       "activation": "exact-reader-input",
       "sourceIds": [
-        "source-weread-edition-metadata"
+        "source-weread-edition-metadata",
+        "source-nps-colonial-plantation-system"
       ],
+      "safeNote": "在美国历史语境中，种植园通常指大规模农业用地；其生产体系常依赖契约劳工和被奴役者，具体作物与劳动方式因地区和时期而异。",
       "scopeNote": "详情页简介确认该背景词；系统只提供概念名称，不预置制度说明或剧情解释。"
     },
     {
@@ -693,8 +737,10 @@
       "kind": "person",
       "activation": "exact-reader-input",
       "sourceIds": [
-        "source-weread-edition-metadata"
+        "source-weread-edition-metadata",
+        "source-loc-abraham-lincoln-biography"
       ],
+      "safeNote": "亚伯拉罕·林肯（1809–1865）是美国第 16 任总统；他于 1860 年当选，并在任内经历了 1861–1865 年的美国内战。",
       "scopeNote": "详情页简介确认该历史人物短名；系统不预置作品人物关系、历史评价或剧情联系。"
     },
     {
@@ -705,8 +751,10 @@
       "kind": "event",
       "activation": "exact-reader-input",
       "sourceIds": [
-        "source-weread-edition-metadata"
+        "source-weread-edition-metadata",
+        "source-nps-civil-war-overview"
       ],
+      "safeNote": "美国南北战争发生于 1861–1865 年；其历史背景涉及联邦存续、奴隶制以及此后持续发展的公民权问题。",
       "scopeNote": "详情页简介确认该历史事件名称；系统不预置事件说明或它与作品剧情的联系。"
     },
     {

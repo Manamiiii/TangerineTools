@@ -1642,6 +1642,12 @@ function ObservedEntitiesPanel({
                                 : OBSERVED_KIND_LABELS[match.kind]}
                             </span>
                             {match.parentLabel && <span>{match.parentLabel}</span>}
+                            {match.safeNote && (
+                              <div className="reader-observed-safe-note">
+                                <b>无剧透背景</b>
+                                <p>{match.safeNote}</p>
+                              </div>
+                            )}
                             {match.scopeNote && <small>{match.scopeNote}</small>}
                           </div>
                         )}
@@ -2247,6 +2253,12 @@ function ReadingMapPanel({
               </dl>
               {selectedPlace.scopeNote && (
                 <p className="reader-place-scope-note">{selectedPlace.scopeNote}</p>
+              )}
+              {selectedPlace.safeNote && (
+                <div className="reader-place-safe-note">
+                  <strong>无剧透背景</strong>
+                  <p>{selectedPlace.safeNote}</p>
+                </div>
               )}
               {placeRelations.length > 0 && (
                 <div className="reader-place-relations">

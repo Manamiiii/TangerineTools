@@ -774,6 +774,10 @@ export function validateReadingPackage(pkg) {
       || entity.aliases.some((alias) => !isNonEmptyString(alias))) {
       errors.push(`${label}.aliases 必须是字符串数组`)
     }
+    if (entity.safeNote !== undefined
+      && (!isNonEmptyString(entity.safeNote) || entity.safeNote.length > 400)) {
+      errors.push(`${label}.safeNote 必须是 1–400 字符的非空字符串`)
+    }
     if (!Array.isArray(entity.sourceIds) || entity.sourceIds.length === 0) {
       errors.push(`${label}.sourceIds 必须是非空数组`)
     } else {

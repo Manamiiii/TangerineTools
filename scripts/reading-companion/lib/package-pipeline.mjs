@@ -105,6 +105,12 @@ function validateResearchCandidates(kind, candidates, sourceIds) {
     if (kind === 'entity') {
       if (!item.name || !item.kind) throw new Error(`实体候选缺少名称或类型：${item.id}`)
       if (!ENTITY_KINDS.has(item.kind)) throw new Error(`实体候选类型无效：${item.id}`)
+      if (item.safeNote !== undefined
+        && (typeof item.safeNote !== 'string'
+          || item.safeNote.trim().length === 0
+          || item.safeNote.length > 400)) {
+        throw new Error(`实体候选 safeNote 必须是 1–400 字符的非空字符串：${item.id}`)
+      }
       if (item.kind === 'place' && !PLACE_KINDS.has(item.placeKind)) {
         throw new Error(`地点候选分类无效：${item.id}`)
       }
