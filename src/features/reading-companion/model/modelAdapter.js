@@ -4,6 +4,7 @@ import {
 } from '../domain/readingCompanion.js'
 import {
   READING_PROMPT_IDS,
+  excerptEntityLinkMessages,
   personalBookKnowledgeMessages,
 } from './promptCatalog.js'
 import {
@@ -33,8 +34,11 @@ function storeModelResult(key, result) {
   return cacheModelResult(key, result)
 }
 
-export function normalizeModelCandidates(payload) {
+export function normalizeModelCandidates(payload, allowedEntityIds = null) {
   const candidates = Array.isArray(payload?.candidates) ? payload.candidates : []
+  const allowedIds = allowedEntityIds instanceof Set
+    ? allowedEntityIds
+    : new Set(Array.isArray(allowedEntityIds) ? allowedEntityIds : [])
   const seen = new Set()
   return candidates.slice(0, 20).flatMap((candidate) => {
     const name = typeof candidate?.name === 'string'
@@ -47,6 +51,10 @@ export function normalizeModelCandidates(payload) {
     if (!name || name.length > 80 || seen.has(`${kind}:${normalizedName}`)) return []
     seen.add(`${kind}:${normalizedName}`)
     const confidence = Number(candidate?.confidence)
+    const matchedEntityId = typeof candidate?.matchedEntityId === 'string'
+      && allowedIds.has(candidate.matchedEntityId)
+      ? candidate.matchedEntityId
+      : null
     return [{
       name,
       kind,
@@ -60,6 +68,40 @@ export function normalizeModelCandidates(payload) {
       confidence: Number.isFinite(confidence)
         ? Math.max(0, Math.min(1, confidence))
         : null,
+      matchedEntityId,
+    }]
+  })
+}
+
+function modelKnownEntityIndex(knownEntities) {
+  if (!Array.isArray(knownEntities)) return []
+  const seen = new Set()
+  return knownEntities.slice(0, 60).flatMap((entity) => {
+    const id = typeof entity?.id === 'string' ? entity.id.trim() : ''
+    const name = typeof entity?.name === 'string'
+      ? entity.name.normalize('NFKC').trim().slice(0, 80)
+      : ''
+    if (!id || !name || seen.has(id) || !VALID_KINDS.has(entity?.kind)) return []
+    seen.add(id)
+    const originalName = typeof entity?.originalName === 'string'
+      ? entity.originalName.normalize('NFKC').trim().slice(0, 120)
+      : ''
+    const aliases = (Array.isArray(entity?.aliases) ? entity.aliases : [])
+      .map((alias) => (typeof alias === 'string'
+        ? alias.normalize('NFKC').trim().slice(0, 80)
+        : ''))
+      .filter((alias, index, all) => alias && all.indexOf(alias) === index)
+      .slice(0, 8)
+    return [{
+      id,
+      name,
+      kind: entity.kind,
+      ...(originalName ? { originalName } : {}),
+      ...(aliases.length > 0 ? { aliases } : {}),
+      ...(entity.kind === OBSERVED_ENTITY_KIND.PLACE
+        && VALID_PLACE_KINDS.has(entity.placeKind)
+        ? { placeKind: entity.placeKind }
+        : {}),
     }]
   })
 }
@@ -242,6 +284,7 @@ export async function analyzeReadingExcerpt({
   excerpt,
   bookTitle,
   chapterLabel,
+  knownEntities = [],
   fetchImpl = globalThis.fetch,
 }) {
   const url = normalizeModelEndpoint(endpoint)
@@ -250,12 +293,15 @@ export async function analyzeReadingExcerpt({
   const text = requiredText(excerpt, '请先放入当前正在阅读的小段文字')
   if (text.length > 12000) throw new Error('单次模型识别最多发送 12000 个字符')
   if (typeof fetchImpl !== 'function') throw new Error('当前环境无法调用模型接口')
-  const cacheKey = modelCacheKey('excerpt', [
+  const knownEntityIndex = modelKnownEntityIndex(knownEntities)
+  const allowedEntityIds = new Set(knownEntityIndex.map((entity) => entity.id))
+  const cacheKey = modelCacheKey(READING_PROMPT_IDS.excerptEntityLink, [
     url,
     modelName,
     text,
     bookTitle || '',
     chapterLabel || '',
+    knownEntityIndex,
   ])
   const cached = cachedModelResult(cacheKey)
   if (cached) return cached
@@ -265,29 +311,33 @@ export async function analyzeReadingExcerpt({
     key,
     temperature,
     fetchImpl,
-    messages: [
-          {
-            role: 'system',
-            content: [
-              '你是阅读伴侣的窄范围实体识别器。',
-              '只识别用户段落中原样出现的人物、地点、概念或事件名称。',
-              '不得补充关系、身份、剧情、未来事件、结局或段落外知识。',
-              '地点无法仅凭段落确认是真实时，placeKind 必须为 unknown。',
-              '只返回 JSON：{"candidates":[{"name":"原文名称","kind":"place|person|concept|event","placeKind":"unknown|real|fictional|prototype|approximate","confidence":0到1}]}。',
-            ].join('\n'),
-          },
-          {
-            role: 'user',
-            content: [
-              `书籍：${bookTitle || '未知'}`,
-              `当前阅读边界：${chapterLabel || '未知章节'}`,
-              '以下是读者主动提供的当前小段：',
-              text,
-            ].join('\n'),
-          },
-    ],
+    messages: excerptEntityLinkMessages({
+      bookTitle,
+      chapterLabel,
+      excerpt: text,
+      knownEntities: knownEntityIndex,
+    }),
   })
-  return storeModelResult(cacheKey, normalizeModelCandidates(payload))
+  const knownEntitiesById = new Map(
+    knownEntityIndex.map((entity) => [entity.id, entity]),
+  )
+  const result = normalizeModelCandidates(payload, allowedEntityIds)
+    .map((candidate) => {
+      const matchedEntity = knownEntitiesById.get(candidate.matchedEntityId)
+      if (!matchedEntity) return candidate
+      return {
+        ...candidate,
+        kind: matchedEntity.kind,
+        ...(matchedEntity.kind === OBSERVED_ENTITY_KIND.PLACE
+          ? {
+              placeKind: VALID_PLACE_KINDS.has(matchedEntity.placeKind)
+                ? matchedEntity.placeKind
+                : OBSERVED_PLACE_KIND.UNKNOWN,
+            }
+          : {}),
+      }
+    })
+  return storeModelResult(cacheKey, result)
 }
 
 export async function suggestReadingPlaceQueries({
