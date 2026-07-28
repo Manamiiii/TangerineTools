@@ -78,6 +78,10 @@ import {
   readingModelApiKeyStorageKey,
   readingModelProviderDefaults,
 } from '../../../src/features/reading-companion/model/modelProviders.js'
+import {
+  READING_PROMPT_IDS,
+  personalBookKnowledgeMessages,
+} from '../../../src/features/reading-companion/model/promptCatalog.js'
 
 const repoUrl = new URL('../../../', import.meta.url)
 const readingPackage = JSON.parse(
@@ -1033,6 +1037,19 @@ test('personal book preparation returns only bounded names and no generated fact
       }
     },
   })
+  assert.equal(READING_PROMPT_IDS.personalBookKnowledge, 'personal-book-knowledge-v1')
+  assert.equal(
+    READING_PROMPT_IDS.formalPackageCandidates,
+    'formal-reading-package-candidates-v1',
+  )
+  assert.match(
+    personalBookKnowledgeMessages({ title: '测试书' })[0].content,
+    new RegExp(READING_PROMPT_IDS.personalBookKnowledge),
+  )
+  assert.match(
+    requestBody.messages[0].content,
+    new RegExp(READING_PROMPT_IDS.personalBookKnowledge),
+  )
   assert.match(requestBody.messages[0].content, /不要返回人物关系/)
   assert.equal(candidates.length, 2)
   assert.equal(candidates[1].placeKind, OBSERVED_PLACE_KIND.UNKNOWN)

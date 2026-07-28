@@ -92,6 +92,7 @@ npm run lint
 │   │   └── open-issues.md                # 尚待确认的通用规则问题
 │   ├── reading-companion/
 │   │   ├── product-and-architecture.md    # 经典文学阅读伴侣规划与剧透安全契约
+│   │   ├── model-prompts.md               # 个人初始化与正式预制提示词契约
 │   │   ├── model-provider-setup.md        # 国内外兼容模型配置与测试方法
 │   │   └── trial-guide.md                 # 当前试用范围、步骤和反馈重点
 │   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
@@ -232,6 +233,7 @@ git diff --check
 - [`docs/nature/confirmed-results.md`](docs/nature/confirmed-results.md)：用户确认过的单只结果，用作规则回归基线。
 - [`docs/nature/open-issues.md`](docs/nature/open-issues.md)：尚未形成稳定规则的通用问题。
 - [`docs/reading-companion/product-and-architecture.md`](docs/reading-companion/product-and-architecture.md)：经典文学阅读伴侣的已实现范围、按书建库、跨端入口和剧透安全契约。
+- [`docs/reading-companion/model-prompts.md`](docs/reading-companion/model-prompts.md)：个人书籍自动初始化和内置书正式预制使用的版本化提示词与输出权限。
 - [`docs/reading-companion/model-provider-setup.md`](docs/reading-companion/model-provider-setup.md)：智谱、DeepSeek、MiniMax、OpenAI 和自定义模型的配置与测试方法。
 - [`docs/reading-companion/trial-guide.md`](docs/reading-companion/trial-guide.md)：阅读伴侣当前可试用范围、启动步骤和反馈重点。
 
