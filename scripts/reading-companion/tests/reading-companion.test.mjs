@@ -541,6 +541,30 @@ test('Gone with the Wind exact-input dictionary recognizes audited names without
   assert.match(contextMatches[1].entity.safeNote, /大规模农业用地/)
   assert.match(contextMatches[2].entity.safeNote, /美国第 16 任总统/)
   assert.match(contextMatches[3].entity.safeNote, /1861–1865 年/)
+  const historicalContextMatches = scanOnDemandEntities(
+    '文中提到奴隶制、废奴运动、《解放奴隶宣言》、重建时期和美利坚联盟国。',
+    readingPackage.onDemandEntities,
+  )
+  assert.deepEqual(
+    historicalContextMatches.map(({ entity }) => entity.id),
+    [
+      'concept-enslavement',
+      'concept-american-abolitionist-movement',
+      'event-emancipation-proclamation',
+      'concept-reconstruction-era',
+      'concept-confederate-states-of-america',
+    ],
+  )
+  assert.match(historicalContextMatches[0].entity.safeNote, /强制劳动/)
+  assert.match(historicalContextMatches[2].entity.safeNote, /1863 年 1 月 1 日/)
+  assert.match(historicalContextMatches[3].entity.safeNote, /1865–1877 年/)
+  assert.match(historicalContextMatches[4].entity.safeNote, /1861 年/)
+  assert.equal(
+    historicalContextMatches.some(({ entity }) => (
+      entity.revealAt || entity.plot || entity.relationships
+    )),
+    false,
+  )
   assert.deepEqual(
     readingEntitySafeNoteSources(contextMatches[1].entity, readingPackage.sources),
     [{
@@ -1559,24 +1583,24 @@ test('reading preview publishes only approved sources and keeps candidates pendi
   assert.equal(catalog.packages.length, 1)
   const [preview] = previews
   assert.deepEqual(validateReadingPackage(preview.package), [])
-  assert.equal(preview.previewMeta.approvedSourceIds.length, 22)
+  assert.equal(preview.previewMeta.approvedSourceIds.length, 30)
   assert.equal(preview.previewMeta.pendingSourceIds.length, 3)
   assert.equal(preview.previewMeta.candidateEntityIds.length, 30)
   assert.equal(preview.previewMeta.candidateFactIds.length, 2)
-  assert.equal(preview.previewMeta.onDemandEntityIds.length, 18)
+  assert.equal(preview.previewMeta.onDemandEntityIds.length, 23)
   assert.equal(preview.researchCandidates.entities.length, 30)
   assert.equal(preview.researchCandidates.facts.length, 2)
-  assert.equal(preview.package.onDemandEntities.length, 18)
+  assert.equal(preview.package.onDemandEntities.length, 23)
   assert.deepEqual(preview.package.entities, [])
   assert.deepEqual(preview.package.facts, [])
   assert.deepEqual(preview.catalogEntry.preparedSummary, {
-    entityCount: 18,
+    entityCount: 23,
     place: 11,
     person: 5,
-    concept: 1,
-    event: 1,
+    concept: 5,
+    event: 2,
     factCount: 0,
-    sourceCount: 22,
+    sourceCount: 30,
   })
   assert.deepEqual(
     preview.package.sources.map((source) => source.id),

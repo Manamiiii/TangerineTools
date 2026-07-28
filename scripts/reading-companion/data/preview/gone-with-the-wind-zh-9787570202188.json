@@ -10,6 +10,14 @@
       "source-nps-colonial-plantation-system",
       "source-loc-abraham-lincoln-biography",
       "source-nps-civil-war-overview",
+      "source-nps-enslavement-abolition",
+      "source-nps-reconstruction-overview",
+      "source-national-archives-civil-war-documents",
+      "source-loc-confederate-states-records",
+      "source-zgbk-american-civil-war",
+      "source-zgbk-emancipation-proclamation",
+      "source-zgbk-abolitionist-movement",
+      "source-cssn-civil-war-slave-trade",
       "source-university-of-virginia-official",
       "source-university-of-alabama-official",
       "source-university-of-south-carolina-official",
@@ -82,6 +90,11 @@
       "concept-plantation",
       "person-abraham-lincoln",
       "event-american-civil-war",
+      "concept-enslavement",
+      "concept-american-abolitionist-movement",
+      "event-emancipation-proclamation",
+      "concept-reconstruction-era",
+      "concept-confederate-states-of-america",
       "place-clayton-county-georgia",
       "place-atlanta",
       "place-jonesboro-georgia",
@@ -858,18 +871,18 @@
     "editionLabel": "长江文艺出版社 · 2018年5月",
     "path": "presets/reading-companion/gone-with-the-wind-zh-9787570202188.json",
     "preparedSummary": {
-      "entityCount": 18,
+      "entityCount": 23,
       "place": 11,
       "person": 5,
-      "concept": 1,
-      "event": 1,
+      "concept": 5,
+      "event": 2,
       "factCount": 0,
-      "sourceCount": 22
+      "sourceCount": 30
     }
   },
   "package": {
     "schemaVersion": 1,
-    "packageVersion": "1.9.0",
+    "packageVersion": "1.10.0",
     "id": "reader-package-gone-with-the-wind-zh-9787570202188",
     "book": {
       "id": "gone-with-the-wind",
@@ -1280,6 +1293,127 @@
         "notes": "用于确认美国内战发生于 1861–1865 年及其涉及联邦存续、奴隶制和公民权的广义历史背景；不用于作品章节或剧情解释。"
       },
       {
+        "id": "source-nps-enslavement-abolition",
+        "kind": "public-history",
+        "label": "U.S. National Park Service · Enslavement & Abolition",
+        "organization": "U.S. National Park Service",
+        "url": "https://www.nps.gov/subjects/enslavement/about.htm",
+        "accessedAt": "2026-07-28",
+        "useFor": [
+          "safe_concept_note",
+          "enslavement",
+          "abolition",
+          "emancipation"
+        ],
+        "rightsStatus": "public-government-reference",
+        "notes": "用于解释美国奴隶制、废奴与解放的基础历史语境；不把制度背景与作品人物、行动或后续命运关联。"
+      },
+      {
+        "id": "source-nps-reconstruction-overview",
+        "kind": "public-history",
+        "label": "U.S. National Park Service · Reconstruction Era Overview",
+        "organization": "U.S. National Park Service",
+        "url": "https://home.nps.gov/articles/000/a-short-overview-of-the-reconstruction-era-and-ulysses-s-grant-s-presidency.htm",
+        "accessedAt": "2026-07-28",
+        "useFor": [
+          "safe_concept_note",
+          "reconstruction_definition",
+          "historical_dates"
+        ],
+        "rightsStatus": "public-government-reference",
+        "notes": "用于说明重建时期的常见 1865–1877 口径和更宽的历史解释；不用于推断作品跨越的具体年份、章节或人物经历。"
+      },
+      {
+        "id": "source-national-archives-civil-war-documents",
+        "kind": "public-archive",
+        "label": "U.S. National Archives · Civil War Documents",
+        "organization": "U.S. National Archives and Records Administration",
+        "url": "https://www.archives.gov/education/lessons/civil-war-docs",
+        "accessedAt": "2026-07-28",
+        "useFor": [
+          "safe_concept_note",
+          "confederacy_definition",
+          "union_context"
+        ],
+        "rightsStatus": "public-government-reference",
+        "notes": "用于确认南方州脱离联邦并组成 Confederate States of America 的基础历史事实；不采用档案教学页解释作品立场或剧情。"
+      },
+      {
+        "id": "source-loc-confederate-states-records",
+        "kind": "public-archive",
+        "label": "Library of Congress · Confederate States of America Records",
+        "organization": "Library of Congress",
+        "url": "https://www.loc.gov/collections/confederate-states-of-america-records/about-this-collection/",
+        "accessedAt": "2026-07-28",
+        "useFor": [
+          "safe_concept_note",
+          "confederacy_name",
+          "historical_dates"
+        ],
+        "rightsStatus": "public-government-reference",
+        "notes": "用于确认 Confederate States of America 的政府记录主要集中于 1861–1865 年及其机构性质；不用于指定译本名称或章节定位。"
+      },
+      {
+        "id": "source-zgbk-american-civil-war",
+        "kind": "chinese-encyclopedia",
+        "label": "《中国大百科全书》第三版网络版 · 美国内战",
+        "organization": "中国大百科全书出版社",
+        "url": "https://www.zgbk.com/ecph/words?Name=%E7%BE%8E%E5%9B%BD%E5%86%85%E6%88%98&SiteID=1&SourceID=557288&Type=bkzyb&subSourceType=000003000012000007",
+        "accessedAt": "2026-07-28",
+        "useFor": [
+          "chinese_term",
+          "safe_event_note",
+          "historical_dates"
+        ],
+        "rightsStatus": "reference-only",
+        "notes": "用于确认“美国内战”“美国南北战争”等中文名称和 1861–1865 年日期；不用于作品章节或剧情解释。"
+      },
+      {
+        "id": "source-zgbk-emancipation-proclamation",
+        "kind": "chinese-encyclopedia",
+        "label": "《中国大百科全书》第三版网络版 · 《解放奴隶宣言》",
+        "organization": "中国大百科全书出版社",
+        "url": "https://www.zgbk.com/ecph/words?ID=27218&SiteID=1&SubID=51422&Type=bkzyb",
+        "accessedAt": "2026-07-28",
+        "useFor": [
+          "chinese_term",
+          "safe_event_note",
+          "historical_date"
+        ],
+        "rightsStatus": "reference-only",
+        "notes": "用于确认《解放奴隶宣言》的通行中文名、英文名和 1863 年 1 月 1 日颁布日期；不用于解释作品中的影响或人物行动。"
+      },
+      {
+        "id": "source-zgbk-abolitionist-movement",
+        "kind": "chinese-encyclopedia",
+        "label": "《中国大百科全书》第三版网络版 · 美国废奴运动",
+        "organization": "中国大百科全书出版社",
+        "url": "https://www.zgbk.com/ecph/words?ID=394450&SiteID=1&SubID=51422&Type=bkzyb",
+        "accessedAt": "2026-07-28",
+        "useFor": [
+          "chinese_term",
+          "safe_concept_note",
+          "abolition_definition"
+        ],
+        "rightsStatus": "reference-only",
+        "notes": "用于确认“美国废奴运动”指以废除奴隶制度为宗旨的社会运动；不用于作品人物立场或剧情解释。"
+      },
+      {
+        "id": "source-cssn-civil-war-slave-trade",
+        "kind": "chinese-academic-news",
+        "label": "中国社会科学网 · 内战时期美国南方的奴隶贸易",
+        "organization": "中国社会科学网 / 中国社会科学报",
+        "url": "https://www.cssn.cn/skwxsdt/gjhy/202407/t20240726_5767090.shtml",
+        "accessedAt": "2026-07-28",
+        "useFor": [
+          "chinese_term",
+          "confederacy_alias",
+          "historical_context"
+        ],
+        "rightsStatus": "reference-only",
+        "notes": "用于确认“美利坚联盟国”“南方联邦”作为 Confederate States of America 的中文称呼，并辅助说明奴隶制与其历史背景；不把书评内容用于作品剧情或章节定位。"
+      },
+      {
         "id": "source-university-of-virginia-official",
         "kind": "institution-official",
         "label": "University of Virginia · About UVA",
@@ -1676,18 +1810,140 @@
         "id": "event-american-civil-war",
         "name": "南北战争",
         "originalName": "American Civil War",
-        "aliases": [],
+        "aliases": [
+          "美国内战",
+          "美国南北战争",
+          "American Civil War"
+        ],
         "kind": "event",
         "activation": "exact-reader-input",
         "sourceIds": [
           "source-weread-edition-metadata",
-          "source-nps-civil-war-overview"
+          "source-nps-civil-war-overview",
+          "source-zgbk-american-civil-war"
         ],
         "safeNote": "美国南北战争发生于 1861–1865 年；其历史背景涉及联邦存续、奴隶制以及此后持续发展的公民权问题。",
         "safeNoteSourceIds": [
+          "source-nps-civil-war-overview",
+          "source-zgbk-american-civil-war"
+        ],
+        "scopeNote": "详情页简介确认“南北战争”属于本书背景词；注释只解释独立历史背景，不建立它与作品剧情的联系。"
+      },
+      {
+        "id": "concept-enslavement",
+        "name": "奴隶制",
+        "originalName": "Slavery",
+        "aliases": [
+          "奴隶制度",
+          "蓄奴制",
+          "Slavery",
+          "Enslavement"
+        ],
+        "kind": "concept",
+        "activation": "exact-reader-input",
+        "sourceIds": [
+          "source-nps-enslavement-abolition",
           "source-nps-civil-war-overview"
         ],
-        "scopeNote": "详情页简介确认该历史事件名称；系统不预置事件说明或它与作品剧情的联系。"
+        "safeNote": "美国历史中的奴隶制把被奴役者置于强制劳动和被剥夺自由的制度中。到美国内战时期，奴隶制已成为长期政治冲突的核心议题之一。",
+        "safeNoteSourceIds": [
+          "source-nps-enslavement-abolition",
+          "source-nps-civil-war-overview"
+        ],
+        "scopeNote": "只解释制度背景，不把它与书中任何人物的身份、立场、行动或命运关联。"
+      },
+      {
+        "id": "concept-american-abolitionist-movement",
+        "name": "废奴运动",
+        "originalName": "Abolitionist Movement",
+        "aliases": [
+          "美国废奴运动",
+          "Abolitionist Movement",
+          "Abolitionism"
+        ],
+        "kind": "concept",
+        "activation": "exact-reader-input",
+        "sourceIds": [
+          "source-nps-enslavement-abolition",
+          "source-zgbk-abolitionist-movement"
+        ],
+        "safeNote": "美国废奴运动是以结束奴隶制度为目标的社会运动，延续时间早于美国内战，并与奴隶制问题的公共争论相伴发展。",
+        "safeNoteSourceIds": [
+          "source-nps-enslavement-abolition",
+          "source-zgbk-abolitionist-movement"
+        ],
+        "scopeNote": "只提供历史概念定义，不据此判断作品人物是否属于、支持或反对某一运动。"
+      },
+      {
+        "id": "event-emancipation-proclamation",
+        "name": "《解放奴隶宣言》",
+        "originalName": "Emancipation Proclamation",
+        "aliases": [
+          "解放奴隶宣言",
+          "解放黑人奴隶宣言",
+          "Emancipation Proclamation"
+        ],
+        "kind": "event",
+        "activation": "exact-reader-input",
+        "sourceIds": [
+          "source-nps-enslavement-abolition",
+          "source-zgbk-emancipation-proclamation"
+        ],
+        "safeNote": "《解放奴隶宣言》由美国总统林肯于 1863 年 1 月 1 日颁布，宣布南部叛乱州受奴役者获得自由；它没有在颁布当天直接覆盖美国所有受奴役者。",
+        "safeNoteSourceIds": [
+          "source-nps-enslavement-abolition",
+          "source-zgbk-emancipation-proclamation"
+        ],
+        "scopeNote": "只说明历史文件的基本范围，不解释它在作品中的出现方式、影响或后续情节。"
+      },
+      {
+        "id": "concept-reconstruction-era",
+        "name": "重建时期",
+        "originalName": "Reconstruction Era",
+        "aliases": [
+          "战后重建",
+          "美国重建时期",
+          "南方重建",
+          "Reconstruction",
+          "Reconstruction Era"
+        ],
+        "kind": "concept",
+        "activation": "exact-reader-input",
+        "sourceIds": [
+          "source-nps-reconstruction-overview"
+        ],
+        "safeNote": "“重建时期”通常指美国内战结束后重组南方政治与社会秩序、重新定义公民权的阶段，常见年代口径是 1865–1877 年；部分研究采用从 1861 年延伸到 20 世纪初的更宽范围。",
+        "safeNoteSourceIds": [
+          "source-nps-reconstruction-overview"
+        ],
+        "scopeNote": "只解释历史术语及不同年代口径，不据此推断本书剧情跨越的具体时间。"
+      },
+      {
+        "id": "concept-confederate-states-of-america",
+        "name": "美利坚联盟国",
+        "originalName": "Confederate States of America",
+        "aliases": [
+          "南方联邦",
+          "邦联",
+          "南部邦联",
+          "Confederacy",
+          "Confederate States of America",
+          "CSA"
+        ],
+        "kind": "concept",
+        "activation": "exact-reader-input",
+        "sourceIds": [
+          "source-national-archives-civil-war-documents",
+          "source-loc-confederate-states-records",
+          "source-cssn-civil-war-slave-trade"
+        ],
+        "safeNote": "美利坚联盟国是美国南部脱离联邦的州在 1861 年组成的政权，通常也称南方联邦或邦联；其政府和军事活动延续至 1865 年美国内战结束。",
+        "safeNoteSourceIds": [
+          "source-national-archives-civil-war-documents",
+          "source-loc-confederate-states-records",
+          "source-cssn-civil-war-slave-trade"
+        ],
+        "scopeNote": "只解释历史名称，不据此判断作品人物的阵营、立场或命运。"
       },
       {
         "id": "place-clayton-county-georgia",
