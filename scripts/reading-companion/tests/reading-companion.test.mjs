@@ -14,7 +14,9 @@ import {
   isRevealedAtChapter,
   matchOnDemandEntity,
   normalizeObservedEntityName,
+  observedEntityEncounterChapterIds,
   projectReadingPlaces,
+  readingEntitySafeNoteSources,
   readingPlaceRelations,
   readerConfirmedMapEntities,
   readingStateKey,
@@ -23,7 +25,9 @@ import {
   scanObservedEntities,
   spoilerGateAction,
   strongestSpoilerRisk,
+  summarizeReadingPackage,
   unlockedOnDemandEntities,
+  updateObservedEntityNote,
   updateObservedPlaceKind,
   upsertObservedEntity,
   validateReadingPackage,
@@ -35,6 +39,10 @@ import {
   buildReadingPreviewFromStaging,
   buildReadingPreviews,
 } from '../lib/package-pipeline.mjs'
+import {
+  auditReadingPackageQuality,
+  checkReadingSourceLinks,
+} from '../lib/quality-audit.mjs'
 import {
   READING_MAP_DEFAULT_VIEW,
   READING_MAP_PROVIDER,
@@ -82,6 +90,10 @@ import {
   READING_PROMPT_IDS,
   personalBookKnowledgeMessages,
 } from '../../../src/features/reading-companion/model/promptCatalog.js'
+import {
+  READING_FEEDBACK_KIND,
+  createReadingFeedbackBundle,
+} from '../../../src/features/reading-companion/domain/feedbackBundle.js'
 
 const repoUrl = new URL('../../../', import.meta.url)
 const readingPackage = JSON.parse(
@@ -101,6 +113,7 @@ test('reading companion keeps feature code and maintenance files in dedicated di
     'src/features/reading-companion/db/readingState.js',
     'src/features/reading-companion/db/seed.js',
     'src/features/reading-companion/domain/personalBooks.js',
+    'src/features/reading-companion/domain/feedbackBundle.js',
     'src/features/reading-companion/domain/readingCompanion.js',
     'src/features/reading-companion/map/geocoding.js',
     'src/features/reading-companion/map/mapConfig.js',
@@ -109,6 +122,8 @@ test('reading companion keeps feature code and maintenance files in dedicated di
     'src/features/reading-companion/ocr/localOcr.js',
     'src/features/reading-companion/preset.js',
     'scripts/reading-companion/build-preview.mjs',
+    'scripts/reading-companion/audit-quality.mjs',
+    'scripts/reading-companion/lib/quality-audit.mjs',
     'docs/reading-companion/model-provider-setup.md',
     'docs/reading-companion/product-and-architecture.md',
   ]
@@ -181,6 +196,15 @@ test('personal book creation produces a valid empty local package and catalog en
     editionLabel: '测试出版社 · 2026-07',
     source: 'personal',
     cover: { theme: 'amber' },
+    preparedSummary: {
+      entityCount: 0,
+      place: 0,
+      person: 0,
+      concept: 0,
+      event: 0,
+      factCount: 0,
+      sourceCount: 0,
+    },
   })
 })
 
@@ -479,13 +503,12 @@ test('Gone with the Wind exact-input dictionary recognizes audited names without
     'place-georgia-state',
     'place-clayton-county-georgia',
   ]
-  assert.deepEqual(
-    scanOnDemandEntities(
-      '斯佳丽、瑞德、艾希礼和梅兰妮谈到了佐治亚州与克莱顿县。',
-      readingPackage.onDemandEntities,
-    ).map(({ entity }) => entity.id),
-    expectedIds,
+  const openingMatches = scanOnDemandEntities(
+    '斯佳丽、瑞德、艾希礼和梅兰妮谈到了佐治亚州与克莱顿县。',
+    readingPackage.onDemandEntities,
   )
+  assert.deepEqual(openingMatches.map(({ entity }) => entity.id), expectedIds)
+  assert.match(openingMatches[4].entity.safeNote, /1788 年/)
   assert.deepEqual(readingPackage.entities, [])
   assert.deepEqual(readingPackage.facts, [])
   const institutionMatches = scanOnDemandEntities(
@@ -506,11 +529,67 @@ test('Gone with the Wind exact-input dictionary recognizes audited names without
     institutionMatches.at(-1).entity.placeKind,
     OBSERVED_PLACE_KIND.PROTOTYPE,
   )
+  assert.match(institutionMatches[0].entity.safeNote, /1819 年/)
+  assert.match(institutionMatches[1].entity.safeNote, /1831 年首次开课/)
+  assert.match(institutionMatches[2].entity.safeNote, /South Carolina College/)
+  assert.match(institutionMatches[3].entity.safeNote, /虚构学校的原型/)
+  const contextMatches = scanOnDemandEntities(
+    '故事背景涉及美国南方的种植园、林肯和南北战争。',
+    readingPackage.onDemandEntities,
+  )
+  assert.deepEqual(
+    contextMatches.map(({ entity }) => entity.id),
+    [
+      'place-american-south',
+      'concept-plantation',
+      'person-abraham-lincoln',
+      'event-american-civil-war',
+    ],
+  )
+  assert.equal(contextMatches[0].entity.placeKind, OBSERVED_PLACE_KIND.APPROXIMATE)
+  assert.equal(contextMatches[0].entity.geometry, undefined)
+  assert.match(contextMatches[0].entity.safeNote, /不是单一行政区/)
+  assert.match(contextMatches[1].entity.safeNote, /大规模农业用地/)
+  assert.match(contextMatches[2].entity.safeNote, /美国第 16 任总统/)
+  assert.match(contextMatches[3].entity.safeNote, /1861–1865 年/)
+  const historicalContextMatches = scanOnDemandEntities(
+    '文中提到奴隶制、废奴运动、《解放奴隶宣言》、重建时期和美利坚联盟国。',
+    readingPackage.onDemandEntities,
+  )
+  assert.deepEqual(
+    historicalContextMatches.map(({ entity }) => entity.id),
+    [
+      'concept-enslavement',
+      'concept-american-abolitionist-movement',
+      'event-emancipation-proclamation',
+      'concept-reconstruction-era',
+      'concept-confederate-states-of-america',
+    ],
+  )
+  assert.match(historicalContextMatches[0].entity.safeNote, /强制劳动/)
+  assert.match(historicalContextMatches[2].entity.safeNote, /1863 年 1 月 1 日/)
+  assert.match(historicalContextMatches[3].entity.safeNote, /1865–1877 年/)
+  assert.match(historicalContextMatches[4].entity.safeNote, /1861 年/)
+  assert.equal(
+    historicalContextMatches.some(({ entity }) => (
+      entity.revealAt || entity.plot || entity.relationships
+    )),
+    false,
+  )
+  assert.deepEqual(
+    readingEntitySafeNoteSources(contextMatches[1].entity, readingPackage.sources),
+    [{
+      id: 'source-nps-colonial-plantation-system',
+      label: 'U.S. National Park Service · Rise of the Colonial Plantation System',
+      url: 'https://home.nps.gov/articles/plantationsystem.htm',
+    }],
+  )
 })
 
 test('package validation rejects duplicate chapters and unknown fact references', () => {
   const invalidPackage = structuredClone(readingPackage)
   invalidPackage.chapters[1].id = 'chapter-01'
+  invalidPackage.onDemandEntities[0].safeNote = ' '.repeat(401)
   invalidPackage.facts = [{
     id: 'fact-invalid',
     entityIds: ['missing-entity'],
@@ -522,6 +601,28 @@ test('package validation rejects duplicate chapters and unknown fact references'
   assert.ok(errors.some((error) => error.includes('riskLevel')))
   assert.ok(errors.some((error) => error.includes('已知章节')))
   assert.ok(errors.some((error) => error.includes('未知实体')))
+  assert.ok(errors.some((error) => error.includes('safeNote')))
+})
+
+test('safe reading notes expose only their explicitly assigned HTTP sources', () => {
+  const plantation = readingPackage.onDemandEntities.find(
+    (entity) => entity.id === 'concept-plantation',
+  )
+  const unsafeSources = readingPackage.sources.map((source) => (
+    source.id === plantation.safeNoteSourceIds[0]
+      ? { ...source, url: 'javascript:alert(1)' }
+      : source
+  ))
+  assert.deepEqual(readingEntitySafeNoteSources(plantation, unsafeSources), [])
+
+  const invalidPackage = structuredClone(readingPackage)
+  delete invalidPackage.onDemandEntities.find(
+    (entity) => entity.id === 'concept-plantation',
+  ).safeNoteSourceIds
+  assert.ok(
+    validateReadingPackage(invalidPackage)
+      .some((error) => error.includes('safeNoteSourceIds')),
+  )
 })
 
 test('package validation requires auditable place boundaries and avoids fabricated fictional points', () => {
@@ -699,6 +800,7 @@ test('reader-confirmed names use chapters without requiring book text or guessed
     name: '塔拉庄园',
     kind: 'place',
     firstSeenChapterId: 'chapter-03',
+    encounterChapterIds: ['chapter-03'],
     placeKind: OBSERVED_PLACE_KIND.UNKNOWN,
   }])
   assert.equal(normalizeObservedEntityName('ＴＡＲＡ  '), 'tara')
@@ -708,15 +810,24 @@ test('reader-confirmed names use chapters without requiring book text or guessed
     ['塔拉庄园'],
   )
 
-  const unchanged = upsertObservedEntity(first, {
+  const recordedLater = upsertObservedEntity(first, {
     id: 'observed-duplicate',
     name: '塔拉庄园',
     kind: 'place',
     firstSeenChapterId: 'chapter-05',
   }, chapters)
-  assert.equal(unchanged, first)
+  assert.deepEqual(recordedLater[0].encounterChapterIds, ['chapter-03', 'chapter-05'])
+  assert.equal(recordedLater[0].firstSeenChapterId, 'chapter-03')
 
-  const correctedEarlier = upsertObservedEntity(first, {
+  const unchanged = upsertObservedEntity(recordedLater, {
+    id: 'observed-duplicate',
+    name: '塔拉庄园',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-05',
+  }, chapters)
+  assert.equal(unchanged, recordedLater)
+
+  const correctedEarlier = upsertObservedEntity(recordedLater, {
     id: 'observed-duplicate',
     name: '塔拉庄园',
     kind: 'place',
@@ -725,6 +836,25 @@ test('reader-confirmed names use chapters without requiring book text or guessed
   assert.equal(correctedEarlier.length, 1)
   assert.equal(correctedEarlier[0].id, 'observed-tara')
   assert.equal(correctedEarlier[0].firstSeenChapterId, 'chapter-01')
+  assert.deepEqual(
+    observedEntityEncounterChapterIds(correctedEarlier[0], chapters),
+    ['chapter-01', 'chapter-03', 'chapter-05'],
+  )
+  assert.deepEqual(
+    observedEntityEncounterChapterIds({
+      firstSeenChapterId: 'chapter-02',
+    }, chapters),
+    ['chapter-02'],
+  )
+
+  const noted = updateObservedEntityNote(correctedEarlier, 'observed-tara', '女主生活的庄园')
+  assert.equal(noted[0].note, '女主生活的庄园')
+  const clearedNote = updateObservedEntityNote(noted, 'observed-tara', '  ')
+  assert.equal(clearedNote[0].note, undefined)
+  assert.throws(
+    () => updateObservedEntityNote(noted, 'observed-tara', '长'.repeat(501)),
+    /不能超过 500/,
+  )
   assert.throws(
     () => upsertObservedEntity([], {
       id: 'invalid',
@@ -1058,7 +1188,7 @@ test('personal book preparation returns only bounded names and no generated fact
   assert.equal(READING_PROMPT_IDS.personalBookKnowledge, 'personal-book-knowledge-v1')
   assert.equal(
     READING_PROMPT_IDS.formalPackageCandidates,
-    'formal-reading-package-candidates-v1',
+    'formal-reading-package-candidates-v3',
   )
   assert.match(
     personalBookKnowledgeMessages({ title: '测试书' })[0].content,
@@ -1268,6 +1398,8 @@ test('on-demand entities unlock only after an exact reader-confirmed name match'
     placeKind: 'real',
     activation: 'exact-reader-input',
     sourceIds: ['source-weread-edition-metadata'],
+    safeNote: '亚特兰大是佐治亚州州府。',
+    safeNoteSourceIds: ['source-weread-edition-metadata'],
     geometry: { type: 'point', latitude: 33.7628, longitude: -84.422 },
   }]
   assert.equal(
@@ -1305,6 +1437,7 @@ test('on-demand entities unlock only after an exact reader-confirmed name match'
   assert.equal(unlocked.id, 'place-atlanta')
   assert.equal(unlocked.readerConfirmedName, '亚特兰大市')
   assert.equal(unlocked.accessMode, 'reader-confirmed-exact-match')
+  assert.equal(unlocked.safeNote, '亚特兰大是佐治亚州州府。')
   assert.deepEqual(unlocked.revealAt, { chapterId: 'chapter-03' })
 })
 
@@ -1461,16 +1594,25 @@ test('reading preview publishes only approved sources and keeps candidates pendi
   assert.equal(catalog.packages.length, 1)
   const [preview] = previews
   assert.deepEqual(validateReadingPackage(preview.package), [])
-  assert.equal(preview.previewMeta.approvedSourceIds.length, 16)
+  assert.equal(preview.previewMeta.approvedSourceIds.length, 30)
   assert.equal(preview.previewMeta.pendingSourceIds.length, 3)
-  assert.equal(preview.previewMeta.candidateEntityIds.length, 26)
+  assert.equal(preview.previewMeta.candidateEntityIds.length, 30)
   assert.equal(preview.previewMeta.candidateFactIds.length, 2)
-  assert.equal(preview.previewMeta.onDemandEntityIds.length, 14)
-  assert.equal(preview.researchCandidates.entities.length, 26)
+  assert.equal(preview.previewMeta.onDemandEntityIds.length, 23)
+  assert.equal(preview.researchCandidates.entities.length, 30)
   assert.equal(preview.researchCandidates.facts.length, 2)
-  assert.equal(preview.package.onDemandEntities.length, 14)
+  assert.equal(preview.package.onDemandEntities.length, 23)
   assert.deepEqual(preview.package.entities, [])
   assert.deepEqual(preview.package.facts, [])
+  assert.deepEqual(preview.catalogEntry.preparedSummary, {
+    entityCount: 23,
+    place: 11,
+    person: 5,
+    concept: 5,
+    event: 2,
+    factCount: 0,
+    sourceCount: 30,
+  })
   assert.deepEqual(
     preview.package.sources.map((source) => source.id),
     preview.previewMeta.approvedSourceIds,
@@ -1479,6 +1621,110 @@ test('reading preview publishes only approved sources and keeps candidates pendi
     preview.package.sources.some((source) => source.id.startsWith('candidate-')),
     false,
   )
+})
+
+test('single-book feedback exports only whitelisted reading data', () => {
+  const payload = createReadingFeedbackBundle({
+    appVersion: '0.1.0',
+    appBuild: 'abc1234',
+    scene: {
+      id: 'scene-reading',
+      name: '经典文学阅读',
+      tools: ['reader'],
+      unrelatedSecret: 'ignored',
+    },
+    readingPackage,
+    currentChapterId: 'chapter-04',
+    readingState: {
+      currentChapterId: 'chapter-03',
+      updatedAt: '2026-07-28T10:00:00.000Z',
+      excerpt: '不应导出的原文',
+      screenshot: 'data:image/png;base64,ignored',
+      apiKey: 'secret',
+      observedEntities: [{
+        id: 'observed-atlanta',
+        name: '亚特兰大',
+        kind: 'place',
+        placeKind: 'real',
+        firstSeenChapterId: 'chapter-02',
+        encounterChapterIds: ['chapter-02', 'chapter-04'],
+        note: '个人备注',
+        transientModelResult: 'ignored',
+        mapLocation: {
+          mode: 'exact',
+          resultId: 'map-result',
+          label: 'Atlanta, Georgia',
+          providerId: 'international',
+          latitude: 33.75,
+          longitude: -84.39,
+          rawProviderResponse: { ignored: true },
+        },
+      }],
+    },
+    exportedAt: '2026-07-28T12:00:00.000Z',
+  })
+  assert.equal(payload.kind, READING_FEEDBACK_KIND)
+  assert.deepEqual(payload.app, { version: '0.1.0', build: 'abc1234' })
+  assert.equal(payload.book.packageVersion, readingPackage.packageVersion)
+  assert.equal(payload.reading.currentChapterId, 'chapter-04')
+  assert.equal(payload.reading.currentChapterLabel, '第 4 章')
+  assert.deepEqual(payload.summary, {
+    observedCount: 1,
+    noteCount: 1,
+    mappedPlaceCount: 1,
+    personCount: 0,
+    placeCount: 1,
+    conceptCount: 0,
+    eventCount: 0,
+  })
+  assert.deepEqual(payload.reading.observedEntities[0].mapLocation, {
+    mode: 'exact',
+    resultId: 'map-result',
+    label: 'Atlanta, Georgia',
+    providerId: 'international',
+    latitude: 33.75,
+    longitude: -84.39,
+  })
+  const serialized = JSON.stringify(payload)
+  for (const forbidden of [
+    '不应导出的原文',
+    'data:image/png',
+    'secret',
+    'transientModelResult',
+    'rawProviderResponse',
+    'unrelatedSecret',
+  ]) {
+    assert.equal(serialized.includes(forbidden), false)
+  }
+})
+
+test('reading package quality audit keeps gaps and blockers inspectable', async () => {
+  const { previews } = await buildReadingPreviews()
+  const audit = auditReadingPackageQuality(previews[0])
+  assert.equal(audit.summary.onDemandEntityCount, 23)
+  assert.ok(audit.backgroundGaps.some((item) => item.id === 'place-tara'))
+  assert.ok(audit.placeGeometryGaps.some((item) => item.id === 'place-american-south'))
+  assert.ok(
+    audit.candidateTranslationGaps.some((item) => item.id === 'person-gerald-ohara'),
+  )
+  assert.equal(audit.blockerCounts.missing_edition_chapter_evidence, 32)
+  assert.deepEqual(audit.pendingSourceIds, [
+    'candidate-loc-america-reads-gwtw',
+    'candidate-loc-general-maps',
+    'candidate-openstreetmap',
+  ])
+  const linkResults = await checkReadingSourceLinks([
+    { id: 'ok', label: '可访问', url: 'https://example.com/ok' },
+    { id: 'restricted', label: '限制访问', url: 'https://example.com/restricted' },
+  ], {
+    fetchImpl: async (url) => new Response('', {
+      status: url.endsWith('/ok') ? 200 : 403,
+    }),
+  })
+  assert.deepEqual(linkResults.map(({ id, status }) => ({ id, status })), [
+    { id: 'ok', status: 'reachable' },
+    { id: 'restricted', status: 'restricted' },
+  ])
 })
 
 test('a new book can build its first preview from staging without pipeline code changes', () => {
@@ -1529,6 +1775,38 @@ test('a new book can build its first preview from staging without pipeline code 
   assert.equal(preview.previewMeta.targetPath, 'public/presets/reading-companion/test-book-zh-test-edition.json')
   assert.equal(preview.catalogEntry.path, 'presets/reading-companion/test-book-zh-test-edition.json')
   assert.deepEqual(preview.package.sources.map((source) => source.id), ['source-test-edition'])
+  assert.deepEqual(preview.catalogEntry.preparedSummary, {
+    entityCount: 0,
+    place: 0,
+    person: 0,
+    concept: 0,
+    event: 0,
+    factCount: 0,
+    sourceCount: 1,
+  })
+})
+
+test('prepared package summary counts hidden and published entities without revealing names', () => {
+  assert.deepEqual(summarizeReadingPackage({
+    onDemandEntities: [
+      { kind: 'person' },
+      { kind: 'place' },
+    ],
+    entities: [
+      { kind: 'place' },
+      { kind: 'concept' },
+    ],
+    facts: [{ id: 'fact-1' }],
+    sources: [{ id: 'source-1' }, { id: 'source-2' }],
+  }), {
+    entityCount: 4,
+    place: 2,
+    person: 1,
+    concept: 1,
+    event: 0,
+    factCount: 1,
+    sourceCount: 2,
+  })
 })
 
 test('research candidates require provenance and blockers and never publish implicitly', () => {
@@ -1574,6 +1852,18 @@ test('research candidates require provenance and blockers and never publish impl
   )
 
   staging.entityCandidates[0].blockers = ['missing_edition_chapter_evidence']
+  staging.entityCandidates[0].entity.safeNote = ' '
+  assert.throws(
+    () => buildReadingPreviewFromStaging(staging),
+    /safeNote 必须是 1–400 字符的非空字符串/,
+  )
+  delete staging.entityCandidates[0].entity.safeNote
+  staging.entityCandidates[0].entity.safeNote = '独立背景'
+  assert.throws(
+    () => buildReadingPreviewFromStaging(staging),
+    /safeNoteSourceIds 必须引用至少一个注释来源/,
+  )
+  delete staging.entityCandidates[0].entity.safeNote
   staging.factCandidates = [{
     status: 'candidate',
     fact: {

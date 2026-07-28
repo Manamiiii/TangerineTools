@@ -248,7 +248,7 @@ export function ReadingGeoMap({
       )}
       {tileState === 'missing-key' && (
         <span className="reader-map-network-state error">
-          请填写天地图浏览器端 Key；Key 只保存在当前浏览器。
+          请填写天地图浏览器端 Key。
         </span>
       )}
       {tileUsage.base + tileUsage.labels > 0 && (

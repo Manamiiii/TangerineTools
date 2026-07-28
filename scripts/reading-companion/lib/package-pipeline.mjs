@@ -1,6 +1,9 @@
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { assertReadingPackage } from '../../../src/features/reading-companion/domain/readingCompanion.js'
+import {
+  assertReadingPackage,
+  summarizeReadingPackage,
+} from '../../../src/features/reading-companion/domain/readingCompanion.js'
 
 export const repoRoot = path.resolve(import.meta.dirname, '../../..')
 export const publicRoot = path.join(repoRoot, 'public/presets/reading-companion')
@@ -102,6 +105,24 @@ function validateResearchCandidates(kind, candidates, sourceIds) {
     if (kind === 'entity') {
       if (!item.name || !item.kind) throw new Error(`实体候选缺少名称或类型：${item.id}`)
       if (!ENTITY_KINDS.has(item.kind)) throw new Error(`实体候选类型无效：${item.id}`)
+      if (item.safeNote !== undefined
+        && (typeof item.safeNote !== 'string'
+          || item.safeNote.trim().length === 0
+          || item.safeNote.length > 400)) {
+        throw new Error(`实体候选 safeNote 必须是 1–400 字符的非空字符串：${item.id}`)
+      }
+      if (item.safeNote !== undefined) {
+        if (!Array.isArray(item.safeNoteSourceIds) || item.safeNoteSourceIds.length === 0) {
+          throw new Error(`实体候选 safeNoteSourceIds 必须引用至少一个注释来源：${item.id}`)
+        }
+        for (const sourceId of item.safeNoteSourceIds) {
+          if (!candidate.sourceIds.includes(sourceId)) {
+            throw new Error(`实体候选 safeNoteSourceIds 必须属于 sourceIds：${item.id} → ${sourceId}`)
+          }
+        }
+      } else if (item.safeNoteSourceIds !== undefined) {
+        throw new Error(`实体候选 safeNoteSourceIds 不能脱离 safeNote 单独存在：${item.id}`)
+      }
       if (item.kind === 'place' && !PLACE_KINDS.has(item.placeKind)) {
         throw new Error(`地点候选分类无效：${item.id}`)
       }
@@ -225,6 +246,7 @@ export function buildReadingPreviewFromStaging(staging, basePackage = null) {
       title: staging.catalogEntry.title || nextPackage.book.title,
       editionLabel: staging.catalogEntry.editionLabel,
       path: `presets/reading-companion/${staging.slug}.json`,
+      preparedSummary: summarizeReadingPackage(nextPackage),
     },
     package: nextPackage,
   }
