@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "1.4.0",
+  "packageVersion": "1.5.0",
   "id": "reader-package-gone-with-the-wind-zh-9787570202188",
   "book": {
     "id": "gone-with-the-wind",
@@ -353,7 +353,7 @@
         "book_description_names",
         "book_description_context"
       ],
-      "notes": "用于确认 ISBN、译者、出版社、出版时间、连续 1–63 章结构，以及详情页简介中出现的斯佳丽、瑞德、艾希礼、梅兰妮四个短名和“美国南方”“种植园”两个无剧情背景词；不包含正文，不能用于确认首次出现章节。"
+      "notes": "用于确认 ISBN、译者、出版社、出版时间、连续 1–63 章结构，以及详情页简介中出现的斯佳丽、瑞德、艾希礼、梅兰妮四个短名和“美国南方”“种植园”“林肯”“南北战争”四个无剧情背景词；不包含正文，不能用于确认首次出现章节。"
     },
     {
       "id": "source-reader-excerpt-early-institutions",
@@ -684,6 +684,30 @@
         "source-weread-edition-metadata"
       ],
       "scopeNote": "详情页简介确认该背景词；系统只提供概念名称，不预置制度说明或剧情解释。"
+    },
+    {
+      "id": "person-abraham-lincoln",
+      "name": "林肯",
+      "originalName": "Abraham Lincoln",
+      "aliases": [],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-weread-edition-metadata"
+      ],
+      "scopeNote": "详情页简介确认该历史人物短名；系统不预置作品人物关系、历史评价或剧情联系。"
+    },
+    {
+      "id": "event-american-civil-war",
+      "name": "南北战争",
+      "originalName": "American Civil War",
+      "aliases": [],
+      "kind": "event",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-weread-edition-metadata"
+      ],
+      "scopeNote": "详情页简介确认该历史事件名称；系统不预置事件说明或它与作品剧情的联系。"
     },
     {
       "id": "place-clayton-county-georgia",

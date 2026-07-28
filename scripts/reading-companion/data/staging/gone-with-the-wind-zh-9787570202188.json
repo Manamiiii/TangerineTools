@@ -3,7 +3,7 @@
   "slug": "gone-with-the-wind-zh-9787570202188",
   "order": 0,
   "packageId": "reader-package-gone-with-the-wind-zh-9787570202188",
-  "packageVersion": "1.4.0",
+  "packageVersion": "1.5.0",
   "basePackagePath": "public/presets/reading-companion/gone-with-the-wind-zh-9787570202188.json",
   "catalogEntry": {
     "title": "飘",
@@ -17,7 +17,7 @@
       "label": "微信读书版本详情与版权信息",
       "accessedAt": "2026-07-24",
       "useFor": ["edition", "chapter_structure", "book_description_names", "book_description_context"],
-      "notes": "用于确认 ISBN、译者、出版社、出版时间、连续 1–63 章结构，以及详情页简介中出现的斯佳丽、瑞德、艾希礼、梅兰妮四个短名和“美国南方”“种植园”两个无剧情背景词；不包含正文，不能用于确认首次出现章节。"
+      "notes": "用于确认 ISBN、译者、出版社、出版时间、连续 1–63 章结构，以及详情页简介中出现的斯佳丽、瑞德、艾希礼、梅兰妮四个短名和“美国南方”“种植园”“林肯”“南北战争”四个无剧情背景词；不包含正文，不能用于确认首次出现章节。"
     },
     {
       "id": "source-reader-excerpt-early-institutions",
@@ -371,6 +371,34 @@
       "sourceIds": ["source-weread-edition-metadata"],
       "blockers": ["missing_edition_chapter_evidence", "explanation_not_audited"],
       "notes": "当前版本详情页简介确认“种植园”这一背景词；只发布隐藏精确匹配名称，不预置制度说明或剧情解释。"
+    },
+    {
+      "status": "candidate",
+      "entity": {
+        "id": "person-abraham-lincoln",
+        "name": "林肯",
+        "originalName": "Abraham Lincoln",
+        "kind": "person",
+        "aliases": [],
+        "revealAt": null
+      },
+      "sourceIds": ["source-weread-edition-metadata"],
+      "blockers": ["missing_edition_chapter_evidence", "historical_explanation_not_audited"],
+      "notes": "当前版本详情页简介确认短名“林肯”；只发布隐藏精确匹配名称，不把简介中的概括转化为作品事实。"
+    },
+    {
+      "status": "candidate",
+      "entity": {
+        "id": "event-american-civil-war",
+        "name": "南北战争",
+        "originalName": "American Civil War",
+        "kind": "event",
+        "aliases": [],
+        "revealAt": null
+      },
+      "sourceIds": ["source-weread-edition-metadata"],
+      "blockers": ["missing_edition_chapter_evidence", "historical_explanation_not_audited"],
+      "notes": "当前版本详情页简介确认“南北战争”这一背景词；只发布隐藏精确匹配名称，不预置与作品剧情的联系。"
     },
     {
       "status": "candidate",
@@ -899,6 +927,26 @@
       "activation": "exact-reader-input",
       "sourceIds": ["source-weread-edition-metadata"],
       "scopeNote": "详情页简介确认该背景词；系统只提供概念名称，不预置制度说明或剧情解释。"
+    },
+    {
+      "id": "person-abraham-lincoln",
+      "name": "林肯",
+      "originalName": "Abraham Lincoln",
+      "aliases": [],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": ["source-weread-edition-metadata"],
+      "scopeNote": "详情页简介确认该历史人物短名；系统不预置作品人物关系、历史评价或剧情联系。"
+    },
+    {
+      "id": "event-american-civil-war",
+      "name": "南北战争",
+      "originalName": "American Civil War",
+      "aliases": [],
+      "kind": "event",
+      "activation": "exact-reader-input",
+      "sourceIds": ["source-weread-edition-metadata"],
+      "scopeNote": "详情页简介确认该历史事件名称；系统不预置事件说明或它与作品剧情的联系。"
     },
     {
       "id": "place-clayton-county-georgia",
