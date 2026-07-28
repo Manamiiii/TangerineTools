@@ -839,7 +839,14 @@ function ModelAnalysisPanel({
               >
                 <div className="reader-model-candidate-fields">
                   <label>
-                    <span>名称</span>
+                    <span>
+                      名称
+                      {candidate.confidence !== null && (
+                        <em className="reader-model-confidence">
+                          置信度 {Math.round(candidate.confidence * 100)}%
+                        </em>
+                      )}
+                    </span>
                     <input
                       value={candidate.name}
                       disabled={candidateDisabled}
@@ -873,9 +880,6 @@ function ModelAnalysisPanel({
                         ))}
                       </select>
                     </label>
-                  )}
-                  {candidate.confidence !== null && (
-                    <small>模型置信度 {Math.round(candidate.confidence * 100)}%</small>
                   )}
                 </div>
                 <button
@@ -3216,31 +3220,32 @@ export function ReaderTool({ scene }) {
               <small>{excerpt.length} 字</small>
             </label>
             {selectedExcerptText && (
-              <div className="reader-selection-add">
+              <div
+                className={[
+                  'reader-selection-add',
+                  selectedEntityKind === OBSERVED_ENTITY_KIND.PLACE ? 'has-place' : '',
+                ].filter(Boolean).join(' ')}
+              >
                 <strong>记录“{selectedExcerptText}”</strong>
-                <label>
-                  <span>类型</span>
+                <select
+                  aria-label="名称类型"
+                  value={selectedEntityKind}
+                  onChange={(event) => setSelectedEntityKind(event.target.value)}
+                >
+                  {Object.entries(OBSERVED_KIND_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
+                {selectedEntityKind === OBSERVED_ENTITY_KIND.PLACE && (
                   <select
-                    value={selectedEntityKind}
-                    onChange={(event) => setSelectedEntityKind(event.target.value)}
+                    aria-label="地点性质"
+                    value={selectedPlaceKind}
+                    onChange={(event) => setSelectedPlaceKind(event.target.value)}
                   >
-                    {Object.entries(OBSERVED_KIND_LABELS).map(([value, label]) => (
+                    {Object.entries(OBSERVED_PLACE_KIND_LABELS).map(([value, label]) => (
                       <option key={value} value={value}>{label}</option>
                     ))}
                   </select>
-                </label>
-                {selectedEntityKind === OBSERVED_ENTITY_KIND.PLACE && (
-                  <label>
-                    <span>地点性质</span>
-                    <select
-                      value={selectedPlaceKind}
-                      onChange={(event) => setSelectedPlaceKind(event.target.value)}
-                    >
-                      {Object.entries(OBSERVED_PLACE_KIND_LABELS).map(([value, label]) => (
-                        <option key={value} value={value}>{label}</option>
-                      ))}
-                    </select>
-                  </label>
                 )}
                 <button
                   type="button"

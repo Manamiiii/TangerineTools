@@ -4536,8 +4536,8 @@ img {
 
 .reader-selection-add {
   display: grid;
-  grid-template-columns: minmax(120px, 1fr) 92px 108px auto;
-  align-items: end;
+  grid-template-columns: minmax(120px, 1fr) 92px auto;
+  align-items: center;
   gap: 8px;
   margin-top: 8px;
   padding: 8px 10px;
@@ -4555,15 +4555,8 @@ img {
   white-space: nowrap;
 }
 
-.reader-selection-add label {
-  display: grid;
-  min-width: 0;
-  gap: 3px;
-}
-
-.reader-selection-add label > span {
-  color: var(--text-muted);
-  font-size: 9px;
+.reader-selection-add.has-place {
+  grid-template-columns: minmax(120px, 1fr) 92px 108px auto;
 }
 
 .reader-selection-add select {
@@ -4961,10 +4954,21 @@ img {
   gap: 3px;
 }
 
-.reader-model-candidate-fields label > span,
-.reader-model-candidate-fields small {
+.reader-model-candidate-fields label > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
   color: var(--text-muted);
   font-size: 9px;
+}
+
+.reader-model-confidence {
+  color: #7c3aed;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 650;
+  white-space: nowrap;
 }
 
 .reader-model-candidate-fields input,
@@ -4979,10 +4983,6 @@ img {
   color: var(--text);
   font: inherit;
   font-size: 10px;
-}
-
-.reader-model-candidate-fields small {
-  grid-column: 1 / -1;
 }
 
 .reader-model-candidate.is-stale {
@@ -6531,7 +6531,8 @@ img {
     grid-template-columns: 1fr;
   }
 
-  .reader-selection-add {
+  .reader-selection-add,
+  .reader-selection-add.has-place {
     grid-template-columns: minmax(0, 1fr) 92px;
   }
 
