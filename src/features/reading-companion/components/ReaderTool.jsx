@@ -1309,118 +1309,6 @@ function ReadingServiceSettings({
   )
 }
 
-function QuickObservedEntityForm({
-  observedEntities,
-  currentChapterId,
-  currentChapter,
-  chapters,
-  onChange,
-  onOpenRecords,
-  onOpenMap,
-}) {
-  const [name, setName] = useState('')
-  const [kind, setKind] = useState(OBSERVED_ENTITY_KIND.PLACE)
-  const [placeKind, setPlaceKind] = useState(OBSERVED_PLACE_KIND.UNKNOWN)
-  const [status, setStatus] = useState('')
-  const [lastSavedKind, setLastSavedKind] = useState('')
-  const currentAction = observedRecordAction(
-    observedEntities,
-    name,
-    kind,
-    currentChapterId,
-    chapters,
-  )
-
-  async function addObservedEntity(event) {
-    event.preventDefault()
-    setStatus('')
-    setLastSavedKind('')
-    try {
-      const next = upsertObservedEntity(observedEntities, {
-        id: generateId('observed'),
-        name,
-        kind,
-        placeKind,
-        firstSeenChapterId: currentChapterId,
-      }, chapters)
-      if (next === observedEntities) {
-        setStatus(`这个名称${currentAction.label}。`)
-        return
-      }
-      await onChange(next)
-      setLastSavedKind(kind)
-      setName('')
-      setPlaceKind(OBSERVED_PLACE_KIND.UNKNOWN)
-      setStatus(
-        currentAction.type === 'move-earlier'
-          ? `已从${currentAction.existingChapter?.label || '较后章节'}提前到${currentChapter?.label || '当前章'}。`
-          : currentAction.type === 'record-again'
-            ? `已补记${currentChapter?.label || '当前章'}的出现。`
-            : `已记在${currentChapter?.label || '当前章'}，现在可以继续阅读。`,
-      )
-    } catch (error) {
-      setStatus(error?.message || '保存失败')
-    }
-  }
-
-  return (
-    <div className="reader-quick-add">
-      <div className="reader-quick-add-heading">
-        <strong>快速记录</strong>
-        <span className="reader-local-chip"><Lock size={13} /> 个人记录</span>
-      </div>
-      <form
-        className={kind === OBSERVED_ENTITY_KIND.PLACE ? '' : 'reader-quick-add-form-compact'}
-        onSubmit={addObservedEntity}
-      >
-        <label className="reader-quick-add-name">
-          <span>刚遇到的名称</span>
-          <input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="人名、地点或其他名词"
-            maxLength={120}
-          />
-        </label>
-        <label>
-          <span>类型</span>
-          <select value={kind} onChange={(event) => setKind(event.target.value)}>
-            {Object.entries(OBSERVED_KIND_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
-        </label>
-        {kind === OBSERVED_ENTITY_KIND.PLACE && (
-          <label>
-            <span>地点性质</span>
-            <select value={placeKind} onChange={(event) => setPlaceKind(event.target.value)}>
-              {Object.entries(OBSERVED_PLACE_KIND_LABELS).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
-          </label>
-        )}
-        <button
-          type="submit"
-          className="btn btn-sm"
-          disabled={!name.trim() || currentAction.type === 'recorded'}
-        >
-          <Plus size={13} /> {currentAction.label}
-        </button>
-      </form>
-      {status && (
-        <div className="reader-quick-add-status" role="status">
-          <span>{status}</span>
-          <button type="button" onClick={onOpenRecords}>查看已遇到</button>
-          {lastSavedKind === OBSERVED_ENTITY_KIND.PLACE && (
-            <button type="button" onClick={onOpenMap}>打开地图</button>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
-
 function ObservedPagination({
   page,
   pageSize,
@@ -2641,6 +2529,8 @@ export function ReaderTool({ scene }) {
   const [imagePreviewOpen, setImagePreviewOpen] = useState(false)
   const [scanResults, setScanResults] = useState([])
   const [selectedExcerptText, setSelectedExcerptText] = useState('')
+  const [selectedEntityKind, setSelectedEntityKind] = useState(OBSERVED_ENTITY_KIND.PERSON)
+  const [selectedPlaceKind, setSelectedPlaceKind] = useState(OBSERVED_PLACE_KIND.UNKNOWN)
   const [scanStatus, setScanStatus] = useState('')
   const [inputStatus, setInputStatus] = useState('')
   const [ocrState, setOcrState] = useState('idle')
@@ -2981,6 +2871,8 @@ export function ReaderTool({ scene }) {
   function changeExcerpt(value) {
     setExcerpt(value)
     setSelectedExcerptText('')
+    setSelectedEntityKind(OBSERVED_ENTITY_KIND.PERSON)
+    setSelectedPlaceKind(OBSERVED_PLACE_KIND.UNKNOWN)
     setScanStatus('')
     setInputStatus('')
   }
@@ -3055,11 +2947,16 @@ export function ReaderTool({ scene }) {
     const start = event.currentTarget.selectionStart
     const end = event.currentTarget.selectionEnd
     const selected = event.currentTarget.value.slice(start, end).trim()
-    setSelectedExcerptText(
-      selected.length >= 2 && selected.length <= 120 && !selected.includes('\n')
-        ? selected
-        : '',
-    )
+    const nextSelected = selected.length >= 2
+      && selected.length <= 120
+      && !selected.includes('\n')
+      ? selected
+      : ''
+    setSelectedExcerptText(nextSelected)
+    if (nextSelected) {
+      setSelectedEntityKind(OBSERVED_ENTITY_KIND.PERSON)
+      setSelectedPlaceKind(OBSERVED_PLACE_KIND.UNKNOWN)
+    }
   }
 
   async function confirmModelCandidate(candidate) {
@@ -3347,25 +3244,48 @@ export function ReaderTool({ scene }) {
             {selectedExcerptText && (
               <div className="reader-selection-add">
                 <strong>记录“{selectedExcerptText}”</strong>
-                {Object.entries(OBSERVED_KIND_LABELS).map(([kind, label]) => {
-                  const action = actionForObservedName(selectedExcerptText, kind)
-                  return (
-                    <button
-                      key={kind}
-                      type="button"
-                      disabled={action.type === 'recorded'}
-                      onClick={() => confirmObservedCandidate({
-                        name: selectedExcerptText,
-                        kind,
-                        placeKind: kind === OBSERVED_ENTITY_KIND.PLACE
-                          ? OBSERVED_PLACE_KIND.UNKNOWN
-                          : undefined,
-                      })}
+                <label>
+                  <span>类型</span>
+                  <select
+                    value={selectedEntityKind}
+                    onChange={(event) => setSelectedEntityKind(event.target.value)}
+                  >
+                    {Object.entries(OBSERVED_KIND_LABELS).map(([value, label]) => (
+                      <option key={value} value={value}>{label}</option>
+                    ))}
+                  </select>
+                </label>
+                {selectedEntityKind === OBSERVED_ENTITY_KIND.PLACE && (
+                  <label>
+                    <span>地点性质</span>
+                    <select
+                      value={selectedPlaceKind}
+                      onChange={(event) => setSelectedPlaceKind(event.target.value)}
                     >
-                      {label} · {action.label}
-                    </button>
-                  )
-                })}
+                      {Object.entries(OBSERVED_PLACE_KIND_LABELS).map(([value, label]) => (
+                        <option key={value} value={value}>{label}</option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+                <button
+                  type="button"
+                  className="btn btn-sm"
+                  disabled={
+                    actionForObservedName(selectedExcerptText, selectedEntityKind).type
+                    === 'recorded'
+                  }
+                  onClick={() => confirmObservedCandidate({
+                    name: selectedExcerptText,
+                    kind: selectedEntityKind,
+                    placeKind: selectedEntityKind === OBSERVED_ENTITY_KIND.PLACE
+                      ? selectedPlaceKind
+                      : undefined,
+                  })}
+                >
+                  <Plus size={13} />
+                  {actionForObservedName(selectedExcerptText, selectedEntityKind).label}
+                </button>
               </div>
             )}
             <p className="reader-input-status" role="status">
@@ -3435,16 +3355,6 @@ export function ReaderTool({ scene }) {
                   actionFor={actionForObservedName}
                   modelConfig={modelConfig}
                   onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
-                />
-
-                <QuickObservedEntityForm
-                  observedEntities={observedEntities}
-                  currentChapterId={currentChapterId}
-                  currentChapter={currentChapter}
-                  chapters={readingPackage.chapters}
-                  onChange={changeObservedEntities}
-                  onOpenRecords={() => setActiveTab(READER_TAB.RECORDS)}
-                  onOpenMap={() => setActiveTab(READER_TAB.MAP)}
                 />
               </div>
             </div>
