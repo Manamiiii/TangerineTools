@@ -9,15 +9,19 @@ import { ArrowDownCircle, ArrowUpCircle, CheckCircle2, Plus, Sparkles } from 'lu
 import { db, ensureOwnedTable } from '../db.js'
 import { STATS_DIMENSIONS } from '../constants.js'
 import {
+  calculateStandardStats,
   evaluateAllNatures,
   evaluateNatureProfiles,
+  MAX_INDIVIDUAL_STAT_COUNT,
+  MAX_INDIVIDUAL_DISPLAY_VALUE,
   natureName,
   NATURE_DECISION_LABELS,
   STAT_LABELS,
 } from '../domain/nature.js'
+import { natureRetentionAdvice, summarizeOwnedNatureRecords } from '../domain/natureRetention.js'
 import { pveOverviewSummary, pveStarText } from '../domain/naturePve.js'
 import { buildNatureAnalysisInput, buildPopulationStatSummary, extractRowSummary } from '../domain/natureRowAdapter.js'
-import { buildOwnedNatureIndex } from '../domain/owned.js'
+import { buildOwnedNatureIndex, buildOwnedNatureRecordIndex } from '../domain/owned.js'
 import {
   compareRockKingdomCreatureRows,
   buildEvolutionReferenceGroups,
@@ -32,6 +36,7 @@ import { EmptyState, FormRow, OptionTag, SearchableSelect, StatsChart } from './
 import { OwnedFormModal } from './owned.jsx'
 
 const EMPTY_STATS = Object.fromEntries(STATS_DIMENSIONS.map((d) => [d.key, '']))
+const EMPTY_INDIVIDUAL_STATS = Object.fromEntries(STATS_DIMENSIONS.map((d) => [d.key, 0]))
 function TraitTagList({ value }) {
   const selected = Array.isArray(value) ? value : []
   const options = TRAIT_TAG_OPTIONS.filter((option) => selected.includes(option.value))
@@ -47,12 +52,14 @@ export function NatureTool({ scene }) {
   const emptyInput = {
     name: '',
     stats: { ...EMPTY_STATS },
+    individualStats: { ...EMPTY_INDIVIDUAL_STATS },
     traitTags: [],
     skillInfo: { skills: [] },
     analysisProfiles: [],
     sourceRowId: '',
     sourceMeta: null,
     ownedNatures: {},
+    ownedNatureRecords: {},
     formAnalysis: null,
     formProfiles: [],
     populationStats: null,
@@ -63,13 +70,25 @@ export function NatureTool({ scene }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [quickAddNature, setQuickAddNature] = useState(null)
 
-  function handleQuickAddSaved() {
+  function handleQuickAddSaved(savedValues = {}) {
     if (!quickAddNature) return
     const updateOwned = (previous) => ({
       ...previous,
       ownedNatures: {
         ...previous.ownedNatures,
         [quickAddNature.id]: (previous.ownedNatures?.[quickAddNature.id] || 0) + 1,
+      },
+      ownedNatureRecords: {
+        ...previous.ownedNatureRecords,
+        [quickAddNature.id]: [
+          ...(previous.ownedNatureRecords?.[quickAddNature.id] || []),
+          {
+            id: '',
+            nature: quickAddNature.id,
+            shiny: savedValues[previous.ownedContext?.shinyKey] === 'yes',
+            colorful: savedValues[previous.ownedContext?.colorfulKey] === 'yes',
+          },
+        ],
       },
     })
     setInput(updateOwned)
@@ -81,18 +100,56 @@ export function NatureTool({ scene }) {
     setDraftInput((prev) => ({ ...prev, stats: { ...prev.stats, [key]: value } }))
   }
 
+  function toggleIndividualStat(key) {
+    const update = (previous) => {
+      const current = Number(previous.individualStats?.[key]) || 0
+      const selectedCount = Object.values(previous.individualStats || {}).filter((value) => Number(value) > 0).length
+      if (current === 0 && selectedCount >= MAX_INDIVIDUAL_STAT_COUNT) return previous
+      return {
+        ...previous,
+        individualStats: {
+          ...EMPTY_INDIVIDUAL_STATS,
+          ...previous.individualStats,
+          [key]: current > 0 ? 0 : MAX_INDIVIDUAL_DISPLAY_VALUE,
+        },
+      }
+    }
+    setDraftInput(update)
+    setInput(update)
+  }
+
   function handleImport(payload) {
     if (!payload) {
-      const next = { ...emptyInput, stats: { ...EMPTY_STATS }, skillInfo: { skills: [] } }
+      const next = {
+        ...emptyInput,
+        stats: { ...EMPTY_STATS },
+        individualStats: { ...EMPTY_INDIVIDUAL_STATS },
+        skillInfo: { skills: [] },
+      }
       setDraftInput(next)
       setInput(next)
       setSelectedIndex(0)
       return
     }
-    const { name, stats, traitTags, skillInfo, analysisProfiles, formProfiles, sourceRowId, sourceMeta, ownedNatures, formAnalysis, populationStats, ownedContext } = payload
+    const {
+      name,
+      stats,
+      traitTags,
+      skillInfo,
+      analysisProfiles,
+      formProfiles,
+      sourceRowId,
+      sourceMeta,
+      ownedNatures,
+      ownedNatureRecords,
+      formAnalysis,
+      populationStats,
+      ownedContext,
+    } = payload
     const next = {
       name: name || '',
       stats: { ...EMPTY_STATS, ...stats },
+      individualStats: { ...EMPTY_INDIVIDUAL_STATS },
       traitTags: traitTags || [],
       skillInfo: skillInfo || { skills: [] },
       analysisProfiles: analysisProfiles || [],
@@ -100,6 +157,7 @@ export function NatureTool({ scene }) {
       sourceRowId: sourceRowId || '',
       sourceMeta: sourceMeta || null,
       ownedNatures: ownedNatures || {},
+      ownedNatureRecords: ownedNatureRecords || {},
       formAnalysis: formAnalysis || null,
       populationStats: populationStats || null,
       ownedContext: ownedContext || null,
@@ -132,7 +190,14 @@ export function NatureTool({ scene }) {
 
   const activeIndex = Math.min(selectedIndex, Math.max(candidates.length - 1, 0))
   const nature = candidates[activeIndex] || null
-  const adjustedStats = nature?.adjustedStats || numericStats
+  const formulaBaseStats = useMemo(
+    () => calculateStandardStats(numericStats, null, input.individualStats),
+    [numericStats, input.individualStats],
+  )
+  const adjustedStats = useMemo(
+    () => calculateStandardStats(numericStats, nature, input.individualStats),
+    [numericStats, nature, input.individualStats],
+  )
 
   return (
     <div className="nature-tool">
@@ -154,6 +219,10 @@ export function NatureTool({ scene }) {
 
       {hasAnyStat ? (
         <>
+          <IndividualStatSelector
+            value={input.individualStats}
+            onToggle={toggleIndividualStat}
+          />
           <NaturePveOverview forms={pveForms} />
           <NatureFixedEvidence nature={candidates[0]} forms={pveForms} />
           <div className="nature-workbench">
@@ -162,13 +231,14 @@ export function NatureTool({ scene }) {
               activeIndex={activeIndex}
               onSelect={setSelectedIndex}
               ownedNatures={input.ownedNatures}
+              ownedNatureRecords={input.ownedNatureRecords}
               onQuickAdd={input.ownedContext ? setQuickAddNature : null}
             />
             <NatureResult
               nature={nature}
-              baseStats={numericStats}
+              baseStats={formulaBaseStats}
               adjustedStats={adjustedStats}
-              populationStats={input.populationStats}
+              candidates={candidates}
             />
           </div>
         </>
@@ -310,6 +380,39 @@ function ManualNatureInput({ input, onNameChange, onStatChange, onCalculate }) {
   )
 }
 
+function IndividualStatSelector({ value = {}, onToggle }) {
+  const selectedCount = STATS_DIMENSIONS.filter((dimension) => Number(value[dimension.key]) > 0).length
+  return (
+    <section className="nature-individual-panel">
+      <div>
+        <strong>个体加成</strong>
+        <span>任选 3 项 +{MAX_INDIVIDUAL_DISPLAY_VALUE}；可随时修改 · 已选 {selectedCount}/{MAX_INDIVIDUAL_STAT_COUNT}</span>
+      </div>
+      <div className="nature-individual-options">
+        {STATS_DIMENSIONS.map((dimension) => {
+          const selected = Number(value[dimension.key]) > 0
+          const disabled = !selected && selectedCount >= MAX_INDIVIDUAL_STAT_COUNT
+          return (
+            <button
+              type="button"
+              className={selected ? 'selected' : ''}
+              disabled={disabled}
+              key={dimension.key}
+              onClick={() => onToggle(dimension.key)}
+            >
+              {dimension.label}
+              <small>{selected ? `+${MAX_INDIVIDUAL_DISPLAY_VALUE}` : '+0'}</small>
+            </button>
+          )
+        })}
+      </div>
+      <small className="nature-individual-note">
+        面板按游戏显示值换算：个体 +10 对应公式内部 IV 60；性格强化 ×1.2，弱化 ×0.9。
+      </small>
+    </section>
+  )
+}
+
 // 从场景已有资料表中选择一行，带入名称/六维/特性标签。
 // 场景下没有任何资料表时返回 null，保证性格工具可以完全独立使用。
 function RowImportPanel({ scene, onImport }) {
@@ -349,12 +452,16 @@ function RowImportPanel({ scene, onImport }) {
       const ownedFields = await db.catalogFields.where('tableId').equals(table.id).toArray()
       const refFields = ownedFields.filter((field) => field.type === 'reference' && field.referenceTableId === creatureTableId)
       const natureField = ownedFields.find((field) => field.key === 'nature' || field.name === '性格')
+      const shinyField = ownedFields.find((field) => field.key === 'shiny' || field.name === '个体异色')
+      const colorfulField = ownedFields.find((field) => field.key === 'colorful' || field.name === '是否炫彩')
       if (refFields.length === 0 || !natureField) continue
       const ownedRows = await db.catalogRows.where('tableId').equals(table.id).toArray()
       sources.push({
         rows: ownedRows,
         referenceKeys: refFields.map((field) => field.key),
         natureKey: natureField.key,
+        shinyKey: shinyField?.key,
+        colorfulKey: colorfulField?.key,
       })
       if (!quickAddContext) {
         quickAddContext = {
@@ -363,12 +470,16 @@ function RowImportPanel({ scene, onImport }) {
           rows: ownedRows,
           referenceKey: refFields[0].key,
           natureKey: natureField.key,
+          shinyKey: shinyField?.key,
+          colorfulKey: colorfulField?.key,
         }
       }
     }
     const creatureRows = await db.catalogRows.where('tableId').equals(creatureTableId).toArray()
+    const equivalentReferences = buildEvolutionReferenceGroups(creatureRows)
     return {
-      index: buildOwnedNatureIndex(sources, buildEvolutionReferenceGroups(creatureRows)),
+      index: buildOwnedNatureIndex(sources, equivalentReferences),
+      recordIndex: buildOwnedNatureRecordIndex(sources, equivalentReferences),
       quickAddContext,
     }
   }, [scene.id, creatureTableId])
@@ -413,6 +524,7 @@ function RowImportPanel({ scene, onImport }) {
       },
       populationStats: buildPopulationStatSummary(visibleRows, fields, target),
       ownedNatures: ownedContext.index.get(target.id) || {},
+      ownedNatureRecords: ownedContext.recordIndex.get(target.id) || {},
       ownedContext: ownedContext.quickAddContext,
     })
   }
@@ -525,7 +637,14 @@ function FormAnalysis({ analysis, populationStats }) {
 }
 
 // 候选清单：展示全部 30 个合法性格，先按「强化维度」分组，组内再展示推荐分档。
-function NatureCandidateList({ candidates, activeIndex, onSelect, ownedNatures = {}, onQuickAdd }) {
+function NatureCandidateList({
+  candidates,
+  activeIndex,
+  onSelect,
+  ownedNatures = {},
+  ownedNatureRecords = {},
+  onQuickAdd,
+}) {
   if (!candidates || candidates.length === 0) return null
   const activeCandidate = candidates[activeIndex]
   const groups = groupByRaise(candidates)
@@ -560,6 +679,7 @@ function NatureCandidateList({ candidates, activeIndex, onSelect, ownedNatures =
                           activeCandidate={activeCandidate}
                           onSelect={onSelect}
                           ownedCount={ownedNatures[c.id] || 0}
+                          ownedRecords={ownedNatureRecords[c.id] || []}
                           onQuickAdd={onQuickAdd}
                         />
                       ))}
@@ -602,10 +722,28 @@ function natureScoreSummary(candidate) {
   return min === max ? formatNatureScore(max) : `${formatNatureScore(min)} 至 ${formatNatureScore(max)}`
 }
 
-function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSelect, ownedCount = 0, onQuickAdd }) {
+function NatureCandidateListItem({
+  candidate,
+  candidates,
+  activeCandidate,
+  onSelect,
+  ownedCount = 0,
+  ownedRecords = [],
+  onQuickAdd,
+}) {
   const candidateIndex = candidates.indexOf(candidate)
   const isActive = candidate === activeCandidate
   const canQuickAdd = candidate.decision !== 'notRecommended' && ownedCount === 0 && onQuickAdd
+  const retention = natureRetentionAdvice(candidate, candidates)
+  const ownedSummary = summarizeOwnedNatureRecords(ownedRecords)
+  const ownedLabel = ownedSummary.rare > 0
+    ? [
+      `已获 ${ownedCount}`,
+      `普通 ${ownedSummary.normal}`,
+      ownedSummary.shiny > 0 ? `异色 ${ownedSummary.shiny}` : '',
+      ownedSummary.colorful > 0 ? `炫彩 ${ownedSummary.colorful}` : '',
+    ].filter(Boolean).join(' · ')
+    : `已获得${ownedCount > 1 ? ` ×${ownedCount}` : ''}`
   return (
     <li className="nature-candidate-row">
       <button
@@ -618,10 +756,15 @@ function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSel
         </span>
         <span className="nature-candidate-name">{natureName(candidate)}</span>
         <span className="nature-candidate-role">{natureModifierSummary(candidate)}</span>
+        <span className={`nature-candidate-retention ${retention.status}`}>
+          {retention.mirrorTarget
+            ? `银镜 → ${natureName(retention.mirrorTarget)}`
+            : retention.rareLabel.replace('异色/炫彩：', '')}
+        </span>
         {ownedCount > 0 ? (
           <span className="nature-candidate-owned acquired">
             <CheckCircle2 size={13} />
-            已获得{ownedCount > 1 ? ` ×${ownedCount}` : ''}
+            {ownedLabel}
           </span>
         ) : (
           <span className="nature-candidate-owned empty" aria-hidden="true" />
@@ -648,12 +791,13 @@ function NatureCandidateListItem({ candidate, candidates, activeCandidate, onSel
 }
 
 
-function NatureResult({ nature, baseStats, adjustedStats, populationStats }) {
+function NatureResult({ nature, baseStats, adjustedStats, candidates = [] }) {
   if (!nature) return null
   const formDecisions = nature.formDecisions || []
   const coreReason = nature.decision === 'notRecommended'
     ? nature.warnings[0]
     : nature.reasons[0]
+  const retention = natureRetentionAdvice(nature, candidates)
 
   return (
     <div className="nature-result">
@@ -680,6 +824,24 @@ function NatureResult({ nature, baseStats, adjustedStats, populationStats }) {
           弱化：{STAT_LABELS[nature.lower]}（{baseStats[nature.lower]} → {adjustedStats[nature.lower]}）
         </span>
       </div>
+
+      <section className={`nature-retention-card ${retention.status}`}>
+        <div className="nature-retention-head">
+          <strong>捕捉与残缺魔镜</strong>
+          <span>不改变上方最终性格分档</span>
+        </div>
+        <div className="nature-retention-options">
+          <span>{retention.normalLabel}</span>
+          <span>{retention.rareLabel}</span>
+        </div>
+        <p>{retention.description}</p>
+        {retention.mirrorTarget && (
+          <p className="nature-retention-target">
+            保留 +{STAT_LABELS[nature.raise]}，将 -{STAT_LABELS[nature.lower]} 改为
+            -{STAT_LABELS[retention.mirrorTarget.lower]}，目标性格：{natureName(retention.mirrorTarget)}。
+          </p>
+        )}
+      </section>
 
       <div className="nature-result-summary">
         <div>
@@ -737,7 +899,6 @@ function NatureResult({ nature, baseStats, adjustedStats, populationStats }) {
         nature={nature}
         baseStats={baseStats}
         adjustedStats={adjustedStats}
-        scaleMax={populationStats?.globalMax}
       />
     </div>
   )
@@ -918,18 +1079,15 @@ function NaturePveOverview({ forms = [] }) {
 }
 
 function natureModifierSummary(candidate) {
-  const raiseDelta = candidate.deltas?.[candidate.raise] || 0
-  const lowerDelta = candidate.deltas?.[candidate.lower] || 0
-  const raiseText = `${STAT_LABELS[candidate.raise]} ${raiseDelta > 0 ? `+${raiseDelta}` : raiseDelta}`
-  const lowerText = `${STAT_LABELS[candidate.lower]} ${lowerDelta}`
-  return `${raiseText} / ${lowerText}`
+  return `${STAT_LABELS[candidate.raise]} +20% / ${STAT_LABELS[candidate.lower]} -10%`
 }
 
 
-function NatureStatsBars({ nature, baseStats, adjustedStats, scaleMax }) {
-  const maxValue = Math.max(Number(scaleMax) || 1, ...Object.values(adjustedStats).map(Number))
+function NatureStatsBars({ nature, baseStats, adjustedStats }) {
+  const maxValue = Math.max(1, ...Object.values(baseStats).map(Number), ...Object.values(adjustedStats).map(Number))
   return (
     <div className="nature-bars">
+      <div className="nature-formula-caption">公式面板（已计入所选个体与当前性格）</div>
       {STATS_DIMENSIONS.map((d) => {
         const base = baseStats[d.key] || 0
         const adjusted = adjustedStats[d.key] || 0

@@ -48,14 +48,15 @@ export const SPEED_CONCERN_LABELS = {
   high: '高关注',
 }
 
-// 最终面板公式预留位：当前不写死未知的洛克王国世界公式。
-// 后续确认等级、个体、成长/努力等固定参数后，只需补齐这里并启用 calculateStandardStat。
-export const STANDARD_STAT_FORMULA_PLACEHOLDER = {
-  level: null,
-  individual: null,
-  growth: null,
-  flatBonus: 5,
+export const NATURE_STAT_MULTIPLIERS = {
+  raised: 1.2,
+  neutral: 1,
+  lowered: 0.9,
 }
+
+export const MAX_INDIVIDUAL_DISPLAY_VALUE = 10
+export const MAX_INDIVIDUAL_STAT_COUNT = 3
+const INDIVIDUAL_INTERNAL_MULTIPLIER = 6
 
 // 预置资料的速度并非连续分布，而是集中在一批固定/半固定速度点上。
 // 速度线展示时使用这些锚点，避免只按连续百分位误判“刚好跨线”的价值。
@@ -159,11 +160,73 @@ function percentileLabel(key, value) {
   return ['极低', '偏低', '中低', '中高', '较高', '顶级'][score]
 }
 
-export function calculateStandardStat(baseValue, natureModifier = 1, formula = STANDARD_STAT_FORMULA_PLACEHOLDER) {
-  const { level, individual, growth, flatBonus } = formula
-  if ([baseValue, level, individual, growth, flatBonus].some((value) => value == null)) return null
-  const raw = (((Number(baseValue) * 2 + Number(individual) + Number(growth)) * Number(level)) / 100) + Number(flatBonus)
-  return Math.floor(raw * natureModifier)
+function normalizedIndividualDisplayValue(value) {
+  return Math.max(0, Math.min(MAX_INDIVIDUAL_DISPLAY_VALUE, Number(value) || 0))
+}
+
+export function calculateStandardStat(baseValue, statKey, individualDisplayValue = 0, natureModifier = 1) {
+  const base = Number(baseValue) || 0
+  if (base <= 0 || !MODIFIABLE_STAT_KEYS.includes(statKey)) return 0
+  const individual = normalizedIndividualDisplayValue(individualDisplayValue) * INDIVIDUAL_INTERNAL_MULTIPLIER
+  const isHp = statKey === 'hp'
+  const scaled = Math.round(
+    base * (isHp ? 1.7 : 1.1) +
+    individual * (isHp ? 0.85 : 0.55) +
+    (isHp ? 70 : 10),
+  )
+  return Math.round(scaled * Number(natureModifier || 1) + (isHp ? 100 : 50))
+}
+
+export function calculateStandardStats(baseStats = {}, nature = null, individualStats = {}) {
+  return Object.fromEntries(MODIFIABLE_STAT_KEYS.map((key) => {
+    const natureModifier = key === nature?.raise
+      ? NATURE_STAT_MULTIPLIERS.raised
+      : key === nature?.lower
+        ? NATURE_STAT_MULTIPLIERS.lowered
+        : NATURE_STAT_MULTIPLIERS.neutral
+    return [
+      key,
+      calculateStandardStat(baseStats[key], key, individualStats[key], natureModifier),
+    ]
+  }))
+}
+
+export function equivalentNeutralSpeedBase(finalSpeed, individualDisplayValue = MAX_INDIVIDUAL_DISPLAY_VALUE) {
+  const target = Number(finalSpeed) || 0
+  if (target <= 0) return 0
+  let low = 0
+  let high = 500
+  while (low < high) {
+    const middle = Math.ceil((low + high) / 2)
+    if (calculateStandardStat(middle, 'spd', individualDisplayValue) <= target) low = middle
+    else high = middle - 1
+  }
+  return low
+}
+
+function projectStandardSpeedLine(baseSpeed) {
+  const base = Number(baseSpeed) || 0
+  const standard = {
+    neutral: calculateStandardStat(base, 'spd'),
+    maxIndividual: calculateStandardStat(base, 'spd', MAX_INDIVIDUAL_DISPLAY_VALUE),
+    raised: calculateStandardStat(
+      base,
+      'spd',
+      MAX_INDIVIDUAL_DISPLAY_VALUE,
+      NATURE_STAT_MULTIPLIERS.raised,
+    ),
+    lowered: calculateStandardStat(
+      base,
+      'spd',
+      MAX_INDIVIDUAL_DISPLAY_VALUE,
+      NATURE_STAT_MULTIPLIERS.lowered,
+    ),
+  }
+  return {
+    standard,
+    raisedEquivalentBase: equivalentNeutralSpeedBase(standard.raised),
+    loweredEquivalentBase: equivalentNeutralSpeedBase(standard.lowered),
+  }
 }
 
 export function nearestSpeedAnchor(value) {
@@ -387,6 +450,7 @@ export const NATURE_CANDIDATES = OWNED_NATURE_OPTIONS.map(parseNatureOption).fil
 
 export function analyzeStats(baseStats = {}) {
   const stats = numericStats(baseStats)
+  const speedProjection = projectStandardSpeedLine(stats.spd)
   const modValues = MODIFIABLE_STAT_KEYS.map((key) => stats[key]).filter((v) => v > 0)
   const average = modValues.length ? modValues.reduce((sum, v) => sum + v, 0) / modValues.length : 0
   const total = MODIFIABLE_STAT_KEYS.reduce((sum, key) => sum + stats[key], 0)
@@ -411,14 +475,21 @@ export function analyzeStats(baseStats = {}) {
     percentiles,
     speed: {
       base: stats.spd,
-      raised: Math.round(stats.spd * 1.1),
-      lowered: Math.round(stats.spd * 0.9),
+      raised: speedProjection.raisedEquivalentBase,
+      lowered: speedProjection.loweredEquivalentBase,
       baseTier: speedTier(stats.spd),
-      raisedTier: speedTier(Math.round(stats.spd * 1.1)),
-      loweredTier: speedTier(Math.round(stats.spd * 0.9)),
+      raisedTier: speedTier(speedProjection.raisedEquivalentBase),
+      loweredTier: speedTier(speedProjection.loweredEquivalentBase),
       nearestAnchor: nearestSpeedAnchor(stats.spd),
-      raisedCrossedAnchors: crossedSpeedAnchors(stats.spd, Math.round(stats.spd * 1.1)),
-      loweredCrossedAnchors: crossedSpeedAnchors(Math.round(stats.spd * 0.9), stats.spd),
+      raisedCrossedAnchors: crossedSpeedAnchors(
+        stats.spd,
+        speedProjection.raisedEquivalentBase,
+      ),
+      loweredCrossedAnchors: crossedSpeedAnchors(
+        speedProjection.loweredEquivalentBase,
+        stats.spd,
+      ),
+      standard: speedProjection.standard,
     },
   }
 }
@@ -461,17 +532,39 @@ export function analyzeFormulaAssist(baseStats = {}, skillProfile = null) {
 export function analyzeSpeedProfile(baseStats = {}, traitTags = [], roles = null, skillProfile = null) {
   const stats = numericStats(baseStats)
   const roleList = roles || inferRoles(stats, traitTags)
+  const speedTraitTags = ['spdLean', 'conditionalSpeedBoost', 'swiftSkill']
+  const hasExplicitSpeedDemand =
+    Boolean(skillProfile?.speedRequired) ||
+    traitTags.some((tag) => speedTraitTags.includes(tag))
+  const speedProjection = projectStandardSpeedLine(stats.spd)
   const speedSkillShouldRaiseConcern =
     skillProfile?.speedRequired && stats.spd >= STAT_PERCENTILE_BANDS.spd.p50
   const extraTraitTags = speedSkillShouldRaiseConcern ? [...traitTags, 'spdLean'] : traitTags
-  const speedConcern = analyzeSpeedConcern(stats, extraTraitTags, roleList)
-  const raised = Math.round(stats.spd * 1.1)
-  const lowered = Math.round(stats.spd * 0.9)
-  const standard = {
-    neutral: calculateStandardStat(stats.spd, 1),
-    raised: calculateStandardStat(stats.spd, 1.1),
-    lowered: calculateStandardStat(stats.spd, 0.9),
+  let speedConcern = analyzeSpeedConcern(stats, extraTraitTags, roleList)
+  const formulaCrossesCompetitiveLine =
+    stats.spd >= STAT_PERCENTILE_BANDS.spd.p25 &&
+    stats.spd < STAT_PERCENTILE_BANDS.spd.p50 &&
+    speedProjection.raisedEquivalentBase >= STAT_PERCENTILE_BANDS.spd.p50
+  if (stats.spd < STAT_PERCENTILE_BANDS.spd.p50 && (!hasExplicitSpeedDemand || !formulaCrossesCompetitiveLine)) {
+    speedConcern = {
+      ...speedConcern,
+      level: 'low',
+      label: SPEED_CONCERN_LABELS.low,
+      reason: stats.spd < STAT_PERCENTILE_BANDS.spd.p25
+        ? `基础速度低于 ${STAT_PERCENTILE_BANDS.spd.p25} 的低速门槛，不为泛化速度线索保留加速方向`
+        : `基础速度尚未进入中速竞争圈，且缺少明确先手需求或加速面板未越过 ${STAT_PERCENTILE_BANDS.spd.p50} 竞争线`,
+    }
+  } else if (speedConcern.level === 'low' && hasExplicitSpeedDemand && formulaCrossesCompetitiveLine) {
+    speedConcern = {
+      ...speedConcern,
+      level: 'medium',
+      label: SPEED_CONCERN_LABELS.medium,
+      reason: `技能或特性线索明确需要先手；加速满个体面板可越过基础速度 ${STAT_PERCENTILE_BANDS.spd.p50} 的中速竞争线`,
+    }
   }
+  const raised = speedProjection.raisedEquivalentBase
+  const lowered = speedProjection.loweredEquivalentBase
+  const standard = speedProjection.standard
   return {
     base: stats.spd,
     raised,
@@ -484,9 +577,7 @@ export function analyzeSpeedProfile(baseStats = {}, traitTags = [], roles = null
     loweredCrossedAnchors: crossedSpeedAnchors(lowered, stats.spd),
     standard,
     concern: speedConcern,
-    note: standard.neutral == null
-      ? '最终速度公式已预留，当前因固定参数未确认，仍基于资料库基础速度近似估算。'
-      : '速度线已按标准固定参数计算；实战仍会受技能优先级与临场速度变化影响。',
+    note: `满速度个体最终面板：无修正 ${standard.maxIndividual}，加速 ${standard.raised}，减速 ${standard.lowered}；锚点按相同满速度个体的最终面板比较。实战仍会受技能优先级与临场速度变化影响。`,
   }
 }
 
@@ -691,22 +782,6 @@ function isStandoutDefenseStat(key, analysis = {}) {
 }
 
 
-function isSingleDefenseRaiseSoftCapped(candidate, roles = [], traitTags = [], analysis = null) {
-  if (!['pdef', 'mdef'].includes(candidate.raise)) return false
-  const topRoles = roles.slice(0, 2)
-  const topRolesNeedDefense = topRoles.some((role) => (ROLE_DEFINITIONS[role.key]?.core?.[candidate.raise] || 0) > 0)
-  const hasMechanicDefenseTrait = traitTags.includes('shieldReduce')
-  const hasBulkFoundation =
-    analysis &&
-    ((analysis.bulkScore >= BULK_PERCENTILE_BANDS.p75 && analysis.stats.hp >= STAT_PERCENTILE_BANDS.hp.p50) ||
-      analysis.stats.hp >= STAT_PERCENTILE_BANDS.hp.p75)
-  if (topRolesNeedDefense && (hasMechanicDefenseTrait || hasBulkFoundation)) return false
-  if (hasMechanicDefenseTrait) return false
-  return roles.some((role) => (ROLE_DEFINITIONS[role.key]?.core?.[candidate.raise] || 0) > 0)
-}
-
-
-
 function isFunctionalBalancedMixedAttack(analysis = {}, roles = [], skillProfile = {}) {
   const breakdown = skillProfile.breakdown || {}
   const physicalShare = Number(breakdown.physicalShare)
@@ -875,7 +950,7 @@ export function evaluateNatureCandidate(
     }
     if (speedProfile.raisedTier !== speedProfile.baseTier || speedProfile.raisedCrossedAnchors.length > 0) {
       reasons.push(
-        `基础速度 ${speedProfile.base} 属于${speedProfile.baseTier}；加速近似到 ${speedProfile.raised}，可能跨过 ${speedProfile.raisedCrossedAnchors.join(' / ') || '无'} 锚点。${speedProfile.concern.reason}`,
+        `基础速度 ${speedProfile.base} 属于${speedProfile.baseTier}；加速满个体最终面板 ${speedProfile.standard.raised}，相当于无修正满个体基础速度约 ${speedProfile.raised}，可能跨过 ${speedProfile.raisedCrossedAnchors.join(' / ') || '无'} 锚点。${speedProfile.concern.reason}`,
       )
     } else if (speedProfile.concern.level === 'low') {
       warnings.push('速度未进入竞争圈，加速主要改善同档对位，通常不应优先于主攻或耐久')
@@ -885,7 +960,7 @@ export function evaluateNatureCandidate(
     const speedPenalty = { high: 14, medium: 7, low: 2 }[speedProfile.concern.level]
     score -= speedPenalty
     if (speedProfile.loweredTier !== speedProfile.baseTier || speedProfile.loweredCrossedAnchors.length > 0) {
-      const message = `基础速度 ${speedProfile.base} 属于${speedProfile.baseTier}；减速近似到 ${speedProfile.lowered}，会失去 ${speedProfile.loweredCrossedAnchors.join(' / ') || '无'} 锚点。${speedProfile.concern.reason}`
+      const message = `基础速度 ${speedProfile.base} 属于${speedProfile.baseTier}；减速满个体最终面板 ${speedProfile.standard.lowered}，相当于无修正满个体基础速度约 ${speedProfile.lowered}，会失去 ${speedProfile.loweredCrossedAnchors.join(' / ') || '无'} 锚点。${speedProfile.concern.reason}`
       if (speedProfile.concern.level === 'low') reasons.push(`${message}，可作为低速路线的牺牲项`)
       else warnings.push(message)
     }
@@ -1134,6 +1209,12 @@ export function evaluateNatureCandidate(
   const speedTradesDefense =
     candidate.raise === 'spd' &&
     ['pdef', 'mdef'].includes(candidate.lower)
+  const lowPrioritySpeedRaise =
+    candidate.raise === 'spd' &&
+    speedProfile.concern.level === 'low'
+  const unsupportedSingleDefenseRaise =
+    ['pdef', 'mdef'].includes(candidate.raise) &&
+    !DEFENSE_STAT_KEYS.includes(candidate.lower)
   const invalidAttackDefenseTrade = attackTradesDefense
   const invalidSpeedDefenseTrade = speedTradesDefense
   const hardRisk =
@@ -1141,8 +1222,9 @@ export function evaluateNatureCandidate(
     lowersStandoutDefense ||
     tradesWithinDurability ||
     invalidAttackDefenseTrade ||
-    invalidSpeedDefenseTrade
-  const singleDefenseSoftCap = isSingleDefenseRaiseSoftCapped(candidate, roles, traitTags, analysis)
+    invalidSpeedDefenseTrade ||
+    lowPrioritySpeedRaise ||
+    unsupportedSingleDefenseRaise
 
   if (lowersStandoutDefense) {
     score -= 14
@@ -1160,12 +1242,16 @@ export function evaluateNatureCandidate(
     score -= 18
     warnings.push('强化速度应优先牺牲明确不用的攻击项；不以削弱物防或魔防换取速度')
   }
+  if (lowPrioritySpeedRaise) {
+    score -= 18
+    warnings.push('基础速度未满足速度竞争门槛，不把加速性格作为捕捉保留分支')
+  }
+  if (unsupportedSingleDefenseRaise) {
+    score -= 18
+    warnings.push('生命强化能同时覆盖两侧承伤；物防或魔防的单侧强化不作为捕捉保留分支')
+  }
   if (hardRisk) score -= 8
   let decision = decisionFromScore(score, hardRisk)
-  if (singleDefenseSoftCap && decision === 'recommended') {
-    decision = 'keepable'
-    warnings.push('单防强化需要生命/双防综合基础或明确护盾减伤机制支撑；当前证据不足，默认降为可保留')
-  }
   const midSpeedFunctionalTempo =
     candidate.raise === 'spd' &&
     decision !== 'notRecommended' &&
@@ -1243,7 +1329,13 @@ export function evaluateNatureCandidate(
       ? '技能已证明可走单攻分支，当前组合不应直接判死，降级为可保留'
       : '技能略偏单攻分支，捕捉时可先保留等待玩法确认')
   }
-  if (tradesWithinDurability || invalidAttackDefenseTrade || invalidSpeedDefenseTrade) {
+  if (
+    tradesWithinDurability ||
+    invalidAttackDefenseTrade ||
+    invalidSpeedDefenseTrade ||
+    lowPrioritySpeedRaise ||
+    unsupportedSingleDefenseRaise
+  ) {
     decision = 'notRecommended'
   }
 
@@ -1277,7 +1369,7 @@ function lowersOffRouteAttack(item) {
 function shouldHardDominateWithOffRouteAttack(item, best) {
   if (!lowersOffRouteAttack(best) || lowersOffRouteAttack(item)) return false
   const bestBlockingWarnings = best.warnings.filter((warning) =>
-    !/单防强化需要生命\/双防综合基础/.test(warning),
+    !/生命强化能同时覆盖两侧承伤/.test(warning),
   )
   if (best.hardRisk || bestBlockingWarnings.length > 0) return false
   if (item.lower === best.raise) return false
@@ -1557,14 +1649,18 @@ export function evaluateNatureProfiles(baseStats = {}, traitTags = [], skillInfo
   )
 }
 
-// 对原始六维应用性格加成：强化项 ×1.1、弱化项 ×0.9，四舍五入取整；
+// 对原始六维应用性格方向倍率：强化项 ×1.2、弱化项 ×0.9，四舍五入取整；
 // 其余维度保持不变。
 export function applyNatureModifier(baseStats = {}, nature) {
   const stats = numericStats(baseStats)
   const result = { ...stats }
   if (!nature || nature.raise == null || nature.lower == null) return result
-  if (result[nature.raise] != null) result[nature.raise] = Math.round(result[nature.raise] * 1.1)
-  if (result[nature.lower] != null) result[nature.lower] = Math.round(result[nature.lower] * 0.9)
+  if (result[nature.raise] != null) {
+    result[nature.raise] = Math.round(result[nature.raise] * NATURE_STAT_MULTIPLIERS.raised)
+  }
+  if (result[nature.lower] != null) {
+    result[nature.lower] = Math.round(result[nature.lower] * NATURE_STAT_MULTIPLIERS.lowered)
+  }
   return result
 }
 

@@ -1,6 +1,6 @@
 export const READING_MAP_DEFAULT_VIEW = Object.freeze({
-  center: [32.7, -83.3],
-  zoom: 6,
+  center: [20, 0],
+  zoom: 2,
 })
 
 export const READING_MAP_PROVIDER = Object.freeze({
@@ -31,6 +31,9 @@ export const READING_MAP_PROVIDERS = Object.freeze({
 const COMMON_TILE_OPTIONS = Object.freeze({
   minZoom: 2,
   maxZoom: 18,
+  updateWhenIdle: true,
+  updateWhenZooming: false,
+  keepBuffer: 1,
 })
 
 export function normalizeReadingMapProvider(providerId) {
@@ -60,6 +63,7 @@ export function readingMapTileSources(providerId, tiandituToken = '') {
     const attribution = '&copy; <a href="https://www.tianditu.gov.cn/" target="_blank" rel="noreferrer">天地图</a>'
     return [
       {
+        usageKind: 'base',
         url: `https://t{s}.tianditu.gov.cn/vec_w/wmts?LAYER=vec&${commonUrl}`,
         options: {
           ...COMMON_TILE_OPTIONS,
@@ -68,6 +72,7 @@ export function readingMapTileSources(providerId, tiandituToken = '') {
         },
       },
       {
+        usageKind: 'labels',
         url: `https://t{s}.tianditu.gov.cn/cva_w/wmts?LAYER=cva&${commonUrl}`,
         options: {
           ...COMMON_TILE_OPTIONS,
@@ -79,6 +84,7 @@ export function readingMapTileSources(providerId, tiandituToken = '') {
   }
 
   return [{
+    usageKind: 'base',
     url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     options: {
       ...COMMON_TILE_OPTIONS,

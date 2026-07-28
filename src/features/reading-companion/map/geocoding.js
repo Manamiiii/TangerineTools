@@ -4,7 +4,7 @@ import {
 } from './mapConfig.js'
 
 const resultCache = new Map()
-let nextInternationalRequestAt = 0
+const nextRequestAtByProvider = new Map()
 
 function normalizedQuery(query) {
   return typeof query === 'string' ? query.normalize('NFKC').trim() : ''
@@ -84,15 +84,26 @@ function normalizedResult({
 export function normalizeNominatimResults(payload) {
   if (!Array.isArray(payload)) return []
   return payload
-    .map((item) => normalizedResult({
-      id: item?.place_id,
-      label: item?.display_name,
-      latitude: item?.lat,
-      longitude: item?.lon,
-      providerId: READING_MAP_PROVIDER.INTERNATIONAL,
-      geometry: item?.geojson,
-      category: [item?.category || item?.class, item?.type].filter(Boolean).join('/'),
-    }))
+    .map((item) => {
+      const names = item?.namedetails || {}
+      const chineseName = names['name:zh-Hans']
+        || names['name:zh_CN']
+        || names['name:zh']
+        || ''
+      const displayName = String(item?.display_name || '')
+      const label = chineseName && !displayName.includes(chineseName)
+        ? `${chineseName} · ${displayName}`
+        : displayName
+      return normalizedResult({
+        id: item?.place_id,
+        label,
+        latitude: item?.lat,
+        longitude: item?.lon,
+        providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+        geometry: item?.geojson,
+        category: [item?.category || item?.class, item?.type].filter(Boolean).join('/'),
+      })
+    })
     .filter(Boolean)
 }
 
@@ -125,10 +136,10 @@ export function normalizeTiandituResults(payload) {
     .filter(Boolean)
 }
 
-async function waitForInternationalRateLimit() {
-  const waitMs = Math.max(0, nextInternationalRequestAt - Date.now())
+async function waitForProviderRateLimit(providerId) {
+  const waitMs = Math.max(0, (nextRequestAtByProvider.get(providerId) || 0) - Date.now())
   if (waitMs > 0) await new Promise((resolve) => setTimeout(resolve, waitMs))
-  nextInternationalRequestAt = Date.now() + 1000
+  nextRequestAtByProvider.set(providerId, Date.now() + 1000)
 }
 
 async function fetchJson(url, fetchImpl) {
@@ -162,6 +173,7 @@ export async function searchReadingPlaces({
   if (resultCache.has(cacheKey)) return resultCache.get(cacheKey)
 
   let results
+  await waitForProviderRateLimit(provider)
   if (provider === READING_MAP_PROVIDER.DOMESTIC) {
     const postStr = JSON.stringify({
       keyWord: searchQuery,
@@ -175,11 +187,12 @@ export async function searchReadingPlaces({
     const url = `https://api.tianditu.gov.cn/v2/search?postStr=${encodeURIComponent(postStr)}&type=query&tk=${encodeURIComponent(token)}`
     results = normalizeTiandituResults(await fetchJson(url, fetchImpl))
   } else {
-    await waitForInternationalRateLimit()
     const parameters = new URLSearchParams({
       q: searchQuery,
       format: 'jsonv2',
+      'accept-language': 'zh-CN,zh-Hans,zh,en',
       addressdetails: '1',
+      namedetails: '1',
       polygon_geojson: '1',
       polygon_threshold: '0.002',
       limit: '5',

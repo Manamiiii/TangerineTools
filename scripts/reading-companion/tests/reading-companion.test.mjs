@@ -2,12 +2,15 @@ import assert from 'node:assert/strict'
 import { access, readFile } from 'node:fs/promises'
 import test from 'node:test'
 import {
+  OBSERVED_ENTITY_KIND,
   OBSERVED_PLACE_KIND,
   SPOILER_GATE_ACTION,
   SPOILER_RISK,
   canRevealRisk,
   clearObservedPlaceLocation,
+  confirmObservedPlaceApproximateArea,
   confirmObservedPlaceLocation,
+  confirmObservedRealPlaceFallbackArea,
   isRevealedAtChapter,
   matchOnDemandEntity,
   normalizeObservedEntityName,
@@ -17,6 +20,7 @@ import {
   readingStateKey,
   riskForDisclosure,
   scanOnDemandEntities,
+  scanObservedEntities,
   spoilerGateAction,
   strongestSpoilerRisk,
   unlockedOnDemandEntities,
@@ -32,6 +36,7 @@ import {
   buildReadingPreviews,
 } from '../lib/package-pipeline.mjs'
 import {
+  READING_MAP_DEFAULT_VIEW,
   READING_MAP_PROVIDER,
   normalizeReadingMapProvider,
   readingMapTileSources,
@@ -45,12 +50,38 @@ import {
 import {
   buildPersonalChapters,
   createPersonalReadingPackage,
+  extractPersonalBookMetadataDetails,
+  extractPersonalBookMetadataFromText,
+  mergePersonalBookKnowledge,
+  mergePersonalBookMetadata,
   personalCatalogEntry,
 } from '../../../src/features/reading-companion/domain/personalBooks.js'
 import {
+  analyzeReadingBookMetadata,
   analyzeReadingExcerpt,
+  answerReadingQuestion,
   normalizeModelCandidates,
+  normalizePersonalBookKnowledge,
+  preparePersonalBookKnowledge,
+  readingAnswerLooksForward,
+  readingQuestionLooksForward,
+  suggestReadingPlaceQueries,
+  translateReadingPlaceQuery,
 } from '../../../src/features/reading-companion/model/modelAdapter.js'
+import {
+  normalizeReadingOcrText,
+} from '../../../src/features/reading-companion/ocr/localOcr.js'
+import {
+  READING_MODEL_PROVIDER,
+  READING_MODEL_PROVIDERS,
+  inferReadingModelProvider,
+  readingModelApiKeyStorageKey,
+  readingModelProviderDefaults,
+} from '../../../src/features/reading-companion/model/modelProviders.js'
+import {
+  READING_PROMPT_IDS,
+  personalBookKnowledgeMessages,
+} from '../../../src/features/reading-companion/model/promptCatalog.js'
 
 const repoUrl = new URL('../../../', import.meta.url)
 const readingPackage = JSON.parse(
@@ -74,9 +105,11 @@ test('reading companion keeps feature code and maintenance files in dedicated di
     'src/features/reading-companion/map/geocoding.js',
     'src/features/reading-companion/map/mapConfig.js',
     'src/features/reading-companion/model/modelAdapter.js',
+    'src/features/reading-companion/model/modelProviders.js',
     'src/features/reading-companion/ocr/localOcr.js',
     'src/features/reading-companion/preset.js',
     'scripts/reading-companion/build-preview.mjs',
+    'docs/reading-companion/model-provider-setup.md',
     'docs/reading-companion/product-and-architecture.md',
   ]
   await Promise.all(dedicatedPaths.map((file) => access(new URL(file, repoUrl))))
@@ -93,6 +126,15 @@ test('reading companion keeps feature code and maintenance files in dedicated di
   for (const file of retiredMixedPaths) {
     await assert.rejects(access(new URL(file, repoUrl)), { code: 'ENOENT' })
   }
+})
+
+test('PWA registration and static cache use the same update generation', async () => {
+  const [html, serviceWorker] = await Promise.all([
+    readFile(new URL('index.html', repoUrl), 'utf8'),
+    readFile(new URL('public/sw.js', repoUrl), 'utf8'),
+  ])
+  assert.match(html, /sw\.js\?v=5/)
+  assert.match(serviceWorker, /tangerine-static-v5/)
 })
 
 test('personal books accept a chapter count or pasted numeric directory', () => {
@@ -138,10 +180,175 @@ test('personal book creation produces a valid empty local package and catalog en
     title: '测试个人书籍',
     editionLabel: '测试出版社 · 2026-07',
     source: 'personal',
+    cover: { theme: 'amber' },
   })
 })
 
+test('personal book AI knowledge becomes a hidden exact-match dictionary without facts', () => {
+  const pkg = createPersonalReadingPackage({
+    packageId: 'reader-package-personal-ai-test',
+    bookId: 'reader-book-personal-ai-test',
+    editionId: 'reader-edition-personal-ai-test',
+    title: '测试个人书籍',
+    author: '测试作者',
+    chapterCount: 2,
+  })
+  let id = 0
+  const prepared = mergePersonalBookKnowledge(pkg, [
+    {
+      name: '测试人物',
+      originalName: 'Test Person',
+      aliases: ['人物别名'],
+      kind: 'person',
+      plot: 'ignored',
+    },
+    {
+      name: '测试地点',
+      aliases: [],
+      kind: 'place',
+      placeKind: 'fictional',
+      latitude: 1,
+      longitude: 2,
+    },
+  ], () => `personal-ai-${id += 1}`)
+  assert.equal(prepared.addedCount, 2)
+  assert.deepEqual(validateReadingPackage(prepared.package), [])
+  assert.equal(prepared.package.onDemandEntities[0].activation, 'exact-reader-input')
+  assert.equal('plot' in prepared.package.onDemandEntities[0], false)
+  assert.equal('geometry' in prepared.package.onDemandEntities[1], false)
+  assert.deepEqual(prepared.package.facts, [])
+  const repeated = mergePersonalBookKnowledge(
+    prepared.package,
+    [{ name: '测试人物', kind: 'person', aliases: [] }],
+    () => 'unused',
+  )
+  assert.equal(repeated.addedCount, 0)
+})
+
+test('book detail OCR text provides deterministic metadata before optional model cleanup', () => {
+  assert.deepEqual(
+    extractPersonalBookMetadataFromText([
+      '飘（世界文学名著名译典藏）',
+      '玛格丽特·米切尔 著 / 范纯海、夏旻 译',
+      '出版社：长江文艺出版社',
+      '出版时间 2018年5月',
+      'ISBN 9787570202188',
+    ].join('\n')),
+    {
+      title: '飘(世界文学名著名译典藏)',
+      author: '玛格丽特·米切尔',
+      translators: ['范纯海', '夏旻'],
+      publisher: '长江文艺出版社',
+      isbn: '9787570202188',
+      publishedAt: '2018-05',
+    },
+  )
+})
+
+test('book detail OCR prefers colon-labeled title and translators', () => {
+  assert.deepEqual(
+    extractPersonalBookMetadataFromText([
+      '书 名 ：飘（世界文学名著名译典藏）',
+      '作者：玛格丽特·米切尔',
+      '译者：范纯海、夏旻',
+      '出版社：长江文艺出版社',
+      '出版时间：2018年5月',
+      'ISBN：9787570202188',
+    ].join('\n')),
+    {
+      title: '飘(世界文学名著名译典藏)',
+      author: '玛格丽特·米切尔',
+      translators: ['范纯海', '夏旻'],
+      publisher: '长江文艺出版社',
+      isbn: '9787570202188',
+      publishedAt: '2018-05',
+    },
+  )
+})
+
+test('book metadata parsing recovers labels even when OCR merged all rows', () => {
+  assert.deepEqual(
+    extractPersonalBookMetadataFromText(
+      '书名:飘 作者:(美)玛格丽特·米切尔 译者:范纯海、夏旻 出版社:长江文艺出版社 ISBN:9787570202188',
+    ),
+    {
+      title: '飘',
+      author: '(美)玛格丽特·米切尔',
+      translators: ['范纯海', '夏旻'],
+      publisher: '长江文艺出版社',
+      isbn: '9787570202188',
+    },
+  )
+})
+
+test('structured local title and translators reject noisy model overrides', () => {
+  assert.deepEqual(
+    mergePersonalBookMetadata(
+      {
+        title: '傲慢与偏见',
+        author: '简·奥斯本',
+        translators: ['孙致礼'],
+      },
+      {
+        title: 'FE:傲慢与偏见',
+        author: '简·奥斯丁',
+        translators: [],
+        publisher: '译林出版社',
+      },
+    ),
+    {
+      title: '傲慢与偏见',
+      author: '简·奥斯丁',
+      translators: ['孙致礼'],
+      publisher: '译林出版社',
+    },
+  )
+})
+
+test('damaged FE and BE labels become model-correctable low-confidence fields', () => {
+  const details = extractPersonalBookMetadataDetails([
+    '版权信息',
+    'FE: 做慢与俩见',
+    '作者 : 简 - 奥斯本',
+    'BE: HEAL',
+    '出版社 : 译林出版社',
+    '出版时间 : 2010-06-01',
+    'ISBN: 9787544711302',
+  ].join('\n'))
+  assert.deepEqual(details, {
+    metadata: {
+      title: '做慢与俩见',
+      author: '简 - 奥斯本',
+      translators: ['HEAL'],
+      publisher: '译林出版社',
+      isbn: '9787544711302',
+      publishedAt: '2010-06',
+    },
+    uncertainFields: ['title', 'translators'],
+  })
+  assert.deepEqual(
+    mergePersonalBookMetadata(
+      details.metadata,
+      {
+        title: '傲慢与偏见',
+        author: '简·奥斯丁',
+        translators: ['孙致礼'],
+      },
+      details.uncertainFields,
+    ),
+    {
+      title: '傲慢与偏见',
+      author: '简·奥斯丁',
+      translators: ['孙致礼'],
+      publisher: '译林出版社',
+      isbn: '9787544711302',
+      publishedAt: '2010-06',
+    },
+  )
+})
+
 test('reading map providers keep international fallback and require a domestic browser key', () => {
+  assert.deepEqual(READING_MAP_DEFAULT_VIEW, { center: [20, 0], zoom: 2 })
   assert.equal(
     normalizeReadingMapProvider('unknown-provider'),
     READING_MAP_PROVIDER.INTERNATIONAL,
@@ -149,6 +356,18 @@ test('reading map providers keep international fallback and require a domestic b
   const internationalSources = readingMapTileSources(READING_MAP_PROVIDER.INTERNATIONAL)
   assert.equal(internationalSources.length, 1)
   assert.match(internationalSources[0].url, /openstreetmap/)
+  assert.deepEqual(
+    {
+      updateWhenIdle: internationalSources[0].options.updateWhenIdle,
+      updateWhenZooming: internationalSources[0].options.updateWhenZooming,
+      keepBuffer: internationalSources[0].options.keepBuffer,
+    },
+    {
+      updateWhenIdle: true,
+      updateWhenZooming: false,
+      keepBuffer: 1,
+    },
+  )
 
   assert.deepEqual(readingMapTileSources(READING_MAP_PROVIDER.DOMESTIC), [])
   const domesticSources = readingMapTileSources(
@@ -158,6 +377,7 @@ test('reading map providers keep international fallback and require a domestic b
   assert.equal(domesticSources.length, 2)
   assert.match(domesticSources[0].url, /vec_w\/wmts/)
   assert.match(domesticSources[1].url, /cva_w\/wmts/)
+  assert.deepEqual(domesticSources.map((source) => source.usageKind), ['base', 'labels'])
   assert.ok(domesticSources.every((source) => source.url.includes('tk=key%20with%20spaces')))
 })
 
@@ -213,6 +433,8 @@ test('map search adapters normalize international and domestic results without g
   })
   assert.match(requestedUrl, /^https:\/\/nominatim\.openstreetmap\.org\/search\?/)
   assert.match(requestedUrl, /q=Atlanta/)
+  assert.match(requestedUrl, /accept-language=zh-CN/)
+  assert.match(requestedUrl, /namedetails=1/)
   assert.equal(results[0].label, 'Atlanta, Georgia')
   await assert.rejects(
     searchReadingPlaces({
@@ -224,6 +446,20 @@ test('map search adapters normalize international and domestic results without g
   )
 })
 
+test('international map results prefer an available Chinese name', () => {
+  const [result] = normalizeNominatimResults([{
+    place_id: 88,
+    display_name: 'University of Virginia, Virginia, United States',
+    namedetails: { 'name:zh': '弗吉尼亚大学' },
+    lat: '38.0336',
+    lon: '-78.5080',
+  }])
+  assert.equal(
+    result.label,
+    '弗吉尼亚大学 · University of Virginia, Virginia, United States',
+  )
+})
+
 test('Gone with the Wind package preserves the confirmed edition and 63 stable chapters', () => {
   assert.deepEqual(validateReadingPackage(readingPackage), [])
   assert.equal(readingPackage.edition.isbn, '9787570202188')
@@ -232,6 +468,44 @@ test('Gone with the Wind package preserves the confirmed edition and 63 stable c
   assert.equal(readingPackage.chapters[0].id, 'chapter-01')
   assert.equal(readingPackage.chapters.at(-1).id, 'chapter-63')
   assert.equal(new Set(readingPackage.chapters.map((chapter) => chapter.id)).size, 63)
+})
+
+test('Gone with the Wind exact-input dictionary recognizes audited names without pre-revealing facts', () => {
+  const expectedIds = [
+    'person-scarlett-ohara',
+    'person-rhett-butler',
+    'person-ashley-wilkes',
+    'person-melanie-hamilton',
+    'place-georgia-state',
+    'place-clayton-county-georgia',
+  ]
+  assert.deepEqual(
+    scanOnDemandEntities(
+      '斯佳丽、瑞德、艾希礼和梅兰妮谈到了佐治亚州与克莱顿县。',
+      readingPackage.onDemandEntities,
+    ).map(({ entity }) => entity.id),
+    expectedIds,
+  )
+  assert.deepEqual(readingPackage.entities, [])
+  assert.deepEqual(readingPackage.facts, [])
+  const institutionMatches = scanOnDemandEntities(
+    '他们提到弗吉尼亚大学、亚拉巴马大学、南卡罗来纳大学和费耶特维尔女子学院。',
+    readingPackage.onDemandEntities,
+  )
+  assert.deepEqual(
+    institutionMatches.map(({ entity }) => entity.id),
+    [
+      'place-university-of-virginia',
+      'place-university-of-alabama',
+      'place-university-of-south-carolina',
+      'place-fayetteville-female-academy',
+    ],
+  )
+  assert.equal(institutionMatches[0].entity.placeKind, OBSERVED_PLACE_KIND.REAL)
+  assert.equal(
+    institutionMatches.at(-1).entity.placeKind,
+    OBSERVED_PLACE_KIND.PROTOTYPE,
+  )
 })
 
 test('package validation rejects duplicate chapters and unknown fact references', () => {
@@ -549,6 +823,82 @@ test('unknown or fictional places never go to the public map until the reader ma
   assert.equal(fictional[0].mapLocation, undefined)
 })
 
+test('fictional places may use a reader-confirmed broad reference area without a fake point', () => {
+  const observed = [{
+    id: 'observed-fictional-place',
+    name: '虚构庄园',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-01',
+    placeKind: OBSERVED_PLACE_KIND.FICTIONAL,
+  }]
+  const located = confirmObservedPlaceApproximateArea(
+    observed,
+    observed[0].id,
+    {
+      id: 'region-georgia',
+      label: 'Georgia, United States',
+      providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+      latitude: 32.7,
+      longitude: -83.3,
+    },
+    100,
+  )
+  const [mapEntity] = readerConfirmedMapEntities(
+    located,
+    'chapter-01',
+    readingPackage.chapters,
+  )
+  assert.equal(mapEntity.placeKind, OBSERVED_PLACE_KIND.FICTIONAL)
+  assert.equal(mapEntity.accessMode, 'reader-confirmed-approximate-area')
+  assert.deepEqual(mapEntity.geometry, {
+    type: 'area',
+    latitude: 32.7,
+    longitude: -83.3,
+    radiusKm: 100,
+  })
+  assert.throws(
+    () => confirmObservedPlaceApproximateArea(observed, observed[0].id, {
+      label: 'Georgia',
+      providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+      latitude: 32.7,
+      longitude: -83.3,
+    }, 1),
+    /5–1000/,
+  )
+})
+
+test('a real historical place may fall back to a clearly marked reference area', () => {
+  const observed = [{
+    id: 'observed-historical-school',
+    name: '费耶特维尔女子学院',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-01',
+    placeKind: OBSERVED_PLACE_KIND.REAL,
+  }]
+  const located = confirmObservedRealPlaceFallbackArea(
+    observed,
+    observed[0].id,
+    {
+      id: 'region-fayetteville',
+      label: 'Fayetteville, Georgia, United States',
+      providerId: READING_MAP_PROVIDER.INTERNATIONAL,
+      latitude: 33.4487,
+      longitude: -84.4549,
+    },
+    20,
+  )
+  const [mapEntity] = readerConfirmedMapEntities(
+    located,
+    'chapter-01',
+    readingPackage.chapters,
+  )
+  assert.equal(located[0].mapLocation.mode, 'fallback-area')
+  assert.equal(mapEntity.placeKind, OBSERVED_PLACE_KIND.REAL)
+  assert.equal(mapEntity.accessMode, 'reader-confirmed-fallback-area')
+  assert.equal(mapEntity.geometry.type, 'area')
+  assert.match(mapEntity.scopeNote, /不代表该地点的精确坐标/)
+})
+
 test('reader-confirmed rivers and regions preserve safe GeoJSON geometry', () => {
   const line = {
     type: 'LineString',
@@ -588,12 +938,40 @@ test('reader-confirmed rivers and regions preserve safe GeoJSON geometry', () =>
   })
 })
 
+test('reading model presets support domestic switching without sharing session keys', () => {
+  assert.deepEqual(
+    Object.keys(READING_MODEL_PROVIDERS),
+    ['zhipu', 'deepseek', 'minimax', 'openai', 'custom'],
+  )
+  assert.equal(
+    inferReadingModelProvider('https://open.bigmodel.cn/api/paas/v4/chat/completions'),
+    READING_MODEL_PROVIDER.ZHIPU,
+  )
+  assert.equal(
+    inferReadingModelProvider('https://api.deepseek.com/chat/completions'),
+    READING_MODEL_PROVIDER.DEEPSEEK,
+  )
+  assert.equal(
+    readingModelProviderDefaults(READING_MODEL_PROVIDER.ZHIPU).model,
+    'glm-4-flash-250414',
+  )
+  assert.equal(
+    readingModelProviderDefaults(READING_MODEL_PROVIDER.MINIMAX).temperature,
+    0.1,
+  )
+  assert.notEqual(
+    readingModelApiKeyStorageKey(READING_MODEL_PROVIDER.ZHIPU),
+    readingModelApiKeyStorageKey(READING_MODEL_PROVIDER.DEEPSEEK),
+  )
+})
+
 test('runtime model analysis stays a reader-confirmed candidate adapter', async () => {
   let request
   const candidates = await analyzeReadingExcerpt({
     endpoint: 'https://model.example/v1/chat/completions',
     model: 'reader-test-model',
     apiKey: 'test-key',
+    temperature: 0.1,
     excerpt: '她从亚特兰大回到了塔拉。',
     bookTitle: '测试书',
     chapterLabel: '第 1 章',
@@ -611,7 +989,6 @@ test('runtime model analysis stays a reader-confirmed candidate adapter', async 
                     kind: 'place',
                     placeKind: 'real',
                     confidence: 0.92,
-                    reason: '名称原样出现在段落中',
                   },
                   {
                     name: '塔拉',
@@ -632,10 +1009,229 @@ test('runtime model analysis stays a reader-confirmed candidate adapter', async 
   assert.equal(request.options.headers.Authorization, 'Bearer test-key')
   const body = JSON.parse(request.options.body)
   assert.equal(body.model, 'reader-test-model')
+  assert.equal(body.temperature, 0.1)
   assert.match(body.messages[1].content, /亚特兰大/)
   assert.equal(candidates.length, 2)
   assert.equal(candidates[1].placeKind, OBSERVED_PLACE_KIND.UNKNOWN)
-  assert.equal(candidates[0].reason, '名称原样出现在段落中')
+  assert.equal('reason' in candidates[0], false)
+})
+
+test('personal book preparation returns only bounded names and no generated facts', async () => {
+  let requestBody
+  const candidates = await preparePersonalBookKnowledge({
+    endpoint: 'https://prepare-model.example/v1/chat/completions',
+    model: 'reader-prepare-model',
+    apiKey: 'test-key',
+    book: { title: '测试书', author: '测试作者', originalLanguage: 'en' },
+    edition: { translators: ['测试译者'], publisher: '测试出版社', isbn: '123' },
+    fetchImpl: async (_url, options) => {
+      requestBody = JSON.parse(options.body)
+      return {
+        ok: true,
+        json: async () => ({
+          choices: [{
+            message: {
+              content: JSON.stringify({
+                candidates: [
+                  {
+                    name: '测试人物',
+                    kind: 'person',
+                    originalName: 'Test Person',
+                    aliases: ['人物别名'],
+                    relationship: 'ignored',
+                  },
+                  {
+                    name: '测试地点',
+                    kind: 'place',
+                    placeKind: 'not-valid',
+                    coordinates: [1, 2],
+                  },
+                ],
+                facts: [{ content: 'ignored' }],
+              }),
+            },
+          }],
+        }),
+      }
+    },
+  })
+  assert.equal(READING_PROMPT_IDS.personalBookKnowledge, 'personal-book-knowledge-v1')
+  assert.equal(
+    READING_PROMPT_IDS.formalPackageCandidates,
+    'formal-reading-package-candidates-v1',
+  )
+  assert.match(
+    personalBookKnowledgeMessages({ title: '测试书' })[0].content,
+    new RegExp(READING_PROMPT_IDS.personalBookKnowledge),
+  )
+  assert.match(
+    requestBody.messages[0].content,
+    new RegExp(READING_PROMPT_IDS.personalBookKnowledge),
+  )
+  assert.match(requestBody.messages[0].content, /不要返回人物关系/)
+  assert.equal(candidates.length, 2)
+  assert.equal(candidates[1].placeKind, OBSERVED_PLACE_KIND.UNKNOWN)
+  assert.equal('relationship' in candidates[0], false)
+  assert.equal('coordinates' in candidates[1], false)
+  assert.deepEqual(normalizePersonalBookKnowledge({ facts: [{}] }), [])
+})
+
+test('current-reading questions answer concepts and block obvious future-plot questions', async () => {
+  assert.equal(readingQuestionLooksForward('这个制度是什么意思？'), false)
+  assert.equal(readingQuestionLooksForward('这个人物最后怎么样？'), true)
+  assert.equal(readingAnswerLooksForward('这是一个历史时期。'), false)
+  assert.equal(readingAnswerLooksForward('后来他和某人结婚。'), true)
+  let requestBody
+  const result = await answerReadingQuestion({
+    endpoint: 'https://question-model.example/v1/chat/completions',
+    model: 'reader-question-model',
+    apiKey: 'test-key',
+    question: '重建时期是什么意思？',
+    excerpt: '当前段落提到了重建时期。',
+    bookTitle: '测试书',
+    chapterLabel: '第 2 章',
+    fetchImpl: async (_url, options) => {
+      requestBody = JSON.parse(options.body)
+      return {
+        ok: true,
+        json: async () => ({
+          choices: [{
+            message: {
+              content: '{"answer":"这是一个历史时期。","uncertain":false,"futurePlot":"ignored"}',
+            },
+          }],
+        }),
+      }
+    },
+  })
+  assert.match(requestBody.messages[0].content, /不得补充后续章节/)
+  assert.match(requestBody.messages[1].content, /当前段落提到了重建时期/)
+  assert.deepEqual(result, { answer: '这是一个历史时期。', uncertain: false })
+  await assert.rejects(
+    answerReadingQuestion({
+      endpoint: 'https://question-model.example/v1/chat/completions',
+      model: 'reader-question-model',
+      apiKey: 'test-key',
+      question: '这个人物最后怎么样？',
+    }),
+    /不回答后续剧情/,
+  )
+})
+
+test('identical model excerpt analysis reuses the temporary successful-result cache', async () => {
+  let calls = 0
+  const options = {
+    endpoint: 'https://cache-model.example/v1/chat/completions',
+    model: 'reader-cache-model',
+    apiKey: 'test-key',
+    excerpt: '缓存测试地点。',
+    bookTitle: '缓存测试书',
+    chapterLabel: '第 1 章',
+    fetchImpl: async () => {
+      calls += 1
+      return {
+        ok: true,
+        json: async () => ({
+          choices: [{
+            message: {
+              content: '{"candidates":[{"name":"缓存测试地点","kind":"place","placeKind":"unknown","confidence":0.8}]}',
+            },
+          }],
+        }),
+      }
+    },
+  }
+  const first = await analyzeReadingExcerpt(options)
+  const second = await analyzeReadingExcerpt(options)
+  assert.deepEqual(second, first)
+  assert.equal(calls, 1)
+})
+
+test('model place translation returns only a bounded map query', async () => {
+  const translated = await translateReadingPlaceQuery({
+    endpoint: 'https://model.example/v1/chat/completions',
+    model: 'reader-test-model',
+    apiKey: 'test-key',
+    query: '弗吉尼亚大学，美国',
+    fetchImpl: async () => ({
+      ok: true,
+      json: async () => ({
+        choices: [{
+          message: {
+            content: '{"query":"University of Virginia, United States"}',
+          },
+        }],
+      }),
+    }),
+  })
+  assert.equal(translated, 'University of Virginia, United States')
+})
+
+test('model map-query suggestions include book context and preserve alternatives', async () => {
+  let requestBody
+  const suggestions = await suggestReadingPlaceQueries({
+    endpoint: 'https://suggest-model.example/v1/chat/completions',
+    model: 'reader-suggest-model',
+    apiKey: 'test-key',
+    query: '费耶特维尔女子学院',
+    bookTitle: '飘',
+    chapterLabel: '第 1 章',
+    fetchImpl: async (_url, options) => {
+      requestBody = JSON.parse(options.body)
+      return {
+        ok: true,
+        json: async () => ({
+          choices: [{
+            message: {
+              content: '{"queries":["Fayetteville Female Academy, Georgia","Fayetteville, Georgia"]}',
+            },
+          }],
+        }),
+      }
+    },
+  })
+  assert.match(requestBody.messages[1].content, /书籍：飘/)
+  assert.deepEqual(suggestions, [
+    'Fayetteville Female Academy, Georgia',
+    'Fayetteville, Georgia',
+  ])
+})
+
+test('model book metadata stays limited to OCR fields', async () => {
+  let requestBody
+  const metadata = await analyzeReadingBookMetadata({
+    endpoint: 'https://metadata-model.example/v1/chat/completions',
+    model: 'reader-metadata-model',
+    apiKey: 'test-key',
+    ocrText: '飘 ISBN 9787570202188',
+    localMetadata: { title: '票', isbn: '9787570202188' },
+    uncertainFields: ['title'],
+    fetchImpl: async (_url, options) => {
+      requestBody = JSON.parse(options.body)
+      return {
+        ok: true,
+        json: async () => ({
+          choices: [{
+            message: {
+              content: '{"title":"飘","author":"","translators":[],"publisher":"","isbn":"9787570202188","publishedAt":"","originalLanguage":"","chapterCount":63,"plot":"ignored"}',
+            },
+          }],
+        }),
+      }
+    },
+  })
+  assert.match(requestBody.messages[1].content, /"title":"票"/)
+  assert.match(requestBody.messages[1].content, /低置信字段：\["title"\]/)
+  assert.deepEqual(metadata, {
+    title: '飘',
+    author: '',
+    translators: [],
+    publisher: '',
+    isbn: '9787570202188',
+    publishedAt: '',
+    originalLanguage: '',
+    chapterCount: 63,
+  })
 })
 
 test('runtime model candidates are bounded and cannot create facts', () => {
@@ -652,14 +1248,12 @@ test('runtime model candidates are bounded and cannot create facts', () => {
       name: '某人',
       kind: 'person',
       confidence: 1,
-      reason: '',
     },
     {
       name: '某地',
       kind: 'place',
       placeKind: OBSERVED_PLACE_KIND.UNKNOWN,
       confidence: 0,
-      reason: '',
     },
   ])
 })
@@ -749,6 +1343,68 @@ test('local excerpt scanning only returns audited names that actually occur in t
   assert.deepEqual(scanOnDemandEntities('这里没有任何已知名称。', onDemandEntities), [])
 })
 
+test('local scanning also marks names already saved by the reader', () => {
+  const observed = [{
+    id: 'observed-uva',
+    name: '弗吉尼亚大学',
+    kind: OBSERVED_ENTITY_KIND.PLACE,
+    placeKind: OBSERVED_PLACE_KIND.REAL,
+    firstSeenChapterId: 'chapter-01',
+  }]
+  assert.deepEqual(
+    scanObservedEntities('她从弗吉尼亚大学离开。', observed),
+    [{
+      entity: observed[0],
+      matchedTerm: '弗吉尼亚大学',
+      source: 'observed',
+    }],
+  )
+})
+
+test('OCR cleanup joins Chinese line wraps while preserving English word spaces', () => {
+  assert.equal(
+    normalizeReadingOcrText('从 弗 吉 尼 亚 大 学\n拖 了 出 来。\nUniversity of\nVirginia'),
+    '从弗吉尼亚大学拖了出来。 University of Virginia',
+  )
+})
+
+test('book metadata OCR cleanup preserves labeled field boundaries', () => {
+  assert.equal(
+    normalizeReadingOcrText([
+      '作者：玛格丽特·米切尔',
+      '译者：范纯海、夏旻',
+      '出版社：长江文艺出版社',
+    ].join('\n'), { preserveLines: true }),
+    [
+      '作者:玛格丽特·米切尔',
+      '译者:范纯海、夏旻',
+      '出版社:长江文艺出版社',
+    ].join('\n'),
+  )
+})
+
+test('book metadata OCR cleans repeated Chinese spaces from a real copyright page shape', () => {
+  const normalized = normalizeReadingOcrText([
+    'Tose as 四 ;',
+    '版 权 信 息',
+    '书 名 : 傲慢 与 偏见',
+    '作者 : 简 . 奥 斯 本',
+    '译 者 : 孙 致 礼',
+    '出 版 社 : 译 林 出 版 社',
+    '出 版 时 间 : 2010-06-01',
+    'ISBN: 9787544711302',
+    '品牌 方 : 江苏 译 林 出 版 社 有 限 公司',
+  ].join('\n'), { preserveLines: true })
+  assert.deepEqual(extractPersonalBookMetadataFromText(normalized), {
+    title: '傲慢与偏见',
+    author: '简·奥斯本',
+    translators: ['孙致礼'],
+    publisher: '译林出版社',
+    isbn: '9787544711302',
+    publishedAt: '2010-06',
+  })
+})
+
 test('spoiler risk defaults unknown boundaries to potential and preserves high risk', () => {
   const chapters = readingPackage.chapters
   assert.equal(
@@ -805,14 +1461,14 @@ test('reading preview publishes only approved sources and keeps candidates pendi
   assert.equal(catalog.packages.length, 1)
   const [preview] = previews
   assert.deepEqual(validateReadingPackage(preview.package), [])
-  assert.equal(preview.previewMeta.approvedSourceIds.length, 6)
-  assert.equal(preview.previewMeta.pendingSourceIds.length, 4)
-  assert.equal(preview.previewMeta.candidateEntityIds.length, 4)
+  assert.equal(preview.previewMeta.approvedSourceIds.length, 16)
+  assert.equal(preview.previewMeta.pendingSourceIds.length, 3)
+  assert.equal(preview.previewMeta.candidateEntityIds.length, 26)
   assert.equal(preview.previewMeta.candidateFactIds.length, 2)
-  assert.equal(preview.previewMeta.onDemandEntityIds.length, 4)
-  assert.equal(preview.researchCandidates.entities.length, 4)
+  assert.equal(preview.previewMeta.onDemandEntityIds.length, 14)
+  assert.equal(preview.researchCandidates.entities.length, 26)
   assert.equal(preview.researchCandidates.facts.length, 2)
-  assert.equal(preview.package.onDemandEntities.length, 4)
+  assert.equal(preview.package.onDemandEntities.length, 14)
   assert.deepEqual(preview.package.entities, [])
   assert.deepEqual(preview.package.facts, [])
   assert.deepEqual(

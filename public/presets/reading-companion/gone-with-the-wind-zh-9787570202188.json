@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "1.1.0",
+  "packageVersion": "1.3.0",
   "id": "reader-package-gone-with-the-wind-zh-9787570202188",
   "book": {
     "id": "gone-with-the-wind",
@@ -349,9 +349,126 @@
       "accessedAt": "2026-07-24",
       "useFor": [
         "edition",
-        "chapter_structure"
+        "chapter_structure",
+        "book_description_names"
       ],
-      "notes": "用于确认 ISBN、译者、出版社、出版时间和连续 1–63 章结构；不包含正文。"
+      "notes": "用于确认 ISBN、译者、出版社、出版时间、连续 1–63 章结构，以及详情页简介中出现的斯佳丽、瑞德、艾希礼、梅兰妮四个短名；不包含正文，不能用于确认首次出现章节。"
+    },
+    {
+      "id": "source-reader-excerpt-early-institutions",
+      "kind": "user-provided-edition-evidence",
+      "label": "读者提供的当前译本早期片段 · 学校名称",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "edition_name",
+        "book_relevance",
+        "exact_match"
+      ],
+      "rightsStatus": "minimal-user-provided-evidence",
+      "notes": "读者曾提供包含“弗吉尼亚大学、亚拉巴马大学和南卡罗来纳大学”的当前译本文字，并单独确认同一早期阅读内容使用“费耶特维尔女子学院”；只用于确认四个中文名称确实属于该版本，不保存上下文、不推断客观首次出现章节。"
+    },
+    {
+      "id": "source-university-of-virginia-official",
+      "kind": "institution-official",
+      "label": "University of Virginia · Official Contact and Rotunda History",
+      "organization": "University of Virginia",
+      "url": "https://www.virginia.edu/contact-us/",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "modern_institution_name",
+        "modern_location"
+      ],
+      "rightsStatus": "reference-only",
+      "notes": "用于确认 University of Virginia 的现代机构名称和 Charlottesville 地址；地图点采用校内 Rotunda 作为清楚标注的校园参考点，不表示校园边界。"
+    },
+    {
+      "id": "source-university-of-alabama-official",
+      "kind": "institution-official",
+      "label": "The University of Alabama · History",
+      "organization": "The University of Alabama",
+      "url": "https://www.ua.edu/about/history/",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "modern_institution_name",
+        "institution_history",
+        "modern_location"
+      ],
+      "rightsStatus": "reference-only",
+      "notes": "用于确认 The University of Alabama 的名称、Tuscaloosa 地址和 1831 年开课历史；不能单独证明指定译本的章节位置。"
+    },
+    {
+      "id": "source-university-of-south-carolina-official",
+      "kind": "institution-official",
+      "label": "University of South Carolina · University History",
+      "organization": "University of South Carolina",
+      "url": "https://www.sc.edu/about/our_history/university_history/timeline/index.php",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "modern_institution_name",
+        "historical_institution_name",
+        "modern_location"
+      ],
+      "rightsStatus": "reference-only",
+      "notes": "用于确认现代机构位于 Columbia，并说明其 1801 年创立时名为 South Carolina College、1906 年后固定使用现名；当前译本使用“南卡罗来纳大学”，系统不把现代名称倒推为故事年代正式校名。"
+    },
+    {
+      "id": "source-dlg-fayetteville-academy",
+      "kind": "digital-library-record",
+      "label": "Digital Library of Georgia · Fayetteville Academy",
+      "organization": "Digital Library of Georgia / New Georgia Encyclopedia",
+      "url": "https://dlg.usg.edu/record/nge_ngen_m-9272",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "fictional_place_classification",
+        "prototype_location",
+        "modern_reference_coordinate"
+      ],
+      "rightsStatus": "metadata-reference-only",
+      "notes": "馆藏记录明确说明现实 Fayetteville Academy 是小说中虚构 Fayetteville Female Academy 的原型，并提供馆藏地点坐标；运行时标记为原型参考点，不声称虚构学校存在精确现实坐标。"
+    },
+    {
+      "id": "source-openstreetmap-nominatim-research",
+      "kind": "modern-geography",
+      "label": "OpenStreetMap Nominatim · Institution Search Results",
+      "organization": "OpenStreetMap contributors",
+      "url": "https://nominatim.openstreetmap.org/",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "modern_representative_coordinates",
+        "campus_reference_points"
+      ],
+      "rightsStatus": "ODbL-1.0-attribution-required",
+      "notes": "用于核对三所现实大学的现代校园代表位置；界面底图持续显示 OpenStreetMap 署名。代表点不是校园边界，也不表示故事年代的机构范围。"
+    },
+    {
+      "id": "source-atlanta-history-center-peachtree-street",
+      "kind": "museum-research",
+      "label": "Atlanta History Center · Peachtree Street",
+      "organization": "Atlanta History Center",
+      "url": "https://www.atlantahistorycenter.com/exhibitions/atlanta-in-50-objects/peachtree-street/",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "book_relevance",
+        "real_place_classification",
+        "historical_name"
+      ],
+      "rightsStatus": "reference-only",
+      "notes": "页面明确说明 Peachtree Street 因小说而广为人知，并确认其为亚特兰大现实街道；指定译本中文名称和可用线形几何仍需核对。"
+    },
+    {
+      "id": "source-census-2025-gazetteer",
+      "kind": "modern-geography",
+      "label": "U.S. Census Bureau · 2025 Gazetteer Files",
+      "organization": "United States Census Bureau",
+      "url": "https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.2025.html",
+      "accessedAt": "2026-07-24",
+      "useFor": [
+        "modern_place_names",
+        "administrative_hierarchy",
+        "representative_coordinates"
+      ],
+      "rightsStatus": "public-government-data",
+      "notes": "用于现代真实地点的名称、GEOID、行政层级和代表坐标；代表坐标不是边界，历史边界仍需另行核对。"
     },
     {
       "id": "source-census-2025-georgia-incorporated-places",
@@ -413,6 +530,33 @@
       "notes": "页面包含剧情概述；运行时只采用经人工摘出的地点名称与虚构分类，并且只在读者精确输入同名内容后显示，不复制剧情概述，也不能代替本译本 revealAt 证据。"
     },
     {
+      "id": "source-new-georgia-encyclopedia-gwtw-film",
+      "kind": "state-encyclopedia",
+      "label": "New Georgia Encyclopedia · Gone With the Wind (Film)",
+      "organization": "New Georgia Encyclopedia",
+      "url": "https://www.georgiaencyclopedia.org/articles/arts-culture/gone-with-the-wind-film/",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "original_character_candidates",
+        "adaptation_comparison"
+      ],
+      "rightsStatus": "reference-only",
+      "notes": "页面区分小说与电影改编，并明确提到 Gerald、Ellen、Jonas Wilkerson、Mammy、Prissy 和 Uncle Peter 等名称；只用于形成原文人物候选，不用于指定译本中文名或章节定位。"
+    },
+    {
+      "id": "source-new-georgia-encyclopedia-wind-done-gone",
+      "kind": "state-encyclopedia",
+      "label": "New Georgia Encyclopedia · The Wind Done Gone",
+      "organization": "New Georgia Encyclopedia",
+      "url": "https://www.georgiaencyclopedia.org/articles/arts-culture/the-wind-done-gone/",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "original_character_candidates"
+      ],
+      "rightsStatus": "reference-only",
+      "notes": "页面在说明改写名称时明确提到 Gone With the Wind 中的 Pork；只用于形成原文人物候选，不采用该改写作品的关系或剧情。"
+    },
+    {
       "id": "source-new-georgia-encyclopedia-clayton-county",
       "kind": "state-encyclopedia",
       "label": "New Georgia Encyclopedia · Clayton County",
@@ -428,6 +572,114 @@
     }
   ],
   "onDemandEntities": [
+    {
+      "id": "person-scarlett-ohara",
+      "name": "斯佳丽",
+      "originalName": "Scarlett O'Hara",
+      "aliases": [
+        "Scarlett",
+        "Scarlett O'Hara"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "scopeNote": "详情页简介只确认该版本使用短名“斯佳丽”；系统不预置人物关系、命运或未读剧情。"
+    },
+    {
+      "id": "person-rhett-butler",
+      "name": "瑞德",
+      "originalName": "Rhett Butler",
+      "aliases": [
+        "Rhett",
+        "Rhett Butler"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "scopeNote": "详情页简介只确认该版本使用短名“瑞德”；系统不预置人物关系、命运或未读剧情。"
+    },
+    {
+      "id": "person-ashley-wilkes",
+      "name": "艾希礼",
+      "originalName": "Ashley Wilkes",
+      "aliases": [
+        "Ashley",
+        "Ashley Wilkes"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "scopeNote": "详情页简介只确认该版本使用短名“艾希礼”；系统不预置人物关系、命运或未读剧情。"
+    },
+    {
+      "id": "person-melanie-hamilton",
+      "name": "梅兰妮",
+      "originalName": "Melanie Hamilton",
+      "aliases": [
+        "Melanie",
+        "Melanie Hamilton"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "scopeNote": "详情页简介只确认该版本使用短名“梅兰妮”；系统不预置人物关系、命运或未读剧情。"
+    },
+    {
+      "id": "place-georgia-state",
+      "name": "佐治亚州",
+      "originalName": "Georgia",
+      "aliases": [
+        "Georgia"
+      ],
+      "kind": "place",
+      "placeKind": "real",
+      "activation": "exact-reader-input",
+      "parentLabel": "美国",
+      "geometry": {
+        "type": "point",
+        "latitude": 32.629579,
+        "longitude": -83.423511
+      },
+      "sourceIds": [
+        "source-census-2025-gazetteer",
+        "source-new-georgia-encyclopedia-gwtw"
+      ],
+      "scopeNote": "坐标是现代州级代表坐标，不表示州界，也不表示作品年代的行政边界。"
+    },
+    {
+      "id": "place-clayton-county-georgia",
+      "name": "克莱顿县",
+      "originalName": "Clayton County",
+      "aliases": [
+        "Clayton County"
+      ],
+      "kind": "place",
+      "placeKind": "real",
+      "activation": "exact-reader-input",
+      "parentLabel": "佐治亚州，美国",
+      "geometry": {
+        "type": "point",
+        "latitude": 33.552242,
+        "longitude": -84.412973
+      },
+      "sourceIds": [
+        "source-census-2025-gazetteer",
+        "source-new-georgia-encyclopedia-clayton-county"
+      ],
+      "scopeNote": "坐标是现代县级代表坐标；公开资料确认其与作品创作背景有关，但不能据此断言正文直接出现该名称。"
+    },
     {
       "id": "place-atlanta",
       "name": "亚特兰大",
@@ -507,6 +759,97 @@
         "source-atlanta-history-center-telling-stories-citations"
       ],
       "scopeNote": "只提供虚构地点分类，不包含外部资料页面中的剧情概述。"
+    },
+    {
+      "id": "place-university-of-virginia",
+      "name": "弗吉尼亚大学",
+      "originalName": "University of Virginia",
+      "aliases": [
+        "University of Virginia"
+      ],
+      "kind": "place",
+      "placeKind": "real",
+      "activation": "exact-reader-input",
+      "parentLabel": "夏洛茨维尔，弗吉尼亚州，美国",
+      "geometry": {
+        "type": "point",
+        "latitude": 38.0356372,
+        "longitude": -78.5033905
+      },
+      "sourceIds": [
+        "source-reader-excerpt-early-institutions",
+        "source-university-of-virginia-official",
+        "source-openstreetmap-nominatim-research"
+      ],
+      "scopeNote": "当前译本片段确认中文名称；地图使用校内 Rotunda 作为现代校园参考点，不表示校园边界或故事年代范围。"
+    },
+    {
+      "id": "place-university-of-alabama",
+      "name": "亚拉巴马大学",
+      "originalName": "University of Alabama",
+      "aliases": [
+        "University of Alabama"
+      ],
+      "kind": "place",
+      "placeKind": "real",
+      "activation": "exact-reader-input",
+      "parentLabel": "塔斯卡卢萨，亚拉巴马州，美国",
+      "geometry": {
+        "type": "point",
+        "latitude": 33.2120822,
+        "longitude": -87.5396735
+      },
+      "sourceIds": [
+        "source-reader-excerpt-early-institutions",
+        "source-university-of-alabama-official",
+        "source-openstreetmap-nominatim-research"
+      ],
+      "scopeNote": "当前译本片段确认中文名称；坐标是现代校园代表点，不表示校园边界或故事年代范围。"
+    },
+    {
+      "id": "place-university-of-south-carolina",
+      "name": "南卡罗来纳大学",
+      "originalName": "University of South Carolina",
+      "aliases": [
+        "University of South Carolina"
+      ],
+      "kind": "place",
+      "placeKind": "real",
+      "activation": "exact-reader-input",
+      "parentLabel": "哥伦比亚，南卡罗来纳州，美国",
+      "geometry": {
+        "type": "point",
+        "latitude": 33.9928841,
+        "longitude": -81.0268676
+      },
+      "sourceIds": [
+        "source-reader-excerpt-early-institutions",
+        "source-university-of-south-carolina-official",
+        "source-openstreetmap-nominatim-research"
+      ],
+      "scopeNote": "当前译本片段使用现代中文校名；官方校史说明故事年代机构名不同，坐标仅表示现代校园代表点。"
+    },
+    {
+      "id": "place-fayetteville-female-academy",
+      "name": "费耶特维尔女子学院",
+      "originalName": "Fayetteville Female Academy",
+      "aliases": [
+        "Fayetteville Female Academy"
+      ],
+      "kind": "place",
+      "placeKind": "prototype",
+      "activation": "exact-reader-input",
+      "parentLabel": "佐治亚州费耶特维尔（虚构学校及现实原型）",
+      "geometry": {
+        "type": "point",
+        "latitude": 33.44873,
+        "longitude": -84.45493
+      },
+      "sourceIds": [
+        "source-reader-excerpt-early-institutions",
+        "source-dlg-fayetteville-academy"
+      ],
+      "scopeNote": "当前译本片段确认中文名称；地图点来自现实 Fayetteville Academy 原型资料，不表示虚构学校存在精确现实坐标。"
     }
   ]
 }

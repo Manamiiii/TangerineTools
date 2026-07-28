@@ -171,12 +171,110 @@ export function confirmObservedPlaceLocation(observedEntities, observedEntityId,
       ? {
           ...item,
           mapLocation: {
+            mode: 'exact',
             resultId: String(location.id || ''),
             label: location.label.trim(),
             providerId: location.providerId,
             latitude,
             longitude,
             ...(location.geometry ? { geometry: location.geometry } : {}),
+          },
+        }
+      : item
+  ))
+}
+
+export function confirmObservedPlaceApproximateArea(
+  observedEntities,
+  observedEntityId,
+  location,
+  radiusKm = 50,
+) {
+  if (!Array.isArray(observedEntities)) throw new Error('已遇到名称记录无效')
+  const index = observedEntities.findIndex((item) => item?.id === observedEntityId)
+  if (index < 0) throw new Error('找不到要标记参考区域的地点记录')
+  const observed = observedEntities[index]
+  if (observed.kind !== OBSERVED_ENTITY_KIND.PLACE) throw new Error('只有地点记录可以标记参考区域')
+  if (![OBSERVED_PLACE_KIND.FICTIONAL, OBSERVED_PLACE_KIND.PROTOTYPE, OBSERVED_PLACE_KIND.APPROXIMATE]
+    .includes(observed.placeKind)) {
+    throw new Error('只有虚构、原型或位置模糊地点可以标记参考区域')
+  }
+  const latitude = Number(location?.latitude)
+  const longitude = Number(location?.longitude)
+  const normalizedRadius = Number(radiusKm)
+  if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+    throw new Error('参考区域纬度无效')
+  }
+  if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+    throw new Error('参考区域经度无效')
+  }
+  if (!Number.isFinite(normalizedRadius) || normalizedRadius < 5 || normalizedRadius > 1000) {
+    throw new Error('参考区域半径必须是 5–1000 公里')
+  }
+  if (!isNonEmptyString(location?.label) || !isNonEmptyString(location?.providerId)) {
+    throw new Error('参考区域缺少来源或名称')
+  }
+  return observedEntities.map((item, itemIndex) => (
+    itemIndex === index
+      ? {
+          ...item,
+          mapLocation: {
+            mode: 'approximate-area',
+            resultId: String(location.id || ''),
+            label: location.label.trim(),
+            providerId: location.providerId,
+            latitude,
+            longitude,
+            radiusKm: normalizedRadius,
+          },
+        }
+      : item
+  ))
+}
+
+export function confirmObservedRealPlaceFallbackArea(
+  observedEntities,
+  observedEntityId,
+  location,
+  radiusKm = 20,
+) {
+  if (!Array.isArray(observedEntities)) throw new Error('已遇到名称记录无效')
+  const index = observedEntities.findIndex((item) => item?.id === observedEntityId)
+  if (index < 0) throw new Error('找不到要标记参考区域的地点记录')
+  const observed = observedEntities[index]
+  if (
+    observed.kind !== OBSERVED_ENTITY_KIND.PLACE
+    || observed.placeKind !== OBSERVED_PLACE_KIND.REAL
+  ) {
+    throw new Error('只有搜索不到精确位置的现实地点可以使用区域兜底')
+  }
+  const latitude = Number(location?.latitude)
+  const longitude = Number(location?.longitude)
+  const normalizedRadius = Number(radiusKm)
+  if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+    throw new Error('参考区域纬度无效')
+  }
+  if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+    throw new Error('参考区域经度无效')
+  }
+  if (!Number.isFinite(normalizedRadius) || normalizedRadius < 5 || normalizedRadius > 1000) {
+    throw new Error('参考区域半径必须是 5–1000 公里')
+  }
+  if (!isNonEmptyString(location?.label) || !isNonEmptyString(location?.providerId)) {
+    throw new Error('参考区域缺少来源或名称')
+  }
+  return observedEntities.map((item, itemIndex) => (
+    itemIndex === index
+      ? {
+          ...item,
+          mapLocation: {
+            mode: 'fallback-area',
+            resultId: String(location.id || ''),
+            label: location.label.trim(),
+            providerId: location.providerId,
+            latitude,
+            longitude,
+            radiusKm: normalizedRadius,
           },
         }
       : item
@@ -199,7 +297,12 @@ export function readerConfirmedMapEntities(observedEntities, currentChapterId, c
   return visibleObservedEntities(observedEntities, currentChapterId, chapters)
     .filter((item) => (
       item?.kind === OBSERVED_ENTITY_KIND.PLACE
-      && (item.placeKind === OBSERVED_PLACE_KIND.REAL || (!item.placeKind && item.mapLocation))
+      && (
+        item.placeKind === OBSERVED_PLACE_KIND.REAL
+        || item.mapLocation?.mode === 'approximate-area'
+        || item.mapLocation?.mode === 'fallback-area'
+        || (!item.placeKind && item.mapLocation)
+      )
       && Number.isFinite(item.mapLocation?.latitude)
       && Number.isFinite(item.mapLocation?.longitude)
     ))
@@ -207,20 +310,37 @@ export function readerConfirmedMapEntities(observedEntities, currentChapterId, c
       id: `reader-map:${item.id}`,
       name: item.name,
       kind: 'place',
-      placeKind: 'real',
+      placeKind: ['approximate-area', 'fallback-area'].includes(item.mapLocation.mode)
+        ? item.placeKind
+        : 'real',
       aliases: [],
       parentLabel: item.mapLocation.label,
       revealAt: { chapterId: item.firstSeenChapterId },
       geometry: {
-        type: item.mapLocation.geometry ? 'geojson' : 'point',
+        type: ['approximate-area', 'fallback-area'].includes(item.mapLocation.mode)
+          ? 'area'
+          : item.mapLocation.geometry
+            ? 'geojson'
+            : 'point',
         latitude: item.mapLocation.latitude,
         longitude: item.mapLocation.longitude,
+        ...(['approximate-area', 'fallback-area'].includes(item.mapLocation.mode)
+          ? { radiusKm: item.mapLocation.radiusKm }
+          : {}),
         ...(item.mapLocation.geometry ? { geojson: item.mapLocation.geometry } : {}),
       },
-      accessMode: 'reader-confirmed-geocoder',
+      accessMode: item.mapLocation.mode === 'fallback-area'
+        ? 'reader-confirmed-fallback-area'
+        : item.mapLocation.mode === 'approximate-area'
+          ? 'reader-confirmed-approximate-area'
+          : 'reader-confirmed-geocoder',
       readerConfirmedName: item.name,
       geocodingProviderId: item.mapLocation.providerId,
-      scopeNote: '由读者从公网地图搜索结果中选择，仅代表个人确认的现代现实位置。',
+      scopeNote: item.mapLocation.mode === 'fallback-area'
+        ? '精确地点未被地图服务收录；由读者选择相关现实区域作为兜底，不代表该地点的精确坐标。'
+        : item.mapLocation.mode === 'approximate-area'
+          ? '由读者选择现实区域作为宽泛参考，不代表虚构地点的精确位置。'
+          : '由读者从公网地图搜索结果中选择，仅代表个人确认的现代现实位置。',
     }))
 }
 
@@ -266,6 +386,15 @@ export function scanOnDemandEntities(text, onDemandEntities) {
     if (matchedTerm) matches.push({ entity, matchedTerm })
   }
   return matches
+}
+
+export function scanObservedEntities(text, observedEntities) {
+  if (typeof text !== 'string' || !text.trim() || !Array.isArray(observedEntities)) return []
+  return observedEntities.flatMap((entity) => (
+    textContainsExactTerm(text, entity?.name)
+      ? [{ entity, matchedTerm: entity.name, source: 'observed' }]
+      : []
+  ))
 }
 
 export function unlockedOnDemandEntities(

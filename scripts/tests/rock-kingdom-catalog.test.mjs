@@ -1,9 +1,18 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
-import { evaluateAllNatures, evaluateNatureProfiles } from '../../src/domain/nature.js'
+import {
+  analyzeSpeedProfile,
+  applyNatureModifier,
+  calculateStandardStat,
+  calculateStandardStats,
+  equivalentNeutralSpeedBase,
+  evaluateAllNatures,
+  evaluateNatureProfiles,
+} from '../../src/domain/nature.js'
+import { bestSilverMirrorTarget, natureRetentionAdvice, summarizeOwnedNatureRecords } from '../../src/domain/natureRetention.js'
 import { buildFormAnalysis, buildNatureAnalysisInput, buildPopulationStatSummary } from '../../src/domain/natureRowAdapter.js'
-import { buildOwnedNatureIndex } from '../../src/domain/owned.js'
+import { buildOwnedNatureIndex, buildOwnedNatureRecordIndex } from '../../src/domain/owned.js'
 import { ROCK_KINGDOM_PRESET } from '../../src/presets/rockKingdom.js'
 import {
   compareRockKingdomCreatureRows,
@@ -49,6 +58,131 @@ test('counts a collected growth stage as acquired for its full evolution line', 
     rows: [{ values: { ref: stage.id, nature: 'adamant' } }],
   }], buildEvolutionReferenceGroups([stage, final]))
   assert.equal(index.get(final.id).adamant, 1)
+})
+
+test('keeps rarity details when indexing owned natures across an evolution line', () => {
+  const stage = { id: 'stage', values: { evolutionLine: '火花 → 焰火 → 火神' } }
+  const final = { id: 'final', values: { evolutionLine: '火花 → 焰火 → 火神' } }
+  const index = buildOwnedNatureRecordIndex([{
+    referenceKeys: ['ref'],
+    natureKey: 'nature',
+    shinyKey: 'shiny',
+    colorfulKey: 'colorful',
+    rows: [
+      { id: 'ordinary', values: { ref: stage.id, nature: 'adamant', shiny: 'no', colorful: 'no' } },
+      { id: 'rare', values: { ref: stage.id, nature: 'adamant', shiny: 'yes', colorful: 'yes' } },
+    ],
+  }], buildEvolutionReferenceGroups([stage, final]))
+
+  assert.deepEqual(index.get(final.id).adamant, [
+    { id: 'ordinary', nature: 'adamant', shiny: false, colorful: false },
+    { id: 'rare', nature: 'adamant', shiny: true, colorful: true },
+  ])
+  assert.deepEqual(summarizeOwnedNatureRecords(index.get(final.id).adamant), {
+    total: 2,
+    normal: 1,
+    rare: 1,
+    shiny: 1,
+    colorful: 1,
+  })
+})
+
+test('treats a wrong drawback as silver-mirror repairable when the raised stat has a viable target', () => {
+  const candidates = [
+    { id: 'bold', raise: 'patk', lower: 'pdef', decision: 'notRecommended', score: -2 },
+    { id: 'naughty', raise: 'patk', lower: 'mdef', decision: 'keepable', score: 2 },
+    { id: 'adamant', raise: 'patk', lower: 'matk', decision: 'recommended', score: 5 },
+    { id: 'timid', raise: 'spd', lower: 'patk', decision: 'recommended', score: 6 },
+  ]
+
+  assert.equal(bestSilverMirrorTarget(candidates[0], candidates)?.id, 'adamant')
+  assert.deepEqual(natureRetentionAdvice(candidates[0], candidates), {
+    status: 'repairRecommended',
+    normalLabel: '普通个体：优先继续刷',
+    rareLabel: '异色/炫彩：银镜可修',
+    description: '问题只在减益属性；残缺魔镜可以保留当前强化项，并替换成更合适的减益。',
+    mirrorTarget: candidates[2],
+  })
+})
+
+test('marks a rare individual as collection-only when a silver mirror cannot fix its raised stat', () => {
+  const candidates = [
+    { id: 'focused', raise: 'matk', lower: 'pdef', decision: 'notRecommended', score: -4 },
+    { id: 'paranoid', raise: 'matk', lower: 'mdef', decision: 'notRecommended', score: -5 },
+    { id: 'adamant', raise: 'patk', lower: 'matk', decision: 'recommended', score: 5 },
+  ]
+
+  assert.equal(bestSilverMirrorTarget(candidates[0], candidates), null)
+  assert.equal(natureRetentionAdvice(candidates[0], candidates).status, 'collectionOnly')
+})
+
+test('standard stat formula reproduces the verified max-speed Kakabird panel', () => {
+  assert.equal(calculateStandardStat(120, 'spd', 10, 1.2), 260)
+  assert.equal(calculateStandardStat(130, 'spd', 10, 1.2), 273)
+  assert.equal(calculateStandardStat(120, 'spd', 0, 1), 192)
+})
+
+test('standard stat formula applies three editable individual bonuses and nature multipliers', () => {
+  const baseStats = { hp: 97, patk: 114, matk: 110, pdef: 101, mdef: 89, spd: 120 }
+  const individualStats = { hp: 10, patk: 10, matk: 0, pdef: 0, mdef: 0, spd: 10 }
+  const neutral = calculateStandardStats(baseStats, null, individualStats)
+  const jolly = calculateStandardStats(baseStats, { raise: 'spd', lower: 'matk' }, individualStats)
+
+  assert.equal(neutral.spd, 225)
+  assert.equal(jolly.spd, 260)
+  assert.equal(jolly.matk, calculateStandardStat(110, 'matk', 0, 0.9))
+  assert.equal(jolly.hp, neutral.hp)
+  assert.deepEqual(applyNatureModifier(baseStats, { raise: 'spd', lower: 'matk' }), {
+    hp: 97,
+    patk: 114,
+    matk: 99,
+    pdef: 101,
+    mdef: 89,
+    spd: 144,
+  })
+})
+
+test('speed anchors compare final panels with the same max individual value', () => {
+  const profile = analyzeSpeedProfile(
+    { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 65 },
+    [],
+    null,
+    { speedRequired: true },
+  )
+  assert.equal(profile.standard.maxIndividual, 165)
+  assert.equal(profile.standard.raised, 188)
+  assert.equal(equivalentNeutralSpeedBase(profile.standard.raised), 86)
+  assert.equal(profile.raised, 86)
+  assert.ok(profile.raisedCrossedAnchors.includes(84))
+  assert.equal(profile.concern.level, 'medium')
+})
+
+test('formula crossing only rescues the 65 to 83 speed band with explicit speed demand', () => {
+  const speedSkill = {
+    skills: [
+      { category: 'physical', power: 80, effectTags: ['speed'], effect: '行动后提升速度。' },
+    ],
+  }
+  const crossing = evaluateAllNatures(
+    { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 65 },
+    [],
+    speedSkill,
+  )
+  const belowBand = evaluateAllNatures(
+    { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 64 },
+    [],
+    speedSkill,
+  )
+  const belowBandWithSpeedTrait = evaluateAllNatures(
+    { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 64 },
+    ['spdLean'],
+  )
+  assert.notEqual(crossing.find((candidate) => candidate.name === '开朗')?.decision, 'notRecommended')
+  assert.equal(belowBand.find((candidate) => candidate.name === '开朗')?.decision, 'notRecommended')
+  assert.equal(
+    belowBandWithSpeedTrait.find((candidate) => candidate.name === '开朗')?.decision,
+    'notRecommended',
+  )
 })
 
 test('hides a superseded official row only when its replacement exists', () => {
@@ -275,7 +409,7 @@ test('nature analysis keeps each form trait and skill evidence independent', () 
   assert.deepEqual(input.analysisProfiles[0].skillInfo.skills.map((skill) => skill.name), ['魔法技能'])
 })
 
-test('balanced functional mixed attackers keep a supported short-defense branch despite minor skill drift', () => {
+test('balanced functional mixed attackers do not rescue an ordinary single-defense branch', () => {
   const rows = visibleRockKingdomCreatureRows(
     JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
   )
@@ -290,8 +424,8 @@ test('balanced functional mixed attackers keep a supported short-defense branch 
         .find((candidate) => candidate.name === '稳重')
       return [form.values.name, steady.decision]
     }))
-  assert.equal(decisions['魔力猫'], 'keepable')
-  assert.equal(decisions['叶冕魔力猫'], 'keepable')
+  assert.equal(decisions['魔力猫'], 'notRecommended')
+  assert.equal(decisions['叶冕魔力猫'], 'notRecommended')
   assert.equal(decisions['武斗酷猫'], 'notRecommended')
 })
 
@@ -312,7 +446,7 @@ test('balanced mixed attackers keep both routes when skill counts remain close',
   assert.equal(decisionFor('NO.023', '胆小'), 'keepable')
   assert.equal(decisionFor('NO.038', '开朗'), 'keepable')
   assert.equal(decisionFor('NO.038', '胆小'), 'keepable')
-  assert.equal(decisionFor('NO.038', '天真'), 'keepable')
+  assert.equal(decisionFor('NO.038', '天真'), 'notRecommended')
 })
 
 test('close dual attacks keep both sacrifice directions despite a skill-count gap', () => {
@@ -325,12 +459,15 @@ test('close dual attacks keep both sacrifice directions despite a skill-count ga
   const forms = rows.filter((item) => item.values?.no === 'NO.051')
   const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
   const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
-  for (const name of ['固执', '平和', '开朗', '天真', '害羞']) {
+  for (const name of ['固执', '平和']) {
     assert.notEqual(candidates.find((candidate) => candidate.name === name)?.decision, 'notRecommended')
+  }
+  for (const name of ['开朗', '天真', '害羞']) {
+    assert.equal(candidates.find((candidate) => candidate.name === name)?.decision, 'notRecommended')
   }
 })
 
-test('balanced mixed routes do not rescue low-value speed natures', () => {
+test('a confirmed speed-dependent mixed attacker can use formula-crossing speed natures', () => {
   const rows = visibleRockKingdomCreatureRows(
     JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
   )
@@ -340,8 +477,8 @@ test('balanced mixed routes do not rescue low-value speed natures', () => {
   const forms = rows.filter((item) => item.values?.no === 'NO.040')
   const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
   const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
-  assert.equal(candidates.find((candidate) => candidate.name === '开朗')?.decision, 'notRecommended')
-  assert.equal(candidates.find((candidate) => candidate.name === '胆小')?.decision, 'notRecommended')
+  assert.equal(candidates.find((candidate) => candidate.name === '开朗')?.decision, 'keepable')
+  assert.equal(candidates.find((candidate) => candidate.name === '胆小')?.decision, 'keepable')
 })
 
 test('functional forms do not sacrifice their standout defense', () => {
@@ -413,7 +550,58 @@ test('speed raises do not trade away either defense', () => {
   }
 })
 
-test('a weaker attack sacrifice does not bypass same-raise dominance as a defense specialty', () => {
+test('life is preferred over ordinary single-defense raises with the same sacrifice', () => {
+  const candidates = evaluateAllNatures(
+    { hp: 120, patk: 90, matk: 45, pdef: 110, mdef: 110, spd: 80 },
+    ['defense'],
+    { skills: [{ category: '物理', power: 80 }] },
+  )
+  assert.equal(candidates.find((candidate) => candidate.name === '平和')?.decision, 'recommended')
+  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'notRecommended')
+  assert.equal(candidates.find((candidate) => candidate.name === '害羞')?.decision, 'notRecommended')
+})
+
+test('an extreme one-sided wall still rejects single-defense raises', () => {
+  const candidates = evaluateAllNatures(
+    { hp: 120, patk: 90, matk: 45, pdef: 125, mdef: 45, spd: 80 },
+    ['defense'],
+    { skills: [{ category: '物理', power: 80 }] },
+  )
+  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'notRecommended')
+  assert.match(
+    candidates.find((candidate) => candidate.name === '天真')?.warnings.join('；') || '',
+    /单侧强化不作为捕捉保留分支/,
+  )
+  assert.equal(candidates.find((candidate) => candidate.name === '害羞')?.decision, 'notRecommended')
+})
+
+test('confirmed bulky creatures prefer life and reject ordinary single-defense branches', () => {
+  const rows = visibleRockKingdomCreatureRows(
+    JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
+  )
+  const skillRows = JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomSkillRows.json', import.meta.url), 'utf8'))
+  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const fields = ROCK_KINGDOM_PRESET.fields.filter((field) => field.tableId === creatureTableId)
+  const cases = [
+    { no: 'NO.010', life: '沉默', defenses: ['稳重', '警惕'] },
+    { no: 'NO.014', life: '沉默', defenses: ['稳重', '警惕'] },
+    { no: 'NO.029', life: '平和', defenses: ['天真', '害羞'] },
+    { no: 'NO.051', life: '沉默', defenses: ['稳重', '警惕'] },
+    { no: 'NO.062', life: '平和', defenses: ['天真', '害羞'] },
+  ]
+
+  for (const item of cases) {
+    const forms = rows.filter((row) => row.values?.no === item.no)
+    const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
+    const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
+    assert.equal(candidates.find((candidate) => candidate.name === item.life)?.decision, 'recommended')
+    for (const nature of item.defenses) {
+      assert.equal(candidates.find((candidate) => candidate.name === nature)?.decision, 'notRecommended')
+    }
+  }
+})
+
+test('an ordinary defense specialty does not bypass life with the same sacrifice', () => {
   const rows = visibleRockKingdomCreatureRows(
     JSON.parse(readFileSync(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8')),
   )
@@ -423,7 +611,7 @@ test('a weaker attack sacrifice does not bypass same-raise dominance as a defens
   const forms = rows.filter((item) => item.values?.no === 'NO.026')
   const input = buildNatureAnalysisInput(forms[0], forms, fields, skillRows, rows)
   const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
-  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'keepable')
+  assert.equal(candidates.find((candidate) => candidate.name === '天真')?.decision, 'notRecommended')
   assert.equal(candidates.find((candidate) => candidate.name === '稳重')?.decision, 'notRecommended')
 })
 
