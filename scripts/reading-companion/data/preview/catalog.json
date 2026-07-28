@@ -13,10 +13,10 @@
         "editionLabel": "长江文艺出版社 · 2018年5月",
         "path": "presets/reading-companion/gone-with-the-wind-zh-9787570202188.json",
         "preparedSummary": {
-          "entityCount": 14,
-          "place": 10,
+          "entityCount": 16,
+          "place": 11,
           "person": 4,
-          "concept": 0,
+          "concept": 1,
           "event": 0,
           "factCount": 0,
           "sourceCount": 16

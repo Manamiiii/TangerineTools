@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "1.3.0",
+  "packageVersion": "1.4.0",
   "id": "reader-package-gone-with-the-wind-zh-9787570202188",
   "book": {
     "id": "gone-with-the-wind",
@@ -350,9 +350,10 @@
       "useFor": [
         "edition",
         "chapter_structure",
-        "book_description_names"
+        "book_description_names",
+        "book_description_context"
       ],
-      "notes": "用于确认 ISBN、译者、出版社、出版时间、连续 1–63 章结构，以及详情页简介中出现的斯佳丽、瑞德、艾希礼、梅兰妮四个短名；不包含正文，不能用于确认首次出现章节。"
+      "notes": "用于确认 ISBN、译者、出版社、出版时间、连续 1–63 章结构，以及详情页简介中出现的斯佳丽、瑞德、艾希礼、梅兰妮四个短名和“美国南方”“种植园”两个无剧情背景词；不包含正文，不能用于确认首次出现章节。"
     },
     {
       "id": "source-reader-excerpt-early-institutions",
@@ -657,6 +658,32 @@
         "source-new-georgia-encyclopedia-gwtw"
       ],
       "scopeNote": "坐标是现代州级代表坐标，不表示州界，也不表示作品年代的行政边界。"
+    },
+    {
+      "id": "place-american-south",
+      "name": "美国南方",
+      "originalName": "Southern United States",
+      "aliases": [],
+      "kind": "place",
+      "placeKind": "approximate",
+      "activation": "exact-reader-input",
+      "parentLabel": "美国（范围随历史语境变化）",
+      "sourceIds": [
+        "source-weread-edition-metadata"
+      ],
+      "scopeNote": "详情页简介确认该背景词；系统只标记为模糊区域，不提供中心点、边界或剧情意义。"
+    },
+    {
+      "id": "concept-plantation",
+      "name": "种植园",
+      "originalName": "Plantation",
+      "aliases": [],
+      "kind": "concept",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-weread-edition-metadata"
+      ],
+      "scopeNote": "详情页简介确认该背景词；系统只提供概念名称，不预置制度说明或剧情解释。"
     },
     {
       "id": "place-clayton-county-georgia",

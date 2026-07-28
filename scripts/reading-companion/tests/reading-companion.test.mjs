@@ -516,6 +516,16 @@ test('Gone with the Wind exact-input dictionary recognizes audited names without
     institutionMatches.at(-1).entity.placeKind,
     OBSERVED_PLACE_KIND.PROTOTYPE,
   )
+  const contextMatches = scanOnDemandEntities(
+    '故事背景涉及美国南方的种植园。',
+    readingPackage.onDemandEntities,
+  )
+  assert.deepEqual(
+    contextMatches.map(({ entity }) => entity.id),
+    ['place-american-south', 'concept-plantation'],
+  )
+  assert.equal(contextMatches[0].entity.placeKind, OBSERVED_PLACE_KIND.APPROXIMATE)
+  assert.equal(contextMatches[0].entity.geometry, undefined)
 })
 
 test('package validation rejects duplicate chapters and unknown fact references', () => {
@@ -1473,19 +1483,19 @@ test('reading preview publishes only approved sources and keeps candidates pendi
   assert.deepEqual(validateReadingPackage(preview.package), [])
   assert.equal(preview.previewMeta.approvedSourceIds.length, 16)
   assert.equal(preview.previewMeta.pendingSourceIds.length, 3)
-  assert.equal(preview.previewMeta.candidateEntityIds.length, 26)
+  assert.equal(preview.previewMeta.candidateEntityIds.length, 28)
   assert.equal(preview.previewMeta.candidateFactIds.length, 2)
-  assert.equal(preview.previewMeta.onDemandEntityIds.length, 14)
-  assert.equal(preview.researchCandidates.entities.length, 26)
+  assert.equal(preview.previewMeta.onDemandEntityIds.length, 16)
+  assert.equal(preview.researchCandidates.entities.length, 28)
   assert.equal(preview.researchCandidates.facts.length, 2)
-  assert.equal(preview.package.onDemandEntities.length, 14)
+  assert.equal(preview.package.onDemandEntities.length, 16)
   assert.deepEqual(preview.package.entities, [])
   assert.deepEqual(preview.package.facts, [])
   assert.deepEqual(preview.catalogEntry.preparedSummary, {
-    entityCount: 14,
-    place: 10,
+    entityCount: 16,
+    place: 11,
     person: 4,
-    concept: 0,
+    concept: 1,
     event: 0,
     factCount: 0,
     sourceCount: 16,
