@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "1.10.0",
+  "packageVersion": "1.11.0",
   "id": "reader-package-gone-with-the-wind-zh-9787570202188",
   "book": {
     "id": "gone-with-the-wind",
@@ -738,6 +738,35 @@
       "notes": "页面包含剧情概述；运行时只采用经人工摘出的地点名称与虚构分类，并且只在读者精确输入同名内容后显示，不复制剧情概述，也不能代替本译本 revealAt 证据。"
     },
     {
+      "id": "source-zh-wikipedia-gwtw-name-index",
+      "kind": "chinese-encyclopedia",
+      "label": "中文维基百科 · 《飘》人物与地点名称索引",
+      "organization": "维基百科编者",
+      "url": "https://zh.wikipedia.org/wiki/%E9%A3%84",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "original_character_name",
+        "cross_translation_alias",
+        "place_name"
+      ],
+      "rightsStatus": "CC-BY-SA-4.0-reference-only",
+      "notes": "页面明确说明人物表采用其他中译本译名。运行时只取原文姓名及常见中文译名作为精确匹配别名，不采用人物关系、命运、情节概述或章节信息；当前版本主名称仍优先使用范纯海、夏旻译本已有证据。"
+    },
+    {
+      "id": "source-dangdang-fan-chunhai-edition-description",
+      "kind": "edition-bookseller-metadata",
+      "label": "当当 · 范纯海、夏旻译《飘》书目介绍",
+      "organization": "当当",
+      "url": "https://category.dangdang.com/cp01.03.56.03.00.00-as4294967296%3A4294977597.html",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "translator_edition_name",
+        "core_character_name"
+      ],
+      "rightsStatus": "metadata-reference-only",
+      "notes": "同一译者版本的书目介绍明确使用“斯佳丽”“艾伦”“杰拉尔德”；只用于确认三个人名写法，不采用介绍中的人物关系和剧情信息，也不推断当前 2018 电子版的首次出现章节。"
+    },
+    {
       "id": "source-new-georgia-encyclopedia-gwtw-film",
       "kind": "state-encyclopedia",
       "label": "New Georgia Encyclopedia · Gone With the Wind (Film)",
@@ -1284,6 +1313,298 @@
         "source-dlg-fayetteville-academy"
       ],
       "scopeNote": "当前译本片段确认中文名称；地图点来自现实 Fayetteville Academy 原型资料，不表示虚构学校存在精确现实坐标。"
+    },
+    {
+      "id": "person-gerald-ohara",
+      "name": "杰拉尔德",
+      "originalName": "Gerald O'Hara",
+      "aliases": [
+        "杰拉尔德·奥哈拉",
+        "杰拉尔德·欧哈拉",
+        "杰拉德",
+        "Gerald O'Hara"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-new-georgia-encyclopedia-gwtw",
+        "source-dangdang-fan-chunhai-edition-description"
+      ],
+      "scopeNote": "同一译者版本确认短名“杰拉尔德”；只预置名称，不展示人物关系、经历或命运。"
+    },
+    {
+      "id": "person-ellen-ohara",
+      "name": "艾伦",
+      "originalName": "Ellen O'Hara",
+      "aliases": [
+        "艾伦·奥哈拉",
+        "艾伦·欧哈拉",
+        "埃伦",
+        "Ellen O'Hara"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-new-georgia-encyclopedia-gwtw",
+        "source-dangdang-fan-chunhai-edition-description"
+      ],
+      "scopeNote": "同一译者版本确认短名“艾伦”；只预置名称，不展示人物关系、经历或命运。"
+    },
+    {
+      "id": "person-suellen-ohara",
+      "name": "苏伦",
+      "originalName": "Suellen O'Hara",
+      "aliases": [
+        "苏伦·奥哈拉",
+        "苏伦·欧哈拉",
+        "郝苏伦",
+        "Suellen O'Hara"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-zh-wikipedia-gwtw-name-index"
+      ],
+      "scopeNote": "中文写法来自跨译本名称索引，仅用于精确匹配；不展示人物关系、经历或命运。"
+    },
+    {
+      "id": "person-carreen-ohara",
+      "name": "凯伦",
+      "originalName": "Carreen O'Hara",
+      "aliases": [
+        "卡琳",
+        "恺琳",
+        "凯伦·奥哈拉",
+        "卡琳·奥哈拉",
+        "Carreen O'Hara"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-zh-wikipedia-gwtw-name-index"
+      ],
+      "scopeNote": "中文写法来自跨译本名称索引，仅用于精确匹配；不展示人物关系、经历或命运。"
+    },
+    {
+      "id": "person-mammy",
+      "name": "黑妈妈",
+      "originalName": "Mammy",
+      "aliases": [
+        "黑嬷嬷",
+        "嬷嬷",
+        "Mammy"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-new-georgia-encyclopedia-gwtw-film",
+        "source-zh-wikipedia-gwtw-name-index"
+      ],
+      "scopeNote": "包含不同译本的常见称呼，仅用于原文精确命中；不展示身份、关系或剧情说明。"
+    },
+    {
+      "id": "person-charles-hamilton",
+      "name": "查尔斯",
+      "originalName": "Charles Hamilton",
+      "aliases": [
+        "查尔斯·汉密尔顿",
+        "查理斯",
+        "韩查理",
+        "Charles Hamilton"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-zh-wikipedia-gwtw-name-index"
+      ],
+      "scopeNote": "包含不同译本的常见称呼，仅用于原文精确命中；不展示人物关系、经历或命运。"
+    },
+    {
+      "id": "person-frank-kennedy",
+      "name": "弗兰克",
+      "originalName": "Frank Kennedy",
+      "aliases": [
+        "弗兰克·肯尼迪",
+        "富兰克",
+        "甘福隆",
+        "甘弗朗",
+        "Frank Kennedy"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-zh-wikipedia-gwtw-name-index"
+      ],
+      "scopeNote": "包含不同译本的常见称呼，仅用于原文精确命中；不展示人物关系、经历或命运。"
+    },
+    {
+      "id": "person-pitty-hamilton",
+      "name": "皮蒂姑妈",
+      "originalName": "Pitty Hamilton",
+      "aliases": [
+        "皮蒂帕特姑妈",
+        "贝蒂帕特姑妈",
+        "贝蒂·汉密尔顿",
+        "韩白蝶",
+        "Pitty Hamilton"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-zh-wikipedia-gwtw-name-index"
+      ],
+      "scopeNote": "包含不同译本的常见称呼，仅用于原文精确命中；不展示人物关系、经历或命运。"
+    },
+    {
+      "id": "person-belle-watling",
+      "name": "贝尔",
+      "originalName": "Belle Watling",
+      "aliases": [
+        "贝尔·沃特琳",
+        "贝尔·沃特林",
+        "华贝儿",
+        "Belle Watling"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-zh-wikipedia-gwtw-name-index"
+      ],
+      "scopeNote": "包含不同译本的常见称呼，仅用于原文精确命中；不展示身份、关系或剧情说明。"
+    },
+    {
+      "id": "person-will-benteen",
+      "name": "威尔",
+      "originalName": "Will Benteen",
+      "aliases": [
+        "威尔·本特恩",
+        "威尔·本廷",
+        "班威尔",
+        "Will Benteen"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-zh-wikipedia-gwtw-name-index"
+      ],
+      "scopeNote": "包含不同译本的常见称呼，仅用于原文精确命中；不展示人物关系、经历或命运。"
+    },
+    {
+      "id": "person-wade-hampton-hamilton",
+      "name": "韦德",
+      "originalName": "Wade Hampton Hamilton",
+      "aliases": [
+        "韦德·汉普顿·汉密尔顿",
+        "韩韦德",
+        "Wade Hampton Hamilton"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-zh-wikipedia-gwtw-name-index"
+      ],
+      "scopeNote": "包含不同译本的常见称呼，仅用于原文精确命中；不展示人物关系、经历或命运。"
+    },
+    {
+      "id": "person-ella-lorena-kennedy",
+      "name": "埃拉",
+      "originalName": "Ella Lorena Kennedy",
+      "aliases": [
+        "埃拉·洛丽娜·肯尼迪",
+        "埃拉·洛雷娜·肯尼迪",
+        "甘爱雅",
+        "Ella Lorena Kennedy"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-zh-wikipedia-gwtw-name-index"
+      ],
+      "scopeNote": "包含不同译本的常见称呼，仅用于原文精确命中；不展示人物关系、经历或命运。"
+    },
+    {
+      "id": "person-bonnie-blue-butler",
+      "name": "邦妮",
+      "originalName": "Eugenie Victoria \"Bonnie\" Butler",
+      "aliases": [
+        "邦尼",
+        "邦妮·巴特勒",
+        "邦尼·巴特勒",
+        "白美蓝",
+        "Bonnie Butler",
+        "Bonnie Blue Butler"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-zh-wikipedia-gwtw-name-index"
+      ],
+      "scopeNote": "包含不同译本的常见称呼，仅用于原文精确命中；不展示人物关系、经历或命运。"
+    },
+    {
+      "id": "person-prissy",
+      "name": "普莉西",
+      "originalName": "Prissy",
+      "aliases": [
+        "普里西",
+        "普莉斯",
+        "Prissy"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-new-georgia-encyclopedia-gwtw-film"
+      ],
+      "scopeNote": "公开资料确认原文人物；中文写法作为跨译本匹配候选，不展示身份、关系或剧情说明。"
+    },
+    {
+      "id": "person-pork",
+      "name": "波克",
+      "originalName": "Pork",
+      "aliases": [
+        "Pork"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-new-georgia-encyclopedia-wind-done-gone"
+      ],
+      "scopeNote": "公开资料确认原文人物；中文写法只用于精确匹配，不展示身份、关系或剧情说明。"
+    },
+    {
+      "id": "person-uncle-peter",
+      "name": "彼得大叔",
+      "originalName": "Uncle Peter",
+      "aliases": [
+        "彼得叔叔",
+        "Uncle Peter"
+      ],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-new-georgia-encyclopedia-gwtw-film",
+        "source-zh-wikipedia-gwtw-name-index"
+      ],
+      "scopeNote": "包含不同译本的常见称呼，仅用于原文精确命中；不展示身份、关系或剧情说明。"
+    },
+    {
+      "id": "place-peachtree-street",
+      "name": "桃树街",
+      "originalName": "Peachtree Street",
+      "aliases": [
+        "桃树大街",
+        "桃树街道",
+        "Peachtree Street"
+      ],
+      "kind": "place",
+      "placeKind": "real",
+      "activation": "exact-reader-input",
+      "parentLabel": "亚特兰大，佐治亚州，美国",
+      "sourceIds": [
+        "source-atlanta-history-center-peachtree-street",
+        "source-zh-wikipedia-gwtw-name-index"
+      ],
+      "scopeNote": "现实街道名称已确认；未用单个坐标替代街道路段，地图位置由读者按需搜索确认。"
     }
   ]
 }
