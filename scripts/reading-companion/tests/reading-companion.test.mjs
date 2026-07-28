@@ -14,6 +14,7 @@ import {
   isRevealedAtChapter,
   matchOnDemandEntity,
   normalizeObservedEntityName,
+  observedEntityEncounterChapterIds,
   projectReadingPlaces,
   readingEntitySafeNoteSources,
   readingPlaceRelations,
@@ -26,6 +27,7 @@ import {
   strongestSpoilerRisk,
   summarizeReadingPackage,
   unlockedOnDemandEntities,
+  updateObservedEntityNote,
   updateObservedPlaceKind,
   upsertObservedEntity,
   validateReadingPackage,
@@ -763,6 +765,7 @@ test('reader-confirmed names use chapters without requiring book text or guessed
     name: '塔拉庄园',
     kind: 'place',
     firstSeenChapterId: 'chapter-03',
+    encounterChapterIds: ['chapter-03'],
     placeKind: OBSERVED_PLACE_KIND.UNKNOWN,
   }])
   assert.equal(normalizeObservedEntityName('ＴＡＲＡ  '), 'tara')
@@ -772,15 +775,24 @@ test('reader-confirmed names use chapters without requiring book text or guessed
     ['塔拉庄园'],
   )
 
-  const unchanged = upsertObservedEntity(first, {
+  const recordedLater = upsertObservedEntity(first, {
     id: 'observed-duplicate',
     name: '塔拉庄园',
     kind: 'place',
     firstSeenChapterId: 'chapter-05',
   }, chapters)
-  assert.equal(unchanged, first)
+  assert.deepEqual(recordedLater[0].encounterChapterIds, ['chapter-03', 'chapter-05'])
+  assert.equal(recordedLater[0].firstSeenChapterId, 'chapter-03')
 
-  const correctedEarlier = upsertObservedEntity(first, {
+  const unchanged = upsertObservedEntity(recordedLater, {
+    id: 'observed-duplicate',
+    name: '塔拉庄园',
+    kind: 'place',
+    firstSeenChapterId: 'chapter-05',
+  }, chapters)
+  assert.equal(unchanged, recordedLater)
+
+  const correctedEarlier = upsertObservedEntity(recordedLater, {
     id: 'observed-duplicate',
     name: '塔拉庄园',
     kind: 'place',
@@ -789,6 +801,25 @@ test('reader-confirmed names use chapters without requiring book text or guessed
   assert.equal(correctedEarlier.length, 1)
   assert.equal(correctedEarlier[0].id, 'observed-tara')
   assert.equal(correctedEarlier[0].firstSeenChapterId, 'chapter-01')
+  assert.deepEqual(
+    observedEntityEncounterChapterIds(correctedEarlier[0], chapters),
+    ['chapter-01', 'chapter-03', 'chapter-05'],
+  )
+  assert.deepEqual(
+    observedEntityEncounterChapterIds({
+      firstSeenChapterId: 'chapter-02',
+    }, chapters),
+    ['chapter-02'],
+  )
+
+  const noted = updateObservedEntityNote(correctedEarlier, 'observed-tara', '女主生活的庄园')
+  assert.equal(noted[0].note, '女主生活的庄园')
+  const clearedNote = updateObservedEntityNote(noted, 'observed-tara', '  ')
+  assert.equal(clearedNote[0].note, undefined)
+  assert.throws(
+    () => updateObservedEntityNote(noted, 'observed-tara', '长'.repeat(501)),
+    /不能超过 500/,
+  )
   assert.throws(
     () => upsertObservedEntity([], {
       id: 'invalid',

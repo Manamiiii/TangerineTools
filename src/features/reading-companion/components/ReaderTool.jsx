@@ -87,6 +87,7 @@ import {
   OBSERVED_PLACE_KIND,
   matchOnDemandEntity,
   normalizeObservedEntityName,
+  observedEntityEncounterChapterIds,
   readingEntitySafeNoteSources,
   readingPlaceRelations,
   readerConfirmedMapEntities,
@@ -95,6 +96,7 @@ import {
   spoilerGateAction,
   unlockedOnDemandEntities,
   upsertObservedEntity,
+  updateObservedEntityNote,
   updateObservedPlaceKind,
   visibleReadingEntities,
   visibleReadingFacts,
@@ -161,9 +163,17 @@ function observedRecordAction(observedEntities, name, kind, currentChapterId, ch
       existingChapter,
     }
   }
+  if (!observedEntityEncounterChapterIds(existing, chapters).includes(currentChapterId)) {
+    return {
+      type: 'record-again',
+      label: `记录${chapters[currentIndex]?.label || '当前章'}出现`,
+      existing,
+      existingChapter,
+    }
+  }
   return {
     type: 'recorded',
-    label: `已记于${existingChapter?.label || '较早章节'}`,
+    label: `${chapters[currentIndex]?.label || '当前章'}已记录`,
     existing,
     existingChapter,
   }
@@ -776,7 +786,9 @@ function ModelAnalysisPanel({
       setMessage(
         action.type === 'move-earlier'
           ? `已把“${candidate.name}”从${action.existingChapter?.label || '较后章节'}提前到${currentChapter?.label || '当前章'}。`
-          : `已把“${candidate.name}”记在${currentChapter?.label || '当前章'}。`,
+          : action.type === 'record-again'
+            ? `已补记“${candidate.name}”在${currentChapter?.label || '当前章'}的出现。`
+            : `已把“${candidate.name}”记在${currentChapter?.label || '当前章'}。`,
       )
     } catch (error) {
       setMessage(error?.message || '保存模型候选失败')
@@ -1293,7 +1305,9 @@ function QuickObservedEntityForm({
       setStatus(
         currentAction.type === 'move-earlier'
           ? `已从${currentAction.existingChapter?.label || '较后章节'}提前到${currentChapter?.label || '当前章'}。`
-          : `已记在${currentChapter?.label || '当前章'}，现在可以继续阅读。`,
+          : currentAction.type === 'record-again'
+            ? `已补记${currentChapter?.label || '当前章'}的出现。`
+            : `已记在${currentChapter?.label || '当前章'}，现在可以继续阅读。`,
       )
     } catch (error) {
       setStatus(error?.message || '保存失败')
@@ -1438,6 +1452,7 @@ function ObservedEntitiesPanel({
   const [kindFilter, setKindFilter] = useState('all')
   const [pageSize, setPageSize] = useState(10)
   const [page, setPage] = useState(1)
+  const [noteDrafts, setNoteDrafts] = useState({})
   const currentAction = observedRecordAction(
     observedEntities,
     name,
@@ -1508,7 +1523,9 @@ function ObservedEntitiesPanel({
       setStatus(
         currentAction.type === 'move-earlier'
           ? `已从${currentAction.existingChapter?.label || '较后章节'}提前到${currentChapter?.label || '当前章'}。`
-          : `已把首次遇到位置记在${currentChapter?.label || '当前章'}。`,
+          : currentAction.type === 'record-again'
+            ? `已补记${currentChapter?.label || '当前章'}的出现。`
+            : `已把首次遇到位置记在${currentChapter?.label || '当前章'}。`,
       )
     } catch (error) {
       setStatus(error?.message || '保存失败')
@@ -1545,6 +1562,43 @@ function ObservedEntitiesPanel({
       )
     } catch (error) {
       setStatus(error?.message || '更新地点性质失败')
+    }
+  }
+
+  async function recordObservedAgain(entity) {
+    setStatus('')
+    try {
+      const next = upsertObservedEntity(observedEntities, {
+        id: entity.id,
+        name: entity.name,
+        kind: entity.kind,
+        placeKind: entity.placeKind,
+        firstSeenChapterId: currentChapterId,
+      }, chapters)
+      if (next === observedEntities) {
+        setStatus(`“${entity.name}”在${currentChapter?.label || '当前章'}已经记录。`)
+        return
+      }
+      await onChange(next)
+      setStatus(`已补记“${entity.name}”在${currentChapter?.label || '当前章'}的出现。`)
+    } catch (error) {
+      setStatus(error?.message || '记录本章出现失败')
+    }
+  }
+
+  async function saveObservedNote(entity) {
+    setStatus('')
+    try {
+      const draft = noteDrafts[entity.id] ?? entity.note ?? ''
+      await onChange(updateObservedEntityNote(observedEntities, entity.id, draft))
+      setNoteDrafts((current) => {
+        const next = { ...current }
+        delete next[entity.id]
+        return next
+      })
+      setStatus(draft.trim() ? `已保存“${entity.name}”的个人备注。` : `已清除“${entity.name}”的个人备注。`)
+    } catch (error) {
+      setStatus(error?.message || '保存个人备注失败')
     }
   }
 
@@ -1628,14 +1682,25 @@ function ObservedEntitiesPanel({
               <h4>{group.label}<span>{group.entities.length}</span></h4>
               <div className="reader-observed-list">
           {group.entities.map((entity) => {
-            const chapter = chapters.find((item) => item.id === entity.firstSeenChapterId)
+            const encounterChapterIds = observedEntityEncounterChapterIds(entity, chapters)
+            const encounterChapters = encounterChapterIds
+              .map((chapterId) => chapters.find((item) => item.id === chapterId))
+              .filter(Boolean)
+            const firstChapter = encounterChapters[0]
+            const latestChapter = encounterChapters.at(-1)
+            const hasCurrentChapter = encounterChapterIds.includes(currentChapterId)
+            const noteDraft = noteDrafts[entity.id] ?? entity.note ?? ''
             const match = matchOnDemandEntity(onDemandEntities, entity.name, entity.kind)
             return (
               <div className="reader-observed-item" key={entity.id}>
                 <UserRoundSearch size={16} />
                 <div>
                   <strong>{entity.name}</strong>
-                  <span>{OBSERVED_KIND_LABELS[entity.kind]} · 首次记录于{chapter?.label || '未知章节'}</span>
+                  <span>
+                    {OBSERVED_KIND_LABELS[entity.kind]} · 首次{firstChapter?.label || '未知章节'}
+                    {encounterChapters.length > 1 && ` · 最近${latestChapter?.label || '未知章节'}`}
+                    {` · 共 ${encounterChapters.length || 1} 章`}
+                  </span>
                   {!match && entity.kind === OBSERVED_ENTITY_KIND.PLACE && (
                     <label className="reader-observed-place-kind">
                       <span>地点性质</span>
@@ -1649,61 +1714,98 @@ function ObservedEntitiesPanel({
                       </select>
                     </label>
                   )}
-                  {(match || entity.mapLocation) && (
-                    <>
-                      <div className="reader-observed-badges">
-                        {match && <span>资料已匹配</span>}
-                        {entity.mapLocation && (
-                          <span>
-                            {entity.mapLocation.mode === 'exact' ? '精确地图位置' : '参考区域'}
-                          </span>
+                  {(entity.note || match || entity.mapLocation) && (
+                    <div className="reader-observed-badges">
+                      {entity.note && <span>有个人备注</span>}
+                      {match && <span>资料已匹配</span>}
+                      {entity.mapLocation && (
+                        <span>
+                          {entity.mapLocation.mode === 'exact' ? '精确地图位置' : '参考区域'}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <details className="reader-observed-details">
+                    <summary>查看阅读记忆</summary>
+                    <div className="reader-observed-detail-section reader-observed-memory">
+                      <div className="reader-observed-detail-heading">
+                        <b>出现章节</b>
+                        {!hasCurrentChapter && (
+                          <button type="button" onClick={() => recordObservedAgain(entity)}>
+                            <Plus size={12} /> 记录{currentChapter?.label || '当前章'}
+                          </button>
                         )}
                       </div>
-                      <details className="reader-observed-details">
-                        <summary>查看详情</summary>
-                        {match && (
-                          <div className="reader-observed-detail-section">
-                            <b>匹配资料</b>
-                            <span>
-                              {match.name !== entity.name ? `资料名：${match.name} · ` : ''}
-                              {match.kind === 'place'
-                                ? PLACE_KIND_LABELS[match.placeKind]
-                                : OBSERVED_KIND_LABELS[match.kind]}
-                            </span>
-                            {match.parentLabel && <span>{match.parentLabel}</span>}
-                            <ReadingSafeNote
-                              entity={match}
-                              sources={sources}
-                              className="reader-observed-safe-note"
-                            />
-                            {match.scopeNote && <small>{match.scopeNote}</small>}
-                          </div>
+                      <div className="reader-observed-chapters">
+                        {encounterChapters.map((chapter) => (
+                          <span key={chapter.id}>{chapter.label}</span>
+                        ))}
+                      </div>
+                      <label className="reader-observed-note">
+                        <span>个人备注</span>
+                        <textarea
+                          value={noteDraft}
+                          onChange={(event) => setNoteDrafts((current) => ({
+                            ...current,
+                            [entity.id]: event.target.value,
+                          }))}
+                          placeholder="只记录自己已经读到和确认的信息"
+                          maxLength={500}
+                          rows={3}
+                        />
+                      </label>
+                      <div className="reader-observed-note-actions">
+                        <span>{noteDraft.length}/500</span>
+                        <button
+                          type="button"
+                          disabled={noteDraft.trim() === (entity.note || '')}
+                          onClick={() => saveObservedNote(entity)}
+                        >
+                          保存备注
+                        </button>
+                      </div>
+                    </div>
+                    {match && (
+                      <div className="reader-observed-detail-section">
+                        <b>匹配资料</b>
+                        <span>
+                          {match.name !== entity.name ? `资料名：${match.name} · ` : ''}
+                          {match.kind === 'place'
+                            ? PLACE_KIND_LABELS[match.placeKind]
+                            : OBSERVED_KIND_LABELS[match.kind]}
+                        </span>
+                        {match.parentLabel && <span>{match.parentLabel}</span>}
+                        <ReadingSafeNote
+                          entity={match}
+                          sources={sources}
+                          className="reader-observed-safe-note"
+                        />
+                        {match.scopeNote && <small>{match.scopeNote}</small>}
+                      </div>
+                    )}
+                    {entity.mapLocation && (
+                      <div className="reader-observed-detail-section">
+                        <b>
+                          {entity.mapLocation.mode === 'exact'
+                            ? '个人确认的现实位置'
+                            : '个人设置的参考区域'}
+                        </b>
+                        <span>{entity.mapLocation.label}</span>
+                        {entity.mapLocation.mode !== 'exact' && (
+                          <span>
+                            半径约 {entity.mapLocation.radiusKm} 公里 · 非精确位置
+                          </span>
                         )}
-                        {entity.mapLocation && (
-                          <div className="reader-observed-detail-section">
-                            <b>
-                              {entity.mapLocation.mode === 'exact'
-                                ? '个人确认的现实位置'
-                                : '个人设置的参考区域'}
-                            </b>
-                            <span>{entity.mapLocation.label}</span>
-                            {entity.mapLocation.mode !== 'exact' && (
-                              <span>
-                                半径约 {entity.mapLocation.radiusKm} 公里 · 非精确位置
-                              </span>
-                            )}
-                            <button
-                              type="button"
-                              className="reader-observed-unlink"
-                              onClick={() => removeObservedMapLocation(entity.id)}
-                            >
-                              清除地图位置并重新选择
-                            </button>
-                          </div>
-                        )}
-                      </details>
-                    </>
-                  )}
+                        <button
+                          type="button"
+                          className="reader-observed-unlink"
+                          onClick={() => removeObservedMapLocation(entity.id)}
+                        >
+                          清除地图位置并重新选择
+                        </button>
+                      </div>
+                    )}
+                  </details>
                 </div>
                 <button
                   type="button"
@@ -2874,7 +2976,9 @@ export function ReaderTool({ scene }) {
       setScanStatus(
         action.type === 'move-earlier'
           ? `已把“${name}”的首次记录从${action.existingChapter?.label || '较后章节'}提前到${currentChapter?.label || '当前章'}。`
-          : `已把“${name}”记在${currentChapter?.label || '当前章'}。`,
+          : action.type === 'record-again'
+            ? `已补记“${name}”在${currentChapter?.label || '当前章'}的出现。`
+            : `已把“${name}”记在${currentChapter?.label || '当前章'}。`,
       )
     } catch (error) {
       setScanStatus(error?.message || '保存候选失败')

@@ -103,6 +103,18 @@ export function normalizeObservedEntityName(name) {
     : ''
 }
 
+export function observedEntityEncounterChapterIds(entity, chapters = []) {
+  const chapterIds = [
+    ...(Array.isArray(entity?.encounterChapterIds) ? entity.encounterChapterIds : []),
+    entity?.firstSeenChapterId,
+  ].filter((chapterId) => isNonEmptyString(chapterId))
+  const uniqueChapterIds = [...new Set(chapterIds)]
+  if (!Array.isArray(chapters) || chapters.length === 0) return uniqueChapterIds
+  return uniqueChapterIds
+    .filter((chapterId) => chapterIndex(chapters, chapterId) >= 0)
+    .sort((left, right) => chapterIndex(chapters, left) - chapterIndex(chapters, right))
+}
+
 export function upsertObservedEntity(observedEntities, candidate, chapters) {
   const current = Array.isArray(observedEntities) ? observedEntities : []
   const name = typeof candidate?.name === 'string' ? candidate.name.normalize('NFKC').trim() : ''
@@ -123,6 +135,7 @@ export function upsertObservedEntity(observedEntities, candidate, chapters) {
       name,
       kind: candidate.kind,
       firstSeenChapterId: candidate.firstSeenChapterId,
+      encounterChapterIds: [candidate.firstSeenChapterId],
       ...(candidate.kind === OBSERVED_ENTITY_KIND.PLACE
         ? {
             placeKind: VALID_OBSERVED_PLACE_KINDS.has(candidate.placeKind)
@@ -134,13 +147,38 @@ export function upsertObservedEntity(observedEntities, candidate, chapters) {
   }
 
   const existing = current[existingIndex]
-  const existingChapterIndex = chapterIndex(chapters, existing.firstSeenChapterId)
-  if (existingChapterIndex >= 0 && existingChapterIndex <= candidateChapterIndex) return current
+  const existingEncounterChapterIds = observedEntityEncounterChapterIds(existing, chapters)
+  if (existingEncounterChapterIds.includes(candidate.firstSeenChapterId)) return current
+  const encounterChapterIds = [...existingEncounterChapterIds, candidate.firstSeenChapterId]
+    .sort((left, right) => chapterIndex(chapters, left) - chapterIndex(chapters, right))
+  const firstSeenChapterId = encounterChapterIds[0]
   return current.map((item, index) => (
     index === existingIndex
-      ? { ...existing, name, firstSeenChapterId: candidate.firstSeenChapterId }
+      ? {
+          ...existing,
+          name: firstSeenChapterId === candidate.firstSeenChapterId ? name : existing.name,
+          firstSeenChapterId,
+          encounterChapterIds,
+        }
       : item
   ))
+}
+
+export function updateObservedEntityNote(observedEntities, observedEntityId, note) {
+  if (!Array.isArray(observedEntities)) throw new Error('已遇到名称记录无效')
+  const index = observedEntities.findIndex((item) => item?.id === observedEntityId)
+  if (index < 0) throw new Error('找不到要添加备注的名称')
+  const normalizedNote = typeof note === 'string' ? note.trim() : ''
+  if (normalizedNote.length > 500) throw new Error('个人备注不能超过 500 个字')
+  return observedEntities.map((item, itemIndex) => {
+    if (itemIndex !== index) return item
+    if (!normalizedNote) {
+      const next = { ...item }
+      delete next.note
+      return next
+    }
+    return { ...item, note: normalizedNote }
+  })
 }
 
 export function updateObservedPlaceKind(observedEntities, observedEntityId, placeKind) {
