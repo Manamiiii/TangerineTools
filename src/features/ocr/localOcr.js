@@ -17,7 +17,7 @@ function cleanOcrLine(value) {
     .replace(/[ \t]{2,}/g, ' ')
 }
 
-export function normalizeReadingOcrText(value, { preserveLines = false } = {}) {
+export function normalizeOcrText(value, { preserveLines = false } = {}) {
   if (typeof value !== 'string') return ''
   const lines = value
     .normalize('NFKC')
@@ -38,7 +38,7 @@ function localLanguagePath() {
   return new URL('reader-ocr/', document.baseURI).href.replace(/\/$/, '')
 }
 
-async function createReadingOcrWorker(languages = ['chi_sim', 'eng']) {
+async function createOcrWorker(languages = ['chi_sim', 'eng']) {
   const { createWorker, OEM } = await import('tesseract.js')
   return createWorker(languages, OEM.LSTM, {
     langPath: localLanguagePath(),
@@ -48,17 +48,17 @@ async function createReadingOcrWorker(languages = ['chi_sim', 'eng']) {
   })
 }
 
-async function createReadingMetadataOcrWorker() {
-  const worker = await createReadingOcrWorker(['chi_sim'])
+async function createStructuredOcrWorker() {
+  const worker = await createOcrWorker(['chi_sim'])
   await worker.setParameters({ tessedit_pageseg_mode: '6' })
   return worker
 }
 
-export async function recognizeReadingImage(image, onProgress, options) {
+export async function recognizeImageText(image, onProgress, options) {
   if (!image) throw new Error('请先选择一张截图')
   progressListener = onProgress
   if (!workerPromise) {
-    workerPromise = createReadingOcrWorker().catch((error) => {
+    workerPromise = createOcrWorker().catch((error) => {
       workerPromise = null
       throw error
     })
@@ -66,17 +66,17 @@ export async function recognizeReadingImage(image, onProgress, options) {
   try {
     const worker = await workerPromise
     const result = await worker.recognize(image)
-    return normalizeReadingOcrText(result?.data?.text, options)
+    return normalizeOcrText(result?.data?.text, options)
   } finally {
     progressListener = null
   }
 }
 
-export async function recognizeReadingMetadataImage(image, onProgress) {
+export async function recognizeStructuredImageText(image, onProgress) {
   if (!image) throw new Error('请先选择一张截图')
   progressListener = onProgress
   if (!metadataWorkerPromise) {
-    metadataWorkerPromise = createReadingMetadataOcrWorker().catch((error) => {
+    metadataWorkerPromise = createStructuredOcrWorker().catch((error) => {
       metadataWorkerPromise = null
       throw error
     })
@@ -84,7 +84,7 @@ export async function recognizeReadingMetadataImage(image, onProgress) {
   try {
     const worker = await metadataWorkerPromise
     const result = await worker.recognize(image)
-    return normalizeReadingOcrText(result?.data?.text, { preserveLines: true })
+    return normalizeOcrText(result?.data?.text, { preserveLines: true })
   } finally {
     progressListener = null
   }

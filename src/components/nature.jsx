@@ -5,7 +5,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { ArrowDownCircle, ArrowUpCircle, CheckCircle2, Plus, Sparkles } from 'lucide-react'
+import { ArrowDownCircle, ArrowUpCircle, CheckCircle2, Plus, Settings2, Sparkles } from 'lucide-react'
 import { db, ensureOwnedTable } from '../db.js'
 import { STATS_DIMENSIONS } from '../constants.js'
 import {
@@ -32,6 +32,10 @@ import {
 } from '../domain/rockKingdom.js'
 import { TRAIT_TAG_OPTIONS } from '../presets/rockKingdom.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
+import { ModelSettingsModal } from '../features/model/ModelSettingsModal.jsx'
+import { MODEL_CONFIG_SCOPE, modelConfigIsComplete } from '../features/model/modelConfig.js'
+import { useModelConfig } from '../features/model/useModelConfig.js'
+import { explainRockNature } from '../features/rock-kingdom-model/rockKingdomModel.js'
 import { EmptyState, FormRow, OptionTag, SearchableSelect, StatsChart } from './common.jsx'
 import { OwnedFormModal } from './owned.jsx'
 
@@ -236,6 +240,7 @@ export function NatureTool({ scene }) {
             />
             <NatureResult
               nature={nature}
+              creatureName={input.name}
               baseStats={formulaBaseStats}
               adjustedStats={adjustedStats}
               candidates={candidates}
@@ -791,7 +796,7 @@ function NatureCandidateListItem({
 }
 
 
-function NatureResult({ nature, baseStats, adjustedStats, candidates = [] }) {
+function NatureResult({ nature, creatureName, baseStats, adjustedStats, candidates = [] }) {
   if (!nature) return null
   const formDecisions = nature.formDecisions || []
   const coreReason = nature.decision === 'notRecommended'
@@ -842,6 +847,14 @@ function NatureResult({ nature, baseStats, adjustedStats, candidates = [] }) {
           </p>
         )}
       </section>
+
+      <NatureModelExplanation
+        creatureName={creatureName}
+        nature={nature}
+        baseStats={baseStats}
+        adjustedStats={adjustedStats}
+        retention={retention}
+      />
 
       <div className="nature-result-summary">
         <div>
@@ -901,6 +914,110 @@ function NatureResult({ nature, baseStats, adjustedStats, candidates = [] }) {
         adjustedStats={adjustedStats}
       />
     </div>
+  )
+}
+
+function NatureModelExplanation({
+  creatureName,
+  nature,
+  baseStats,
+  adjustedStats,
+  retention,
+}) {
+  const [state, setState] = useState('idle')
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState('')
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const {
+    modelConfig,
+    loadProvider,
+    canCopyOtherConfig,
+    loadOtherConfig,
+    saveModelConfig,
+  } = useModelConfig(MODEL_CONFIG_SCOPE.ROCK_KINGDOM)
+
+  useEffect(() => {
+    setState('idle')
+    setResult(null)
+    setError('')
+  }, [nature.id, creatureName])
+
+  async function runExplanation() {
+    if (!modelConfigIsComplete(modelConfig)) {
+      setSettingsOpen(true)
+      return
+    }
+    setState('loading')
+    setError('')
+    try {
+      setResult(await explainRockNature({
+        config: modelConfig,
+        context: {
+          creature: creatureName || '当前精灵',
+          nature: natureName(nature),
+          decision: NATURE_DECISION_LABELS[nature.decision],
+          modifier: natureModifierSummary(nature),
+          role: nature.roleLabel || '',
+          reasons: nature.reasons,
+          warnings: nature.warnings,
+          retention: `${retention.normalLabel}；${retention.rareLabel}；${retention.description}`,
+          mirrorTarget: retention.mirrorTarget ? natureName(retention.mirrorTarget) : '',
+          stats: { base: baseStats, adjusted: adjustedStats },
+          skillSummary: nature.skillProfile?.summary || '',
+          speedSummary: nature.speedProfile
+            ? `${nature.speedProfile.concern?.label || ''}；基础速度 ${nature.speedProfile.base || 0}；${nature.speedProfile.concern?.reason || ''}`
+            : '',
+          formDecisions: (nature.formDecisions || []).map((item) => ({
+            label: item.label,
+            decision: NATURE_DECISION_LABELS[item.decision],
+          })),
+        },
+      }))
+      setState('ready')
+    } catch (modelError) {
+      setError(modelError.message)
+      setState('error')
+    }
+  }
+
+  return (
+    <section className="nature-model-explanation">
+      <div>
+        <span>
+          <Sparkles size={15} />
+          <strong>AI 解释当前结论</strong>
+        </span>
+        <button type="button" className="btn btn-icon" title="模型设置" onClick={() => setSettingsOpen(true)}>
+          <Settings2 size={14} />
+        </button>
+      </div>
+      <p>只把当前规则结果转成通俗说明，不会改变推荐档位或另行推荐性格。</p>
+      <button type="button" className="btn btn-sm" disabled={state === 'loading'} onClick={runExplanation}>
+        <Sparkles size={13} /> {state === 'loading' ? '解释中…' : result ? '重新解释' : '解释为什么'}
+      </button>
+      {error && <div className="form-error">{error}</div>}
+      {result && (
+        <div className="nature-model-result" role="status">
+          <p>{result.summary}</p>
+          {result.keyPoints.length > 0 && (
+            <ul>{result.keyPoints.map((item) => <li key={item}>{item}</li>)}</ul>
+          )}
+          {result.caution && <small>{result.caution}</small>}
+        </div>
+      )}
+      {settingsOpen && (
+        <ModelSettingsModal
+          config={modelConfig}
+          domainLabel="洛克王国"
+          copySourceLabel="阅读伴侣"
+          canCopySource={canCopyOtherConfig}
+          onLoadProvider={loadProvider}
+          onLoadCopySource={loadOtherConfig}
+          onSave={saveModelConfig}
+          onClose={() => setSettingsOpen(false)}
+        />
+      )}
+    </section>
   )
 }
 
