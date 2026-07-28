@@ -1,6 +1,8 @@
 // 收集记录工具的领域逻辑：固定字段定义、选项常量、统计纯函数。
 // 与「统计视图」的思路互补：统计视图回答"我拥有多少能达到条件的个体"，
 // 收集记录回答"我具体拥有哪一只、它有哪些个体属性"。
+
+import { ROCK_APPEARANCE_OPTIONS } from './rockKingdomScanner.js'
 //
 // 存储上和资料库、统计视图共用 catalogTables/catalogFields/catalogRows，
 // 通过 kind: 'owned' 区分，字段类型仍是标准的 reference/text/number/select/date/longtext，
@@ -126,6 +128,7 @@ export const ROCK_KINGDOM_COLLECTION_FIELDS = [
   { key: 'bloodline', name: '血脉', type: 'select', options: OWNED_BLOODLINE_OPTIONS, display: { compact: true, tableWidth: 104 } },
   { key: 'shiny', name: '个体异色', type: 'select', options: OWNED_SHINY_OPTIONS, display: { mode: 'icon', hiddenOptionValues: ['no'], compact: true, tableWidth: 68 } },
   { key: 'colorful', name: '是否炫彩', type: 'select', options: OWNED_COLORFUL_OPTIONS, display: { mode: 'icon', hiddenOptionValues: ['no'], compact: true, tableWidth: 68 } },
+  { key: 'appearance', name: '外观细分', type: 'select', options: ROCK_APPEARANCE_OPTIONS, display: { hiddenOptionValues: ['none'], compact: true, tableWidth: 128 } },
   { key: 'specialty', name: '特长', type: 'select', options: OWNED_SPECIALTY_OPTIONS },
   { key: 'gender', name: '性别', type: 'select', options: OWNED_GENDER_OPTIONS, display: { mode: 'icon', compact: true, tableWidth: 56 } },
   { key: 'note', name: '备注', type: 'longtext' },

@@ -7,9 +7,11 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Pencil, Plus, Search, Settings2, Trash2 } from 'lucide-react'
+import { Pencil, Plus, ScanLine, Search, Settings2, Trash2 } from 'lucide-react'
 import { createRow, db, deleteRow, ensureOwnedTable, updateRow } from '../db.js'
 import { matchesOwnedSearch } from '../domain/owned.js'
+import { RockKingdomScannerModal } from '../features/rock-kingdom-scanner/RockKingdomScannerModal.jsx'
+import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
 import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal } from './common.jsx'
 import { CellView, FieldInput, FieldManagerModal, fieldDisplayProps } from './catalog.jsx'
 
@@ -83,6 +85,7 @@ function OwnedTableView({ table, sceneId }) {
   const [keyword, setKeyword] = useState('')
   const [rowForm, setRowForm] = useState(null) // null | 'new' | row
   const [deletingRow, setDeletingRow] = useState(null)
+  const [scannerOpen, setScannerOpen] = useState(false)
 
   const filteredRows = useMemo(() => {
     if (!rows || !fields) return []
@@ -128,6 +131,14 @@ function OwnedTableView({ table, sceneId }) {
           ))}
         </div>
         <span className="toolbar-spacer" />
+        {sceneId === ROCK_KINGDOM_PRESET.scene.id && (
+          <IconButton
+            icon={ScanLine}
+            label="扫描录入"
+            disabled={visibleFields.length === 0}
+            onClick={() => setScannerOpen(true)}
+          />
+        )}
         <IconButton
           icon={Settings2}
           label="字段"
@@ -186,6 +197,14 @@ function OwnedTableView({ table, sceneId }) {
           rows={rows}
           collectionMode={table.collectionMode || 'single'}
           onClose={() => setRowForm(null)}
+        />
+      )}
+
+      {scannerOpen && (
+        <RockKingdomScannerModal
+          table={table}
+          fields={visibleFields}
+          onClose={() => setScannerOpen(false)}
         />
       )}
 

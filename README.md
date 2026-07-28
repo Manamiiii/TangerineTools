@@ -95,6 +95,7 @@ npm run lint
 │   │   ├── model-prompts.md               # 个人初始化与正式预制提示词契约
 │   │   ├── model-provider-setup.md        # 国内外兼容模型配置与测试方法
 │   │   └── trial-guide.md                 # 当前试用范围、步骤和反馈重点
+│   ├── rock-kingdom-scanner.md            # 精灵扫描录入、Windows 采集与复核约束
 │   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
 │   └── system-capabilities.md            # 已实现能力和明确非目标
 ├── public/presets/
@@ -145,6 +146,7 @@ npm run lint
 │   │   ├── map/                          # 互动底图供应商与默认视野配置
 │   │   ├── preset.js                     # 经典文学阅读场景定义
 │   │   └── index.js                      # 功能公开入口
+│   ├── features/rock-kingdom-scanner/    # 本地视频抽帧、截图复核与扫描界面
 │   ├── presets/
 │   │   └── rockKingdom.js                # 洛克王国场景、字段和选项
 │   ├── App.jsx                            # hash 路由、工具懒加载、全局导入导出
@@ -225,6 +227,7 @@ git diff --check
 - [`AGENTS.md`](AGENTS.md)：长期有效的 Codex/agent 开发边界、必读文件与测试命令。
 - [`docs/system-capabilities.md`](docs/system-capabilities.md)：当前已实现能力与明确排除范围。
 - [`docs/data-sync.md`](docs/data-sync.md)：数据模型、导入/导出、预置资料同步与迁移语义。
+- [`docs/rock-kingdom-scanner.md`](docs/rock-kingdom-scanner.md)：洛克王国精灵扫描录入、Windows 采集路径和人工复核约束。
 - [`docs/data-sources/bwiki-pipeline.md`](docs/data-sources/bwiki-pipeline.md)：BWiki 页面、版本化快照、刷新顺序和发布边界。
 - [`docs/data-sources/bwiki-field-mapping.md`](docs/data-sources/bwiki-field-mapping.md)：staging 到正式预置的字段血缘、稳定 id 和验收门槛。
 - [`docs/data-sources/research-sources.md`](docs/data-sources/research-sources.md)：B站、小红书等玩家资料的用途、证据记录方式和采用边界。
