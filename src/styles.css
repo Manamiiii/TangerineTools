@@ -5379,6 +5379,13 @@ img {
   font-size: 10px;
 }
 
+.reader-observed-detail-btn {
+  min-height: 26px;
+  padding: 3px 7px;
+  border-radius: 7px;
+  font-size: 10px;
+}
+
 .reader-observed-note-actions {
   justify-content: space-between;
 }

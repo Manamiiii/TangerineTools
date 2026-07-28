@@ -1637,14 +1637,6 @@ function ObservedEntitiesPanel({
             </button>
           ))}
         </div>
-        <ObservedPagination
-          page={safePage}
-          pageSize={pageSize}
-          totalPages={totalPages}
-          totalItems={filteredEntities.length}
-          onPageChange={changePage}
-          onPageSizeChange={setPageSize}
-        />
       </div>
       {pageEntities.length > 0 ? (
         <div className="reader-observed-groups">
@@ -1696,7 +1688,7 @@ function ObservedEntitiesPanel({
                   )}
                   <button
                     type="button"
-                    className="btn btn-sm"
+                    className="btn reader-observed-detail-btn"
                     onClick={() => setSelectedEntityId(entity.id)}
                   >
                     查看详情
