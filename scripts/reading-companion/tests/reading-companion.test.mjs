@@ -883,6 +883,28 @@ test('reader-confirmed names use chapters without requiring book text or guessed
   )
 })
 
+test('reader-confirmed translation variants share one prepared package entity', () => {
+  const chapters = readingPackage.chapters
+  const first = upsertObservedEntity([], {
+    id: 'observed-ashley',
+    name: '艾希礼',
+    kind: 'person',
+    firstSeenChapterId: 'chapter-01',
+  }, chapters)
+  const linkedAlias = upsertObservedEntity(first, {
+    id: 'observed-wilkes',
+    name: '卫希礼',
+    kind: 'person',
+    packageEntityId: 'person-ashley-wilkes',
+    equivalentNames: ['艾希礼', 'Ashley Wilkes', '卫希礼'],
+    firstSeenChapterId: 'chapter-02',
+  }, chapters)
+
+  assert.equal(linkedAlias.length, 1)
+  assert.equal(linkedAlias[0].packageEntityId, 'person-ashley-wilkes')
+  assert.deepEqual(linkedAlias[0].encounterChapterIds, ['chapter-01', 'chapter-02'])
+})
+
 test('a reader-confirmed geocoder result stays personal and follows the chapter boundary', () => {
   const observed = [{
     id: 'observed-savannah',
@@ -1114,6 +1136,14 @@ test('reading model presets support domestic switching without sharing session k
 
 test('runtime model analysis stays a reader-confirmed candidate adapter', async () => {
   let request
+  const knownEntities = [{
+    id: 'place-atlanta',
+    name: '亚特兰大',
+    originalName: 'Atlanta',
+    aliases: ['亚特兰大市'],
+    kind: 'place',
+    placeKind: 'real',
+  }]
   const candidates = await analyzeReadingExcerpt({
     endpoint: 'https://model.example/v1/chat/completions',
     model: 'reader-test-model',
@@ -1122,6 +1152,7 @@ test('runtime model analysis stays a reader-confirmed candidate adapter', async 
     excerpt: '她从亚特兰大回到了塔拉。',
     bookTitle: '测试书',
     chapterLabel: '第 1 章',
+    knownEntities,
     fetchImpl: async (url, options) => {
       request = { url, options }
       return {
@@ -1136,12 +1167,14 @@ test('runtime model analysis stays a reader-confirmed candidate adapter', async 
                     kind: 'place',
                     placeKind: 'real',
                     confidence: 0.92,
+                    matchedEntityId: 'place-atlanta',
                   },
                   {
                     name: '塔拉',
                     kind: 'place',
                     placeKind: 'unknown',
                     confidence: 0.8,
+                    matchedEntityId: 'invented-id',
                   },
                 ],
               }),
@@ -1158,8 +1191,12 @@ test('runtime model analysis stays a reader-confirmed candidate adapter', async 
   assert.equal(body.model, 'reader-test-model')
   assert.equal(body.temperature, 0.1)
   assert.match(body.messages[1].content, /亚特兰大/)
+  assert.match(body.messages[0].content, /matchedEntityId 只能逐字选用/)
+  assert.match(body.messages[1].content, /"id":"place-atlanta"/)
   assert.equal(candidates.length, 2)
+  assert.equal(candidates[0].matchedEntityId, 'place-atlanta')
   assert.equal(candidates[1].placeKind, OBSERVED_PLACE_KIND.UNKNOWN)
+  assert.equal(candidates[1].matchedEntityId, null)
   assert.equal('reason' in candidates[0], false)
 })
 
@@ -1203,6 +1240,10 @@ test('personal book preparation returns only bounded names and no generated fact
     },
   })
   assert.equal(READING_PROMPT_IDS.personalBookKnowledge, 'personal-book-knowledge-v1')
+  assert.equal(
+    READING_PROMPT_IDS.excerptEntityLink,
+    'reading-excerpt-entity-link-v1',
+  )
   assert.equal(
     READING_PROMPT_IDS.formalPackageCandidates,
     'formal-reading-package-candidates-v3',
@@ -1395,12 +1436,14 @@ test('runtime model candidates are bounded and cannot create facts', () => {
       name: '某人',
       kind: 'person',
       confidence: 1,
+      matchedEntityId: null,
     },
     {
       name: '某地',
       kind: 'place',
       placeKind: OBSERVED_PLACE_KIND.UNKNOWN,
       confidence: 0,
+      matchedEntityId: null,
     },
   ])
 })
@@ -1428,6 +1471,10 @@ test('on-demand entities unlock only after an exact reader-confirmed name match'
     'place-atlanta',
   )
   assert.equal(matchOnDemandEntity(onDemandEntities, '亚特兰', 'place'), null)
+  assert.equal(
+    matchOnDemandEntity(onDemandEntities, '另一个译名', 'place', 'place-atlanta')?.id,
+    'place-atlanta',
+  )
   assert.equal(matchOnDemandEntity(onDemandEntities, '亚特兰大', 'person'), null)
 
   const observed = [{

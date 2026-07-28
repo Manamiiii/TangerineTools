@@ -165,10 +165,28 @@ const BOOK_COVER_THEME_LABELS = {
   ink: '墨色',
 }
 
-function observedRecordAction(observedEntities, name, kind, currentChapterId, chapters) {
+function observedRecordAction(
+  observedEntities,
+  name,
+  kind,
+  currentChapterId,
+  chapters,
+  packageEntityId = '',
+  equivalentNames = [],
+) {
+  const normalizedEquivalentNames = new Set(
+    equivalentNames.map(normalizeObservedEntityName).filter(Boolean),
+  )
   const existing = observedEntities.find((item) => (
     item.kind === kind
-    && normalizeObservedEntityName(item.name) === normalizeObservedEntityName(name)
+    && (
+      normalizeObservedEntityName(item.name) === normalizeObservedEntityName(name)
+      || (packageEntityId && item.packageEntityId === packageEntityId)
+      || (
+        packageEntityId
+        && normalizedEquivalentNames.has(normalizeObservedEntityName(item.name))
+      )
+    )
   ))
   const currentIndex = chapters.findIndex((item) => item.id === currentChapterId)
   if (!existing) {
@@ -707,6 +725,7 @@ function ModelAnalysisPanel({
   excerpt,
   bookTitle,
   currentChapter,
+  knownEntities,
   onConfirmCandidate,
   actionFor,
   modelConfig,
@@ -743,6 +762,7 @@ function ModelAnalysisPanel({
         excerpt,
         bookTitle,
         chapterLabel: currentChapter?.label,
+        knownEntities,
       })
       setCandidates(results)
       setAnalysisExcerpt(excerpt)
@@ -764,6 +784,7 @@ function ModelAnalysisPanel({
         ? {
             ...candidate,
             ...patch,
+            ...(('name' in patch || 'kind' in patch) ? { matchedEntityId: null } : {}),
             ...(patch.kind === OBSERVED_ENTITY_KIND.PLACE && candidate.kind !== patch.kind
               ? { placeKind: OBSERVED_PLACE_KIND.UNKNOWN }
               : {}),
@@ -774,7 +795,7 @@ function ModelAnalysisPanel({
 
   async function confirm(candidate) {
     try {
-      const action = actionFor(candidate.name, candidate.kind)
+      const action = actionFor(candidate.name, candidate.kind, candidate.matchedEntityId)
       await onConfirmCandidate(candidate)
       setCandidates((current) => current.map((item) => (
         item === candidate
@@ -823,7 +844,14 @@ function ModelAnalysisPanel({
       {candidates.length > 0 && (
         <div className="reader-model-candidates">
           {candidates.map((candidate, index) => {
-            const action = actionFor(candidate.name, candidate.kind)
+            const matchedEntity = knownEntities.find(
+              (entity) => entity.id === candidate.matchedEntityId,
+            )
+            const action = actionFor(
+              candidate.name,
+              candidate.kind,
+              candidate.matchedEntityId,
+            )
             const isRecorded = action.type === 'recorded'
               || candidate.recordedChapterId === currentChapter?.id
             const candidateDisabled = isRecorded || resultsStale
@@ -840,11 +868,21 @@ function ModelAnalysisPanel({
                   <label>
                     <span>
                       名称
-                      {candidate.confidence !== null && (
-                        <em className="reader-model-confidence">
-                          置信度 {Math.round(candidate.confidence * 100)}%
-                        </em>
-                      )}
+                      <span className="reader-model-field-meta">
+                        {matchedEntity && (
+                          <em
+                            className="reader-model-entity-match"
+                            title={`已配对资料：${matchedEntity.name}`}
+                          >
+                            资料 · {matchedEntity.name}
+                          </em>
+                        )}
+                        {candidate.confidence !== null && (
+                          <em className="reader-model-confidence">
+                            {Math.round(candidate.confidence * 100)}%
+                          </em>
+                        )}
+                      </span>
                     </span>
                     <input
                       value={candidate.name}
@@ -1497,7 +1535,12 @@ function ObservedEntitiesPanel({
     .map((chapterId) => chapters.find((item) => item.id === chapterId))
     .filter(Boolean)
   const selectedMatch = selectedEntity
-    ? matchOnDemandEntity(onDemandEntities, selectedEntity.name, selectedEntity.kind)
+    ? matchOnDemandEntity(
+        onDemandEntities,
+        selectedEntity.name,
+        selectedEntity.kind,
+        selectedEntity.packageEntityId,
+      )
     : null
   const selectedNoteDraft = selectedEntity
     ? (noteDrafts[selectedEntity.id] ?? selectedEntity.note ?? '')
@@ -1710,7 +1753,12 @@ function ObservedEntitiesPanel({
               .filter(Boolean)
             const firstChapter = encounterChapters[0]
             const latestChapter = encounterChapters.at(-1)
-            const match = matchOnDemandEntity(onDemandEntities, entity.name, entity.kind)
+            const match = matchOnDemandEntity(
+              onDemandEntities,
+              entity.name,
+              entity.kind,
+              entity.packageEntityId,
+            )
             return (
               <div className="reader-observed-item" key={entity.id}>
                 <div className="reader-observed-item-heading">
@@ -1998,7 +2046,12 @@ function ReadingMapPanel({
       && (
         (
           entity.placeKind === OBSERVED_PLACE_KIND.REAL
-          && !matchOnDemandEntity(onDemandEntities, entity.name, entity.kind)
+          && !matchOnDemandEntity(
+            onDemandEntities,
+            entity.name,
+            entity.kind,
+            entity.packageEntityId,
+          )
         )
         || [
           OBSERVED_PLACE_KIND.FICTIONAL,
@@ -3122,25 +3175,45 @@ export function ReaderTool({ scene }) {
     }
   }
 
-  function actionForObservedName(name, kind) {
+  function actionForObservedName(name, kind, packageEntityId = '') {
+    const packageEntity = readingPackage.onDemandEntities?.find(
+      (entity) => entity.id === packageEntityId,
+    )
+    const equivalentNames = packageEntity
+      ? [packageEntity.name, packageEntity.originalName, ...(packageEntity.aliases || [])]
+      : []
     return observedRecordAction(
       observedEntities,
       name,
       kind,
       currentChapterId,
       readingPackage.chapters,
+      packageEntityId,
+      equivalentNames,
     )
   }
 
-  async function confirmObservedCandidate({ name, kind, placeKind }) {
+  async function confirmObservedCandidate({
+    name,
+    kind,
+    placeKind,
+    packageEntityId = '',
+  }) {
     setScanStatus('')
     try {
-      const action = actionForObservedName(name, kind)
+      const packageEntity = readingPackage.onDemandEntities?.find(
+        (entity) => entity.id === packageEntityId,
+      )
+      const action = actionForObservedName(name, kind, packageEntityId)
       const next = upsertObservedEntity(observedEntities, {
         id: generateId('observed'),
         name,
         kind,
         placeKind,
+        packageEntityId,
+        equivalentNames: packageEntity
+          ? [packageEntity.name, packageEntity.originalName, ...(packageEntity.aliases || [])]
+          : [],
         firstSeenChapterId: currentChapterId,
       }, readingPackage.chapters)
       if (next === observedEntities) {
@@ -3166,6 +3239,7 @@ export function ReaderTool({ scene }) {
       name: matchedTerm,
       kind: entity.kind,
       placeKind: entity.placeKind,
+      packageEntityId: entity.id,
     })
   }
 
@@ -3186,11 +3260,18 @@ export function ReaderTool({ scene }) {
   }
 
   async function confirmModelCandidate(candidate) {
+    const packageEntity = readingPackage.onDemandEntities?.find(
+      (entity) => entity.id === candidate.matchedEntityId,
+    )
     const next = upsertObservedEntity(observedEntities, {
       id: generateId('observed'),
       name: candidate.name,
       kind: candidate.kind,
       placeKind: candidate.placeKind,
+      packageEntityId: candidate.matchedEntityId,
+      equivalentNames: packageEntity
+        ? [packageEntity.name, packageEntity.originalName, ...(packageEntity.aliases || [])]
+        : [],
       firstSeenChapterId: currentChapterId,
     }, readingPackage.chapters)
     if (next === observedEntities) return false
@@ -3577,6 +3658,7 @@ export function ReaderTool({ scene }) {
                   excerpt={excerpt}
                   bookTitle={readingPackage.book.title}
                   currentChapter={currentChapter}
+                  knownEntities={readingPackage.onDemandEntities || []}
                   onConfirmCandidate={confirmModelCandidate}
                   actionFor={actionForObservedName}
                   modelConfig={modelConfig}

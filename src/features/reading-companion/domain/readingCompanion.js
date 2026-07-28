@@ -119,6 +119,14 @@ export function upsertObservedEntity(observedEntities, candidate, chapters) {
   const current = Array.isArray(observedEntities) ? observedEntities : []
   const name = typeof candidate?.name === 'string' ? candidate.name.normalize('NFKC').trim() : ''
   const normalizedName = normalizeObservedEntityName(name)
+  const packageEntityId = isNonEmptyString(candidate?.packageEntityId)
+    ? candidate.packageEntityId.trim()
+    : ''
+  const equivalentNames = new Set(
+    (Array.isArray(candidate?.equivalentNames) ? candidate.equivalentNames : [])
+      .map(normalizeObservedEntityName)
+      .filter(Boolean),
+  )
   if (!normalizedName) throw new Error('遇到的名称不能为空')
   if (!VALID_ENTITY_KINDS.has(candidate?.kind)) throw new Error('遇到的内容类型无效')
   const candidateChapterIndex = chapterIndex(chapters, candidate?.firstSeenChapterId)
@@ -126,7 +134,11 @@ export function upsertObservedEntity(observedEntities, candidate, chapters) {
 
   const existingIndex = current.findIndex((item) => (
     item?.kind === candidate.kind
-    && normalizeObservedEntityName(item.name) === normalizedName
+    && (
+      normalizeObservedEntityName(item.name) === normalizedName
+      || (packageEntityId && item.packageEntityId === packageEntityId)
+      || (packageEntityId && equivalentNames.has(normalizeObservedEntityName(item.name)))
+    )
   ))
   if (existingIndex < 0) {
     if (!isNonEmptyString(candidate?.id)) throw new Error('新记录需要稳定 id')
@@ -136,6 +148,7 @@ export function upsertObservedEntity(observedEntities, candidate, chapters) {
       kind: candidate.kind,
       firstSeenChapterId: candidate.firstSeenChapterId,
       encounterChapterIds: [candidate.firstSeenChapterId],
+      ...(packageEntityId ? { packageEntityId } : {}),
       ...(candidate.kind === OBSERVED_ENTITY_KIND.PLACE
         ? {
             placeKind: VALID_OBSERVED_PLACE_KINDS.has(candidate.placeKind)
@@ -159,6 +172,7 @@ export function upsertObservedEntity(observedEntities, candidate, chapters) {
           name: firstSeenChapterId === candidate.firstSeenChapterId ? name : existing.name,
           firstSeenChapterId,
           encounterChapterIds,
+          ...(packageEntityId && !existing.packageEntityId ? { packageEntityId } : {}),
         }
       : item
   ))
@@ -407,10 +421,16 @@ export function readerConfirmedMapEntities(observedEntities, currentChapterId, c
     }))
 }
 
-export function matchOnDemandEntity(onDemandEntities, observedName, kind) {
+export function matchOnDemandEntity(onDemandEntities, observedName, kind, packageEntityId = '') {
   const normalizedName = normalizeObservedEntityName(observedName)
   if (!normalizedName || !VALID_ENTITY_KINDS.has(kind) || !Array.isArray(onDemandEntities)) {
     return null
+  }
+  if (isNonEmptyString(packageEntityId)) {
+    const linkedEntity = onDemandEntities.find((entity) => (
+      entity?.id === packageEntityId && entity?.kind === kind
+    ))
+    if (linkedEntity) return linkedEntity
   }
   return onDemandEntities.find((entity) => (
     entity?.kind === kind
@@ -496,7 +516,12 @@ export function unlockedOnDemandEntities(
     currentChapterId,
     chapters,
   )) {
-    const match = matchOnDemandEntity(onDemandEntities, observed.name, observed.kind)
+    const match = matchOnDemandEntity(
+      onDemandEntities,
+      observed.name,
+      observed.kind,
+      observed.packageEntityId,
+    )
     if (!match || unlocked.has(match.id)) continue
     unlocked.set(match.id, {
       ...match,

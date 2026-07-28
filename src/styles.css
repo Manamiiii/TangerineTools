@@ -4971,6 +4971,24 @@ img {
   white-space: nowrap;
 }
 
+.reader-model-field-meta {
+  display: flex;
+  min-width: 0;
+  gap: 5px;
+  align-items: center;
+}
+
+.reader-model-entity-match {
+  min-width: 0;
+  overflow: hidden;
+  color: #047857;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .reader-model-candidate-fields input,
 .reader-model-candidate-fields select {
   width: 100%;
