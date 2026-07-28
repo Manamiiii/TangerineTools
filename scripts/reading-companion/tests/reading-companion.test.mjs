@@ -490,13 +490,12 @@ test('Gone with the Wind exact-input dictionary recognizes audited names without
     'place-georgia-state',
     'place-clayton-county-georgia',
   ]
-  assert.deepEqual(
-    scanOnDemandEntities(
-      '斯佳丽、瑞德、艾希礼和梅兰妮谈到了佐治亚州与克莱顿县。',
-      readingPackage.onDemandEntities,
-    ).map(({ entity }) => entity.id),
-    expectedIds,
+  const openingMatches = scanOnDemandEntities(
+    '斯佳丽、瑞德、艾希礼和梅兰妮谈到了佐治亚州与克莱顿县。',
+    readingPackage.onDemandEntities,
   )
+  assert.deepEqual(openingMatches.map(({ entity }) => entity.id), expectedIds)
+  assert.match(openingMatches[4].entity.safeNote, /1788 年/)
   assert.deepEqual(readingPackage.entities, [])
   assert.deepEqual(readingPackage.facts, [])
   const institutionMatches = scanOnDemandEntities(
@@ -536,6 +535,7 @@ test('Gone with the Wind exact-input dictionary recognizes audited names without
   )
   assert.equal(contextMatches[0].entity.placeKind, OBSERVED_PLACE_KIND.APPROXIMATE)
   assert.equal(contextMatches[0].entity.geometry, undefined)
+  assert.match(contextMatches[0].entity.safeNote, /不是单一行政区/)
   assert.match(contextMatches[1].entity.safeNote, /大规模农业用地/)
   assert.match(contextMatches[2].entity.safeNote, /美国第 16 任总统/)
   assert.match(contextMatches[3].entity.safeNote, /1861–1865 年/)
@@ -1525,7 +1525,7 @@ test('reading preview publishes only approved sources and keeps candidates pendi
   assert.equal(catalog.packages.length, 1)
   const [preview] = previews
   assert.deepEqual(validateReadingPackage(preview.package), [])
-  assert.equal(preview.previewMeta.approvedSourceIds.length, 20)
+  assert.equal(preview.previewMeta.approvedSourceIds.length, 22)
   assert.equal(preview.previewMeta.pendingSourceIds.length, 3)
   assert.equal(preview.previewMeta.candidateEntityIds.length, 30)
   assert.equal(preview.previewMeta.candidateFactIds.length, 2)
@@ -1542,7 +1542,7 @@ test('reading preview publishes only approved sources and keeps candidates pendi
     concept: 1,
     event: 1,
     factCount: 0,
-    sourceCount: 20,
+    sourceCount: 22,
   })
   assert.deepEqual(
     preview.package.sources.map((source) => source.id),

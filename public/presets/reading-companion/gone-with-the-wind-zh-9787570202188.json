@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "1.8.0",
+  "packageVersion": "1.9.0",
   "id": "reader-package-gone-with-the-wind-zh-9787570202188",
   "book": {
     "id": "gone-with-the-wind",
@@ -529,6 +529,35 @@
       "notes": "用于现代真实地点的名称、GEOID、行政层级和代表坐标；代表坐标不是边界，历史边界仍需另行核对。"
     },
     {
+      "id": "source-census-regions-and-divisions",
+      "kind": "modern-geography",
+      "label": "U.S. Census Bureau · Geographic Levels · Regions and Divisions",
+      "organization": "United States Census Bureau",
+      "url": "https://www.census.gov/programs-surveys/economic-census/guidance-geographies/levels.html",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_place_note",
+        "statistical_south_region"
+      ],
+      "rightsStatus": "public-government-data",
+      "notes": "用于说明人口普查局把 South Region 作为统计分区，并进一步分成 South Atlantic、East South Central 和 West South Central；该统计口径不替代历史语境中的美国南方边界。"
+    },
+    {
+      "id": "source-new-georgia-encyclopedia-quick-facts",
+      "kind": "state-encyclopedia",
+      "label": "New Georgia Encyclopedia · Georgia Quick Facts",
+      "organization": "New Georgia Encyclopedia",
+      "url": "https://www.georgiaencyclopedia.org/quick-facts/",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_place_note",
+        "statehood",
+        "state_capital"
+      ],
+      "rightsStatus": "reference-only",
+      "notes": "用于确认佐治亚于 1788 年成为美国第 4 个州，亚特兰大自 1868 年起为州府；不用于作品章节或剧情解释。"
+    },
+    {
       "id": "source-census-2025-georgia-incorporated-places",
       "kind": "modern-geography",
       "label": "U.S. Census Bureau · 2025 ACS Georgia Incorporated Places",
@@ -712,7 +741,12 @@
       },
       "sourceIds": [
         "source-census-2025-gazetteer",
-        "source-new-georgia-encyclopedia-gwtw"
+        "source-new-georgia-encyclopedia-gwtw",
+        "source-new-georgia-encyclopedia-quick-facts"
+      ],
+      "safeNote": "佐治亚于 1788 年成为美国第 4 个州；亚特兰大自 1868 年起为州府。",
+      "safeNoteSourceIds": [
+        "source-new-georgia-encyclopedia-quick-facts"
       ],
       "scopeNote": "坐标是现代州级代表坐标，不表示州界，也不表示作品年代的行政边界。"
     },
@@ -726,7 +760,12 @@
       "activation": "exact-reader-input",
       "parentLabel": "美国（范围随历史语境变化）",
       "sourceIds": [
-        "source-weread-edition-metadata"
+        "source-weread-edition-metadata",
+        "source-census-regions-and-divisions"
+      ],
+      "safeNote": "“美国南方”不是单一行政区。美国人口普查局在统计上设置 South Region，并分为南大西洋、东南中部和西南中部三个分区；历史语境中的范围不一定与这一统计口径相同。",
+      "safeNoteSourceIds": [
+        "source-census-regions-and-divisions"
       ],
       "scopeNote": "详情页简介确认该背景词；系统只标记为模糊区域，不提供中心点、边界或剧情意义。"
     },

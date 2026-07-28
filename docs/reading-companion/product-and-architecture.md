@@ -179,6 +179,7 @@
 - 使用者提供的微信读书版本、版权信息和详情页简介是已批准来源，用于版本、译者、ISBN、1–63 章结构，以及简介中明确出现的斯佳丽、瑞德、艾希礼、梅兰妮四个短名；它不包含正文，不能用于首次出现章节。
 - [Library of Congress · America Reads](https://www.loc.gov/exhibits/america-reads/1900-to-1949.html#obj019) 用于候选原作书目和作品历史范围，不用于中文译文章节定位。
 - [U.S. Census Bureau · Gazetteer Files](https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.2025.html) 是已批准的美国政府地理数据来源，用于现代行政区、GEOID 和代表坐标；代表坐标不是边界，也不能证明作品年代的边界或交通状况。
+- [U.S. Census Bureau · Regions and Divisions](https://www.census.gov/programs-surveys/economic-census/guidance-geographies/levels.html) 支持把 South Region 作为一种现代统计口径，并明确其三个下级分区；系统用它解释一种可核验的范围定义，但不把统计口径冒充所有历史语境中的“美国南方”。[New Georgia Encyclopedia · Georgia Quick Facts](https://www.georgiaencyclopedia.org/quick-facts/) 支持佐治亚的建州年份和州府沿革。
 - [U.S. Census Bureau · Georgia Incorporated Places](https://tigerweb.geo.census.gov/tigerwebmain/Files/acs25/tigerweb_acs25_incplace_ga.html) 用于核对亚特兰大和琼斯伯勒的现代代表坐标。
 - [Atlanta History Center](https://www.atlantahistorycenter.com/blog/so-red-the-rose-the-gone-with-the-wind-that-never-was/) 用于区分真实的亚特兰大地点与虚构种植园，并防止给塔拉等虚构地点伪造精确坐标。
 - [New Georgia Encyclopedia · Gone With the Wind](https://www.georgiaencyclopedia.org/articles/arts-culture/gone-with-the-wind-novel/) 与 [Clayton County](https://www.georgiaencyclopedia.org/articles/counties-cities-neighborhoods/clayton-county/) 用于候选时代范围、地点名称和地区背景。包含剧情概述的页面仅供建库审阅，不能直接成为运行时安全内容。
@@ -207,7 +208,7 @@
 - 解锁章节取自本地 `firstSeenChapterId`，界面明确标记为“读者确认后精确解锁”，不把它冒充指定译本的客观首次出现章节。
 - 真实地点坐标可以进入互动地图；虚构地点不伪造精确坐标。`safeNote` 与其他按需字段一样，只在读者输入精确匹配并确认该名称后显示；注释下方只列出 `safeNoteSourceIds` 指定且具有 HTTP(S) 地址的来源链接。退回较早章节时，按需实体、名称、注释和来源一起隐藏。
 
-当前《飘》资料包包含 18 个按需精确匹配实体：简介已确认短名的斯佳丽、瑞德、艾希礼、梅兰妮；佐治亚州、克莱顿县、亚特兰大、琼斯伯勒、塔拉庄园、十二橡树庄园；当前译本片段确认的弗吉尼亚大学、亚拉巴马大学、南卡罗来纳大学和费耶特维尔女子学院；以及详情页简介确认的“美国南方”“种植园”“林肯”和“南北战争”。作品人物只提供名称和原文名；现实地点使用明确标注的现代代表位置；三所大学的点位不表示校园边界，费耶特维尔女子学院只显示有馆藏依据的现实原型参考点。“美国南方”是没有中心点或边界的模糊区域。克莱顿县、亚特兰大、琼斯伯勒、三所大学、费耶特维尔女子学院、“种植园”“林肯”和“南北战争”共 10 个名称在精确解锁后另有批准来源支持的简短离线背景注释，但不附加作品人物关系、情节解释或历史评价。所有名称与注释都不会在读者输入前列出，也不包含人物关系或剧情事实。
+当前《飘》资料包包含 18 个按需精确匹配实体：简介已确认短名的斯佳丽、瑞德、艾希礼、梅兰妮；佐治亚州、克莱顿县、亚特兰大、琼斯伯勒、塔拉庄园、十二橡树庄园；当前译本片段确认的弗吉尼亚大学、亚拉巴马大学、南卡罗来纳大学和费耶特维尔女子学院；以及详情页简介确认的“美国南方”“种植园”“林肯”和“南北战争”。作品人物只提供名称和原文名；现实地点使用明确标注的现代代表位置；三所大学的点位不表示校园边界，费耶特维尔女子学院只显示有馆藏依据的现实原型参考点。“美国南方”是没有中心点或固定历史边界的模糊区域，注释只把人口普查局 South Region 作为一种现代统计参照。佐治亚州、美国南方、克莱顿县、亚特兰大、琼斯伯勒、三所大学、费耶特维尔女子学院、“种植园”“林肯”和“南北战争”共 12 个名称在精确解锁后另有批准来源支持的简短离线背景注释，但不附加作品人物关系、情节解释或历史评价。所有名称与注释都不会在读者输入前列出，也不包含人物关系或剧情事实。
 
 不得绕过微信读书鉴权、反自动化措施或私有接口批量获取作品全文。原文和参考资料的获取、保存与模型传输必须符合其授权范围；运行时只处理用户主动提供的最小必要段落。模型可能凭训练形成对知名作品的概括性知识，但训练语料清单、具体版本、译名和章节证据不可由运行时验证，因此模型内部知识只能生成研究候选，不能单独成为正式资料的来源、版本边界或剧透边界。
 
