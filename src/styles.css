@@ -7247,3 +7247,214 @@ img {
 
   .owned-filter-actions > span { align-self: flex-start; }
 }
+
+/* Shared model tasks and Rock Kingdom bounded AI assistance */
+.shared-model-settings {
+  display: grid;
+  gap: 14px;
+}
+
+.shared-model-settings > p,
+.shared-model-settings > small {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.shared-model-settings > label {
+  display: grid;
+  gap: 6px;
+}
+
+.shared-model-settings > label > span {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.shared-model-settings > label > small { color: var(--text-muted); }
+
+.shared-model-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.shared-model-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.shared-model-message {
+  margin: 0;
+  color: var(--primary);
+}
+
+.owned-intelligence {
+  display: grid;
+  gap: 14px;
+}
+
+.owned-intelligence-head,
+.owned-intelligence-model {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.owned-intelligence-head > div {
+  display: grid;
+  gap: 3px;
+}
+
+.owned-intelligence-head span,
+.owned-intelligence-model small {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.owned-intelligence-summary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.owned-intelligence-summary span {
+  display: grid;
+  gap: 2px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: #f8fafc;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.owned-intelligence-summary strong {
+  color: var(--text);
+  font-size: 18px;
+}
+
+.owned-intelligence-list {
+  display: grid;
+  gap: 8px;
+  max-height: 370px;
+  overflow: auto;
+}
+
+.owned-intelligence-list article {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(220px, 1.4fr);
+  gap: 6px 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.owned-intelligence-list article > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.owned-intelligence-list article > div:first-child {
+  display: grid;
+  gap: 2px;
+}
+
+.owned-intelligence-list article span {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.owned-intelligence-list article b {
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 11px;
+}
+
+.owned-intelligence-list article b.recommended {
+  background: #ecfdf5;
+  color: var(--success);
+}
+
+.owned-intelligence-list article b.keepable {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.owned-intelligence-list article b.notRecommended {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.owned-intelligence-list article p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--danger);
+  font-size: 12px;
+}
+
+.owned-intelligence-explanation,
+.nature-model-result {
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--primary) 5%, var(--surface));
+}
+
+.owned-intelligence-explanation p,
+.owned-intelligence-explanation ol,
+.nature-model-result p,
+.nature-model-result ul {
+  margin: 7px 0 0;
+  line-height: 1.65;
+}
+
+.owned-intelligence-explanation small,
+.nature-model-result small { color: var(--text-muted); }
+
+.nature-model-explanation {
+  display: grid;
+  gap: 9px;
+  padding: 12px 14px;
+  border: 1px dashed color-mix(in srgb, var(--primary) 32%, var(--border));
+  border-radius: var(--radius-lg);
+}
+
+.nature-model-explanation > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nature-model-explanation > div:first-child > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nature-model-explanation > p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.nature-model-explanation > .btn { justify-self: start; }
+
+@media (max-width: 680px) {
+  .owned-intelligence-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .owned-intelligence-list article {
+    grid-template-columns: 1fr;
+  }
+
+  .owned-intelligence-model {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

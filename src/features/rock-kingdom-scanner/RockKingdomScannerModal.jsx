@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Camera, FileImage, ScanLine, Trash2, Video } from 'lucide-react'
+import { Camera, FileImage, ScanLine, Settings2, Sparkles, Trash2, Video } from 'lucide-react'
 import { createRow, db } from '../../db.js'
 import { FieldInput } from '../../components/catalog.jsx'
 import { FormRow, Modal } from '../../components/common.jsx'
@@ -10,9 +10,14 @@ import {
   ROCK_SCANNER_CROP_PROFILE,
   bestScanMatch,
   catalogNameCandidates,
+  rankScanCandidates,
   scannerOptionCandidates,
   valuesWithAppearance,
 } from '../../domain/rockKingdomScanner.js'
+import { ModelSettingsModal } from '../model/ModelSettingsModal.jsx'
+import { modelConfigIsComplete } from '../model/modelConfig.js'
+import { useModelConfig } from '../model/useModelConfig.js'
+import { correctRockScannerFields } from '../rock-kingdom-model/rockKingdomModel.js'
 
 function frameId() {
   return `scan-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
@@ -103,6 +108,8 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   const [busy, setBusy] = useState('')
   const [progress, setProgress] = useState('')
   const [error, setError] = useState('')
+  const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
+  const { modelConfig, loadProvider, saveModelConfig } = useModelConfig()
 
   const selected = frames.find((frame) => frame.id === selectedId) || frames[0]
 
@@ -216,7 +223,12 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
 
   function patchFrameValue(id, key, value) {
     setFrames((current) => current.map((frame) => frame.id === id
-      ? { ...frame, values: { ...frame.values, [key]: value }, status: '已复核' }
+      ? {
+          ...frame,
+          values: { ...frame.values, [key]: value },
+          confidence: { ...frame.confidence, [key]: 1 },
+          status: '已复核',
+        }
       : frame))
   }
 
@@ -265,6 +277,57 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       setProgress('批量识别完成。保存前请逐条复核。')
     } catch (recognizeError) {
       setError(recognizeError.message)
+    } finally {
+      setBusy('')
+    }
+  }
+
+  function correctionFields(frame) {
+    const candidateSets = {
+      ref: nameCandidates,
+      nature: scannerOptionCandidates(fieldByKey(fields, 'nature')),
+      bloodline: scannerOptionCandidates(fieldByKey(fields, 'bloodline')),
+      specialty: scannerOptionCandidates(fieldByKey(fields, 'specialty')),
+    }
+    return Object.entries(candidateSets).flatMap(([key, candidates]) => {
+      const rawText = frame.raw?.[key] || ''
+      const confidence = Number(frame.confidence?.[key]) || 0
+      if (!rawText || (frame.values?.[key] && confidence >= 0.78)) return []
+      return [{
+        key,
+        rawText,
+        candidates: rankScanCandidates(rawText, candidates).slice(0, 16),
+      }]
+    })
+  }
+
+  async function correctSelectedWithModel() {
+    if (!selected) return
+    if (!modelConfigIsComplete(modelConfig)) {
+      setModelSettingsOpen(true)
+      return
+    }
+    setBusy('model')
+    setError('')
+    try {
+      const corrections = await correctRockScannerFields({
+        config: modelConfig,
+        fields: correctionFields(selected),
+      })
+      const nextValues = { ...selected.values }
+      const nextConfidence = { ...selected.confidence }
+      corrections.forEach((item) => {
+        nextValues[item.key] = item.value
+        nextConfidence[item.key] = item.confidence
+      })
+      patchFrame(selected.id, {
+        values: nextValues,
+        confidence: nextConfidence,
+        status: 'AI 已补全，待复核',
+      })
+      setProgress(`模型补全了 ${corrections.length} 个低置信字段；请人工核对后保存。`)
+    } catch (modelError) {
+      setError(modelError.message)
     } finally {
       setBusy('')
     }
@@ -332,7 +395,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
             <li>也可以用 OBS 录制；在 OBS 的“设置 → 输出 → 录像路径”查看文件位置。</li>
             <li>导入后按间隔提取画面，先删除切换动画和重复帧，再进行 OCR 与人工复核。</li>
           </ol>
-          <p>所有视频、截图和 OCR 都只在当前浏览器本地处理，不会上传；原视频不会写入 IndexedDB。</p>
+          <p>视频、截图和 OCR 默认只在当前浏览器本地处理，原媒体不会写入 IndexedDB。只有点击“AI 纠错”时，当前帧的低置信 OCR 文字和有限候选会发送给已配置模型，图片不会发送。</p>
         </details>
 
         <div className="scanner-import-row">
@@ -467,6 +530,18 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                   <button type="button" className="btn" onClick={recognizeAll} disabled={Boolean(busy) || frames.length === 0}>
                     识别全部
                   </button>
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={correctSelectedWithModel}
+                    disabled={Boolean(busy) || correctionFields(selected).length === 0}
+                    title={correctionFields(selected).length === 0 ? '先运行本机 OCR；只有未匹配或低置信字段才会发送' : ''}
+                  >
+                    <Sparkles size={15} /> {busy === 'model' ? '纠错中…' : 'AI 纠错低置信字段'}
+                  </button>
+                  <button type="button" className="btn btn-icon" title="模型设置" onClick={() => setModelSettingsOpen(true)} disabled={Boolean(busy)}>
+                    <Settings2 size={15} />
+                  </button>
                   <button type="button" className="btn btn-danger" onClick={() => removeFrame(selected)} disabled={Boolean(busy)}>
                     <Trash2 size={15} /> 删除画面
                   </button>
@@ -493,6 +568,14 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           </section>
         </div>
       </div>
+      {modelSettingsOpen && (
+        <ModelSettingsModal
+          config={modelConfig}
+          onLoadProvider={loadProvider}
+          onSave={saveModelConfig}
+          onClose={() => setModelSettingsOpen(false)}
+        />
+      )}
     </Modal>
   )
 }

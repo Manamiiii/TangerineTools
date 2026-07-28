@@ -138,6 +138,7 @@ npm run lint
 │   │   ├── natureRowAdapter.js            # 资料行到推荐输入的适配
 │   │   ├── rockKingdom*.js               # 形态、展示和共享标签规则
 │   │   └── owned.js / stock.js / breeding*.js # 其他工具纯领域逻辑
+│   ├── features/model/                    # 共享模型连接、配置和受限 JSON 请求
 │   ├── features/reading-companion/
 │   │   ├── components/                   # 阅读伴侣专用界面
 │   │   ├── data/                         # 运行时资料包读取
@@ -147,6 +148,7 @@ npm run lint
 │   │   ├── preset.js                     # 经典文学阅读场景定义
 │   │   └── index.js                      # 功能公开入口
 │   ├── features/rock-kingdom-scanner/    # 本地视频抽帧、截图复核与扫描界面
+│   ├── features/rock-kingdom-model/      # 扫描纠错、记录检查说明与性格解释
 │   ├── presets/
 │   │   └── rockKingdom.js                # 洛克王国场景、字段和选项
 │   ├── App.jsx                            # hash 路由、工具懒加载、全局导入导出
@@ -237,7 +239,7 @@ git diff --check
 - [`docs/nature/open-issues.md`](docs/nature/open-issues.md)：尚未形成稳定规则的通用问题。
 - [`docs/reading-companion/product-and-architecture.md`](docs/reading-companion/product-and-architecture.md)：经典文学阅读伴侣的已实现范围、按书建库、跨端入口和剧透安全契约。
 - [`docs/reading-companion/model-prompts.md`](docs/reading-companion/model-prompts.md)：个人书籍自动初始化和内置书正式预制使用的版本化提示词与输出权限。
-- [`docs/reading-companion/model-provider-setup.md`](docs/reading-companion/model-provider-setup.md)：智谱、DeepSeek、MiniMax、OpenAI 和自定义模型的配置与测试方法。
+- [`docs/reading-companion/model-provider-setup.md`](docs/reading-companion/model-provider-setup.md)：阅读与洛克王国共用的智谱、DeepSeek、MiniMax、OpenAI 和自定义模型连接配置。
 - [`docs/reading-companion/trial-guide.md`](docs/reading-companion/trial-guide.md)：阅读伴侣当前可试用范围、启动步骤和反馈重点。
 
 根 README 是项目结构、命令和维护文档的统一入口；专题文档只保存各自领域内不可由代码结构直接表达的规则与约束。

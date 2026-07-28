@@ -7,12 +7,13 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { BarChart3, FilterX, ListChecks, Pencil, Plus, ScanLine, Search, Settings2, Trash2 } from 'lucide-react'
+import { BarChart3, FilterX, ListChecks, Pencil, Plus, ScanLine, Search, Settings2, Sparkles, Trash2 } from 'lucide-react'
 import { createRow, db, deleteRow, ensureOwnedTable, updateRow, updateRows } from '../db.js'
 import { matchesOwnedFieldFilters, matchesOwnedSearch, ownedFieldValue } from '../domain/owned.js'
 import { valuesWithAppearance } from '../domain/rockKingdomScanner.js'
 import { buildStockSummary, defaultStockGroupField } from '../domain/stock.js'
 import { RockKingdomScannerModal } from '../features/rock-kingdom-scanner/RockKingdomScannerModal.jsx'
+import { OwnedIntelligenceModal } from '../features/rock-kingdom-model/OwnedIntelligenceModal.jsx'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
 import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal, Pagination } from './common.jsx'
 import { CellView, FieldInput, FieldManagerModal, fieldDisplayProps } from './catalog.jsx'
@@ -128,6 +129,7 @@ function OwnedTableView({ table, sceneId }) {
   const [batchOpen, setBatchOpen] = useState(false)
   const [summaryOpen, setSummaryOpen] = useState(false)
   const [summaryFieldKey, setSummaryFieldKey] = useState('')
+  const [intelligenceOpen, setIntelligenceOpen] = useState(false)
 
   const filteredRows = useMemo(() => {
     if (!rows || !fields) return []
@@ -251,6 +253,14 @@ function OwnedTableView({ table, sceneId }) {
           disabled={selectedIds.size === 0}
           onClick={() => setBatchOpen(true)}
         />
+        {sceneId === ROCK_KINGDOM_PRESET.scene.id && (
+          <IconButton
+            icon={Sparkles}
+            label={selectedIds.size > 0 ? `智能检查 ${selectedIds.size}` : '智能检查'}
+            disabled={selectedIds.size === 0}
+            onClick={() => setIntelligenceOpen(true)}
+          />
+        )}
         <IconButton
           icon={Settings2}
           label="字段"
@@ -434,6 +444,14 @@ function OwnedTableView({ table, sceneId }) {
             setBatchOpen(false)
             setSelectedIds(new Set())
           }}
+        />
+      )}
+
+      {intelligenceOpen && (
+        <OwnedIntelligenceModal
+          rows={selectedRows}
+          fields={visibleFields}
+          onClose={() => setIntelligenceOpen(false)}
         />
       )}
 

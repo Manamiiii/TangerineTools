@@ -44,7 +44,6 @@ import {
   recognizeReadingMetadataImage,
 } from '../ocr/localOcr.js'
 import {
-  READING_MODEL_STORAGE_KEYS,
   analyzeReadingBookMetadata,
   analyzeReadingExcerpt,
   answerReadingQuestion,
@@ -54,12 +53,11 @@ import {
 import {
   READING_MODEL_PROVIDER,
   READING_MODEL_PROVIDERS,
-  inferReadingModelProvider,
-  normalizeReadingModelProvider,
-  readingModelApiKeyStorageKey,
-  readingModelProfileStorageKey,
-  readingModelProviderDefaults,
 } from '../model/modelProviders.js'
+import {
+  loadStoredModelConfig,
+  saveStoredModelConfig,
+} from '../../model/modelConfig.js'
 import {
   PERSONAL_BOOK_COVER_THEMES,
   createPersonalReadingPackage,
@@ -169,33 +167,7 @@ function observedRecordAction(observedEntities, name, kind, currentChapterId, ch
 }
 
 function loadStoredReadingModelConfig(providerId = '', allowLegacy = true) {
-  const legacyEndpoint = window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.endpoint) || ''
-  const storedProviderId = window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.provider) || ''
-  const selectedProviderId = providerId
-    ? normalizeReadingModelProvider(providerId)
-    : storedProviderId
-      ? normalizeReadingModelProvider(storedProviderId)
-      : legacyEndpoint
-        ? inferReadingModelProvider(legacyEndpoint)
-        : READING_MODEL_PROVIDER.ZHIPU
-  const defaults = readingModelProviderDefaults(selectedProviderId)
-  const legacyMatchesProvider = inferReadingModelProvider(legacyEndpoint) === selectedProviderId
-  return {
-    ...defaults,
-    endpoint: window.localStorage.getItem(
-      readingModelProfileStorageKey(selectedProviderId, 'endpoint'),
-    ) || (allowLegacy && legacyMatchesProvider ? legacyEndpoint : '') || defaults.endpoint,
-    model: window.localStorage.getItem(
-      readingModelProfileStorageKey(selectedProviderId, 'model'),
-    ) || (allowLegacy && legacyMatchesProvider
-      ? window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.model) || ''
-      : '') || defaults.model,
-    apiKey: window.sessionStorage.getItem(
-      readingModelApiKeyStorageKey(selectedProviderId),
-    ) || (allowLegacy && legacyMatchesProvider
-      ? window.sessionStorage.getItem(READING_MODEL_STORAGE_KEYS.apiKey) || ''
-      : ''),
-  }
+  return loadStoredModelConfig(providerId, allowLegacy)
 }
 
 function LoadingPanel({ message }) {
@@ -2664,44 +2636,7 @@ export function ReaderTool({ scene }) {
   }
 
   function saveModelConfig(nextConfig) {
-    const providerId = normalizeReadingModelProvider(nextConfig.providerId)
-    const provider = READING_MODEL_PROVIDERS[providerId]
-    const normalized = {
-      providerId,
-      endpoint: nextConfig.endpoint.trim(),
-      model: nextConfig.model.trim(),
-      apiKey: nextConfig.apiKey.trim(),
-      temperature: provider.temperature,
-    }
-    window.localStorage.setItem(READING_MODEL_STORAGE_KEYS.provider, providerId)
-    window.localStorage.setItem(
-      readingModelProfileStorageKey(providerId, 'endpoint'),
-      normalized.endpoint,
-    )
-    window.localStorage.setItem(
-      readingModelProfileStorageKey(providerId, 'model'),
-      normalized.model,
-    )
-    if (normalized.endpoint) {
-      window.localStorage.setItem(READING_MODEL_STORAGE_KEYS.endpoint, normalized.endpoint)
-    } else {
-      window.localStorage.removeItem(READING_MODEL_STORAGE_KEYS.endpoint)
-    }
-    if (normalized.model) {
-      window.localStorage.setItem(READING_MODEL_STORAGE_KEYS.model, normalized.model)
-    } else {
-      window.localStorage.removeItem(READING_MODEL_STORAGE_KEYS.model)
-    }
-    if (normalized.apiKey) {
-      window.sessionStorage.setItem(
-        readingModelApiKeyStorageKey(providerId),
-        normalized.apiKey,
-      )
-      window.sessionStorage.setItem(READING_MODEL_STORAGE_KEYS.apiKey, normalized.apiKey)
-    } else {
-      window.sessionStorage.removeItem(readingModelApiKeyStorageKey(providerId))
-      window.sessionStorage.removeItem(READING_MODEL_STORAGE_KEYS.apiKey)
-    }
+    const normalized = saveStoredModelConfig(nextConfig)
     setModelConfig(normalized)
   }
 

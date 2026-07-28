@@ -72,20 +72,31 @@ function candidateSearchTerms(candidate) {
   return [...new Set(terms.map(normalizeScanText).filter(Boolean))]
 }
 
-export function bestScanMatch(rawText, candidates = [], minimumScore = 0.48) {
+export function rankScanCandidates(rawText, candidates = []) {
   const source = normalizeScanText(rawText)
-  if (!source) return null
-  let best = null
+  if (!source) return []
+  const ranked = []
   for (const candidate of candidates) {
+    let bestScore = 0
+    let bestTerm = ''
     for (const term of candidateSearchTerms(candidate)) {
       const contains = source.includes(term) || term.includes(source)
       const distance = editDistance(source, term)
       const score = contains
         ? Math.min(1, 0.82 + Math.min(source.length, term.length) / Math.max(source.length, term.length) * 0.18)
         : 1 - distance / Math.max(source.length, term.length)
-      if (!best || score > best.score) best = { ...candidate, score, term }
+      if (score > bestScore) {
+        bestScore = score
+        bestTerm = term
+      }
     }
+    ranked.push({ ...candidate, score: bestScore, term: bestTerm })
   }
+  return ranked.sort((left, right) => right.score - left.score)
+}
+
+export function bestScanMatch(rawText, candidates = [], minimumScore = 0.48) {
+  const best = rankScanCandidates(rawText, candidates)[0]
   return best && best.score >= minimumScore ? best : null
 }
 
