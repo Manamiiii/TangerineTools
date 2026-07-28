@@ -516,6 +516,10 @@ test('Gone with the Wind exact-input dictionary recognizes audited names without
     institutionMatches.at(-1).entity.placeKind,
     OBSERVED_PLACE_KIND.PROTOTYPE,
   )
+  assert.match(institutionMatches[0].entity.safeNote, /1819 年/)
+  assert.match(institutionMatches[1].entity.safeNote, /1831 年首次开课/)
+  assert.match(institutionMatches[2].entity.safeNote, /South Carolina College/)
+  assert.match(institutionMatches[3].entity.safeNote, /虚构学校的原型/)
   const contextMatches = scanOnDemandEntities(
     '故事背景涉及美国南方的种植园、林肯和南北战争。',
     readingPackage.onDemandEntities,
@@ -1491,7 +1495,7 @@ test('reading preview publishes only approved sources and keeps candidates pendi
   assert.equal(catalog.packages.length, 1)
   const [preview] = previews
   assert.deepEqual(validateReadingPackage(preview.package), [])
-  assert.equal(preview.previewMeta.approvedSourceIds.length, 19)
+  assert.equal(preview.previewMeta.approvedSourceIds.length, 20)
   assert.equal(preview.previewMeta.pendingSourceIds.length, 3)
   assert.equal(preview.previewMeta.candidateEntityIds.length, 30)
   assert.equal(preview.previewMeta.candidateFactIds.length, 2)
@@ -1508,7 +1512,7 @@ test('reading preview publishes only approved sources and keeps candidates pendi
     concept: 1,
     event: 1,
     factCount: 0,
-    sourceCount: 19,
+    sourceCount: 20,
   })
   assert.deepEqual(
     preview.package.sources.map((source) => source.id),

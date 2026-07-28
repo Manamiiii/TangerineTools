@@ -183,6 +183,8 @@
 - [Atlanta History Center](https://www.atlantahistorycenter.com/blog/so-red-the-rose-the-gone-with-the-wind-that-never-was/) 用于区分真实的亚特兰大地点与虚构种植园，并防止给塔拉等虚构地点伪造精确坐标。
 - [New Georgia Encyclopedia · Gone With the Wind](https://www.georgiaencyclopedia.org/articles/arts-culture/gone-with-the-wind-novel/) 与 [Clayton County](https://www.georgiaencyclopedia.org/articles/counties-cities-neighborhoods/clayton-county/) 用于候选时代范围、地点名称和地区背景。包含剧情概述的页面仅供建库审阅，不能直接成为运行时安全内容。
 - [National Park Service · The Plantation System](https://www.nps.gov/articles/plantationsystem.htm)、[Library of Congress · Abraham Lincoln](https://www.loc.gov/exhibits/civil-war-in-america/biographies/abraham-lincoln.html) 和 [National Park Service · The Civil War](https://www.nps.gov/civilwar/index.htm) 是已批准的独立历史来源，分别支持“种植园”“林肯”和“南北战争”的简短无剧透背景注释；它们不用于推断作品中的关系、行动、意义、结局或首次出现章节。
+- [University of Virginia](https://www.virginia.edu/about-uva/)、[The University of Alabama](https://www.ua.edu/about/history/) 和 [University of South Carolina](https://www.sc.edu/about/our_history/university_history/timeline/index.php) 的官方页面支持三所学校的创建年份、历史名称和现代所在地；[Digital Library of Georgia · Fayetteville Academy](https://dlg.usg.edu/record/nge_ngen_m-9272) 支持现实学校与虚构学校原型的区分。学校注释不用于推断作品人物经历或章节位置。
+- [Atlanta History Center · Turning Point](https://www.atlantahistorycenter.com/exhibitions/turning-point-the-american-civil-war/) 支持亚特兰大在美国内战时期作为交通、工业和军需储运中心的独立背景；New Georgia Encyclopedia 的 Clayton County 条目支持克莱顿县和琼斯伯勒的行政与名称沿革。这些内容不用于解释作品中发生了什么。
 - [Library of Congress · General Maps](https://www.loc.gov/collections/general-maps/about-this-collection/rights-and-access/) 用于候选历史地图。每个地图条目必须单独检查 Rights Advisory 与署名要求。
 - 互动地图支持两种可切换底图：国际模式使用 [OpenStreetMap](https://www.openstreetmap.org/copyright) 在线标准瓦片，免 Key，但在国内网络可能需要 VPN；国内模式使用[天地图](https://www.tianditu.gov.cn/)矢量底图与注记，需要使用者在设置中填写浏览器端 Key。选择和 Key 只保存在当前浏览器的 `localStorage`，不进入资料包、IndexedDB 导出或仓库。设置页提供天地图控制台入口、浏览器端应用申请步骤、清除 Key 和回到地图验证的说明。两种模式都始终显示供应商署名，不提供瓦片预取或离线下载。瓦片只在拖动结束后更新，不在缩放动画的中间级别加载，使用一个瓦片宽度的视野缓冲；一本书首次打开地图后会在其他书内 Tab 间保留地图实例，避免来回切换重复初始化。地图显示当前实例加载的底图和注记瓦片数；该值用于本机估算，浏览器缓存会使服务商实际计量少于本机加载数。切换书籍或地图供应商时重新计数。底图配置集中在 `src/features/reading-companion/map/mapConfig.js`，底图只负责显示，不能成为正式地点坐标或虚构地点定位的证据。
 - 资料包外地点可以由读者主动发起公网地图搜索。国际模式使用 Nominatim，国内模式使用天地图地名搜索并复用浏览器端 Key。两种服务都限制为点击后搜索、同一供应商每秒最多一次实际请求、最多五条结果，并缓存会话内重复查询。界面会在请求前说明搜索词将发送给所选服务，不提供自动完成或后台批量查询。
@@ -205,7 +207,7 @@
 - 解锁章节取自本地 `firstSeenChapterId`，界面明确标记为“读者确认后精确解锁”，不把它冒充指定译本的客观首次出现章节。
 - 真实地点坐标可以进入互动地图；虚构地点不伪造精确坐标。`safeNote` 与其他按需字段一样，只在读者输入精确匹配并确认该名称后显示；退回较早章节时，按需实体、名称和注释一起隐藏。
 
-当前《飘》资料包包含 18 个按需精确匹配实体：简介已确认短名的斯佳丽、瑞德、艾希礼、梅兰妮；佐治亚州、克莱顿县、亚特兰大、琼斯伯勒、塔拉庄园、十二橡树庄园；当前译本片段确认的弗吉尼亚大学、亚拉巴马大学、南卡罗来纳大学和费耶特维尔女子学院；以及详情页简介确认的“美国南方”“种植园”“林肯”和“南北战争”。作品人物只提供名称和原文名；现实地点使用明确标注的现代代表位置；三所大学的点位不表示校园边界，费耶特维尔女子学院只显示有馆藏依据的现实原型参考点。“美国南方”是没有中心点或边界的模糊区域；“种植园”“林肯”和“南北战争”在精确解锁后另有由 NPS 或 Library of Congress 支持的简短离线背景注释，但不附加作品关系、情节解释或历史评价。所有名称与注释都不会在读者输入前列出，也不包含人物关系或剧情事实。
+当前《飘》资料包包含 18 个按需精确匹配实体：简介已确认短名的斯佳丽、瑞德、艾希礼、梅兰妮；佐治亚州、克莱顿县、亚特兰大、琼斯伯勒、塔拉庄园、十二橡树庄园；当前译本片段确认的弗吉尼亚大学、亚拉巴马大学、南卡罗来纳大学和费耶特维尔女子学院；以及详情页简介确认的“美国南方”“种植园”“林肯”和“南北战争”。作品人物只提供名称和原文名；现实地点使用明确标注的现代代表位置；三所大学的点位不表示校园边界，费耶特维尔女子学院只显示有馆藏依据的现实原型参考点。“美国南方”是没有中心点或边界的模糊区域。克莱顿县、亚特兰大、琼斯伯勒、三所大学、费耶特维尔女子学院、“种植园”“林肯”和“南北战争”共 10 个名称在精确解锁后另有批准来源支持的简短离线背景注释，但不附加作品人物关系、情节解释或历史评价。所有名称与注释都不会在读者输入前列出，也不包含人物关系或剧情事实。
 
 不得绕过微信读书鉴权、反自动化措施或私有接口批量获取作品全文。原文和参考资料的获取、保存与模型传输必须符合其授权范围；运行时只处理用户主动提供的最小必要段落。模型可能凭训练形成对知名作品的概括性知识，但训练语料清单、具体版本、译名和章节证据不可由运行时验证，因此模型内部知识只能生成研究候选，不能单独成为正式资料的来源、版本边界或剧透边界。
 

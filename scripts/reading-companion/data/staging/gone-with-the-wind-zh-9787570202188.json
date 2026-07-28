@@ -3,7 +3,7 @@
   "slug": "gone-with-the-wind-zh-9787570202188",
   "order": 0,
   "packageId": "reader-package-gone-with-the-wind-zh-9787570202188",
-  "packageVersion": "1.6.0",
+  "packageVersion": "1.7.0",
   "basePackagePath": "public/presets/reading-companion/gone-with-the-wind-zh-9787570202188.json",
   "catalogEntry": {
     "title": "飘",
@@ -69,13 +69,13 @@
       "id": "source-university-of-virginia-official",
       "status": "approved",
       "kind": "institution-official",
-      "label": "University of Virginia · Official Contact and Rotunda History",
+      "label": "University of Virginia · About UVA",
       "organization": "University of Virginia",
-      "url": "https://www.virginia.edu/contact-us/",
+      "url": "https://www.virginia.edu/about-uva/",
       "accessedAt": "2026-07-28",
-      "useFor": ["modern_institution_name", "modern_location"],
+      "useFor": ["modern_institution_name", "institution_history", "modern_location"],
       "rightsStatus": "reference-only",
-      "notes": "用于确认 University of Virginia 的现代机构名称和 Charlottesville 地址；地图点采用校内 Rotunda 作为清楚标注的校园参考点，不表示校园边界。"
+      "notes": "用于确认 University of Virginia 由 Thomas Jefferson 创建、1819 年获弗吉尼亚州议会特许并位于 Charlottesville；地图点采用校内 Rotunda 作为清楚标注的校园参考点，不表示校园边界。"
     },
     {
       "id": "source-university-of-alabama-official",
@@ -136,6 +136,18 @@
       "useFor": ["book_relevance", "real_place_classification", "historical_name"],
       "rightsStatus": "reference-only",
       "notes": "页面明确说明 Peachtree Street 因小说而广为人知，并确认其为亚特兰大现实街道；指定译本中文名称和可用线形几何仍需核对。"
+    },
+    {
+      "id": "source-atlanta-history-center-civil-war",
+      "status": "approved",
+      "kind": "museum-research",
+      "label": "Atlanta History Center · Turning Point: The American Civil War",
+      "organization": "Atlanta History Center",
+      "url": "https://www.atlantahistorycenter.com/exhibitions/turning-point-the-american-civil-war/",
+      "accessedAt": "2026-07-28",
+      "useFor": ["safe_place_note", "atlanta_historical_context"],
+      "rightsStatus": "reference-only",
+      "notes": "用于确认美国内战时期亚特兰大是交通、工业和军需储运中心；不用于解释作品情节、人物行动或指定译本章节。"
     },
     {
       "id": "candidate-loc-america-reads-gwtw",
@@ -463,7 +475,8 @@
           "type": "point",
           "latitude": 33.552242,
           "longitude": -84.412973
-        }
+        },
+        "safeNote": "克莱顿县位于亚特兰大以南，1858 年由佐治亚州议会设立；县治是琼斯伯勒。"
       },
       "sourceIds": [
         "source-census-2025-gazetteer",
@@ -474,7 +487,7 @@
         "missing_edition_chapter_evidence",
         "edition_aliases_not_audited"
       ],
-      "notes": "人口普查局数据提供现代县级代表坐标，公开资料确认该县与作品创作背景的联系；不能据此断言正文直接出现该名称。"
+      "notes": "人口普查局数据提供现代县级代表坐标，New Georgia Encyclopedia 支持独立地理和建县背景；不能据此断言正文直接出现该名称。"
     },
     {
       "status": "candidate",
@@ -491,11 +504,13 @@
           "type": "point",
           "latitude": 33.7628947,
           "longitude": -84.4220844
-        }
+        },
+        "safeNote": "美国内战时期，亚特兰大是美国南方重要的交通、工业和军需储运中心。"
       },
       "sourceIds": [
         "source-census-2025-georgia-incorporated-places",
-        "source-atlanta-history-center-so-red-the-rose"
+        "source-atlanta-history-center-so-red-the-rose",
+        "source-atlanta-history-center-civil-war"
       ],
       "blockers": [
         "missing_edition_chapter_evidence",
@@ -518,7 +533,8 @@
           "type": "point",
           "latitude": 33.5211498,
           "longitude": -84.3546835
-        }
+        },
+        "safeNote": "琼斯伯勒是克莱顿县县治，早期名为 Leaksville，1845 年以铁路工程师 Samuel Goode Jones 的姓氏重新命名。"
       },
       "sourceIds": [
         "source-census-2025-georgia-incorporated-places",
@@ -590,7 +606,8 @@
           "type": "point",
           "latitude": 38.0356372,
           "longitude": -78.5033905
-        }
+        },
+        "safeNote": "弗吉尼亚大学由托马斯·杰斐逊创建，1819 年获弗吉尼亚州议会特许，位于夏洛茨维尔。"
       },
       "sourceIds": [
         "source-reader-excerpt-early-institutions",
@@ -615,7 +632,8 @@
           "type": "point",
           "latitude": 33.2120822,
           "longitude": -87.5396735
-        }
+        },
+        "safeNote": "阿拉巴马州议会于 1820 年设立这所公立大学；学校 1831 年首次开课，到 19 世纪 60 年代已使用 The University of Alabama 这一名称。"
       },
       "sourceIds": [
         "source-reader-excerpt-early-institutions",
@@ -640,7 +658,8 @@
           "type": "point",
           "latitude": 33.9928841,
           "longitude": -81.0268676
-        }
+        },
+        "safeNote": "学校于 1801 年以 South Carolina College 之名创立，1906 年起固定使用 University of South Carolina 这一名称。"
       },
       "sourceIds": [
         "source-reader-excerpt-early-institutions",
@@ -665,7 +684,8 @@
           "type": "point",
           "latitude": 33.44873,
           "longitude": -84.45493
-        }
+        },
+        "safeNote": "现实中的 Fayetteville Academy 曾设在建于 1855 年的 Holliday-Dorsey-Fife 宅邸；Digital Library of Georgia 将其说明为小说中虚构学校的原型。"
       },
       "sourceIds": [
         "source-reader-excerpt-early-institutions",
@@ -1026,6 +1046,7 @@
         "source-census-2025-gazetteer",
         "source-new-georgia-encyclopedia-clayton-county"
       ],
+      "safeNote": "克莱顿县位于亚特兰大以南，1858 年由佐治亚州议会设立；县治是琼斯伯勒。",
       "scopeNote": "坐标是现代县级代表坐标；公开资料确认其与作品创作背景有关，但不能据此断言正文直接出现该名称。"
     },
     {
@@ -1044,8 +1065,10 @@
       },
       "sourceIds": [
         "source-census-2025-georgia-incorporated-places",
-        "source-atlanta-history-center-so-red-the-rose"
+        "source-atlanta-history-center-so-red-the-rose",
+        "source-atlanta-history-center-civil-war"
       ],
+      "safeNote": "美国内战时期，亚特兰大是美国南方重要的交通、工业和军需储运中心。",
       "scopeNote": "坐标是现代行政地点的代表坐标，不表示作品年代的城市边界。"
     },
     {
@@ -1066,6 +1089,7 @@
         "source-census-2025-georgia-incorporated-places",
         "source-new-georgia-encyclopedia-clayton-county"
       ],
+      "safeNote": "琼斯伯勒是克莱顿县县治，早期名为 Leaksville，1845 年以铁路工程师 Samuel Goode Jones 的姓氏重新命名。",
       "scopeNote": "公开资料确认其现代位置和创作背景联系，不代表已经证明正文直接出现该地名。"
     },
     {
@@ -1117,6 +1141,7 @@
         "source-university-of-virginia-official",
         "source-openstreetmap-nominatim-research"
       ],
+      "safeNote": "弗吉尼亚大学由托马斯·杰斐逊创建，1819 年获弗吉尼亚州议会特许，位于夏洛茨维尔。",
       "scopeNote": "当前译本片段确认中文名称；地图使用校内 Rotunda 作为现代校园参考点，不表示校园边界或故事年代范围。"
     },
     {
@@ -1138,6 +1163,7 @@
         "source-university-of-alabama-official",
         "source-openstreetmap-nominatim-research"
       ],
+      "safeNote": "阿拉巴马州议会于 1820 年设立这所公立大学；学校 1831 年首次开课，到 19 世纪 60 年代已使用 The University of Alabama 这一名称。",
       "scopeNote": "当前译本片段确认中文名称；坐标是现代校园代表点，不表示校园边界或故事年代范围。"
     },
     {
@@ -1159,6 +1185,7 @@
         "source-university-of-south-carolina-official",
         "source-openstreetmap-nominatim-research"
       ],
+      "safeNote": "学校于 1801 年以 South Carolina College 之名创立，1906 年起固定使用 University of South Carolina 这一名称。",
       "scopeNote": "当前译本片段使用现代中文校名；官方校史说明故事年代机构名不同，坐标仅表示现代校园代表点。"
     },
     {
@@ -1179,6 +1206,7 @@
         "source-reader-excerpt-early-institutions",
         "source-dlg-fayetteville-academy"
       ],
+      "safeNote": "现实中的 Fayetteville Academy 曾设在建于 1855 年的 Holliday-Dorsey-Fife 宅邸；Digital Library of Georgia 将其说明为小说中虚构学校的原型。",
       "scopeNote": "当前译本片段确认中文名称；地图点来自现实 Fayetteville Academy 原型资料，不表示虚构学校存在精确现实坐标。"
     }
   ],
