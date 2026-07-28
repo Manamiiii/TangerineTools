@@ -59,6 +59,19 @@ export const OWNED_GENDER_OPTIONS = [
   { value: 'female', label: '母', color: '#e11d48', symbol: '♀', variant: 'female' },
 ]
 
+export const OWNED_PARTNER_MARK_OPTIONS = [
+  { value: 'none', label: '无', color: '#94a3b8' },
+  { value: 'fruit', label: '果实', color: '#f59e0b' },
+  { value: 'lightning', label: '闪电', color: '#eab308' },
+  { value: 'home', label: '房屋', color: '#64748b' },
+  { value: 'hp', label: '生命', color: '#e11d48' },
+  { value: 'patk', label: '物攻', color: '#dc2626' },
+  { value: 'matk', label: '魔攻', color: '#7c3aed' },
+  { value: 'pdef', label: '物防', color: '#059669' },
+  { value: 'mdef', label: '魔防', color: '#0891b2' },
+  { value: 'spd', label: '速度', color: '#d97706' },
+]
+
 export const OWNED_SPECIALTY_OPTIONS = [
   { value: 'mercy', label: '慈悲为怀', color: '#059669' },
   { value: 'brave', label: '勇敢', color: '#dc2626' },
@@ -130,6 +143,7 @@ export const ROCK_KINGDOM_COLLECTION_FIELDS = [
   { key: 'colorful', name: '是否炫彩', type: 'select', options: OWNED_COLORFUL_OPTIONS, display: { mode: 'icon', hiddenOptionValues: ['no'], compact: true, tableWidth: 68 } },
   { key: 'appearance', name: '外观细分', type: 'select', options: ROCK_APPEARANCE_OPTIONS, display: { hiddenOptionValues: ['none'], compact: true, tableWidth: 128 } },
   { key: 'specialty', name: '特长', type: 'select', options: OWNED_SPECIALTY_OPTIONS },
+  { key: 'partnerMark', name: '游戏伙伴标记', type: 'select', options: OWNED_PARTNER_MARK_OPTIONS, display: { hiddenOptionValues: ['none'], compact: true, tableWidth: 104 } },
   { key: 'gender', name: '性别', type: 'select', options: OWNED_GENDER_OPTIONS, display: { mode: 'icon', compact: true, tableWidth: 56 } },
   { key: 'note', name: '备注', type: 'longtext' },
 ]

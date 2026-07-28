@@ -9,13 +9,19 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { BarChart3, FilterX, ListChecks, Pencil, Plus, ScanLine, Search, Settings2, Sparkles, Trash2 } from 'lucide-react'
 import { createRow, db, deleteRow, ensureOwnedTable, updateRow, updateRows } from '../db.js'
-import { matchesOwnedFieldFilters, matchesOwnedSearch, ownedFieldValue } from '../domain/owned.js'
+import {
+  matchesOwnedFieldFilters,
+  matchesOwnedSearch,
+  ownedFieldValue,
+  OWNED_PARTNER_MARK_OPTIONS,
+} from '../domain/owned.js'
+import { buildRockPartnerMarkRecommendations } from '../domain/rockKingdomPartnerMarks.js'
 import { valuesWithAppearance } from '../domain/rockKingdomScanner.js'
 import { buildStockSummary, defaultStockGroupField } from '../domain/stock.js'
 import { RockKingdomScannerModal } from '../features/rock-kingdom-scanner/RockKingdomScannerModal.jsx'
 import { OwnedIntelligenceModal } from '../features/rock-kingdom-model/OwnedIntelligenceModal.jsx'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
-import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal, Pagination } from './common.jsx'
+import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal, OptionTag, Pagination } from './common.jsx'
 import { CellView, FieldInput, FieldManagerModal, fieldDisplayProps } from './catalog.jsx'
 
 export function OwnedTool({ scene }) {
@@ -49,7 +55,8 @@ function collectionModeLabel(mode) {
 }
 
 const FILTER_FIELD_TYPES = new Set(['select', 'multiselect', 'boolean', 'reference'])
-const ROCK_BATCH_FIELD_KEYS = new Set(['nature', 'bloodline', 'appearance', 'specialty', 'gender'])
+const ROCK_BATCH_FIELD_KEYS = new Set(['nature', 'bloodline', 'appearance', 'specialty', 'partnerMark', 'gender'])
+const PARTNER_MARK_OPTION_BY_VALUE = new Map(OWNED_PARTNER_MARK_OPTIONS.map((option) => [option.value, option]))
 
 function filterOptionsForField(field, rows, referenceNameMap) {
   if (field.type === 'boolean') {
@@ -116,6 +123,15 @@ function OwnedTableView({ table, sceneId }) {
     }
     return map
   }, [refFieldTables?.map((t) => t.id).join('|') || ''])
+  const rockPartnerData = useLiveQuery(async () => {
+    if (sceneId !== ROCK_KINGDOM_PRESET.scene.id) return null
+    const [creatureRows, creatureFields, skillRows] = await Promise.all([
+      db.catalogRows.where('tableId').equals(ROCK_KINGDOM_PRESET.tables[0].id).toArray(),
+      db.catalogFields.where('tableId').equals(ROCK_KINGDOM_PRESET.tables[0].id).sortBy('order'),
+      db.catalogRows.where('tableId').equals(ROCK_KINGDOM_PRESET.tables[1].id).toArray(),
+    ])
+    return { creatureRows, creatureFields, skillRows }
+  }, [sceneId])
 
   const [fieldManagerOpen, setFieldManagerOpen] = useState(false)
   const [keyword, setKeyword] = useState('')
@@ -130,6 +146,31 @@ function OwnedTableView({ table, sceneId }) {
   const [summaryOpen, setSummaryOpen] = useState(false)
   const [summaryFieldKey, setSummaryFieldKey] = useState('')
   const [intelligenceOpen, setIntelligenceOpen] = useState(false)
+  const [adjustmentOnly, setAdjustmentOnly] = useState(false)
+
+  const partnerAnalysis = useMemo(() => {
+    if (
+      sceneId !== ROCK_KINGDOM_PRESET.scene.id
+      || !rows
+      || !fields
+      || !rockPartnerData
+    ) return { recommendations: new Map(), error: '' }
+    try {
+      return {
+        recommendations: buildRockPartnerMarkRecommendations({
+          records: rows,
+          ownedFields: fields,
+          ...rockPartnerData,
+        }),
+        error: '',
+      }
+    } catch (analysisError) {
+      return {
+        recommendations: new Map(),
+        error: analysisError.message || '伙伴标记分析失败',
+      }
+    }
+  }, [sceneId, rows, fields, rockPartnerData])
 
   const filteredRows = useMemo(() => {
     if (!rows || !fields) return []
@@ -137,13 +178,14 @@ function OwnedTableView({ table, sceneId }) {
     const nameMap = refField?.referenceTableId ? refFieldRows?.[refField.referenceTableId] : null
     return rows.filter((row) =>
       searchableRowMatch(row, keyword, refField, nameMap)
-      && matchesOwnedFieldFilters(row, fields, filters),
+      && matchesOwnedFieldFilters(row, fields, filters)
+      && (!adjustmentOnly || partnerAnalysis.recommendations.get(row.id)?.needsAdjustment),
     )
-  }, [rows, fields, refFieldRows, keyword, filters])
+  }, [rows, fields, refFieldRows, keyword, filters, adjustmentOnly, partnerAnalysis])
 
   useEffect(() => {
     setPage(1)
-  }, [keyword, filters])
+  }, [keyword, filters, adjustmentOnly])
 
   useEffect(() => {
     if (!rows) return
@@ -169,6 +211,10 @@ function OwnedTableView({ table, sceneId }) {
   const safePage = Math.min(page, pageCount)
   const pageRows = filteredRows.slice((safePage - 1) * pageSize, safePage * pageSize)
   const selectedRows = rows.filter((row) => selectedIds.has(row.id))
+  const partnerAdjustmentCount = [...partnerAnalysis.recommendations.values()]
+    .filter((item) => item.needsAdjustment).length
+  const protectedPartnerCount = [...partnerAnalysis.recommendations.values()]
+    .filter((item) => item.protected).length
   const summaryFields = filterFields
   const defaultSummaryField = summaryFields.find((field) => field.key === 'appearance')
     || defaultStockGroupField(summaryFields)
@@ -275,6 +321,34 @@ function OwnedTableView({ table, sceneId }) {
         />
       </div>
 
+      {sceneId === ROCK_KINGDOM_PRESET.scene.id && rows.length > 0 && (
+        <section className="owned-partner-summary" aria-label="伙伴标记检查">
+          <div>
+            <strong>伙伴标记检查</strong>
+            {partnerAnalysis.error ? (
+              <span className="form-error">{partnerAnalysis.error}</span>
+            ) : rockPartnerData ? (
+              <span>
+                {partnerAdjustmentCount > 0
+                  ? `${partnerAdjustmentCount} 只需要调整`
+                  : '当前实际标记均符合建议'}
+                {protectedPartnerCount > 0 ? ` · ${protectedPartnerCount} 只人工保护并跳过` : ''}
+              </span>
+            ) : (
+              <span>正在读取资料并计算建议…</span>
+            )}
+          </div>
+          <button
+            type="button"
+            className={`btn btn-xs ${adjustmentOnly ? 'btn-primary' : ''}`}
+            disabled={!rockPartnerData || Boolean(partnerAnalysis.error)}
+            onClick={() => setAdjustmentOnly((value) => !value)}
+          >
+            {adjustmentOnly ? '显示全部' : `仅看需调整 ${partnerAdjustmentCount || ''}`}
+          </button>
+        </section>
+      )}
+
       {rows.length > 0 && filterFields.length > 0 && (
         <div className="owned-filter-panel">
           <div className="owned-filter-fields">
@@ -299,10 +373,11 @@ function OwnedTableView({ table, sceneId }) {
             <button
               type="button"
               className="btn btn-xs"
-              disabled={!keyword && activeFilterCount === 0}
+              disabled={!keyword && activeFilterCount === 0 && !adjustmentOnly}
               onClick={() => {
                 setKeyword('')
                 setFilters({})
+                setAdjustmentOnly(false)
               }}
             >
               <FilterX size={13} /> 清空条件
@@ -382,6 +457,7 @@ function OwnedTableView({ table, sceneId }) {
         <OwnedGrid
           fields={visibleFields}
           rows={pageRows}
+          partnerRecommendations={sceneId === ROCK_KINGDOM_PRESET.scene.id ? partnerAnalysis.recommendations : null}
           selectedIds={selectedIds}
           allPageSelected={pageRows.length > 0 && pageRows.every((row) => selectedIds.has(row.id))}
           onToggleRow={toggleRow}
@@ -479,6 +555,7 @@ function OwnedTableView({ table, sceneId }) {
 function OwnedGrid({
   fields,
   rows,
+  partnerRecommendations,
   selectedIds,
   allPageSelected,
   onToggleRow,
@@ -502,6 +579,7 @@ function OwnedGrid({
             {fields.map((field) => (
               <th key={field.id} {...fieldDisplayProps(field)}>{field.name}</th>
             ))}
+            {partnerRecommendations && <th className="owned-partner-recommendation-column">建议伙伴标记</th>}
             <th className="th-actions">操作</th>
           </tr>
         </thead>
@@ -521,6 +599,11 @@ function OwnedGrid({
                   <CellView field={field} row={row} allFields={fields} mode="table" />
                 </td>
               ))}
+              {partnerRecommendations && (
+                <td className="owned-partner-recommendation-column">
+                  <PartnerMarkRecommendation value={partnerRecommendations.get(row.id)} />
+                </td>
+              )}
               <td className="td-actions">
                 <span className="data-grid-actions">
                   <IconButton icon={Pencil} title="编辑" onClick={() => onEditRow(row)} />
@@ -536,6 +619,25 @@ function OwnedGrid({
           ))}
         </tbody>
       </table>
+    </div>
+  )
+}
+
+function PartnerMarkRecommendation({ value }) {
+  if (!value) return <span className="owned-partner-pending">待计算</span>
+  const option = PARTNER_MARK_OPTION_BY_VALUE.get(value.recommendedMark)
+    || PARTNER_MARK_OPTION_BY_VALUE.get('none')
+  return (
+    <div className={`owned-partner-recommendation ${value.needsAdjustment ? 'mismatch' : 'matched'}`}>
+      <span>
+        <OptionTag option={option} />
+        {value.protected
+          ? <b>人工保护</b>
+          : value.needsAdjustment
+            ? <b>需要调整</b>
+            : <b>已正确</b>}
+      </span>
+      <small title={value.reason}>{value.reason}</small>
     </div>
   )
 }

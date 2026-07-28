@@ -7481,3 +7481,70 @@ img {
     flex-direction: column;
   }
 }
+.owned-partner-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.owned-partner-summary > div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+.owned-partner-summary span {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.owned-partner-recommendation-column {
+  min-width: 220px;
+  width: 220px;
+}
+
+.owned-partner-recommendation {
+  display: grid;
+  gap: 4px;
+}
+
+.owned-partner-recommendation > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.owned-partner-recommendation b {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.owned-partner-recommendation.mismatch b {
+  color: var(--danger);
+}
+
+.owned-partner-recommendation small,
+.owned-partner-pending {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+@media (max-width: 720px) {
+  .owned-partner-summary,
+  .owned-partner-summary > div {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

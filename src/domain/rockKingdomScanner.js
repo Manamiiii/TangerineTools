@@ -16,6 +16,7 @@ export const ROCK_APPEARANCE_OPTIONS = [
 export const ROCK_SCANNER_CROP_PROFILE = {
   // 根据用户提供的 1280 × 576 总览图标定。坐标使用比例，允许等比例缩放。
   name: { label: '名称', x: 0.688, y: 0.105, width: 0.19, height: 0.105 },
+  partnerMark: { label: '伙伴标记', x: 0.805, y: 0.155, width: 0.052, height: 0.105 },
   bloodline: { label: '血脉', x: 0.855, y: 0.17, width: 0.115, height: 0.095 },
   nature: { label: '性格', x: 0.72, y: 0.72, width: 0.14, height: 0.105 },
   specialty: { label: '特长', x: 0.855, y: 0.72, width: 0.115, height: 0.105 },

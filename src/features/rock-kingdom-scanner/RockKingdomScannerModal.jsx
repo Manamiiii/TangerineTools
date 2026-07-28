@@ -151,7 +151,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       url: createLocalUrl(file),
       sourceName: file.name,
       time: null,
-      values: { ...ownedDefaults, appearance: 'none' },
+      values: { ...ownedDefaults, appearance: 'none', partnerMark: 'none' },
       raw: {},
       confidence: {},
       status: '待识别',
@@ -170,7 +170,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         time: captured.time,
         width: captured.width,
         height: captured.height,
-        values: { ...ownedDefaults, appearance: 'none' },
+        values: { ...ownedDefaults, appearance: 'none', partnerMark: 'none' },
         raw: {},
         confidence: {},
         status: '待识别',
@@ -203,7 +203,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           time,
           width: captured.width,
           height: captured.height,
-          values: { ...ownedDefaults, appearance: 'none' },
+          values: { ...ownedDefaults, appearance: 'none', partnerMark: 'none' },
           raw: {},
           confidence: {},
           status: '待识别',
@@ -372,7 +372,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     }
   }
 
-  const editableKeys = ['ref', 'nature', 'bloodline', 'appearance', 'specialty', 'gender']
+  const editableKeys = ['ref', 'nature', 'bloodline', 'appearance', 'specialty', 'partnerMark', 'gender']
   const editableFields = editableKeys.map((key) => fieldByKey(fields, key)).filter(Boolean)
   const readyCount = frames.filter((frame) => frame.values.ref).length
 
@@ -564,6 +564,11 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                         <small className="scanner-ocr-raw">
                           OCR：{selected.raw[field.key]}
                           {selected.confidence[field.key] ? ` · 匹配 ${Math.round(selected.confidence[field.key] * 100)}%` : ''}
+                        </small>
+                      )}
+                      {field.key === 'partnerMark' && (
+                        <small className="scanner-ocr-raw">
+                          请对照血脉左侧的小图标复核；取得清晰的九枚图标素材前不自动猜测。
                         </small>
                       )}
                     </FormRow>
