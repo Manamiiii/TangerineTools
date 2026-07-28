@@ -2333,11 +2333,20 @@ function ReadingFactContent({ fact, entities, onHide }) {
   )
 }
 
-function ReadingFactsPanel({ facts, entities, currentChapterId, currentChapter, chapters }) {
+function ReadingFactsPanel({
+  facts,
+  entities,
+  backgroundEntities,
+  sources,
+  currentChapterId,
+  currentChapter,
+  chapters,
+}) {
   const visibleFacts = useMemo(
     () => visibleReadingFacts(facts, currentChapterId, chapters),
     [facts, currentChapterId, chapters],
   )
+  const safeBackgrounds = backgroundEntities.filter((entity) => entity.safeNote)
   const [gateStates, setGateStates] = useState({})
 
   function setGateState(factId, state) {
@@ -2355,17 +2364,42 @@ function ReadingFactsPanel({ facts, entities, currentChapterId, currentChapter, 
       <div className="reader-panel-heading">
         <div>
           <ShieldCheck size={20} />
-          <h3>查看已读资料</h3>
+          <h3>背景资料</h3>
         </div>
-        <span className="reader-system-chip"><ShieldCheck size={13} /> 确定性剧透门禁</span>
+        <span className="reader-system-chip"><ShieldCheck size={13} /> 随阅读进度解锁</span>
       </div>
-      {visibleFacts.length === 0 ? (
+      {safeBackgrounds.length === 0 && visibleFacts.length === 0 ? (
         <div className="reader-facts-empty">
           <ShieldCheck size={24} />
-          <strong>当前没有可展示的正式事实</strong>
-          <p>测试夹具和临时研究不会出现在这里；只有通过发布流程的已审计事实才会进入门禁。</p>
+          <strong>当前还没有已解锁的背景资料</strong>
+          <p>阅读中确认带背景注释的名称后，资料会在这里汇总，并随章节进度隐藏或显示。</p>
         </div>
-      ) : (
+      ) : null}
+      {safeBackgrounds.length > 0 && (
+        <div className="reader-background-list">
+          {safeBackgrounds.map((entity) => (
+            <article className="reader-background-card" key={entity.id}>
+              <div className="reader-background-heading">
+                <strong>{entity.name}</strong>
+                <span>
+                  {entity.kind === OBSERVED_ENTITY_KIND.PLACE
+                    ? PLACE_KIND_LABELS[entity.placeKind]
+                    : OBSERVED_KIND_LABELS[entity.kind]}
+                </span>
+              </div>
+              {entity.originalName && entity.originalName !== entity.name && (
+                <p className="reader-background-original">{entity.originalName}</p>
+              )}
+              <ReadingSafeNote
+                entity={entity}
+                sources={sources}
+                className="reader-background-safe-note"
+              />
+            </article>
+          ))}
+        </div>
+      )}
+      {visibleFacts.length > 0 && (
         <div className="reader-fact-list">
           {visibleFacts.map((fact, index) => {
             const gateState = gateStates[fact.id] || 'hidden'
@@ -2962,8 +2996,17 @@ export function ReaderTool({ scene }) {
         readingPackage.chapters,
       ).filter((entity) => entity.kind === 'place').length,
     },
-    ...(readingPackage.facts.length > 0
-      ? [{ id: READER_TAB.FACTS, label: '背景与注释', icon: ShieldCheck }]
+    ...(readingPackage.facts.length > 0 || unlockedEntities.some((entity) => entity.safeNote)
+      ? [{
+          id: READER_TAB.FACTS,
+          label: '背景资料',
+          icon: ShieldCheck,
+          count: visibleReadingFacts(
+            readingPackage.facts,
+            currentChapterId,
+            readingPackage.chapters,
+          ).length + unlockedEntities.filter((entity) => entity.safeNote).length,
+        }]
       : []),
     { id: READER_TAB.SETTINGS, label: '设置', icon: Settings2 },
   ]
@@ -3239,6 +3282,8 @@ export function ReaderTool({ scene }) {
             key={`${readingPackage.id}:${currentChapterId}`}
             facts={readingPackage.facts}
             entities={readingPackage.entities}
+            backgroundEntities={unlockedEntities}
+            sources={readingPackage.sources || []}
             currentChapterId={currentChapterId}
             currentChapter={currentChapter}
             chapters={readingPackage.chapters}

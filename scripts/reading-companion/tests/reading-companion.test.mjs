@@ -1332,6 +1332,8 @@ test('on-demand entities unlock only after an exact reader-confirmed name match'
     placeKind: 'real',
     activation: 'exact-reader-input',
     sourceIds: ['source-weread-edition-metadata'],
+    safeNote: '亚特兰大是佐治亚州州府。',
+    safeNoteSourceIds: ['source-weread-edition-metadata'],
     geometry: { type: 'point', latitude: 33.7628, longitude: -84.422 },
   }]
   assert.equal(
@@ -1369,6 +1371,7 @@ test('on-demand entities unlock only after an exact reader-confirmed name match'
   assert.equal(unlocked.id, 'place-atlanta')
   assert.equal(unlocked.readerConfirmedName, '亚特兰大市')
   assert.equal(unlocked.accessMode, 'reader-confirmed-exact-match')
+  assert.equal(unlocked.safeNote, '亚特兰大是佐治亚州州府。')
   assert.deepEqual(unlocked.revealAt, { chapterId: 'chapter-03' })
 })
 
