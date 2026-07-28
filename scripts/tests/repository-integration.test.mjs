@@ -73,9 +73,18 @@ test('owned table creation is idempotent and only presets Rock Kingdom fields', 
   assert.equal(rockFields.find((field) => field.key === 'ref')?.display?.plainReference, true)
   assert.equal(rockFields.find((field) => field.key === 'gender')?.options?.[0]?.symbol, '♂')
   assert.equal(rockFields.find((field) => field.key === 'shiny')?.display?.mode, 'icon')
+  assert.equal(rockFields.find((field) => field.key === 'shiny')?.hidden, true)
+  assert.equal(rockFields.find((field) => field.key === 'colorful')?.hidden, true)
+  assert.equal(rockFields.find((field) => field.key === 'appearance')?.display?.allowEmpty, false)
+  assert.equal(rockFields.find((field) => field.key === 'partnerMark')?.display?.defaultValue, 'none')
 
+  await db.catalogFields.update(
+    rockFields.find((field) => field.key === 'shiny').id,
+    { hidden: false },
+  )
   await ensureOwnedTable(ROCK_KINGDOM_PRESET.scene.id)
   assert.equal(await db.catalogFields.where('tableId').equals(rockOwned.id).count(), rockFields.length)
+  assert.equal((await db.catalogFields.get(rockFields.find((field) => field.key === 'shiny').id)).hidden, true)
 })
 
 test('batch row updates change only the supplied rows and values in one repository operation', async () => {

@@ -838,10 +838,14 @@ export function FieldInput({ field, value, onChange }) {
         </div>
       )
     case 'select':
+      {
+        const allowEmpty = field.display?.allowEmpty !== false
       if ((field.options || []).length <= 5) {
         return (
           <div className="single-select-input">
-            <button type="button" className={`single-select-chip ${!value ? 'selected' : ''}`} onClick={() => onChange('')}>未选择</button>
+            {allowEmpty && (
+              <button type="button" className={`single-select-chip ${!value ? 'selected' : ''}`} onClick={() => onChange('')}>未选择</button>
+            )}
             {(field.options || []).map((option) => (
               <button type="button" key={option.value} className={`single-select-chip ${value === option.value ? 'selected' : ''}`} onClick={() => onChange(option.value)}>
                 <OptionTag option={option} />
@@ -852,10 +856,13 @@ export function FieldInput({ field, value, onChange }) {
       }
       return (
         <select className="select" value={value || ''} onChange={(e) => onChange(e.target.value)}>
-          <option value="">未选择</option>
+          {allowEmpty
+            ? <option value="">未选择</option>
+            : !value && <option value="" disabled>请选择</option>}
           {(field.options || []).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
       )
+      }
     case 'multiselect': {
       const arr = Array.isArray(value) ? value : []
       function toggle(v) {

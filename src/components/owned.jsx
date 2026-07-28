@@ -16,7 +16,7 @@ import {
   OWNED_PARTNER_MARK_OPTIONS,
 } from '../domain/owned.js'
 import { buildRockPartnerMarkRecommendations } from '../domain/rockKingdomPartnerMarks.js'
-import { valuesWithAppearance } from '../domain/rockKingdomScanner.js'
+import { appearanceFlags, valuesWithAppearance } from '../domain/rockKingdomScanner.js'
 import { buildStockSummary, defaultStockGroupField } from '../domain/stock.js'
 import { RockKingdomScannerModal } from '../features/rock-kingdom-scanner/RockKingdomScannerModal.jsx'
 import { OwnedIntelligenceModal } from '../features/rock-kingdom-model/OwnedIntelligenceModal.jsx'
@@ -48,6 +48,11 @@ function defaultValueForType(type) {
   if (type === 'multiselect') return []
   if (type === 'boolean') return false
   return ''
+}
+
+function defaultValueForField(field) {
+  if (field?.display && Object.hasOwn(field.display, 'defaultValue')) return field.display.defaultValue
+  return defaultValueForType(field?.type)
 }
 
 function collectionModeLabel(mode) {
@@ -738,7 +743,9 @@ export function OwnedFormModal({ table, fields, row, rows, collectionMode, initi
   const [values, setValues] = useState(() => {
     const init = {}
     fields.forEach((f) => {
-      init[f.key] = row?.values?.[f.key] ?? initialValues[f.key] ?? defaultValueForType(f.type)
+      init[f.key] = (row ? ownedFieldValue(row, f) : undefined)
+        ?? initialValues[f.key]
+        ?? defaultValueForField(f)
     })
     return init
   })
@@ -753,7 +760,9 @@ export function OwnedFormModal({ table, fields, row, rows, collectionMode, initi
   )
   const selectedRefRow = referencedRows?.find((item) => item.id === values[refField?.key])
   const selectedHasShinyForm = selectedRefRow?.values?.shiny === 'yes' || selectedRefRow?.values?.shiny === true
-  const shinyBlocked = values.shiny === 'yes' && selectedRefRow && !selectedHasShinyForm
+  const shinyBlocked = appearanceFlags(values.appearance).shiny === 'yes'
+    && selectedRefRow
+    && !selectedHasShinyForm
 
   function setFieldValue(key, value) {
     setValues((prev) => {
@@ -813,7 +822,7 @@ export function OwnedFormModal({ table, fields, row, rows, collectionMode, initi
               value={values[field.key]}
               onChange={(v) => setFieldValue(field.key, v)}
             />
-            {field.key === 'shiny' && shinyBlocked && (
+            {field.key === 'appearance' && shinyBlocked && (
               <div className="form-error">资料库「异色形态」为无，不能选择异色个体。</div>
             )}
           </FormRow>
