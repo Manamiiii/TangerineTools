@@ -7305,6 +7305,14 @@ img {
   color: var(--primary);
 }
 
+.shared-model-settings .modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 2px;
+}
+
 .owned-intelligence {
   display: grid;
   gap: 14px;
