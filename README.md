@@ -8,7 +8,7 @@ TangerineTools 是一个本地优先（local-first）的个人资料管理 Web A
 - **场景化工具箱**：首页管理多个场景，每个场景可单独启用资料库、收集记录、统计视图、性格推荐、孵蛋推荐和阅读伴侣六种工具。
 - **可配置资料库**：支持多资料表、字段管理、搜索、排序、筛选、分页、详情弹窗，以及由字段配置控制的紧凑列宽、多行标签、摘要单元格、引用头像和图标化选项。
 - **引用与多引用字段**：支持单条资料引用和一对多资料引用；洛克王国精灵通过 `skillRefs` 关联技能资料，技能通过 `learnerRefs` 反向关联可学精灵。
-- **收集记录**：记录“我具体拥有哪一只 / 哪一份”，支持一对一和一对多模式；可搜索引用字段在同一个组合框中完成输入筛选和选择。
+- **收集记录**：记录“我具体拥有哪一只 / 哪一份”，支持一对一和一对多模式；可搜索引用字段在同一个组合框中完成输入筛选和选择。洛克王国记录可扫描并复核游戏伙伴标记，并按性格、PVE价值、稀有外观、特长和同形态组重复关系即时提示建议标记。
 - **统计视图**：从资料库或收集记录选择数据源，按字段分组并叠加数值阈值条件统计。
 - **性格推荐**：每个编号从普通形态进入，展示统一绝对刻度的六维、动态分位、完整特性和同编号全部形态差异；候选按强化维度与推荐档位展示，按进化链匹配已获得性格，并为推荐/可保留性格提供预填快速新增收集记录。
 - **孵蛋推荐**：结合收集记录、性别、异色/炫彩、性格、蛋组和繁育谱系，对可用父母组合进行排序。
@@ -95,8 +95,9 @@ npm run lint
 │   ├── reading-companion/
 │   │   ├── product-and-architecture.md    # 经典文学阅读伴侣规划与剧透安全契约
 │   │   ├── model-prompts.md               # 个人初始化与正式预制提示词契约
-│   │   ├── model-provider-setup.md        # 国内外兼容模型配置与测试方法
 │   │   └── trial-guide.md                 # 当前试用范围、步骤和反馈重点
+│   ├── model-provider-setup.md             # 各工具独立的模型配置与共享连接说明
+│   ├── rock-kingdom-scanner.md            # 精灵扫描录入、Windows 采集与复核约束
 │   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
 │   └── system-capabilities.md            # 已实现能力和明确非目标
 ├── public/presets/
@@ -140,6 +141,8 @@ npm run lint
 │   │   ├── natureRowAdapter.js            # 资料行到推荐输入的适配
 │   │   ├── rockKingdom*.js               # 形态、展示和共享标签规则
 │   │   └── owned.js / stock.js / breeding*.js # 其他工具纯领域逻辑
+│   ├── features/model/                    # 共享模型连接、配置和受限 JSON 请求
+│   ├── features/ocr/                      # 阅读与游戏扫描共用的本机 OCR
 │   ├── features/reading-companion/
 │   │   ├── components/                   # 阅读伴侣专用界面
 │   │   ├── data/                         # 运行时资料包读取
@@ -148,6 +151,8 @@ npm run lint
 │   │   ├── map/                          # 互动底图供应商与默认视野配置
 │   │   ├── preset.js                     # 经典文学阅读场景定义
 │   │   └── index.js                      # 功能公开入口
+│   ├── features/rock-kingdom-scanner/    # 本地视频抽帧、截图复核与扫描界面
+│   ├── features/rock-kingdom-model/      # 扫描纠错、记录检查说明与性格解释
 │   ├── presets/
 │   │   └── rockKingdom.js                # 洛克王国场景、字段和选项
 │   ├── App.jsx                            # hash 路由、工具懒加载、全局导入导出
@@ -228,6 +233,7 @@ git diff --check
 - [`AGENTS.md`](AGENTS.md)：长期有效的 Codex/agent 开发边界、必读文件与测试命令。
 - [`docs/system-capabilities.md`](docs/system-capabilities.md)：当前已实现能力与明确排除范围。
 - [`docs/data-sync.md`](docs/data-sync.md)：数据模型、导入/导出、预置资料同步与迁移语义。
+- [`docs/rock-kingdom-scanner.md`](docs/rock-kingdom-scanner.md)：洛克王国精灵扫描录入、Windows 采集路径和人工复核约束。
 - [`docs/data-sources/bwiki-pipeline.md`](docs/data-sources/bwiki-pipeline.md)：BWiki 页面、版本化快照、刷新顺序和发布边界。
 - [`docs/data-sources/bwiki-field-mapping.md`](docs/data-sources/bwiki-field-mapping.md)：staging 到正式预置的字段血缘、稳定 id 和验收门槛。
 - [`docs/data-sources/research-sources.md`](docs/data-sources/research-sources.md)：B站、小红书等玩家资料的用途、证据记录方式和采用边界。
@@ -237,7 +243,7 @@ git diff --check
 - [`docs/nature/open-issues.md`](docs/nature/open-issues.md)：尚未形成稳定规则的通用问题。
 - [`docs/reading-companion/product-and-architecture.md`](docs/reading-companion/product-and-architecture.md)：经典文学阅读伴侣的已实现范围、按书建库、跨端入口和剧透安全契约。
 - [`docs/reading-companion/model-prompts.md`](docs/reading-companion/model-prompts.md)：个人书籍自动初始化和内置书正式预制使用的版本化提示词与输出权限。
-- [`docs/reading-companion/model-provider-setup.md`](docs/reading-companion/model-provider-setup.md)：智谱、DeepSeek、MiniMax、OpenAI 和自定义模型的配置与测试方法。
+- [`docs/model-provider-setup.md`](docs/model-provider-setup.md)：阅读伴侣与洛克王国各自独立的智谱、DeepSeek、MiniMax、OpenAI 和自定义模型连接配置，以及双向复制方法。
 - [`docs/reading-companion/trial-guide.md`](docs/reading-companion/trial-guide.md)：阅读伴侣当前可试用范围、启动步骤和反馈重点。
 
 根 README 是项目结构、命令和维护文档的统一入口；专题文档只保存各自领域内不可由代码结构直接表达的规则与约束。

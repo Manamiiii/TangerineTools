@@ -106,6 +106,7 @@ async function ensureFixedFields(tableId, sceneId, idPrefix, fixedFields, now, e
       name: f.name,
       type: f.type,
       order: startOrder + index,
+      hidden: Boolean(f.hidden),
       options: f.options,
       display: f.display,
       createdAt: now,
@@ -146,7 +147,7 @@ async function reconcileRockKingdomOwnedFields(tableId, sceneId, fixedFields, ca
           type: fixed.type,
           options: fixed.options || [],
           display: fixed.display || {},
-          hidden: false,
+          hidden: Boolean(fixed.hidden),
           referenceTableId: fixed.type === 'reference' ? catalogTableId || null : field.referenceTableId || null,
           updatedAt: now,
         })
@@ -214,6 +215,7 @@ export async function ensureOwnedTable(sceneId) {
       name: f.name,
       type: f.type,
       order: index,
+      hidden: Boolean(f.hidden),
       options: f.options,
       display: f.display,
       referenceTableId: f.type === 'reference' ? catalogTable?.id || null : undefined,
@@ -291,6 +293,16 @@ export async function createRow(tableId, values) {
 
 export async function updateRow(id, values) {
   await db.catalogRows.update(id, { values, updatedAt: nowIso() })
+}
+
+export async function updateRows(updates = []) {
+  if (updates.length === 0) return
+  const now = nowIso()
+  await db.transaction('rw', db.catalogRows, async () => {
+    await Promise.all(updates.map(({ id, values }) =>
+      db.catalogRows.update(id, { values, updatedAt: now }),
+    ))
+  })
 }
 
 export async function deleteRow(id) {

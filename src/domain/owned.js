@@ -1,6 +1,8 @@
 // 收集记录工具的领域逻辑：固定字段定义、选项常量、统计纯函数。
 // 与「统计视图」的思路互补：统计视图回答"我拥有多少能达到条件的个体"，
 // 收集记录回答"我具体拥有哪一只、它有哪些个体属性"。
+
+import { ROCK_APPEARANCE_OPTIONS } from './rockKingdomScanner.js'
 //
 // 存储上和资料库、统计视图共用 catalogTables/catalogFields/catalogRows，
 // 通过 kind: 'owned' 区分，字段类型仍是标准的 reference/text/number/select/date/longtext，
@@ -55,6 +57,19 @@ export const OWNED_COLORFUL_OPTIONS = [
 export const OWNED_GENDER_OPTIONS = [
   { value: 'male', label: '公', color: '#2563eb', symbol: '♂', variant: 'male' },
   { value: 'female', label: '母', color: '#e11d48', symbol: '♀', variant: 'female' },
+]
+
+export const OWNED_PARTNER_MARK_OPTIONS = [
+  { value: 'none', label: '无', color: '#94a3b8' },
+  { value: 'fruit', label: '果实', color: '#f59e0b' },
+  { value: 'lightning', label: '闪电', color: '#eab308' },
+  { value: 'home', label: '房屋', color: '#64748b' },
+  { value: 'hp', label: '生命', color: '#e11d48' },
+  { value: 'patk', label: '物攻', color: '#dc2626' },
+  { value: 'matk', label: '魔攻', color: '#7c3aed' },
+  { value: 'pdef', label: '物防', color: '#059669' },
+  { value: 'mdef', label: '魔防', color: '#0891b2' },
+  { value: 'spd', label: '速度', color: '#d97706' },
 ]
 
 export const OWNED_SPECIALTY_OPTIONS = [
@@ -124,9 +139,11 @@ export const ROCK_KINGDOM_COLLECTION_FIELDS = [
   { key: 'ref', name: '精灵', type: 'reference', display: { referenceImageField: 'image', referenceImageVariantField: 'shinyImage', referenceImageVariantSourceField: 'shiny', referenceImageVariantSourceValue: 'yes', referenceLabelFields: ['name'], searchableReference: true, plainReference: true, breakParentheses: true, compact: true, tableWidth: 154 } },
   { key: 'nature', name: '性格', type: 'select', options: OWNED_NATURE_OPTIONS, display: { compact: true, tableWidth: 136 } },
   { key: 'bloodline', name: '血脉', type: 'select', options: OWNED_BLOODLINE_OPTIONS, display: { compact: true, tableWidth: 104 } },
-  { key: 'shiny', name: '个体异色', type: 'select', options: OWNED_SHINY_OPTIONS, display: { mode: 'icon', hiddenOptionValues: ['no'], compact: true, tableWidth: 68 } },
-  { key: 'colorful', name: '是否炫彩', type: 'select', options: OWNED_COLORFUL_OPTIONS, display: { mode: 'icon', hiddenOptionValues: ['no'], compact: true, tableWidth: 68 } },
+  { key: 'shiny', name: '个体异色', type: 'select', options: OWNED_SHINY_OPTIONS, hidden: true, display: { mode: 'icon', hiddenOptionValues: ['no'], compact: true, tableWidth: 68 } },
+  { key: 'colorful', name: '是否炫彩', type: 'select', options: OWNED_COLORFUL_OPTIONS, hidden: true, display: { mode: 'icon', hiddenOptionValues: ['no'], compact: true, tableWidth: 68 } },
+  { key: 'appearance', name: '外观细分', type: 'select', options: ROCK_APPEARANCE_OPTIONS, display: { allowEmpty: false, defaultValue: 'none', hiddenOptionValues: ['none'], compact: true, tableWidth: 128 } },
   { key: 'specialty', name: '特长', type: 'select', options: OWNED_SPECIALTY_OPTIONS },
+  { key: 'partnerMark', name: '游戏伙伴标记', type: 'select', options: OWNED_PARTNER_MARK_OPTIONS, display: { allowEmpty: false, defaultValue: 'none', hiddenOptionValues: ['none'], compact: true, tableWidth: 104 } },
   { key: 'gender', name: '性别', type: 'select', options: OWNED_GENDER_OPTIONS, display: { mode: 'icon', compact: true, tableWidth: 56 } },
   { key: 'note', name: '备注', type: 'longtext' },
 ]
@@ -141,6 +158,28 @@ export function matchesOwnedSearch(row, keyword) {
     .map((v) => (v == null ? '' : String(v).toLowerCase()))
     .join('\n')
   return haystack.includes(kw)
+}
+
+export function matchesOwnedFieldFilters(row, fields = [], filters = {}) {
+  return fields.every((field) => {
+    const expected = filters[field.key]
+    if (!expected) return true
+    const raw = ownedFieldValue(row, field)
+    if (field.type === 'multiselect') return Array.isArray(raw) && raw.map(String).includes(String(expected))
+    if (field.type === 'boolean') return String(Boolean(raw)) === String(expected)
+    return String(raw ?? '') === String(expected)
+  })
+}
+
+export function ownedFieldValue(row, field) {
+  const raw = row.values?.[field.key]
+  if (field.key !== 'appearance' || (raw != null && raw !== '')) return raw
+  const shiny = isOwnedYes(row.values?.shiny)
+  const colorful = isOwnedYes(row.values?.colorful)
+  if (shiny && colorful) return 'shiny-colorful'
+  if (shiny) return 'shiny'
+  if (colorful) return 'colorful'
+  return 'none'
 }
 
 // 按“精灵引用 + 具体性格值”统计收集数量，供性格候选逐项匹配。

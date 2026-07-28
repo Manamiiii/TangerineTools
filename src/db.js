@@ -21,5 +21,6 @@ export {
   reorderFields,
   updateField,
   updateRow,
+  updateRows,
   updateScene,
 } from './db/repository.js'

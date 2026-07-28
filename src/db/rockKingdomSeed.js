@@ -55,7 +55,7 @@ export async function ensureSeeded() {
 // - 第二轮：加入统计视图与性格推荐 -> ['catalog', 'stock', 'nature']
 // - 第三轮：再加入收集记录 -> ['catalog', 'owned', 'stock', 'nature']
 // - 第四轮：加入孵蛋推荐 -> ['catalog', 'owned', 'stock', 'nature', 'breeding']
-// - 当前：按实际工作流排序 -> ['catalog', 'nature', 'owned', 'breeding', 'stock']
+// - 统计摘要合并到收集记录后，默认工具为 ['catalog', 'nature', 'owned', 'breeding']
 // 迁移策略：只在场景 tools 恰好等于某一版旧默认值时，自动补齐到当前默认值。
 // 只要用户手动改过 tools（哪怕只是关掉了资料库或加入了不同工具的组合），
 // 一律不覆盖，尊重用户的选择。场景已被用户删除时跳过。
@@ -64,6 +64,7 @@ const LEGACY_DEFAULT_SCENE_TOOLS_LIST = [
   ['catalog', 'stock', 'nature'],
   ['catalog', 'owned', 'stock', 'nature'],
   ['catalog', 'owned', 'stock', 'nature', 'breeding'],
+  ['catalog', 'nature', 'owned', 'breeding', 'stock'],
 ]
 
 function arraysEqual(a, b) {

@@ -77,8 +77,8 @@ import {
   translateReadingPlaceQuery,
 } from '../../../src/features/reading-companion/model/modelAdapter.js'
 import {
-  normalizeReadingOcrText,
-} from '../../../src/features/reading-companion/ocr/localOcr.js'
+  normalizeOcrText,
+} from '../../../src/features/ocr/localOcr.js'
 import {
   READING_MODEL_PROVIDER,
   READING_MODEL_PROVIDERS,
@@ -119,12 +119,12 @@ test('reading companion keeps feature code and maintenance files in dedicated di
     'src/features/reading-companion/map/mapConfig.js',
     'src/features/reading-companion/model/modelAdapter.js',
     'src/features/reading-companion/model/modelProviders.js',
-    'src/features/reading-companion/ocr/localOcr.js',
+    'src/features/ocr/localOcr.js',
     'src/features/reading-companion/preset.js',
     'scripts/reading-companion/build-preview.mjs',
     'scripts/reading-companion/audit-quality.mjs',
     'scripts/reading-companion/lib/quality-audit.mjs',
-    'docs/reading-companion/model-provider-setup.md',
+    'docs/model-provider-setup.md',
     'docs/reading-companion/product-and-architecture.md',
   ]
   await Promise.all(dedicatedPaths.map((file) => access(new URL(file, repoUrl))))
@@ -1496,14 +1496,14 @@ test('local scanning also marks names already saved by the reader', () => {
 
 test('OCR cleanup joins Chinese line wraps while preserving English word spaces', () => {
   assert.equal(
-    normalizeReadingOcrText('从 弗 吉 尼 亚 大 学\n拖 了 出 来。\nUniversity of\nVirginia'),
+    normalizeOcrText('从 弗 吉 尼 亚 大 学\n拖 了 出 来。\nUniversity of\nVirginia'),
     '从弗吉尼亚大学拖了出来。 University of Virginia',
   )
 })
 
 test('book metadata OCR cleanup preserves labeled field boundaries', () => {
   assert.equal(
-    normalizeReadingOcrText([
+    normalizeOcrText([
       '作者：玛格丽特·米切尔',
       '译者：范纯海、夏旻',
       '出版社：长江文艺出版社',
@@ -1517,7 +1517,7 @@ test('book metadata OCR cleanup preserves labeled field boundaries', () => {
 })
 
 test('book metadata OCR cleans repeated Chinese spaces from a real copyright page shape', () => {
-  const normalized = normalizeReadingOcrText([
+  const normalized = normalizeOcrText([
     'Tose as 四 ;',
     '版 权 信 息',
     '书 名 : 傲慢 与 偏见',

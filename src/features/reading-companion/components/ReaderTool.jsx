@@ -42,11 +42,10 @@ import {
 } from '../../../pwaInstall.js'
 import { searchReadingPlaces } from '../map/geocoding.js'
 import {
-  recognizeReadingImage,
-  recognizeReadingMetadataImage,
-} from '../ocr/localOcr.js'
+  recognizeImageText,
+  recognizeStructuredImageText,
+} from '../../ocr/localOcr.js'
 import {
-  READING_MODEL_STORAGE_KEYS,
   analyzeReadingBookMetadata,
   analyzeReadingExcerpt,
   answerReadingQuestion,
@@ -56,12 +55,13 @@ import {
 import {
   READING_MODEL_PROVIDER,
   READING_MODEL_PROVIDERS,
-  inferReadingModelProvider,
-  normalizeReadingModelProvider,
-  readingModelApiKeyStorageKey,
-  readingModelProfileStorageKey,
-  readingModelProviderDefaults,
 } from '../model/modelProviders.js'
+import {
+  hasStoredModelConfig,
+  loadStoredModelConfig,
+  MODEL_CONFIG_SCOPE,
+  saveStoredModelConfig,
+} from '../../model/modelConfig.js'
 import {
   PERSONAL_BOOK_COVER_THEMES,
   createPersonalReadingPackage,
@@ -76,6 +76,7 @@ import {
 } from '../domain/feedbackBundle.js'
 
 const APP_BUILD = String(import.meta.env.VITE_APP_BUILD || 'local').slice(0, 7)
+const EMPTY_OBSERVED_ENTITIES = Object.freeze([])
 import {
   READING_MAP_PROVIDER,
   READING_MAP_PROVIDERS,
@@ -203,33 +204,7 @@ function observedRecordAction(observedEntities, name, kind, currentChapterId, ch
 }
 
 function loadStoredReadingModelConfig(providerId = '', allowLegacy = true) {
-  const legacyEndpoint = window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.endpoint) || ''
-  const storedProviderId = window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.provider) || ''
-  const selectedProviderId = providerId
-    ? normalizeReadingModelProvider(providerId)
-    : storedProviderId
-      ? normalizeReadingModelProvider(storedProviderId)
-      : legacyEndpoint
-        ? inferReadingModelProvider(legacyEndpoint)
-        : READING_MODEL_PROVIDER.ZHIPU
-  const defaults = readingModelProviderDefaults(selectedProviderId)
-  const legacyMatchesProvider = inferReadingModelProvider(legacyEndpoint) === selectedProviderId
-  return {
-    ...defaults,
-    endpoint: window.localStorage.getItem(
-      readingModelProfileStorageKey(selectedProviderId, 'endpoint'),
-    ) || (allowLegacy && legacyMatchesProvider ? legacyEndpoint : '') || defaults.endpoint,
-    model: window.localStorage.getItem(
-      readingModelProfileStorageKey(selectedProviderId, 'model'),
-    ) || (allowLegacy && legacyMatchesProvider
-      ? window.localStorage.getItem(READING_MODEL_STORAGE_KEYS.model) || ''
-      : '') || defaults.model,
-    apiKey: window.sessionStorage.getItem(
-      readingModelApiKeyStorageKey(selectedProviderId),
-    ) || (allowLegacy && legacyMatchesProvider
-      ? window.sessionStorage.getItem(READING_MODEL_STORAGE_KEYS.apiKey) || ''
-      : ''),
-  }
+  return loadStoredModelConfig(providerId, allowLegacy, MODEL_CONFIG_SCOPE.READING)
 }
 
 function LoadingPanel({ message }) {
@@ -325,7 +300,7 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
       correctedFields: [],
     })
     try {
-      let text = await recognizeReadingImage(
+      let text = await recognizeImageText(
         file,
         (progress) => {
           if (Number.isFinite(progress?.progress)) {
@@ -344,7 +319,7 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
         || !localDetails.metadata.translators?.length
         || localDetails.uncertainFields.length > 0
       ) {
-        const retryText = await recognizeReadingMetadataImage(file, (progress) => {
+        const retryText = await recognizeStructuredImageText(file, (progress) => {
           if (Number.isFinite(progress?.progress)) {
             setMetadataScan((current) => ({
               ...current,
@@ -1102,11 +1077,13 @@ function ReadingQuestionPanel({
 function ReadingServiceSettings({
   modelConfig,
   mapConfig,
+  canCopyRockModelConfig,
   scene,
   readingPackage,
   readingState,
   currentChapterId,
   onLoadModelProvider,
+  onLoadRockModelConfig,
   onSaveModel,
   onSaveMap,
 }) {
@@ -1162,6 +1139,11 @@ function ReadingServiceSettings({
         ? `已切换到${selectedModelProvider.label}，请回到“阅读输入”用当前段落验证。`
         : '模型地址和名称已保存，API Key 已清除。',
     )
+  }
+
+  function copyRockModelConfig() {
+    setModelDraft(onLoadRockModelConfig())
+    setMessage('已载入洛克王国配置；保存后将成为独立的阅读伴侣配置。')
   }
 
   function saveMap(event) {
@@ -1249,11 +1231,24 @@ function ReadingServiceSettings({
             <button
               type="button"
               className="btn"
+              onClick={copyRockModelConfig}
+              disabled={!canCopyRockModelConfig}
+            >
+              复制洛克王国配置
+            </button>
+            <button
+              type="button"
+              className="btn"
               onClick={() => setModelDraft((current) => ({ ...current, apiKey: '' }))}
             >
               清除 Key
             </button>
           </div>
+          <small>
+            {canCopyRockModelConfig
+              ? '复制只载入当前表单；保存后两套配置仍互不联动。'
+              : '洛克王国还没有已保存的模型配置。'}
+          </small>
         </form>
         <details className="reader-service-guide">
           <summary>{selectedModelProvider.label}配置提示</summary>
@@ -1278,7 +1273,8 @@ function ReadingServiceSettings({
           )}
         </details>
         <p className="reader-settings-storage">
-          Key 仅保留在当前浏览器会话。模型功能执行时会发送所需的书目信息或当前阅读上下文。
+          阅读伴侣配置独立保存。每个供应商的地址和模型名分别保存在本机 localStorage；各家 Key 分别存在 sessionStorage，关闭浏览器会话后失效。
+          不同功能会发送书目信息，或当前问题、段落、书名和章节标签；只有点击功能或创建时保留 AI 准备选项才会调用。
         </p>
       </section>
 
@@ -2880,7 +2876,7 @@ export function ReaderTool({ scene }) {
       edition.isbn.startsWith('personal-') ? null : `ISBN ${edition.isbn}`,
     ].filter(Boolean).join(' · ')
   }, [readingPackage])
-  const observedEntities = savedState?.observedEntities || []
+  const observedEntities = savedState?.observedEntities || EMPTY_OBSERVED_ENTITIES
 
   useEffect(() => {
     const text = excerpt.trim()
@@ -3077,44 +3073,7 @@ export function ReaderTool({ scene }) {
   }
 
   function saveModelConfig(nextConfig) {
-    const providerId = normalizeReadingModelProvider(nextConfig.providerId)
-    const provider = READING_MODEL_PROVIDERS[providerId]
-    const normalized = {
-      providerId,
-      endpoint: nextConfig.endpoint.trim(),
-      model: nextConfig.model.trim(),
-      apiKey: nextConfig.apiKey.trim(),
-      temperature: provider.temperature,
-    }
-    window.localStorage.setItem(READING_MODEL_STORAGE_KEYS.provider, providerId)
-    window.localStorage.setItem(
-      readingModelProfileStorageKey(providerId, 'endpoint'),
-      normalized.endpoint,
-    )
-    window.localStorage.setItem(
-      readingModelProfileStorageKey(providerId, 'model'),
-      normalized.model,
-    )
-    if (normalized.endpoint) {
-      window.localStorage.setItem(READING_MODEL_STORAGE_KEYS.endpoint, normalized.endpoint)
-    } else {
-      window.localStorage.removeItem(READING_MODEL_STORAGE_KEYS.endpoint)
-    }
-    if (normalized.model) {
-      window.localStorage.setItem(READING_MODEL_STORAGE_KEYS.model, normalized.model)
-    } else {
-      window.localStorage.removeItem(READING_MODEL_STORAGE_KEYS.model)
-    }
-    if (normalized.apiKey) {
-      window.sessionStorage.setItem(
-        readingModelApiKeyStorageKey(providerId),
-        normalized.apiKey,
-      )
-      window.sessionStorage.setItem(READING_MODEL_STORAGE_KEYS.apiKey, normalized.apiKey)
-    } else {
-      window.sessionStorage.removeItem(readingModelApiKeyStorageKey(providerId))
-      window.sessionStorage.removeItem(READING_MODEL_STORAGE_KEYS.apiKey)
-    }
+    const normalized = saveStoredModelConfig(nextConfig, MODEL_CONFIG_SCOPE.READING)
     setModelConfig(normalized)
   }
 
@@ -3265,7 +3224,7 @@ export function ReaderTool({ scene }) {
     setOcrProgress(0)
     setInputStatus('正在本机初始化 OCR…')
     try {
-      const text = await recognizeReadingImage(imageInput.file, (progress) => {
+      const text = await recognizeImageText(imageInput.file, (progress) => {
         if (Number.isFinite(progress?.progress)) {
           setOcrProgress(Math.round(progress.progress * 100))
         }
@@ -3679,11 +3638,17 @@ export function ReaderTool({ scene }) {
           <ReadingServiceSettings
             modelConfig={modelConfig}
             mapConfig={mapConfig}
+            canCopyRockModelConfig={hasStoredModelConfig(MODEL_CONFIG_SCOPE.ROCK_KINGDOM)}
             scene={scene}
             readingPackage={readingPackage}
             readingState={savedState}
             currentChapterId={currentChapterId}
             onLoadModelProvider={(providerId) => loadStoredReadingModelConfig(providerId, false)}
+            onLoadRockModelConfig={() => loadStoredModelConfig(
+              '',
+              true,
+              MODEL_CONFIG_SCOPE.ROCK_KINGDOM,
+            )}
             onSaveModel={saveModelConfig}
             onSaveMap={saveMapConfig}
           />

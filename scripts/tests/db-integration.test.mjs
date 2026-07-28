@@ -192,7 +192,7 @@ test('seed migration is versioned and preserves imported custom preset values', 
   assert.equal(fetchCount, 0)
   assert.deepEqual(
     (await db.scenes.get('scene-rock-kingdom')).tools,
-    ['catalog', 'nature', 'owned', 'breeding', 'stock'],
+    ['catalog', 'nature', 'owned', 'breeding'],
   )
 })
 
