@@ -552,6 +552,23 @@ test('Gone with the Wind exact-input dictionary recognizes audited names without
   assert.match(contextMatches[1].entity.safeNote, /大规模农业用地/)
   assert.match(contextMatches[2].entity.safeNote, /美国第 16 任总统/)
   assert.match(contextMatches[3].entity.safeNote, /1861–1865 年/)
+  const expandedCharacterMatches = scanOnDemandEntities(
+    '杰拉尔德、艾伦、苏伦、卡琳、普里西、波克和彼得大叔都被提到了。',
+    readingPackage.onDemandEntities,
+  )
+  assert.deepEqual(
+    expandedCharacterMatches.map(({ entity }) => entity.id),
+    [
+      'person-gerald-ohara',
+      'person-ellen-ohara',
+      'person-suellen-ohara',
+      'person-carreen-ohara',
+      'person-prissy',
+      'person-pork',
+      'person-uncle-peter',
+    ],
+  )
+  assert.ok(expandedCharacterMatches.every(({ entity }) => entity.safeNote === undefined))
   const historicalContextMatches = scanOnDemandEntities(
     '文中提到奴隶制、废奴运动、《解放奴隶宣言》、重建时期和美利坚联盟国。',
     readingPackage.onDemandEntities,
@@ -1594,24 +1611,24 @@ test('reading preview publishes only approved sources and keeps candidates pendi
   assert.equal(catalog.packages.length, 1)
   const [preview] = previews
   assert.deepEqual(validateReadingPackage(preview.package), [])
-  assert.equal(preview.previewMeta.approvedSourceIds.length, 30)
+  assert.equal(preview.previewMeta.approvedSourceIds.length, 32)
   assert.equal(preview.previewMeta.pendingSourceIds.length, 3)
   assert.equal(preview.previewMeta.candidateEntityIds.length, 30)
   assert.equal(preview.previewMeta.candidateFactIds.length, 2)
-  assert.equal(preview.previewMeta.onDemandEntityIds.length, 23)
+  assert.equal(preview.previewMeta.onDemandEntityIds.length, 40)
   assert.equal(preview.researchCandidates.entities.length, 30)
   assert.equal(preview.researchCandidates.facts.length, 2)
-  assert.equal(preview.package.onDemandEntities.length, 23)
+  assert.equal(preview.package.onDemandEntities.length, 40)
   assert.deepEqual(preview.package.entities, [])
   assert.deepEqual(preview.package.facts, [])
   assert.deepEqual(preview.catalogEntry.preparedSummary, {
-    entityCount: 23,
-    place: 11,
-    person: 5,
+    entityCount: 40,
+    place: 12,
+    person: 21,
     concept: 5,
     event: 2,
     factCount: 0,
-    sourceCount: 30,
+    sourceCount: 32,
   })
   assert.deepEqual(
     preview.package.sources.map((source) => source.id),
@@ -1701,11 +1718,11 @@ test('single-book feedback exports only whitelisted reading data', () => {
 test('reading package quality audit keeps gaps and blockers inspectable', async () => {
   const { previews } = await buildReadingPreviews()
   const audit = auditReadingPackageQuality(previews[0])
-  assert.equal(audit.summary.onDemandEntityCount, 23)
+  assert.equal(audit.summary.onDemandEntityCount, 40)
   assert.ok(audit.backgroundGaps.some((item) => item.id === 'place-tara'))
   assert.ok(audit.placeGeometryGaps.some((item) => item.id === 'place-american-south'))
   assert.ok(
-    audit.candidateTranslationGaps.some((item) => item.id === 'person-gerald-ohara'),
+    audit.candidateTranslationGaps.some((item) => item.id === 'person-mrs-tarleton'),
   )
   assert.equal(audit.blockerCounts.missing_edition_chapter_evidence, 32)
   assert.deepEqual(audit.pendingSourceIds, [
