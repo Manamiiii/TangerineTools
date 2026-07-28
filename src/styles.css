@@ -4140,7 +4140,6 @@ img {
 
 .reader-eyebrow,
 .reader-safe-chip,
-.reader-local-chip,
 .reader-system-chip {
   display: inline-flex;
   align-items: center;
@@ -4322,16 +4321,6 @@ img {
   padding: 20px;
 }
 
-.reader-service-status {
-  margin: 12px 0 0;
-  color: #b45309;
-  font-size: 11px;
-}
-
-.reader-service-status.ready {
-  color: #047857;
-}
-
 .reader-panel-heading,
 .reader-panel-heading > div,
 .reader-sidebar-card h3 {
@@ -4368,8 +4357,7 @@ img {
   font-weight: 800;
 }
 
-.reader-safe-chip,
-.reader-local-chip {
+.reader-safe-chip {
   padding: 4px 8px;
   border-radius: 999px;
   font-size: 11px;
@@ -4379,11 +4367,6 @@ img {
 .reader-safe-chip {
   background: #ecfdf5;
   color: #047857;
-}
-
-.reader-local-chip {
-  background: #f1f5f9;
-  color: #475569;
 }
 
 .reader-system-chip {

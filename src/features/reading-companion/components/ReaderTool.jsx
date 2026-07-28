@@ -11,7 +11,6 @@ import {
   Image,
   Laptop,
   LibraryBig,
-  Lock,
   Map as MapIcon,
   MapPin,
   Maximize2,
@@ -388,11 +387,7 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
         ocrText: text,
         correctedFields,
       })
-      setStatus(
-        configured
-          ? '已用本机 OCR 和当前模型填入识别到的书籍信息，请核对后创建。'
-          : '已用本机 OCR 填入可确定的信息；配置模型后可提高复杂页面的字段整理效果。',
-      )
+      setStatus('已填入识别到的书籍信息，请核对后创建。')
     } catch (error) {
       setMetadataScan({
         state: 'error',
@@ -619,7 +614,7 @@ function WindowsInstallCard() {
         <strong>{standalone ? '已作为 Windows 应用运行' : '安装到 Windows'}</strong>
         <p>
           {standalone
-            ? '当前是独立窗口；数据仍只保存在这个浏览器应用中。'
+            ? '可从开始菜单或桌面直接打开。'
             : '用 Edge 或 Chrome 安装后可从开始菜单启动，并继续使用本机书架、剪贴板和 OCR。'}
         </p>
         {!standalone && !installable && (
@@ -809,14 +804,9 @@ function ModelAnalysisPanel({
           </div>
         </div>
         <button type="button" className="btn btn-sm" onClick={onOpenSettings}>
-          <Settings2 size={14} /> 管理模型
+          <Settings2 size={14} /> {configured ? '模型设置' : '配置模型'}
         </button>
       </div>
-      <p className={`reader-service-status ${configured ? 'ready' : ''}`}>
-        {configured
-          ? `已配置 ${READING_MODEL_PROVIDERS[modelConfig.providerId]?.label || '自定义服务'} · ${modelConfig.model}；点击识别才会发送当前段落。`
-          : '尚未完成模型配置。本机扫描和 OCR 不受影响。'}
-      </p>
       <button
         type="button"
         className="btn reader-model-run"
@@ -1075,7 +1065,6 @@ function ReadingQuestionPanel({
         <div className="reader-question-answer" role="status">
           <strong>{result.uncertain ? '可能的解释' : '解释'}</strong>
           <p>{result.answer}</p>
-          <small>临时回答，不会自动写入资料库。</small>
         </div>
       )}
     </div>
@@ -1190,7 +1179,7 @@ function ReadingServiceSettings({
                 ...current,
                 apiKey: event.target.value,
               }))}
-              placeholder="只保存在当前浏览器会话"
+              placeholder="粘贴 API Key"
               autoComplete="off"
             />
           </label>
@@ -1228,8 +1217,7 @@ function ReadingServiceSettings({
           )}
         </details>
         <p className="reader-settings-storage">
-          每个供应商的地址和模型名分别保存在本机 localStorage；各家 Key 分别存在 sessionStorage，关闭浏览器会话后失效。
-          不同功能会发送书目信息，或当前问题、段落、书名和章节标签；只有点击功能或创建时保留 AI 准备选项才会调用。
+          Key 仅保留在当前浏览器会话。模型功能执行时会发送所需的书目信息或当前阅读上下文。
         </p>
       </section>
 
@@ -1238,9 +1226,7 @@ function ReadingServiceSettings({
           <div><MapIcon size={20} /><h3>地图服务</h3></div>
           <span className="reader-system-chip">国内 / 国外</span>
         </div>
-        <p className="reader-settings-intro">
-          底图和资料包外现实地点搜索会访问所选服务。虚构、不确定和仅有原型的地点不会自动提交搜索。
-        </p>
+        <p className="reader-settings-intro">地图只检索标记为现实的地点。</p>
         <form className="reader-settings-form" onSubmit={saveMap}>
           <label>
             <span>地图网络</span>
@@ -1299,10 +1285,7 @@ function ReadingServiceSettings({
             </a>
           </div>
         </details>
-        <p className="reader-settings-storage">
-          地图选择和天地图 Key 保存在当前浏览器。国际地图免 Key；国内网络加载失败时可切换国内地图，
-          国外地图不可访问时也可以使用 VPN。
-        </p>
+        <p className="reader-settings-storage">天地图 Key 保存在当前浏览器。</p>
       </section>
       {message && <p className="reader-settings-message" role="status">{message}</p>}
     </div>
@@ -1495,7 +1478,7 @@ function ObservedEntitiesPanel({
       setStatus(
         nextPlaceKind === OBSERVED_PLACE_KIND.REAL
           ? '已标记为现实地点，可以在地图区域搜索位置。'
-          : '已更新地点性质；非现实地点不会发送给公网地图搜索。',
+          : '地点性质已更新。',
       )
     } catch (error) {
       setStatus(error?.message || '更新地点性质失败')
@@ -1546,7 +1529,6 @@ function ObservedEntitiesPanel({
           <UserRoundSearch size={20} />
           <h3>管理已遇到的名称</h3>
         </div>
-        <span className="reader-local-chip"><Lock size={13} /> 用户确认</span>
       </div>
       <form className="reader-observed-form" onSubmit={addObservedEntity}>
         <label>
@@ -2055,7 +2037,6 @@ function ReadingMapPanel({
           <h3>探索已读地点</h3>
         </div>
         <div className="reader-map-heading-actions">
-          <span className="reader-system-chip"><ShieldCheck size={13} /> 系统规则过滤</span>
           <button type="button" className="btn btn-sm" onClick={onOpenSettings}>
             <Settings2 size={13} /> 地图设置
           </button>
@@ -2084,7 +2065,6 @@ function ReadingMapPanel({
             <strong>补充地图位置</strong>
             <span>现实地点可确认位置；虚构或模糊地点只能设置宽泛参考区域。</span>
           </div>
-          <small>仅在点击搜索后外发搜索词</small>
         </div>
         {searchableObservedPlaces.length > 0 ? (
           <div className="reader-place-lookup-targets">
@@ -2340,14 +2320,10 @@ function ReadingMapPanel({
                   ))}
                 </div>
               )}
-              <small>
-                {selectedPlace.accessMode === 'reader-confirmed-geocoder'
-                  ? '个人确认位置只用于当前阅读地图，不会写回正式资料包。'
-                  : ['reader-confirmed-approximate-area', 'reader-confirmed-fallback-area']
-                    .includes(selectedPlace.accessMode)
-                    ? '参考区域只表示大致背景，不参与精确距离判断。'
-                  : '仅展示资料包中已审计的空间字段，不生成剧情解释。'}
-              </small>
+              {['reader-confirmed-approximate-area', 'reader-confirmed-fallback-area']
+                .includes(selectedPlace.accessMode) && (
+                  <small>参考区域只表示大致背景，不参与精确距离判断。</small>
+                )}
           </div>
         )}
       </div>
@@ -2463,7 +2439,6 @@ function ReadingFactsPanel({
                 ) : gateState === 'hidden' ? (
                   <div className="reader-fact-locked">
                     <EyeOff size={18} />
-                    <p>已审计内容在确认前不会写入页面。</p>
                     <button
                       type="button"
                       className="btn btn-sm"
@@ -2890,7 +2865,7 @@ export function ReaderTool({ scene }) {
         return
       }
       changeExcerpt(text)
-      setInputStatus('已从 Windows 剪贴板放入当前段落；文字不会自动保存。')
+      setInputStatus('已从剪贴板粘贴。')
     } catch {
       setInputStatus('浏览器没有获得剪贴板权限，请点击文本框后使用 Ctrl+V。')
     }
@@ -3146,7 +3121,6 @@ export function ReaderTool({ scene }) {
                 <ClipboardPaste size={20} />
                 <h3>放入正在阅读的内容</h3>
               </div>
-              <span className="reader-local-chip"><Lock size={13} /> 仅在本机</span>
             </div>
             {readingPackage.personal && (
               <PersonalBookPreparationPanel
@@ -3239,7 +3213,7 @@ export function ReaderTool({ scene }) {
                 placeholder="从微信读书复制一小段文字，本机可以扫描其中已审计的名称…"
                 rows={7}
               />
-              <small>{excerpt.length} 字 · 当前不会上传或持久化这段文字</small>
+              <small>{excerpt.length} 字</small>
             </label>
             {selectedExcerptText && (
               <div className="reader-selection-add">
