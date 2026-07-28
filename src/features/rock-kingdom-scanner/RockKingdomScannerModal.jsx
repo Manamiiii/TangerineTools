@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Camera, FileImage, ScanLine, Settings2, Sparkles, Trash2, Video } from 'lucide-react'
+import { Camera, Check, FileImage, ScanLine, Settings2, Sparkles, Trash2, Video } from 'lucide-react'
 import { createRow, db } from '../../db.js'
 import { FieldInput } from '../../components/catalog.jsx'
 import { FormRow, Modal } from '../../components/common.jsx'
-import { recognizeReadingMetadataImage } from '../reading-companion/ocr/localOcr.js'
+import { recognizeStructuredImageText } from '../ocr/localOcr.js'
 import { captureVideoFrame, cropImageSource, loadImageSource } from './frameCapture.js'
 import {
   ROCK_SCANNER_CROP_PROFILE,
   bestScanMatch,
   catalogNameCandidates,
+  isScannerFrameReady,
   rankScanCandidates,
   scannerOptionCandidates,
   valuesWithAppearance,
@@ -154,6 +155,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       values: { ...ownedDefaults, appearance: 'none', partnerMark: 'none' },
       raw: {},
       confidence: {},
+      reviewed: false,
       status: '待识别',
     }))
     addFrames(items)
@@ -173,6 +175,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         values: { ...ownedDefaults, appearance: 'none', partnerMark: 'none' },
         raw: {},
         confidence: {},
+        reviewed: false,
         status: '待识别',
       }])
     } catch (captureError) {
@@ -206,6 +209,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           values: { ...ownedDefaults, appearance: 'none', partnerMark: 'none' },
           raw: {},
           confidence: {},
+          reviewed: false,
           status: '待识别',
         })
       }
@@ -233,7 +237,8 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           ...frame,
           values: { ...frame.values, [key]: value },
           confidence: { ...frame.confidence, [key]: 1 },
-          status: '已复核',
+          reviewed: false,
+          status: '待确认',
         }
       : frame))
   }
@@ -245,13 +250,14 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     for (const key of ['name', 'bloodline', 'nature', 'specialty']) {
       setProgress(`正在识别 ${frame.sourceName}${frame.time == null ? '' : ` ${formatTime(frame.time)}`} · ${ROCK_SCANNER_CROP_PROFILE[key].label}`)
       const crop = cropImageSource(image, ROCK_SCANNER_CROP_PROFILE[key])
-      raw[key === 'name' ? 'ref' : key] = await recognizeReadingMetadataImage(crop)
+      raw[key === 'name' ? 'ref' : key] = await recognizeStructuredImageText(crop)
     }
     const matched = recognizedPatch(raw, fields, nameCandidates)
     patchFrame(frame.id, {
       raw,
       confidence: matched.confidence,
       values: { ...frame.values, ...matched.patch },
+      reviewed: false,
       status: matched.patch.ref ? '待复核' : '未匹配精灵',
     })
   }
@@ -329,6 +335,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       patchFrame(selected.id, {
         values: nextValues,
         confidence: nextConfidence,
+        reviewed: false,
         status: 'AI 已补全，待复核',
       })
       setProgress(`模型补全了 ${corrections.length} 个低置信字段；请人工核对后保存。`)
@@ -346,9 +353,9 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   }
 
   async function saveReviewed() {
-    const ready = frames.filter((frame) => frame.values.ref)
+    const ready = frames.filter(isScannerFrameReady)
     if (ready.length === 0) {
-      setError('至少需要为一帧确认精灵名称。')
+      setError('至少需要明确确认一帧完整记录。')
       return
     }
     setBusy('save')
@@ -374,7 +381,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
 
   const editableKeys = ['ref', 'nature', 'bloodline', 'appearance', 'specialty', 'partnerMark', 'gender']
   const editableFields = editableKeys.map((key) => fieldByKey(fields, key)).filter(Boolean)
-  const readyCount = frames.filter((frame) => frame.values.ref).length
+  const readyCount = frames.filter(isScannerFrameReady).length
 
   return (
     <Modal
@@ -544,6 +551,17 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                     title={correctionFields(selected).length === 0 ? '先运行本机 OCR；只有未匹配或低置信字段才会发送' : ''}
                   >
                     <Sparkles size={15} /> {busy === 'model' ? '纠错中…' : 'AI 纠错低置信字段'}
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn ${selected.reviewed ? 'btn-primary' : ''}`}
+                    disabled={Boolean(busy) || !selected.values.ref}
+                    onClick={() => patchFrame(selected.id, {
+                      reviewed: !selected.reviewed,
+                      status: selected.reviewed ? '待确认' : '已确认',
+                    })}
+                  >
+                    <Check size={15} /> {selected.reviewed ? '取消确认' : '确认当前记录'}
                   </button>
                   <button type="button" className="btn btn-icon" title="模型设置" onClick={() => setModelSettingsOpen(true)} disabled={Boolean(busy)}>
                     <Settings2 size={15} />

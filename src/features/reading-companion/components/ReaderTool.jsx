@@ -40,9 +40,9 @@ import {
 } from '../../../pwaInstall.js'
 import { searchReadingPlaces } from '../map/geocoding.js'
 import {
-  recognizeReadingImage,
-  recognizeReadingMetadataImage,
-} from '../ocr/localOcr.js'
+  recognizeImageText,
+  recognizeStructuredImageText,
+} from '../../ocr/localOcr.js'
 import {
   analyzeReadingBookMetadata,
   analyzeReadingExcerpt,
@@ -265,7 +265,7 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
       correctedFields: [],
     })
     try {
-      let text = await recognizeReadingImage(
+      let text = await recognizeImageText(
         file,
         (progress) => {
           if (Number.isFinite(progress?.progress)) {
@@ -284,7 +284,7 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
         || !localDetails.metadata.translators?.length
         || localDetails.uncertainFields.length > 0
       ) {
-        const retryText = await recognizeReadingMetadataImage(file, (progress) => {
+        const retryText = await recognizeStructuredImageText(file, (progress) => {
           if (Number.isFinite(progress?.progress)) {
             setMetadataScan((current) => ({
               ...current,
@@ -2799,7 +2799,7 @@ export function ReaderTool({ scene }) {
     setOcrProgress(0)
     setInputStatus('正在本机初始化 OCR…')
     try {
-      const text = await recognizeReadingImage(imageInput.file, (progress) => {
+      const text = await recognizeImageText(imageInput.file, (progress) => {
         if (Number.isFinite(progress?.progress)) {
           setOcrProgress(Math.round(progress.progress * 100))
         }

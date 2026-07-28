@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import {
   appearanceFlags,
   bestScanMatch,
+  isScannerFrameReady,
   normalizeScanText,
   valuesWithAppearance,
 } from '../../src/domain/rockKingdomScanner.js'
@@ -32,4 +33,10 @@ test('scan matching tolerates labels, suffixes, whitespace, and one OCR error', 
   assert.equal(bestScanMatch('爱分亨', options)?.value, 'sharing')
   assert.equal(bestScanMatch('', options), null)
   assert.equal(normalizeScanText('S2 异色·炫彩'), 's2异色炫彩')
+})
+
+test('scanner frames require both a creature reference and explicit review before saving', () => {
+  assert.equal(isScannerFrameReady({ reviewed: false, values: { ref: 'creature-1' } }), false)
+  assert.equal(isScannerFrameReady({ reviewed: true, values: { ref: '' } }), false)
+  assert.equal(isScannerFrameReady({ reviewed: true, values: { ref: 'creature-1' } }), true)
 })

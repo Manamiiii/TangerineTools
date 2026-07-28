@@ -38,6 +38,10 @@ export function valuesWithAppearance(values = {}) {
   }
 }
 
+export function isScannerFrameReady(frame) {
+  return Boolean(frame?.reviewed && frame?.values?.ref)
+}
+
 export function normalizeScanText(value) {
   return String(value || '')
     .normalize('NFKC')

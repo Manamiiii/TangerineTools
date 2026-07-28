@@ -93,8 +93,8 @@ npm run lint
 │   ├── reading-companion/
 │   │   ├── product-and-architecture.md    # 经典文学阅读伴侣规划与剧透安全契约
 │   │   ├── model-prompts.md               # 个人初始化与正式预制提示词契约
-│   │   ├── model-provider-setup.md        # 国内外兼容模型配置与测试方法
 │   │   └── trial-guide.md                 # 当前试用范围、步骤和反馈重点
+│   ├── model-provider-setup.md             # 各工具独立的模型配置与共享连接说明
 │   ├── rock-kingdom-scanner.md            # 精灵扫描录入、Windows 采集与复核约束
 │   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
 │   └── system-capabilities.md            # 已实现能力和明确非目标
@@ -139,6 +139,7 @@ npm run lint
 │   │   ├── rockKingdom*.js               # 形态、展示和共享标签规则
 │   │   └── owned.js / stock.js / breeding*.js # 其他工具纯领域逻辑
 │   ├── features/model/                    # 共享模型连接、配置和受限 JSON 请求
+│   ├── features/ocr/                      # 阅读与游戏扫描共用的本机 OCR
 │   ├── features/reading-companion/
 │   │   ├── components/                   # 阅读伴侣专用界面
 │   │   ├── data/                         # 运行时资料包读取
@@ -239,7 +240,7 @@ git diff --check
 - [`docs/nature/open-issues.md`](docs/nature/open-issues.md)：尚未形成稳定规则的通用问题。
 - [`docs/reading-companion/product-and-architecture.md`](docs/reading-companion/product-and-architecture.md)：经典文学阅读伴侣的已实现范围、按书建库、跨端入口和剧透安全契约。
 - [`docs/reading-companion/model-prompts.md`](docs/reading-companion/model-prompts.md)：个人书籍自动初始化和内置书正式预制使用的版本化提示词与输出权限。
-- [`docs/reading-companion/model-provider-setup.md`](docs/reading-companion/model-provider-setup.md)：阅读伴侣与洛克王国各自独立的智谱、DeepSeek、MiniMax、OpenAI 和自定义模型连接配置，以及双向复制方法。
+- [`docs/model-provider-setup.md`](docs/model-provider-setup.md)：阅读伴侣与洛克王国各自独立的智谱、DeepSeek、MiniMax、OpenAI 和自定义模型连接配置，以及双向复制方法。
 - [`docs/reading-companion/trial-guide.md`](docs/reading-companion/trial-guide.md)：阅读伴侣当前可试用范围、启动步骤和反馈重点。
 
 根 README 是项目结构、命令和维护文档的统一入口；专题文档只保存各自领域内不可由代码结构直接表达的规则与约束。
