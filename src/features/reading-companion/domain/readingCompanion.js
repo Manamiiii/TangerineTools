@@ -61,6 +61,31 @@ function isNonEmptyString(value) {
   return typeof value === 'string' && value.trim().length > 0
 }
 
+export function summarizeReadingPackage(pkg) {
+  const preparedEntities = [...new Map([
+    ...(Array.isArray(pkg?.onDemandEntities) ? pkg.onDemandEntities : []),
+    ...(Array.isArray(pkg?.entities) ? pkg.entities : []),
+  ].map((entity, index) => [
+    entity?.id || `${entity?.kind || 'unknown'}:${entity?.name || index}`,
+    entity,
+  ])).values()]
+  const kindCounts = preparedEntities.reduce((counts, entity) => {
+    if (VALID_ENTITY_KINDS.has(entity?.kind)) counts[entity.kind] += 1
+    return counts
+  }, {
+    place: 0,
+    person: 0,
+    concept: 0,
+    event: 0,
+  })
+  return {
+    entityCount: preparedEntities.length,
+    ...kindCounts,
+    factCount: Array.isArray(pkg?.facts) ? pkg.facts.length : 0,
+    sourceCount: Array.isArray(pkg?.sources) ? pkg.sources.length : 0,
+  }
+}
+
 export function readingStateKey(sceneId, editionId) {
   if (!isNonEmptyString(sceneId) || !isNonEmptyString(editionId)) {
     throw new Error('阅读状态需要有效的场景和版本 id')

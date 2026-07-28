@@ -1,6 +1,9 @@
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { assertReadingPackage } from '../../../src/features/reading-companion/domain/readingCompanion.js'
+import {
+  assertReadingPackage,
+  summarizeReadingPackage,
+} from '../../../src/features/reading-companion/domain/readingCompanion.js'
 
 export const repoRoot = path.resolve(import.meta.dirname, '../../..')
 export const publicRoot = path.join(repoRoot, 'public/presets/reading-companion')
@@ -225,6 +228,7 @@ export function buildReadingPreviewFromStaging(staging, basePackage = null) {
       title: staging.catalogEntry.title || nextPackage.book.title,
       editionLabel: staging.catalogEntry.editionLabel,
       path: `presets/reading-companion/${staging.slug}.json`,
+      preparedSummary: summarizeReadingPackage(nextPackage),
     },
     package: nextPackage,
   }

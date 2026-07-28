@@ -23,6 +23,7 @@ import {
   scanObservedEntities,
   spoilerGateAction,
   strongestSpoilerRisk,
+  summarizeReadingPackage,
   unlockedOnDemandEntities,
   updateObservedPlaceKind,
   upsertObservedEntity,
@@ -181,6 +182,15 @@ test('personal book creation produces a valid empty local package and catalog en
     editionLabel: '测试出版社 · 2026-07',
     source: 'personal',
     cover: { theme: 'amber' },
+    preparedSummary: {
+      entityCount: 0,
+      place: 0,
+      person: 0,
+      concept: 0,
+      event: 0,
+      factCount: 0,
+      sourceCount: 0,
+    },
   })
 })
 
@@ -1471,6 +1481,15 @@ test('reading preview publishes only approved sources and keeps candidates pendi
   assert.equal(preview.package.onDemandEntities.length, 14)
   assert.deepEqual(preview.package.entities, [])
   assert.deepEqual(preview.package.facts, [])
+  assert.deepEqual(preview.catalogEntry.preparedSummary, {
+    entityCount: 14,
+    place: 10,
+    person: 4,
+    concept: 0,
+    event: 0,
+    factCount: 0,
+    sourceCount: 16,
+  })
   assert.deepEqual(
     preview.package.sources.map((source) => source.id),
     preview.previewMeta.approvedSourceIds,
@@ -1529,6 +1548,38 @@ test('a new book can build its first preview from staging without pipeline code 
   assert.equal(preview.previewMeta.targetPath, 'public/presets/reading-companion/test-book-zh-test-edition.json')
   assert.equal(preview.catalogEntry.path, 'presets/reading-companion/test-book-zh-test-edition.json')
   assert.deepEqual(preview.package.sources.map((source) => source.id), ['source-test-edition'])
+  assert.deepEqual(preview.catalogEntry.preparedSummary, {
+    entityCount: 0,
+    place: 0,
+    person: 0,
+    concept: 0,
+    event: 0,
+    factCount: 0,
+    sourceCount: 1,
+  })
+})
+
+test('prepared package summary counts hidden and published entities without revealing names', () => {
+  assert.deepEqual(summarizeReadingPackage({
+    onDemandEntities: [
+      { kind: 'person' },
+      { kind: 'place' },
+    ],
+    entities: [
+      { kind: 'place' },
+      { kind: 'concept' },
+    ],
+    facts: [{ id: 'fact-1' }],
+    sources: [{ id: 'source-1' }, { id: 'source-2' }],
+  }), {
+    entityCount: 4,
+    place: 2,
+    person: 1,
+    concept: 1,
+    event: 0,
+    factCount: 1,
+    sourceCount: 2,
+  })
 })
 
 test('research candidates require provenance and blockers and never publish implicitly', () => {

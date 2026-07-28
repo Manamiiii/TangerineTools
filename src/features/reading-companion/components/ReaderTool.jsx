@@ -671,6 +671,27 @@ function ReadingLibrary({ catalog, onSelect, onCreate, onDelete, modelConfig }) 
                     <em className={entry.source === 'personal' ? 'personal' : 'built-in'}>
                       {entry.source === 'personal' ? '个人书籍' : '内置书籍 · 不可删除'}
                     </em>
+                    {entry.preparedSummary && (
+                      <span className="reader-book-prepared-summary">
+                        已准备 {entry.preparedSummary.entityCount} 个名称
+                        {' · '}
+                        人物 {entry.preparedSummary.person}
+                        {' · '}
+                        地点 {entry.preparedSummary.place}
+                        {(entry.preparedSummary.concept > 0 || entry.preparedSummary.event > 0) && (
+                          <>
+                            {' · '}
+                            其他 {entry.preparedSummary.concept + entry.preparedSummary.event}
+                          </>
+                        )}
+                        {entry.preparedSummary.sourceCount > 0 && (
+                          <>
+                            {' · '}
+                            {entry.preparedSummary.sourceCount} 个来源
+                          </>
+                        )}
+                      </span>
+                    )}
                     <b>开始阅读</b>
                   </span>
                 </button>
