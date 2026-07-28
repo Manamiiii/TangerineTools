@@ -666,6 +666,12 @@ function ReadingLibrary({ catalog, onSelect, onCreate, onDelete, modelConfig }) 
           <div className="reader-book-grid">
             {catalog.map((entry) => (
               <article className="reader-book-card-shell" key={entry.id}>
+                <span
+                  className={`reader-book-source ${entry.source === 'personal' ? 'personal' : 'built-in'}`}
+                  title={entry.source === 'personal' ? '个人书籍' : '内置书籍，不可删除'}
+                >
+                  {entry.source === 'personal' ? '个人书籍' : '内置'}
+                </span>
                 <button
                   className="reader-book-card"
                   type="button"
@@ -679,30 +685,6 @@ function ReadingLibrary({ catalog, onSelect, onCreate, onDelete, modelConfig }) 
                   <span className="reader-book-copy">
                     <strong>{entry.title}</strong>
                     <small>{entry.editionLabel}</small>
-                    <em className={entry.source === 'personal' ? 'personal' : 'built-in'}>
-                      {entry.source === 'personal' ? '个人书籍' : '内置书籍 · 不可删除'}
-                    </em>
-                    {entry.preparedSummary && (
-                      <span className="reader-book-prepared-summary">
-                        已准备 {entry.preparedSummary.entityCount} 个名称
-                        {' · '}
-                        人物 {entry.preparedSummary.person}
-                        {' · '}
-                        地点 {entry.preparedSummary.place}
-                        {(entry.preparedSummary.concept > 0 || entry.preparedSummary.event > 0) && (
-                          <>
-                            {' · '}
-                            其他 {entry.preparedSummary.concept + entry.preparedSummary.event}
-                          </>
-                        )}
-                        {entry.preparedSummary.sourceCount > 0 && (
-                          <>
-                            {' · '}
-                            {entry.preparedSummary.sourceCount} 个来源
-                          </>
-                        )}
-                      </span>
-                    )}
                     <b>开始阅读</b>
                   </span>
                 </button>
@@ -749,7 +731,7 @@ function ModelAnalysisPanel({
     setCandidates([])
     setMessage('')
     setRequestState('idle')
-  }, [excerpt])
+  }, [excerpt, currentChapter?.id])
 
   async function analyze() {
     setRequestState('working')
@@ -782,7 +764,11 @@ function ModelAnalysisPanel({
     try {
       const action = actionFor(candidate.name, candidate.kind)
       await onConfirmCandidate(candidate)
-      setCandidates((current) => current.filter((item) => item !== candidate))
+      setCandidates((current) => current.map((item) => (
+        item === candidate
+          ? { ...item, recordedChapterId: currentChapter?.id }
+          : item
+      )))
       setMessage(
         action.type === 'move-earlier'
           ? `已把“${candidate.name}”从${action.existingChapter?.label || '较后章节'}提前到${currentChapter?.label || '当前章'}。`
@@ -827,9 +813,11 @@ function ModelAnalysisPanel({
         <div className="reader-model-candidates">
           {candidates.map((candidate) => {
             const action = actionFor(candidate.name, candidate.kind)
+            const isRecorded = action.type === 'recorded'
+              || candidate.recordedChapterId === currentChapter?.id
             return (
               <div
-                className="reader-model-candidate"
+                className={`reader-model-candidate ${isRecorded ? 'is-recorded' : ''}`}
                 key={`${candidate.kind}:${candidate.name}`}
               >
                 <div>
@@ -847,10 +835,13 @@ function ModelAnalysisPanel({
                 <button
                   type="button"
                   className="btn btn-sm"
-                  disabled={action.type === 'recorded'}
+                  disabled={isRecorded}
                   onClick={() => confirm(candidate)}
                 >
-                  <Plus size={13} /> {action.label}
+                  {isRecorded
+                    ? <ShieldCheck size={13} />
+                    : <Plus size={13} />}
+                  {isRecorded ? `${currentChapter?.label || '本章'}已记录` : action.label}
                 </button>
               </div>
             )
@@ -991,13 +982,15 @@ function ReadingQuestionPanel({
     <div className="reader-question-panel">
       <div className="reader-model-heading">
         <div>
-          <Sparkles size={19} />
+          <ShieldCheck size={19} />
           <div>
-            <strong>问问当前内容</strong>
-            <p>解释概念、时代背景或眼前这段话；不展开后续剧情。</p>
+            <strong>无剧透问问当前内容</strong>
+            <p>只解释眼前段落、概念和时代背景。</p>
           </div>
         </div>
-        {!configured && (
+        {configured ? (
+          <span className="reader-safe-chip">当前进度内</span>
+        ) : (
           <button type="button" className="btn btn-sm" onClick={onOpenSettings}>
             <Settings2 size={13} /> 配置模型
           </button>
@@ -3199,6 +3192,46 @@ export function ReaderTool({ scene }) {
                 onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
               />
             )}
+            <div className="reader-input-sources" aria-label="选择内容输入方式">
+              <button type="button" className="reader-input-source" onClick={pasteFromClipboard}>
+                <ClipboardPaste size={20} />
+                <span>
+                  <strong>从剪贴板粘贴</strong>
+                  <small>直接放入刚复制的文字</small>
+                </span>
+              </button>
+              <label className="reader-input-source">
+                <Image size={20} />
+                <span>
+                  <strong>从截图提取</strong>
+                  <small>选择图片后在本机识别</small>
+                </span>
+                <Upload size={15} />
+                <input type="file" accept="image/*" onChange={chooseImage} hidden />
+              </label>
+            </div>
+            {imageInput && (
+              <div className="reader-image-preview">
+                <img src={imageInput.url} alt="所选阅读页面预览" />
+                <div>
+                  <span>{imageInput.name}</span>
+                  <button
+                    type="button"
+                    className="btn btn-sm"
+                    onClick={runLocalOcr}
+                    disabled={ocrState === 'working'}
+                  >
+                    <ScanSearch size={13} />
+                    {ocrState === 'working'
+                      ? `本机识别中 ${ocrProgress}%`
+                      : '提取截图文字'}
+                  </button>
+                  <button type="button" className="icon-btn" onClick={clearImage} aria-label="移除截图">
+                    <X size={15} />
+                  </button>
+                </div>
+              </div>
+            )}
             <label className="reader-excerpt-field">
               <span>粘贴当前段落</span>
               <textarea
@@ -3235,14 +3268,24 @@ export function ReaderTool({ scene }) {
                 })}
               </div>
             )}
-            <div className="reader-scan-actions">
-              <button type="button" className="btn" onClick={pasteFromClipboard}>
-                <ClipboardPaste size={15} /> 从剪贴板粘贴
-              </button>
-              <span>本机只匹配资料包和已遇到名称；发现新名称请使用模型。</span>
-            </div>
             {inputStatus && <p className="reader-input-status" role="status">{inputStatus}</p>}
-            {scanResults.length > 0 && (
+            <div className="reader-reading-workspace">
+              <div className="reader-reading-lane reader-understanding-lane">
+                <ReadingQuestionPanel
+                  excerpt={excerpt}
+                  selectedText={selectedExcerptText}
+                  bookTitle={readingPackage.book.title}
+                  currentChapter={currentChapter}
+                  modelConfig={modelConfig}
+                  onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
+                />
+              </div>
+              <div className="reader-reading-lane reader-recording-lane">
+                <div className="reader-reading-lane-heading">
+                  <UserRoundSearch size={17} />
+                  <strong>记录这段里的名称</strong>
+                </div>
+                {scanResults.length > 0 && (
               <div className="reader-scan-results" role="status">
                 <div className="reader-scan-results-heading">
                   <strong>本机已知名称匹配</strong>
@@ -3279,71 +3322,30 @@ export function ReaderTool({ scene }) {
                   )
                 })}
               </div>
-            )}
-            {scanStatus && <p className="reader-scan-status" role="status">{scanStatus}</p>}
+                )}
+                {scanStatus && <p className="reader-scan-status" role="status">{scanStatus}</p>}
 
-            <ReadingQuestionPanel
-              excerpt={excerpt}
-              selectedText={selectedExcerptText}
-              bookTitle={readingPackage.book.title}
-              currentChapter={currentChapter}
-              modelConfig={modelConfig}
-              onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
-            />
+                <ModelAnalysisPanel
+                  excerpt={excerpt}
+                  bookTitle={readingPackage.book.title}
+                  currentChapter={currentChapter}
+                  onConfirmCandidate={confirmModelCandidate}
+                  actionFor={actionForObservedName}
+                  modelConfig={modelConfig}
+                  onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
+                />
 
-            <ModelAnalysisPanel
-              excerpt={excerpt}
-              bookTitle={readingPackage.book.title}
-              currentChapter={currentChapter}
-              onConfirmCandidate={confirmModelCandidate}
-              actionFor={actionForObservedName}
-              modelConfig={modelConfig}
-              onOpenSettings={() => setActiveTab(READER_TAB.SETTINGS)}
-            />
-
-            <QuickObservedEntityForm
-              observedEntities={observedEntities}
-              currentChapterId={currentChapterId}
-              currentChapter={currentChapter}
-              chapters={readingPackage.chapters}
-              onChange={changeObservedEntities}
-              onOpenRecords={() => setActiveTab(READER_TAB.RECORDS)}
-              onOpenMap={() => setActiveTab(READER_TAB.MAP)}
-            />
-
-            <div className="reader-upload">
-              <div className="reader-upload-copy">
-                <Image size={20} />
-                <strong>从页面截图提取文字</strong>
+                <QuickObservedEntityForm
+                  observedEntities={observedEntities}
+                  currentChapterId={currentChapterId}
+                  currentChapter={currentChapter}
+                  chapters={readingPackage.chapters}
+                  onChange={changeObservedEntities}
+                  onOpenRecords={() => setActiveTab(READER_TAB.RECORDS)}
+                  onOpenMap={() => setActiveTab(READER_TAB.MAP)}
+                />
               </div>
-              <label className="btn">
-                <Upload size={15} />
-                选择截图
-                <input type="file" accept="image/*" onChange={chooseImage} hidden />
-              </label>
             </div>
-            {imageInput && (
-              <div className="reader-image-preview">
-                <img src={imageInput.url} alt="所选阅读页面预览" />
-                <div>
-                  <span>{imageInput.name}</span>
-                  <button
-                    type="button"
-                    className="btn btn-sm"
-                    onClick={runLocalOcr}
-                    disabled={ocrState === 'working'}
-                  >
-                    <ScanSearch size={13} />
-                    {ocrState === 'working'
-                      ? `本机识别中 ${ocrProgress}%`
-                      : '提取截图文字'}
-                  </button>
-                  <button type="button" className="icon-btn" onClick={clearImage} aria-label="移除截图">
-                    <X size={15} />
-                  </button>
-                </div>
-              </div>
-            )}
 
           </section>
           </div>
