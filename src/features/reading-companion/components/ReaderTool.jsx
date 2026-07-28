@@ -33,6 +33,7 @@ import {
 import { loadReadingPackage, loadReadingPackageCatalog } from '../data/readingPackages.js'
 import { ReadingGeoMap } from './ReadingGeoMap.jsx'
 import { generateId } from '../../../utils.js'
+import { Modal } from '../../../components/common.jsx'
 import {
   requestAppInstall,
   subscribeInstallPrompt,
@@ -122,6 +123,21 @@ const OBSERVED_PLACE_KIND_LABELS = {
   [OBSERVED_PLACE_KIND.FICTIONAL]: '虚构地点',
   [OBSERVED_PLACE_KIND.PROTOTYPE]: '有现实原型',
   [OBSERVED_PLACE_KIND.APPROXIMATE]: '位置模糊',
+}
+
+const OBSERVED_PLACE_KIND_DESCRIPTIONS = {
+  [OBSERVED_PLACE_KIND.UNKNOWN]: '原文信息不足时先这样记录；不会开放公网地图搜索。',
+  [OBSERVED_PLACE_KIND.REAL]: '现实中可确认的地点；可以搜索并保存现代代表位置。',
+  [OBSERVED_PLACE_KIND.FICTIONAL]: '作品虚构地点；不保存伪造的精确坐标，只能设置宽泛参考区域。',
+  [OBSERVED_PLACE_KIND.PROTOTYPE]: '虚构地点有可靠资料支持的现实原型；原型与作品地点必须明确区分。',
+  [OBSERVED_PLACE_KIND.APPROXIMATE]: '只能确认国家、州、省或地区，无法可靠定位到精确点。',
+}
+
+const PLACE_ACCESS_LABELS = {
+  'reader-confirmed-exact-match': '阅读中确认后解锁',
+  'reader-confirmed-geocoder': '个人确认位置',
+  'reader-confirmed-approximate-area': '宽泛参考区域',
+  'reader-confirmed-fallback-area': '精确位置未收录',
 }
 
 const READER_TAB = Object.freeze({
@@ -1338,23 +1354,24 @@ function ReadingSafeNote({ entity, sources, className }) {
   const noteSources = readingEntitySafeNoteSources(entity, sources)
   return (
     <div className={className}>
-      <strong>无剧透背景</strong>
       <p>{entity.safeNote}</p>
       {noteSources.length > 0 && (
-        <div className="reader-safe-note-sources">
-          <span>资料来源</span>
-          {noteSources.map((source) => (
-            <a
-              href={source.url}
-              key={source.id}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {source.label}
-              <ExternalLink size={12} aria-hidden="true" />
-            </a>
-          ))}
-        </div>
+        <details className="reader-safe-note-sources">
+          <summary>资料来源 {noteSources.length}</summary>
+          <div>
+            {noteSources.map((source) => (
+              <a
+                href={source.url}
+                key={source.id}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {source.label}
+                <ExternalLink size={12} aria-hidden="true" />
+              </a>
+            ))}
+          </div>
+        </details>
       )}
     </div>
   )
@@ -1377,6 +1394,7 @@ function ObservedEntitiesPanel({
   const [pageSize, setPageSize] = useState(10)
   const [page, setPage] = useState(1)
   const [noteDrafts, setNoteDrafts] = useState({})
+  const [selectedEntityId, setSelectedEntityId] = useState('')
   const currentAction = observedRecordAction(
     observedEntities,
     name,
@@ -1412,6 +1430,19 @@ function ObservedEntitiesPanel({
       entities: pageEntities.filter((entity) => entity.kind === groupKind),
     }))
     .filter((group) => group.entities.length > 0)
+  const selectedEntity = visibleEntities.find((entity) => entity.id === selectedEntityId) || null
+  const selectedEncounterChapterIds = selectedEntity
+    ? observedEntityEncounterChapterIds(selectedEntity, chapters)
+    : []
+  const selectedEncounterChapters = selectedEncounterChapterIds
+    .map((chapterId) => chapters.find((item) => item.id === chapterId))
+    .filter(Boolean)
+  const selectedMatch = selectedEntity
+    ? matchOnDemandEntity(onDemandEntities, selectedEntity.name, selectedEntity.kind)
+    : null
+  const selectedNoteDraft = selectedEntity
+    ? (noteDrafts[selectedEntity.id] ?? selectedEntity.note ?? '')
+    : ''
 
   useEffect(() => {
     setPage(1)
@@ -1420,6 +1451,10 @@ function ObservedEntitiesPanel({
   useEffect(() => {
     if (page > totalPages) setPage(totalPages)
   }, [page, totalPages])
+
+  useEffect(() => {
+    if (selectedEntityId && !selectedEntity) setSelectedEntityId('')
+  }, [selectedEntityId, selectedEntity])
 
   function changePage(nextPage) {
     if (!Number.isFinite(nextPage)) return
@@ -1570,6 +1605,19 @@ function ObservedEntitiesPanel({
           <Plus size={15} /> {currentAction.label}
         </button>
       </form>
+      {kind === OBSERVED_ENTITY_KIND.PLACE && (
+        <details className="reader-place-kind-guide">
+          <summary>地点性质怎么选</summary>
+          <dl>
+            {Object.entries(OBSERVED_PLACE_KIND_LABELS).map(([value, label]) => (
+              <div key={value}>
+                <dt>{label}</dt>
+                <dd>{OBSERVED_PLACE_KIND_DESCRIPTIONS[value]}</dd>
+              </div>
+            ))}
+          </dl>
+        </details>
+      )}
       {status && <p className="reader-observed-status" role="status">{status}</p>}
       <div className="reader-observed-toolbar">
         <div className="reader-observed-filters" aria-label="按类型筛选">
@@ -1611,133 +1659,57 @@ function ObservedEntitiesPanel({
               .filter(Boolean)
             const firstChapter = encounterChapters[0]
             const latestChapter = encounterChapters.at(-1)
-            const hasCurrentChapter = encounterChapterIds.includes(currentChapterId)
-            const noteDraft = noteDrafts[entity.id] ?? entity.note ?? ''
             const match = matchOnDemandEntity(onDemandEntities, entity.name, entity.kind)
             return (
               <div className="reader-observed-item" key={entity.id}>
-                <UserRoundSearch size={16} />
-                <div>
+                <div className="reader-observed-item-heading">
                   <strong>{entity.name}</strong>
-                  <span>
-                    {OBSERVED_KIND_LABELS[entity.kind]} · 首次{firstChapter?.label || '未知章节'}
-                    {encounterChapters.length > 1 && ` · 最近${latestChapter?.label || '未知章节'}`}
-                    {` · 共 ${encounterChapters.length || 1} 章`}
-                  </span>
-                  {!match && entity.kind === OBSERVED_ENTITY_KIND.PLACE && (
-                    <label className="reader-observed-place-kind">
-                      <span>地点性质</span>
-                      <select
-                        value={entity.placeKind || OBSERVED_PLACE_KIND.UNKNOWN}
-                        onChange={(event) => changeObservedPlaceKind(entity.id, event.target.value)}
-                      >
-                        {Object.entries(OBSERVED_PLACE_KIND_LABELS).map(([value, label]) => (
-                          <option key={value} value={value}>{label}</option>
-                        ))}
-                      </select>
-                    </label>
+                  {entity.kind === OBSERVED_ENTITY_KIND.PLACE && (
+                    <span>{OBSERVED_PLACE_KIND_LABELS[entity.placeKind] || '不确定'}</span>
                   )}
-                  {(entity.note || match || entity.mapLocation) && (
-                    <div className="reader-observed-badges">
-                      {entity.note && <span>有个人备注</span>}
-                      {match && <span>资料已匹配</span>}
-                      {entity.mapLocation && (
-                        <span>
-                          {entity.mapLocation.mode === 'exact' ? '精确地图位置' : '参考区域'}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  <details className="reader-observed-details">
-                    <summary>查看阅读记忆</summary>
-                    <div className="reader-observed-detail-section reader-observed-memory">
-                      <div className="reader-observed-detail-heading">
-                        <b>出现章节</b>
-                        {!hasCurrentChapter && (
-                          <button type="button" onClick={() => recordObservedAgain(entity)}>
-                            <Plus size={12} /> 记录{currentChapter?.label || '当前章'}
-                          </button>
-                        )}
-                      </div>
-                      <div className="reader-observed-chapters">
-                        {encounterChapters.map((chapter) => (
-                          <span key={chapter.id}>{chapter.label}</span>
-                        ))}
-                      </div>
-                      <label className="reader-observed-note">
-                        <span>个人备注</span>
-                        <textarea
-                          value={noteDraft}
-                          onChange={(event) => setNoteDrafts((current) => ({
-                            ...current,
-                            [entity.id]: event.target.value,
-                          }))}
-                          placeholder="只记录自己已经读到和确认的信息"
-                          maxLength={500}
-                          rows={3}
-                        />
-                      </label>
-                      <div className="reader-observed-note-actions">
-                        <span>{noteDraft.length}/500</span>
-                        <button
-                          type="button"
-                          disabled={noteDraft.trim() === (entity.note || '')}
-                          onClick={() => saveObservedNote(entity)}
-                        >
-                          保存备注
-                        </button>
-                      </div>
-                    </div>
-                    {match && (
-                      <div className="reader-observed-detail-section">
-                        <b>匹配资料</b>
-                        <span>
-                          {match.name !== entity.name ? `资料名：${match.name} · ` : ''}
-                          {match.kind === 'place'
-                            ? PLACE_KIND_LABELS[match.placeKind]
-                            : OBSERVED_KIND_LABELS[match.kind]}
-                        </span>
-                        {match.parentLabel && <span>{match.parentLabel}</span>}
-                        <ReadingSafeNote
-                          entity={match}
-                          sources={sources}
-                          className="reader-observed-safe-note"
-                        />
-                        {match.scopeNote && <small>{match.scopeNote}</small>}
-                      </div>
-                    )}
-                    {entity.mapLocation && (
-                      <div className="reader-observed-detail-section">
-                        <b>
-                          {entity.mapLocation.mode === 'exact'
-                            ? '个人确认的现实位置'
-                            : '个人设置的参考区域'}
-                        </b>
-                        <span>{entity.mapLocation.label}</span>
-                        {entity.mapLocation.mode !== 'exact' && (
-                          <span>
-                            半径约 {entity.mapLocation.radiusKm} 公里 · 非精确位置
-                          </span>
-                        )}
-                        <button
-                          type="button"
-                          className="reader-observed-unlink"
-                          onClick={() => removeObservedMapLocation(entity.id)}
-                        >
-                          清除地图位置并重新选择
-                        </button>
-                      </div>
-                    )}
-                  </details>
                 </div>
-                <button
-                  type="button"
-                  className="icon-btn"
-                  onClick={() => removeObservedEntity(entity.id)}
-                  aria-label={`删除${entity.name}的遇见记录`}
-                >
-                  <Trash2 size={14} />
-                </button>
+                <dl className="reader-observed-summary">
+                  <div><dt>首次</dt><dd>{firstChapter?.label || '未知'}</dd></div>
+                  <div><dt>最近</dt><dd>{latestChapter?.label || firstChapter?.label || '未知'}</dd></div>
+                  <div><dt>出现</dt><dd>{encounterChapters.length || 1} 章</dd></div>
+                </dl>
+                {(entity.note || match || entity.mapLocation) && (
+                  <div className="reader-observed-badges">
+                    {entity.note && <span>有备注</span>}
+                    {match && <span>{match.safeNote ? '有背景' : '资料匹配'}</span>}
+                    {entity.mapLocation && (
+                      <span>{entity.mapLocation.mode === 'exact' ? '已定位' : '参考区域'}</span>
+                    )}
+                  </div>
+                )}
+                <div className="reader-observed-item-actions">
+                  {!match && entity.kind === OBSERVED_ENTITY_KIND.PLACE && (
+                    <select
+                      aria-label={`${entity.name}的地点性质`}
+                      value={entity.placeKind || OBSERVED_PLACE_KIND.UNKNOWN}
+                      onChange={(event) => changeObservedPlaceKind(entity.id, event.target.value)}
+                    >
+                      {Object.entries(OBSERVED_PLACE_KIND_LABELS).map(([value, label]) => (
+                        <option key={value} value={value}>{label}</option>
+                      ))}
+                    </select>
+                  )}
+                  <button
+                    type="button"
+                    className="btn btn-sm"
+                    onClick={() => setSelectedEntityId(entity.id)}
+                  >
+                    查看详情
+                  </button>
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    onClick={() => removeObservedEntity(entity.id)}
+                    aria-label={`删除${entity.name}的遇见记录`}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               </div>
             )
           })}
@@ -1762,6 +1734,161 @@ function ObservedEntitiesPanel({
         <p className="reader-observed-hidden">
           有 {hiddenCount} 条较后章节的记录已隐藏，回到相应进度后才会显示名称。
         </p>
+      )}
+      {selectedEntity && (
+        <Modal
+          title={`${selectedEntity.name} · 阅读记忆`}
+          width={720}
+          onClose={() => setSelectedEntityId('')}
+          footer={(
+            <button type="button" className="btn" onClick={() => setSelectedEntityId('')}>
+              关闭
+            </button>
+          )}
+        >
+          <div className="reader-memory-detail">
+            <div className="reader-memory-overview">
+              <div>
+                <span>类型</span>
+                <strong>{OBSERVED_KIND_LABELS[selectedEntity.kind]}</strong>
+              </div>
+              <div>
+                <span>首次遇到</span>
+                <strong>{selectedEncounterChapters[0]?.label || '未知章节'}</strong>
+              </div>
+              <div>
+                <span>最近遇到</span>
+                <strong>{selectedEncounterChapters.at(-1)?.label || '未知章节'}</strong>
+              </div>
+              <div>
+                <span>出现章节</span>
+                <strong>{selectedEncounterChapters.length || 1} 章</strong>
+              </div>
+            </div>
+
+            <section className="reader-memory-section">
+              <div className="reader-memory-section-heading">
+                <div>
+                  <strong>阅读记录</strong>
+                  <span>你确认它出现过的章节</span>
+                </div>
+                {!selectedEncounterChapterIds.includes(currentChapterId) && (
+                  <button type="button" className="btn btn-sm" onClick={() => recordObservedAgain(selectedEntity)}>
+                    <Plus size={12} /> 记录{currentChapter?.label || '当前章'}
+                  </button>
+                )}
+              </div>
+              <div className="reader-observed-chapters">
+                {selectedEncounterChapters.map((chapter) => (
+                  <span key={chapter.id}>{chapter.label}</span>
+                ))}
+              </div>
+              <label className="reader-observed-note">
+                <span>个人备注</span>
+                <textarea
+                  value={selectedNoteDraft}
+                  onChange={(event) => setNoteDrafts((current) => ({
+                    ...current,
+                    [selectedEntity.id]: event.target.value,
+                  }))}
+                  placeholder="记录自己已经读到和确认的信息"
+                  maxLength={500}
+                  rows={4}
+                />
+              </label>
+              <div className="reader-observed-note-actions">
+                <span>{selectedNoteDraft.length}/500</span>
+                <button
+                  type="button"
+                  disabled={selectedNoteDraft.trim() === (selectedEntity.note || '')}
+                  onClick={() => saveObservedNote(selectedEntity)}
+                >
+                  保存备注
+                </button>
+              </div>
+            </section>
+
+            {selectedEntity.kind === OBSERVED_ENTITY_KIND.PLACE && !selectedMatch && (
+              <section className="reader-memory-section">
+                <div className="reader-memory-section-heading">
+                  <div>
+                    <strong>地点性质</strong>
+                    <span>{OBSERVED_PLACE_KIND_DESCRIPTIONS[selectedEntity.placeKind]}</span>
+                  </div>
+                  <select
+                    value={selectedEntity.placeKind || OBSERVED_PLACE_KIND.UNKNOWN}
+                    onChange={(event) => changeObservedPlaceKind(
+                      selectedEntity.id,
+                      event.target.value,
+                    )}
+                  >
+                    {Object.entries(OBSERVED_PLACE_KIND_LABELS).map(([value, label]) => (
+                      <option key={value} value={value}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+              </section>
+            )}
+
+            {selectedMatch && (
+              <section className="reader-memory-section">
+                <div className="reader-memory-section-heading">
+                  <div>
+                    <strong>资料与背景</strong>
+                    <span>
+                      {selectedMatch.kind === OBSERVED_ENTITY_KIND.PLACE
+                        ? PLACE_KIND_LABELS[selectedMatch.placeKind]
+                        : OBSERVED_KIND_LABELS[selectedMatch.kind]}
+                      {selectedMatch.parentLabel ? ` · ${selectedMatch.parentLabel}` : ''}
+                    </span>
+                  </div>
+                </div>
+                {selectedMatch.name !== selectedEntity.name && (
+                  <p className="reader-memory-alias">资料名称：{selectedMatch.name}</p>
+                )}
+                {selectedMatch.originalName && selectedMatch.originalName !== selectedMatch.name && (
+                  <p className="reader-memory-alias">原文名称：{selectedMatch.originalName}</p>
+                )}
+                <ReadingSafeNote
+                  entity={selectedMatch}
+                  sources={sources}
+                  className="reader-observed-safe-note"
+                />
+                {selectedMatch.scopeNote && (
+                  <p className="reader-memory-scope">{selectedMatch.scopeNote}</p>
+                )}
+              </section>
+            )}
+
+            {selectedEntity.mapLocation && (
+              <section className="reader-memory-section">
+                <div className="reader-memory-section-heading">
+                  <div>
+                    <strong>地图位置</strong>
+                    <span>
+                      {selectedEntity.mapLocation.mode === 'exact'
+                        ? '个人确认的现实位置'
+                        : '个人设置的参考区域'}
+                    </span>
+                  </div>
+                </div>
+                <p className="reader-memory-location">{selectedEntity.mapLocation.label}</p>
+                {selectedEntity.mapLocation.mode !== 'exact' && (
+                  <p className="reader-memory-scope">
+                    半径约 {selectedEntity.mapLocation.radiusKm} 公里 · 非精确位置
+                  </p>
+                )}
+                <button
+                  type="button"
+                  className="reader-observed-unlink"
+                  onClick={() => removeObservedMapLocation(selectedEntity.id)}
+                >
+                  清除位置并重新选择
+                </button>
+              </section>
+            )}
+          </div>
+        </Modal>
       )}
     </section>
   )
@@ -1833,13 +1960,29 @@ function ReadingMapPanel({
   )
   const lookupTarget = searchableObservedPlaces.find((place) => place.id === lookupTargetId)
   const [selectedPlaceId, setSelectedPlaceId] = useState('')
+  const [distanceFromId, setDistanceFromId] = useState('')
+  const [distanceToId, setDistanceToId] = useState('')
+  const [distancePair, setDistancePair] = useState(null)
   const selectedPlace = places.find((place) => place.id === selectedPlaceId) || places[0] || null
-  const placeRelations = useMemo(
-    () => readingPlaceRelations(
-      places.filter((place) => place.geometry?.type !== 'area'),
-      selectedPlace?.id,
-    ),
-    [places, selectedPlace?.id],
+  const distancePlaces = useMemo(
+    () => places.filter((place) => (
+      place.geometry
+      && place.geometry.type !== 'area'
+      && Number.isFinite(place.geometry.latitude)
+      && Number.isFinite(place.geometry.longitude)
+    )),
+    [places],
+  )
+  const distanceRelation = useMemo(
+    () => {
+      if (!distancePair) return null
+      const pairPlaces = distancePlaces.filter((place) => (
+        place.id === distancePair.fromId || place.id === distancePair.toId
+      ))
+      return readingPlaceRelations(pairPlaces, distancePair.fromId)
+        .find((relation) => relation.id === distancePair.toId) || null
+    },
+    [distancePair, distancePlaces],
   )
 
   useEffect(() => {
@@ -1851,6 +1994,18 @@ function ReadingMapPanel({
       setSelectedPlaceId('')
     }
   }, [places, selectedPlaceId])
+
+  useEffect(() => {
+    const validIds = new Set(distancePlaces.map((place) => place.id))
+    if (distanceFromId && !validIds.has(distanceFromId)) setDistanceFromId('')
+    if (distanceToId && !validIds.has(distanceToId)) setDistanceToId('')
+    if (
+      distancePair
+      && (!validIds.has(distancePair.fromId) || !validIds.has(distancePair.toId))
+    ) {
+      setDistancePair(null)
+    }
+  }, [distanceFromId, distancePair, distancePlaces, distanceToId])
 
   useEffect(() => {
     setLookupResults([])
@@ -2244,90 +2399,150 @@ function ReadingMapPanel({
             ))}
           </div>
         )}
+        {distancePlaces.length >= 2 && (
+          <section className="reader-place-distance">
+            <div className="reader-content-section-heading">
+              <div>
+                <strong>比较两个地点</strong>
+                <span>按需计算现代代表位置之间的直线距离</span>
+              </div>
+            </div>
+            <div className="reader-place-distance-form">
+              <select
+                value={distanceFromId}
+                onChange={(event) => {
+                  const nextId = event.target.value
+                  setDistanceFromId(nextId)
+                  if (nextId === distanceToId) setDistanceToId('')
+                  setDistancePair(null)
+                }}
+                aria-label="距离起点"
+              >
+                <option value="">选择起点</option>
+                {distancePlaces.map((place) => (
+                  <option key={place.id} value={place.id}>{place.name}</option>
+                ))}
+              </select>
+              <span>到</span>
+              <select
+                value={distanceToId}
+                onChange={(event) => {
+                  setDistanceToId(event.target.value)
+                  setDistancePair(null)
+                }}
+                aria-label="距离终点"
+              >
+                <option value="">选择终点</option>
+                {distancePlaces
+                  .filter((place) => place.id !== distanceFromId)
+                  .map((place) => (
+                    <option key={place.id} value={place.id}>{place.name}</option>
+                  ))}
+              </select>
+              <button
+                type="button"
+                className="btn btn-sm"
+                disabled={!distanceFromId || !distanceToId || distanceFromId === distanceToId}
+                onClick={() => setDistancePair({
+                  fromId: distanceFromId,
+                  toId: distanceToId,
+                })}
+              >
+                计算距离
+              </button>
+            </div>
+            {distanceRelation && (
+              <p className="reader-place-distance-result">
+                {distancePlaces.find((place) => place.id === distancePair.fromId)?.name}
+                {' → '}
+                {distanceRelation.name}：{distanceRelation.direction}方向，直线约{' '}
+                <strong>
+                  {distanceRelation.distanceKm < 10
+                    ? distanceRelation.distanceKm.toFixed(1)
+                    : Math.round(distanceRelation.distanceKm)} 公里
+                </strong>
+              </p>
+            )}
+          </section>
+        )}
         {selectedPlace && (
           <div className="reader-place-detail">
-              <div>
+              <div className="reader-place-detail-heading">
+                <div>
                 <strong>{selectedPlace.name}</strong>
                 <span>{PLACE_KIND_LABELS[selectedPlace.placeKind] || '地点'}</span>
+                </div>
+                {PLACE_ACCESS_LABELS[selectedPlace.accessMode] && (
+                  <span className="reader-place-access">
+                    {PLACE_ACCESS_LABELS[selectedPlace.accessMode]}
+                  </span>
+                )}
               </div>
               {selectedPlace.aliases?.length > 0 && (
-                <p>别名：{selectedPlace.aliases.join('、')}</p>
+                <p className="reader-place-aliases">别名：{selectedPlace.aliases.join('、')}</p>
               )}
-              {selectedPlace.accessMode === 'reader-confirmed-exact-match' && (
-                <p className="reader-place-unlock-note">
-                  由你在阅读中确认后显示
-                </p>
-              )}
-              {selectedPlace.accessMode === 'reader-confirmed-geocoder' && (
-                <p className="reader-place-unlock-note">
-                  个人确认的现代现实位置
-                </p>
-              )}
-              {selectedPlace.accessMode === 'reader-confirmed-approximate-area' && (
-                <p className="reader-place-unlock-note">
-                  个人设置的宽泛参考区域，不是精确位置
-                </p>
-              )}
-              {selectedPlace.accessMode === 'reader-confirmed-fallback-area' && (
-                <p className="reader-place-unlock-note">
-                  地图未收录精确地点；这里仅展示个人确认的相关区域
-                </p>
-              )}
-              <dl className="reader-place-meta">
-                {selectedPlace.parentLabel && (
-                  <div><dt>区域</dt><dd>{selectedPlace.parentLabel}</dd></div>
-                )}
-                {selectedPlace.geocodingProviderId && (
+              <section className="reader-place-detail-section">
+                <div className="reader-content-section-heading">
                   <div>
-                    <dt>来源</dt>
+                    <strong>地图位置</strong>
+                    <span>现代地理参照</span>
+                  </div>
+                </div>
+                <dl className="reader-place-meta">
+                  {selectedPlace.parentLabel && (
+                    <div><dt>区域</dt><dd>{selectedPlace.parentLabel}</dd></div>
+                  )}
+                  {selectedPlace.geocodingProviderId && (
+                    <div>
+                      <dt>地图服务</dt>
+                      <dd>
+                        {selectedPlace.geocodingProviderId === READING_MAP_PROVIDER.DOMESTIC
+                          ? '天地图'
+                          : 'OpenStreetMap Nominatim'}
+                      </dd>
+                    </div>
+                  )}
+                  <div>
+                    <dt>坐标或范围</dt>
                     <dd>
-                      {selectedPlace.geocodingProviderId === READING_MAP_PROVIDER.DOMESTIC
-                        ? '天地图'
-                        : 'OpenStreetMap Nominatim'}
+                      {selectedPlace.geometry
+                        ? [
+                            `${selectedPlace.geometry.latitude.toFixed(4)}, ${selectedPlace.geometry.longitude.toFixed(4)}`,
+                            selectedPlace.geometry.type === 'area'
+                              ? `半径约 ${selectedPlace.geometry.radiusKm} km`
+                              : selectedPlace.geometry.type === 'geojson'
+                                ? selectedPlace.geometry.geojson?.type || '路径或范围'
+                                : null,
+                          ].filter(Boolean).join(' · ')
+                        : '未发布可显示的位置'}
                     </dd>
                   </div>
+                </dl>
+                {selectedPlace.scopeNote && (
+                  <p className="reader-place-scope-note">{selectedPlace.scopeNote}</p>
                 )}
-                <div>
-                  <dt>位置</dt>
-                  <dd>
-                    {selectedPlace.geometry
-                      ? [
-                          `${selectedPlace.geometry.latitude.toFixed(4)}, ${selectedPlace.geometry.longitude.toFixed(4)}`,
-                          selectedPlace.geometry.type === 'area'
-                            ? `半径约 ${selectedPlace.geometry.radiusKm} km`
-                            : selectedPlace.geometry.type === 'geojson'
-                              ? selectedPlace.geometry.geojson?.type || '路径或范围'
-                              : null,
-                        ].filter(Boolean).join(' · ')
-                      : '未发布可显示的位置'}
-                  </dd>
-                </div>
-              </dl>
-              {selectedPlace.scopeNote && (
-                <p className="reader-place-scope-note">{selectedPlace.scopeNote}</p>
+                {['reader-confirmed-approximate-area', 'reader-confirmed-fallback-area']
+                  .includes(selectedPlace.accessMode) && (
+                    <p className="reader-place-precision">
+                      参考区域只表示大致背景，不参与精确距离判断。
+                    </p>
+                  )}
+              </section>
+              {selectedPlace.safeNote && (
+                <section className="reader-place-detail-section">
+                  <div className="reader-content-section-heading">
+                    <div>
+                      <strong>无剧透背景</strong>
+                      <span>当前进度可查看</span>
+                    </div>
+                  </div>
+                  <ReadingSafeNote
+                    entity={selectedPlace}
+                    sources={sources}
+                    className="reader-place-safe-note"
+                  />
+                </section>
               )}
-              <ReadingSafeNote
-                entity={selectedPlace}
-                sources={sources}
-                className="reader-place-safe-note"
-              />
-              {placeRelations.length > 0 && (
-                <div className="reader-place-relations">
-                  <strong>与其他已读地点</strong>
-                  {placeRelations.map((relation) => (
-                    <span key={relation.id}>
-                      {relation.name}：{relation.direction}方向 · 直线约{' '}
-                      {relation.distanceKm < 10
-                        ? relation.distanceKm.toFixed(1)
-                        : Math.round(relation.distanceKm)} 公里
-                    </span>
-                  ))}
-                </div>
-              )}
-              {['reader-confirmed-approximate-area', 'reader-confirmed-fallback-area']
-                .includes(selectedPlace.accessMode) && (
-                  <small>参考区域只表示大致背景，不参与精确距离判断。</small>
-                )}
           </div>
         )}
       </div>
@@ -2395,31 +2610,48 @@ function ReadingFactsPanel({
         </div>
       ) : null}
       {safeBackgrounds.length > 0 && (
-        <div className="reader-background-list">
-          {safeBackgrounds.map((entity) => (
-            <article className="reader-background-card" key={entity.id}>
-              <div className="reader-background-heading">
-                <strong>{entity.name}</strong>
-                <span>
-                  {entity.kind === OBSERVED_ENTITY_KIND.PLACE
-                    ? PLACE_KIND_LABELS[entity.placeKind]
-                    : OBSERVED_KIND_LABELS[entity.kind]}
-                </span>
-              </div>
-              {entity.originalName && entity.originalName !== entity.name && (
-                <p className="reader-background-original">{entity.originalName}</p>
-              )}
-              <ReadingSafeNote
-                entity={entity}
-                sources={sources}
-                className="reader-background-safe-note"
-              />
-            </article>
-          ))}
-        </div>
+        <section className="reader-background-section">
+          <div className="reader-content-section-heading">
+            <div>
+              <strong>名称背景</strong>
+              <span>只包含当前进度已解锁的简短说明</span>
+            </div>
+            <b>{safeBackgrounds.length}</b>
+          </div>
+          <div className="reader-background-list">
+            {safeBackgrounds.map((entity) => (
+              <article className="reader-background-card" key={entity.id}>
+                <div className="reader-background-heading">
+                  <strong>{entity.name}</strong>
+                  <span>
+                    {entity.kind === OBSERVED_ENTITY_KIND.PLACE
+                      ? PLACE_KIND_LABELS[entity.placeKind]
+                      : OBSERVED_KIND_LABELS[entity.kind]}
+                  </span>
+                </div>
+                {entity.originalName && entity.originalName !== entity.name && (
+                  <p className="reader-background-original">{entity.originalName}</p>
+                )}
+                <ReadingSafeNote
+                  entity={entity}
+                  sources={sources}
+                  className="reader-background-safe-note"
+                />
+              </article>
+            ))}
+          </div>
+        </section>
       )}
       {visibleFacts.length > 0 && (
-        <div className="reader-fact-list">
+        <section className="reader-background-section">
+          <div className="reader-content-section-heading">
+            <div>
+              <strong>阅读说明</strong>
+              <span>可能涉及剧情的信息会单独确认</span>
+            </div>
+            <b>{visibleFacts.length}</b>
+          </div>
+          <div className="reader-fact-list">
           {visibleFacts.map((fact, index) => {
             const gateState = gateStates[fact.id] || 'hidden'
             const gateAction = spoilerGateAction(fact.riskLevel)
@@ -2490,7 +2722,8 @@ function ReadingFactsPanel({
               </article>
             )
           })}
-        </div>
+          </div>
+        </section>
       )}
     </section>
   )
