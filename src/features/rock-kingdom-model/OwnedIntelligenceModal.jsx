@@ -9,7 +9,7 @@ import {
 import { ROCK_APPEARANCE_OPTIONS } from '../../domain/rockKingdomScanner.js'
 import { ROCK_KINGDOM_PRESET } from '../../presets/rockKingdom.js'
 import { ModelSettingsModal } from '../model/ModelSettingsModal.jsx'
-import { modelConfigIsComplete } from '../model/modelConfig.js'
+import { MODEL_CONFIG_SCOPE, modelConfigIsComplete } from '../model/modelConfig.js'
 import { useModelConfig } from '../model/useModelConfig.js'
 import { explainRockOwnedDiagnostics } from './rockKingdomModel.js'
 
@@ -21,7 +21,13 @@ export function OwnedIntelligenceModal({ rows, fields, onClose }) {
   const [error, setError] = useState('')
   const [explanation, setExplanation] = useState(null)
   const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
-  const { modelConfig, loadProvider, saveModelConfig } = useModelConfig()
+  const {
+    modelConfig,
+    loadProvider,
+    canCopyOtherConfig,
+    loadOtherConfig,
+    saveModelConfig,
+  } = useModelConfig(MODEL_CONFIG_SCOPE.ROCK_KINGDOM)
 
   useEffect(() => {
     let active = true
@@ -136,7 +142,11 @@ export function OwnedIntelligenceModal({ rows, fields, onClose }) {
       {modelSettingsOpen && (
         <ModelSettingsModal
           config={modelConfig}
+          domainLabel="洛克王国"
+          copySourceLabel="阅读伴侣"
+          canCopySource={canCopyOtherConfig}
           onLoadProvider={loadProvider}
+          onLoadCopySource={loadOtherConfig}
           onSave={saveModelConfig}
           onClose={() => setModelSettingsOpen(false)}
         />

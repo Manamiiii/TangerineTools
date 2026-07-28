@@ -55,7 +55,9 @@ import {
   READING_MODEL_PROVIDERS,
 } from '../model/modelProviders.js'
 import {
+  hasStoredModelConfig,
   loadStoredModelConfig,
+  MODEL_CONFIG_SCOPE,
   saveStoredModelConfig,
 } from '../../model/modelConfig.js'
 import {
@@ -167,7 +169,7 @@ function observedRecordAction(observedEntities, name, kind, currentChapterId, ch
 }
 
 function loadStoredReadingModelConfig(providerId = '', allowLegacy = true) {
-  return loadStoredModelConfig(providerId, allowLegacy)
+  return loadStoredModelConfig(providerId, allowLegacy, MODEL_CONFIG_SCOPE.READING)
 }
 
 function LoadingPanel({ message }) {
@@ -974,7 +976,9 @@ function ReadingQuestionPanel({
 function ReadingServiceSettings({
   modelConfig,
   mapConfig,
+  canCopyRockModelConfig,
   onLoadModelProvider,
+  onLoadRockModelConfig,
   onSaveModel,
   onSaveMap,
 }) {
@@ -1001,6 +1005,11 @@ function ReadingServiceSettings({
         ? `已切换到${selectedModelProvider.label}，请回到“阅读输入”用当前段落验证。`
         : '模型地址和名称已保存，API Key 已清除。',
     )
+  }
+
+  function copyRockModelConfig() {
+    setModelDraft(onLoadRockModelConfig())
+    setMessage('已载入洛克王国配置；保存后将成为独立的阅读伴侣配置。')
   }
 
   function saveMap(event) {
@@ -1088,11 +1097,24 @@ function ReadingServiceSettings({
             <button
               type="button"
               className="btn"
+              onClick={copyRockModelConfig}
+              disabled={!canCopyRockModelConfig}
+            >
+              复制洛克王国配置
+            </button>
+            <button
+              type="button"
+              className="btn"
               onClick={() => setModelDraft((current) => ({ ...current, apiKey: '' }))}
             >
               清除 Key
             </button>
           </div>
+          <small>
+            {canCopyRockModelConfig
+              ? '复制只载入当前表单；保存后两套配置仍互不联动。'
+              : '洛克王国还没有已保存的模型配置。'}
+          </small>
         </form>
         <details className="reader-service-guide">
           <summary>{selectedModelProvider.label}配置提示</summary>
@@ -1117,7 +1139,7 @@ function ReadingServiceSettings({
           )}
         </details>
         <p className="reader-settings-storage">
-          每个供应商的地址和模型名分别保存在本机 localStorage；各家 Key 分别存在 sessionStorage，关闭浏览器会话后失效。
+          阅读伴侣配置独立保存。每个供应商的地址和模型名分别保存在本机 localStorage；各家 Key 分别存在 sessionStorage，关闭浏览器会话后失效。
           不同功能会发送书目信息，或当前问题、段落、书名和章节标签；只有点击功能或创建时保留 AI 准备选项才会调用。
         </p>
       </section>
@@ -2636,7 +2658,7 @@ export function ReaderTool({ scene }) {
   }
 
   function saveModelConfig(nextConfig) {
-    const normalized = saveStoredModelConfig(nextConfig)
+    const normalized = saveStoredModelConfig(nextConfig, MODEL_CONFIG_SCOPE.READING)
     setModelConfig(normalized)
   }
 
@@ -3121,7 +3143,13 @@ export function ReaderTool({ scene }) {
           <ReadingServiceSettings
             modelConfig={modelConfig}
             mapConfig={mapConfig}
+            canCopyRockModelConfig={hasStoredModelConfig(MODEL_CONFIG_SCOPE.ROCK_KINGDOM)}
             onLoadModelProvider={(providerId) => loadStoredReadingModelConfig(providerId, false)}
+            onLoadRockModelConfig={() => loadStoredModelConfig(
+              '',
+              true,
+              MODEL_CONFIG_SCOPE.ROCK_KINGDOM,
+            )}
             onSaveModel={saveModelConfig}
             onSaveMap={saveMapConfig}
           />

@@ -15,7 +15,7 @@ import {
   valuesWithAppearance,
 } from '../../domain/rockKingdomScanner.js'
 import { ModelSettingsModal } from '../model/ModelSettingsModal.jsx'
-import { modelConfigIsComplete } from '../model/modelConfig.js'
+import { MODEL_CONFIG_SCOPE, modelConfigIsComplete } from '../model/modelConfig.js'
 import { useModelConfig } from '../model/useModelConfig.js'
 import { correctRockScannerFields } from '../rock-kingdom-model/rockKingdomModel.js'
 
@@ -109,7 +109,13 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   const [progress, setProgress] = useState('')
   const [error, setError] = useState('')
   const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
-  const { modelConfig, loadProvider, saveModelConfig } = useModelConfig()
+  const {
+    modelConfig,
+    loadProvider,
+    canCopyOtherConfig,
+    loadOtherConfig,
+    saveModelConfig,
+  } = useModelConfig(MODEL_CONFIG_SCOPE.ROCK_KINGDOM)
 
   const selected = frames.find((frame) => frame.id === selectedId) || frames[0]
 
@@ -571,7 +577,11 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       {modelSettingsOpen && (
         <ModelSettingsModal
           config={modelConfig}
+          domainLabel="洛克王国"
+          copySourceLabel="阅读伴侣"
+          canCopySource={canCopyOtherConfig}
           onLoadProvider={loadProvider}
+          onLoadCopySource={loadOtherConfig}
           onSave={saveModelConfig}
           onClose={() => setModelSettingsOpen(false)}
         />

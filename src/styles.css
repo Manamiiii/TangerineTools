@@ -7273,6 +7273,21 @@ img {
 
 .shared-model-settings > label > small { color: var(--text-muted); }
 
+.shared-model-copy {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+}
+
+.shared-model-copy small {
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
 .shared-model-links {
   display: flex;
   flex-wrap: wrap;

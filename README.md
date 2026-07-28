@@ -239,7 +239,7 @@ git diff --check
 - [`docs/nature/open-issues.md`](docs/nature/open-issues.md)：尚未形成稳定规则的通用问题。
 - [`docs/reading-companion/product-and-architecture.md`](docs/reading-companion/product-and-architecture.md)：经典文学阅读伴侣的已实现范围、按书建库、跨端入口和剧透安全契约。
 - [`docs/reading-companion/model-prompts.md`](docs/reading-companion/model-prompts.md)：个人书籍自动初始化和内置书正式预制使用的版本化提示词与输出权限。
-- [`docs/reading-companion/model-provider-setup.md`](docs/reading-companion/model-provider-setup.md)：阅读与洛克王国共用的智谱、DeepSeek、MiniMax、OpenAI 和自定义模型连接配置。
+- [`docs/reading-companion/model-provider-setup.md`](docs/reading-companion/model-provider-setup.md)：阅读伴侣与洛克王国各自独立的智谱、DeepSeek、MiniMax、OpenAI 和自定义模型连接配置，以及双向复制方法。
 - [`docs/reading-companion/trial-guide.md`](docs/reading-companion/trial-guide.md)：阅读伴侣当前可试用范围、启动步骤和反馈重点。
 
 根 README 是项目结构、命令和维护文档的统一入口；专题文档只保存各自领域内不可由代码结构直接表达的规则与约束。

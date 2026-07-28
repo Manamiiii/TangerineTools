@@ -33,7 +33,7 @@ import {
 import { TRAIT_TAG_OPTIONS } from '../presets/rockKingdom.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
 import { ModelSettingsModal } from '../features/model/ModelSettingsModal.jsx'
-import { modelConfigIsComplete } from '../features/model/modelConfig.js'
+import { MODEL_CONFIG_SCOPE, modelConfigIsComplete } from '../features/model/modelConfig.js'
 import { useModelConfig } from '../features/model/useModelConfig.js'
 import { explainRockNature } from '../features/rock-kingdom-model/rockKingdomModel.js'
 import { EmptyState, FormRow, OptionTag, SearchableSelect, StatsChart } from './common.jsx'
@@ -928,7 +928,13 @@ function NatureModelExplanation({
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const { modelConfig, loadProvider, saveModelConfig } = useModelConfig()
+  const {
+    modelConfig,
+    loadProvider,
+    canCopyOtherConfig,
+    loadOtherConfig,
+    saveModelConfig,
+  } = useModelConfig(MODEL_CONFIG_SCOPE.ROCK_KINGDOM)
 
   useEffect(() => {
     setState('idle')
@@ -1002,7 +1008,11 @@ function NatureModelExplanation({
       {settingsOpen && (
         <ModelSettingsModal
           config={modelConfig}
+          domainLabel="洛克王国"
+          copySourceLabel="阅读伴侣"
+          canCopySource={canCopyOtherConfig}
           onLoadProvider={loadProvider}
+          onLoadCopySource={loadOtherConfig}
           onSave={saveModelConfig}
           onClose={() => setSettingsOpen(false)}
         />
