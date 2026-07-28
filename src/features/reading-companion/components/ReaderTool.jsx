@@ -721,6 +721,7 @@ function ModelAnalysisPanel({
   const [requestState, setRequestState] = useState('idle')
   const [message, setMessage] = useState('')
   const [candidates, setCandidates] = useState([])
+  const [analysisExcerpt, setAnalysisExcerpt] = useState('')
   const configured = Boolean(
     modelConfig.endpoint.trim()
     && modelConfig.model.trim()
@@ -729,14 +730,16 @@ function ModelAnalysisPanel({
 
   useEffect(() => {
     setCandidates([])
+    setAnalysisExcerpt('')
     setMessage('')
     setRequestState('idle')
-  }, [excerpt, currentChapter?.id])
+  }, [currentChapter?.id])
+
+  const resultsStale = candidates.length > 0 && analysisExcerpt !== excerpt
 
   async function analyze() {
     setRequestState('working')
     setMessage('')
-    setCandidates([])
     try {
       const results = await analyzeReadingExcerpt({
         endpoint: modelConfig.endpoint,
@@ -748,6 +751,7 @@ function ModelAnalysisPanel({
         chapterLabel: currentChapter?.label,
       })
       setCandidates(results)
+      setAnalysisExcerpt(excerpt)
       setRequestState('done')
       setMessage(
         results.length > 0
@@ -758,6 +762,20 @@ function ModelAnalysisPanel({
       setRequestState('error')
       setMessage(error?.message || '模型识别失败')
     }
+  }
+
+  function updateCandidate(index, patch) {
+    setCandidates((current) => current.map((candidate, candidateIndex) => (
+      candidateIndex === index
+        ? {
+            ...candidate,
+            ...patch,
+            ...(patch.kind === OBSERVED_ENTITY_KIND.PLACE && candidate.kind !== patch.kind
+              ? { placeKind: OBSERVED_PLACE_KIND.UNKNOWN }
+              : {}),
+          }
+        : candidate
+    )))
   }
 
   async function confirm(candidate) {
@@ -808,34 +826,72 @@ function ModelAnalysisPanel({
         <Sparkles size={15} />
         {requestState === 'working' ? '正在识别当前段落…' : '用模型发现新名称'}
       </button>
-      {message && <p className="reader-model-message" role="status">{message}</p>}
+      {(resultsStale || message) && (
+        <p className="reader-model-message" role="status">
+          {resultsStale ? '当前段落已经改变，请重新识别后再记录。' : message}
+        </p>
+      )}
       {candidates.length > 0 && (
         <div className="reader-model-candidates">
-          {candidates.map((candidate) => {
+          {candidates.map((candidate, index) => {
             const action = actionFor(candidate.name, candidate.kind)
             const isRecorded = action.type === 'recorded'
               || candidate.recordedChapterId === currentChapter?.id
+            const candidateDisabled = isRecorded || resultsStale
             return (
               <div
-                className={`reader-model-candidate ${isRecorded ? 'is-recorded' : ''}`}
-                key={`${candidate.kind}:${candidate.name}`}
+                className={[
+                  'reader-model-candidate',
+                  isRecorded ? 'is-recorded' : '',
+                  resultsStale ? 'is-stale' : '',
+                ].filter(Boolean).join(' ')}
+                key={`${index}:${candidate.name}`}
               >
-                <div>
-                  <strong>{candidate.name}</strong>
-                  <span>
-                    {OBSERVED_KIND_LABELS[candidate.kind]}
-                    {candidate.kind === OBSERVED_ENTITY_KIND.PLACE
-                      ? ` · ${OBSERVED_PLACE_KIND_LABELS[candidate.placeKind]}`
-                      : ''}
-                    {candidate.confidence !== null
-                      ? ` · 模型置信度 ${Math.round(candidate.confidence * 100)}%`
-                      : ''}
-                  </span>
+                <div className="reader-model-candidate-fields">
+                  <label>
+                    <span>名称</span>
+                    <input
+                      value={candidate.name}
+                      disabled={candidateDisabled}
+                      onChange={(event) => updateCandidate(index, { name: event.target.value })}
+                    />
+                  </label>
+                  <label>
+                    <span>类型</span>
+                    <select
+                      value={candidate.kind}
+                      disabled={candidateDisabled}
+                      onChange={(event) => updateCandidate(index, { kind: event.target.value })}
+                    >
+                      {Object.entries(OBSERVED_KIND_LABELS).map(([value, label]) => (
+                        <option key={value} value={value}>{label}</option>
+                      ))}
+                    </select>
+                  </label>
+                  {candidate.kind === OBSERVED_ENTITY_KIND.PLACE && (
+                    <label>
+                      <span>地点性质</span>
+                      <select
+                        value={candidate.placeKind || OBSERVED_PLACE_KIND.UNKNOWN}
+                        disabled={candidateDisabled}
+                        onChange={(event) => updateCandidate(index, {
+                          placeKind: event.target.value,
+                        })}
+                      >
+                        {Object.entries(OBSERVED_PLACE_KIND_LABELS).map(([value, label]) => (
+                          <option key={value} value={value}>{label}</option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+                  {candidate.confidence !== null && (
+                    <small>模型置信度 {Math.round(candidate.confidence * 100)}%</small>
+                  )}
                 </div>
                 <button
                   type="button"
                   className="btn btn-sm"
-                  disabled={isRecorded}
+                  disabled={candidateDisabled || !candidate.name.trim()}
                   onClick={() => confirm(candidate)}
                 >
                   {isRecorded
@@ -2582,6 +2638,7 @@ export function ReaderTool({ scene }) {
   const [saveState, setSaveState] = useState('idle')
   const [excerpt, setExcerpt] = useState('')
   const [imageInput, setImageInput] = useState(null)
+  const [imagePreviewOpen, setImagePreviewOpen] = useState(false)
   const [scanResults, setScanResults] = useState([])
   const [selectedExcerptText, setSelectedExcerptText] = useState('')
   const [scanStatus, setScanStatus] = useState('')
@@ -2631,6 +2688,15 @@ export function ReaderTool({ scene }) {
   useEffect(() => () => {
     if (imageInput?.url) URL.revokeObjectURL(imageInput.url)
   }, [imageInput])
+
+  useEffect(() => {
+    if (!imagePreviewOpen) return undefined
+    function closePreview(event) {
+      if (event.key === 'Escape') setImagePreviewOpen(false)
+    }
+    window.addEventListener('keydown', closePreview)
+    return () => window.removeEventListener('keydown', closePreview)
+  }, [imagePreviewOpen])
 
   useEffect(() => {
     if (activeTab === READER_TAB.MAP) setMapMounted(true)
@@ -2914,7 +2980,6 @@ export function ReaderTool({ scene }) {
 
   function changeExcerpt(value) {
     setExcerpt(value)
-    setScanResults([])
     setSelectedExcerptText('')
     setScanStatus('')
     setInputStatus('')
@@ -3015,6 +3080,7 @@ export function ReaderTool({ scene }) {
     if (!file) return
     if (imageInput?.url) URL.revokeObjectURL(imageInput.url)
     setImageInput({ file, name: file.name, url: URL.createObjectURL(file) })
+    setImagePreviewOpen(false)
     setOcrState('idle')
     setOcrProgress(0)
     setInputStatus('')
@@ -3024,6 +3090,7 @@ export function ReaderTool({ scene }) {
   function clearImage() {
     if (imageInput?.url) URL.revokeObjectURL(imageInput.url)
     setImageInput(null)
+    setImagePreviewOpen(false)
     setOcrState('idle')
     setOcrProgress(0)
   }
@@ -3211,10 +3278,20 @@ export function ReaderTool({ scene }) {
               </label>
             </div>
             {imageInput && (
-              <div className="reader-image-preview">
-                <img src={imageInput.url} alt="所选阅读页面预览" />
-                <div>
-                  <span>{imageInput.name}</span>
+              <>
+                <div className="reader-image-attachment">
+                  <button
+                    type="button"
+                    className="reader-image-thumbnail"
+                    onClick={() => setImagePreviewOpen(true)}
+                    aria-label="打开截图大图"
+                  >
+                    <img src={imageInput.url} alt="" />
+                  </button>
+                  <div>
+                    <strong>{imageInput.name}</strong>
+                    <span>点击缩略图查看大图</span>
+                  </div>
                   <button
                     type="button"
                     className="btn btn-sm"
@@ -3223,14 +3300,37 @@ export function ReaderTool({ scene }) {
                   >
                     <ScanSearch size={13} />
                     {ocrState === 'working'
-                      ? `本机识别中 ${ocrProgress}%`
-                      : '提取截图文字'}
+                      ? `识别中 ${ocrProgress}%`
+                      : '提取文字'}
                   </button>
                   <button type="button" className="icon-btn" onClick={clearImage} aria-label="移除截图">
                     <X size={15} />
                   </button>
                 </div>
-              </div>
+                {imagePreviewOpen && (
+                  <div
+                    className="reader-image-lightbox"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="截图大图预览"
+                    onMouseDown={(event) => {
+                      if (event.target === event.currentTarget) setImagePreviewOpen(false)
+                    }}
+                  >
+                    <div>
+                      <button
+                        type="button"
+                        className="icon-btn"
+                        onClick={() => setImagePreviewOpen(false)}
+                        aria-label="关闭大图"
+                      >
+                        <X size={18} />
+                      </button>
+                      <img src={imageInput.url} alt="所选阅读页面大图预览" />
+                    </div>
+                  </div>
+                )}
+              </>
             )}
             <label className="reader-excerpt-field">
               <span>粘贴当前段落</span>
@@ -3268,7 +3368,9 @@ export function ReaderTool({ scene }) {
                 })}
               </div>
             )}
-            {inputStatus && <p className="reader-input-status" role="status">{inputStatus}</p>}
+            <p className="reader-input-status" role="status">
+              {inputStatus || '\u00a0'}
+            </p>
             <div className="reader-reading-workspace">
               <div className="reader-reading-lane reader-understanding-lane">
                 <ReadingQuestionPanel
