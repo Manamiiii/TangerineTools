@@ -146,6 +146,28 @@ export function matchesOwnedSearch(row, keyword) {
   return haystack.includes(kw)
 }
 
+export function matchesOwnedFieldFilters(row, fields = [], filters = {}) {
+  return fields.every((field) => {
+    const expected = filters[field.key]
+    if (!expected) return true
+    const raw = ownedFieldValue(row, field)
+    if (field.type === 'multiselect') return Array.isArray(raw) && raw.map(String).includes(String(expected))
+    if (field.type === 'boolean') return String(Boolean(raw)) === String(expected)
+    return String(raw ?? '') === String(expected)
+  })
+}
+
+export function ownedFieldValue(row, field) {
+  const raw = row.values?.[field.key]
+  if (field.key !== 'appearance' || (raw != null && raw !== '')) return raw
+  const shiny = isOwnedYes(row.values?.shiny)
+  const colorful = isOwnedYes(row.values?.colorful)
+  if (shiny && colorful) return 'shiny-colorful'
+  if (shiny) return 'shiny'
+  if (colorful) return 'colorful'
+  return 'none'
+}
+
 // 按“精灵引用 + 具体性格值”统计收集数量，供性格候选逐项匹配。
 // sources 支持多个收集表及不同字段 key，不依赖洛克王国的固定表结构。
 export function buildOwnedNatureIndex(sources = [], equivalentReferenceIds = new Map()) {

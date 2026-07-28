@@ -10,6 +10,7 @@ import {
   deleteCatalogTable,
   deleteScene,
   ensureOwnedTable,
+  updateRows,
 } from '../../src/db/repository.js'
 import { ROCK_KINGDOM_COLLECTION_FIELDS } from '../../src/domain/owned.js'
 import { ROCK_KINGDOM_PRESET } from '../../src/presets/rockKingdom.js'
@@ -75,6 +76,24 @@ test('owned table creation is idempotent and only presets Rock Kingdom fields', 
 
   await ensureOwnedTable(ROCK_KINGDOM_PRESET.scene.id)
   assert.equal(await db.catalogFields.where('tableId').equals(rockOwned.id).count(), rockFields.length)
+})
+
+test('batch row updates change only the supplied rows and values in one repository operation', async () => {
+  await resetDatabase()
+  const scene = await createScene({ name: '批量修改场景', type: 'generic', tools: ['owned'] })
+  const owned = await ensureOwnedTable(scene.id)
+  const first = await createRow(owned.id, { nature: 'timid', note: '保留一' })
+  const second = await createRow(owned.id, { nature: 'timid', note: '保留二' })
+  const untouched = await createRow(owned.id, { nature: 'calm', note: '不修改' })
+
+  await updateRows([
+    { id: first.id, values: { ...first.values, nature: 'adamant' } },
+    { id: second.id, values: { ...second.values, nature: 'adamant' } },
+  ])
+
+  assert.deepEqual((await db.catalogRows.get(first.id)).values, { nature: 'adamant', note: '保留一' })
+  assert.deepEqual((await db.catalogRows.get(second.id)).values, { nature: 'adamant', note: '保留二' })
+  assert.deepEqual((await db.catalogRows.get(untouched.id)).values, { nature: 'calm', note: '不修改' })
 })
 
 test.after(async () => {

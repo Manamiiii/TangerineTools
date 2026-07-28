@@ -293,6 +293,16 @@ export async function updateRow(id, values) {
   await db.catalogRows.update(id, { values, updatedAt: nowIso() })
 }
 
+export async function updateRows(updates = []) {
+  if (updates.length === 0) return
+  const now = nowIso()
+  await db.transaction('rw', db.catalogRows, async () => {
+    await Promise.all(updates.map(({ id, values }) =>
+      db.catalogRows.update(id, { values, updatedAt: now }),
+    ))
+  })
+}
+
 export async function deleteRow(id) {
   await db.catalogRows.delete(id)
 }

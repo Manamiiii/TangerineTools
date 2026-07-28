@@ -7,12 +7,14 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Pencil, Plus, ScanLine, Search, Settings2, Trash2 } from 'lucide-react'
-import { createRow, db, deleteRow, ensureOwnedTable, updateRow } from '../db.js'
-import { matchesOwnedSearch } from '../domain/owned.js'
+import { BarChart3, FilterX, ListChecks, Pencil, Plus, ScanLine, Search, Settings2, Trash2 } from 'lucide-react'
+import { createRow, db, deleteRow, ensureOwnedTable, updateRow, updateRows } from '../db.js'
+import { matchesOwnedFieldFilters, matchesOwnedSearch, ownedFieldValue } from '../domain/owned.js'
+import { valuesWithAppearance } from '../domain/rockKingdomScanner.js'
+import { buildStockSummary, defaultStockGroupField } from '../domain/stock.js'
 import { RockKingdomScannerModal } from '../features/rock-kingdom-scanner/RockKingdomScannerModal.jsx'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
-import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal } from './common.jsx'
+import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal, Pagination } from './common.jsx'
 import { CellView, FieldInput, FieldManagerModal, fieldDisplayProps } from './catalog.jsx'
 
 export function OwnedTool({ scene }) {
@@ -43,6 +45,39 @@ function defaultValueForType(type) {
 
 function collectionModeLabel(mode) {
   return mode === 'multiple' ? '一对多' : '一对一'
+}
+
+const FILTER_FIELD_TYPES = new Set(['select', 'multiselect', 'boolean', 'reference'])
+const ROCK_BATCH_FIELD_KEYS = new Set(['nature', 'bloodline', 'appearance', 'specialty', 'gender'])
+
+function filterOptionsForField(field, rows, referenceNameMap) {
+  if (field.type === 'boolean') {
+    return [
+      { value: 'true', label: '是' },
+      { value: 'false', label: '否' },
+    ]
+  }
+  const present = new Set()
+  for (const row of rows) {
+    const raw = ownedFieldValue(row, field)
+    if (Array.isArray(raw)) raw.forEach((value) => present.add(String(value)))
+    else if (raw != null && raw !== '') present.add(String(raw))
+  }
+  if (field.type === 'reference') {
+    return [...present]
+      .map((value) => ({ value, label: referenceNameMap?.get(value) || value }))
+      .sort((left, right) => left.label.localeCompare(right.label, 'zh-CN'))
+  }
+  return (field.options || [])
+    .filter((option) => present.has(String(option.value)))
+    .map((option) => ({ value: String(option.value), label: option.label || String(option.value) }))
+}
+
+function searchableRowMatch(row, keyword, refField, referenceNameMap) {
+  if (matchesOwnedSearch(row, keyword)) return true
+  if (!refField) return false
+  const refName = referenceNameMap?.get(row.values?.[refField.key]) || ''
+  return refName.toLowerCase().includes((keyword || '').trim().toLowerCase())
 }
 
 function OwnedTableView({ table, sceneId }) {
@@ -86,25 +121,96 @@ function OwnedTableView({ table, sceneId }) {
   const [rowForm, setRowForm] = useState(null) // null | 'new' | row
   const [deletingRow, setDeletingRow] = useState(null)
   const [scannerOpen, setScannerOpen] = useState(false)
+  const [filters, setFilters] = useState({})
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(20)
+  const [selectedIds, setSelectedIds] = useState(() => new Set())
+  const [batchOpen, setBatchOpen] = useState(false)
+  const [summaryOpen, setSummaryOpen] = useState(false)
+  const [summaryFieldKey, setSummaryFieldKey] = useState('')
 
   const filteredRows = useMemo(() => {
     if (!rows || !fields) return []
     const refField = fields.find((f) => f.type === 'reference')
-    return rows.filter((row) => {
-      if (matchesOwnedSearch(row, keyword)) return true
-      if (!refField || !refFieldRows) return false
-      const refTableId = refField.referenceTableId
-      const nameMap = refTableId ? refFieldRows[refTableId] : null
-      const refValue = row.values?.[refField.key]
-      const refName = nameMap?.get(refValue) || ''
-      return refName.toLowerCase().includes((keyword || '').trim().toLowerCase())
+    const nameMap = refField?.referenceTableId ? refFieldRows?.[refField.referenceTableId] : null
+    return rows.filter((row) =>
+      searchableRowMatch(row, keyword, refField, nameMap)
+      && matchesOwnedFieldFilters(row, fields, filters),
+    )
+  }, [rows, fields, refFieldRows, keyword, filters])
+
+  useEffect(() => {
+    setPage(1)
+  }, [keyword, filters])
+
+  useEffect(() => {
+    if (!rows) return
+    const rowIds = new Set(rows.map((row) => row.id))
+    setSelectedIds((current) => {
+      const next = new Set([...current].filter((id) => rowIds.has(id)))
+      return next.size === current.size ? current : next
     })
-  }, [rows, fields, refFieldRows, keyword])
+  }, [rows])
 
   if (!fields || !rows) return null
 
   const sortedFields = [...fields].sort((a, b) => a.order - b.order)
   const visibleFields = sortedFields.filter((field) => !field.hidden)
+  const refField = sortedFields.find((field) => field.type === 'reference')
+  const referenceNameMap = refField?.referenceTableId ? refFieldRows?.[refField.referenceTableId] : null
+  const filterFields = visibleFields.filter((field) =>
+    FILTER_FIELD_TYPES.has(field.type)
+    && !(sceneId === ROCK_KINGDOM_PRESET.scene.id && ['shiny', 'colorful'].includes(field.key)),
+  )
+  const activeFilterCount = Object.values(filters).filter(Boolean).length
+  const pageCount = Math.max(1, Math.ceil(filteredRows.length / pageSize))
+  const safePage = Math.min(page, pageCount)
+  const pageRows = filteredRows.slice((safePage - 1) * pageSize, safePage * pageSize)
+  const selectedRows = rows.filter((row) => selectedIds.has(row.id))
+  const summaryFields = filterFields
+  const defaultSummaryField = summaryFields.find((field) => field.key === 'appearance')
+    || defaultStockGroupField(summaryFields)
+  const summarySourceField = summaryFields.find((field) => field.key === summaryFieldKey)
+    || defaultSummaryField
+  const summaryField = summarySourceField?.type === 'reference'
+    ? {
+        ...summarySourceField,
+        type: 'select',
+        options: filterOptionsForField(summarySourceField, rows, referenceNameMap),
+      }
+    : summarySourceField
+  const summaryRows = summarySourceField?.key === 'appearance'
+    ? filteredRows.map((row) => ({
+        ...row,
+        values: { ...row.values, appearance: ownedFieldValue(row, summarySourceField) },
+      }))
+    : filteredRows
+  const summary = buildStockSummary(summaryRows, summaryField)
+
+  function setFieldFilter(key, value) {
+    setFilters((current) => ({ ...current, [key]: value }))
+  }
+
+  function toggleRow(id) {
+    setSelectedIds((current) => {
+      const next = new Set(current)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function togglePageRows() {
+    const allSelected = pageRows.length > 0 && pageRows.every((row) => selectedIds.has(row.id))
+    setSelectedIds((current) => {
+      const next = new Set(current)
+      pageRows.forEach((row) => {
+        if (allSelected) next.delete(row.id)
+        else next.add(row.id)
+      })
+      return next
+    })
+  }
 
   return (
     <div className="table-view">
@@ -140,6 +246,12 @@ function OwnedTableView({ table, sceneId }) {
           />
         )}
         <IconButton
+          icon={ListChecks}
+          label={selectedIds.size > 0 ? `批量修改 ${selectedIds.size}` : '批量修改'}
+          disabled={selectedIds.size === 0}
+          onClick={() => setBatchOpen(true)}
+        />
+        <IconButton
           icon={Settings2}
           label="字段"
           onClick={() => setFieldManagerOpen(true)}
@@ -153,6 +265,91 @@ function OwnedTableView({ table, sceneId }) {
         />
       </div>
 
+      {rows.length > 0 && filterFields.length > 0 && (
+        <div className="owned-filter-panel">
+          <div className="owned-filter-fields">
+            {filterFields.map((field) => (
+              <label key={field.id} className="owned-filter-control">
+                <span>{field.name}</span>
+                <select
+                  className="select"
+                  value={filters[field.key] || ''}
+                  onChange={(event) => setFieldFilter(field.key, event.target.value)}
+                >
+                  <option value="">全部</option>
+                  {filterOptionsForField(field, rows, referenceNameMap).map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </label>
+            ))}
+          </div>
+          <div className="owned-filter-actions">
+            <span>显示 {filteredRows.length} / {rows.length} 条</span>
+            <button
+              type="button"
+              className="btn btn-xs"
+              disabled={!keyword && activeFilterCount === 0}
+              onClick={() => {
+                setKeyword('')
+                setFilters({})
+              }}
+            >
+              <FilterX size={13} /> 清空条件
+            </button>
+            <button
+              type="button"
+              className={`btn btn-xs ${summaryOpen ? 'btn-primary' : ''}`}
+              onClick={() => setSummaryOpen((value) => !value)}
+            >
+              <BarChart3 size={13} /> 统计摘要
+            </button>
+          </div>
+        </div>
+      )}
+
+      {summaryOpen && rows.length > 0 && (
+        <section className="owned-summary" aria-label="收集记录统计摘要">
+          <div className="owned-summary-heading">
+            <div>
+              <strong>当前筛选统计</strong>
+              <span>共 {rows.length} 条，当前条件命中 {filteredRows.length} 条</span>
+            </div>
+            <label>
+              按字段
+              <select
+                className="select"
+                value={summarySourceField?.key || ''}
+                onChange={(event) => setSummaryFieldKey(event.target.value)}
+              >
+                {summaryFields.map((field) => (
+                  <option key={field.id} value={field.key}>{field.name}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="owned-summary-groups">
+            {summary.groups.length === 0 ? (
+              <span>当前条件没有可统计记录。</span>
+            ) : summary.groups.map((item) => (
+              <div key={item.label}>
+                <span>{item.label}</span>
+                <strong>{item.count}</strong>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {selectedIds.size > 0 && (
+        <div className="owned-selection-bar">
+          <span>已选择 {selectedIds.size} 条记录</span>
+          <button type="button" className="btn btn-xs" onClick={() => setSelectedIds(new Set())}>取消选择</button>
+          <button type="button" className="btn btn-primary btn-xs" onClick={() => setBatchOpen(true)}>
+            批量修改
+          </button>
+        </div>
+      )}
 
       {rows.length === 0 ? (
         <EmptyState
@@ -174,9 +371,28 @@ function OwnedTableView({ table, sceneId }) {
       ) : (
         <OwnedGrid
           fields={visibleFields}
-          rows={filteredRows}
+          rows={pageRows}
+          selectedIds={selectedIds}
+          allPageSelected={pageRows.length > 0 && pageRows.every((row) => selectedIds.has(row.id))}
+          onToggleRow={toggleRow}
+          onTogglePage={togglePageRows}
           onEditRow={setRowForm}
           onDeleteRow={setDeletingRow}
+        />
+      )}
+
+      {filteredRows.length > 0 && (
+        <Pagination
+          page={safePage}
+          pageCount={pageCount}
+          pageSize={pageSize}
+          total={filteredRows.length}
+          pageSizeOptions={[20, 50, 100]}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size)
+            setPage(1)
+          }}
         />
       )}
 
@@ -208,6 +424,19 @@ function OwnedTableView({ table, sceneId }) {
         />
       )}
 
+      {batchOpen && (
+        <OwnedBatchEditModal
+          fields={visibleFields}
+          rows={selectedRows}
+          rockKingdom={sceneId === ROCK_KINGDOM_PRESET.scene.id}
+          onClose={() => setBatchOpen(false)}
+          onSaved={() => {
+            setBatchOpen(false)
+            setSelectedIds(new Set())
+          }}
+        />
+      )}
+
       {deletingRow && (
         <ConfirmDialog
           title="删除记录"
@@ -229,12 +458,29 @@ function OwnedTableView({ table, sceneId }) {
 // 表格：与统计视图一致的精简表格，无字段管理/排序控件
 // ---------------------------------------------------------------------------
 
-function OwnedGrid({ fields, rows, onEditRow, onDeleteRow }) {
+function OwnedGrid({
+  fields,
+  rows,
+  selectedIds,
+  allPageSelected,
+  onToggleRow,
+  onTogglePage,
+  onEditRow,
+  onDeleteRow,
+}) {
   return (
     <div className="data-grid-scroll">
       <table className="data-grid">
         <thead>
           <tr>
+            <th className="owned-select-column">
+              <input
+                type="checkbox"
+                aria-label="选择本页全部记录"
+                checked={allPageSelected}
+                onChange={onTogglePage}
+              />
+            </th>
             {fields.map((field) => (
               <th key={field.id} {...fieldDisplayProps(field)}>{field.name}</th>
             ))}
@@ -243,7 +489,15 @@ function OwnedGrid({ fields, rows, onEditRow, onDeleteRow }) {
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.id} className="data-grid-row">
+            <tr key={row.id} className={`data-grid-row ${selectedIds.has(row.id) ? 'owned-row-selected' : ''}`}>
+              <td className="owned-select-column">
+                <input
+                  type="checkbox"
+                  aria-label="选择这条记录"
+                  checked={selectedIds.has(row.id)}
+                  onChange={() => onToggleRow(row.id)}
+                />
+              </td>
               {fields.map((field) => (
                 <td key={field.id} {...fieldDisplayProps(field)}>
                   <CellView field={field} row={row} allFields={fields} mode="table" />
@@ -265,6 +519,94 @@ function OwnedGrid({ fields, rows, onEditRow, onDeleteRow }) {
         </tbody>
       </table>
     </div>
+  )
+}
+
+function OwnedBatchEditModal({ fields, rows, rockKingdom, onClose, onSaved }) {
+  const editableFields = fields.filter((field) => {
+    if (field.type === 'stats' || field.type === 'reference' || field.type === 'references' || field.type === 'image') return false
+    if (rockKingdom) return ROCK_BATCH_FIELD_KEYS.has(field.key)
+    return true
+  })
+  const [fieldKey, setFieldKey] = useState(editableFields[0]?.key || '')
+  const [value, setValue] = useState(undefined)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const field = editableFields.find((item) => item.key === fieldKey) || editableFields[0]
+
+  async function applyBatch() {
+    if (!field || value === undefined || rows.length === 0) return
+    setSaving(true)
+    setError('')
+    try {
+      await updateRows(rows.map((row) => {
+        const next = { ...row.values, [field.key]: value }
+        return {
+          id: row.id,
+          values: field.key === 'appearance' ? valuesWithAppearance(next) : next,
+        }
+      }))
+      onSaved()
+    } catch (batchError) {
+      setError(batchError.message)
+      setSaving(false)
+    }
+  }
+
+  return (
+    <Modal
+      title={`批量修改 ${rows.length} 条记录`}
+      onClose={onClose}
+      width={500}
+      footer={
+        <>
+          <button type="button" className="btn" onClick={onClose} disabled={saving}>取消</button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={applyBatch}
+            disabled={saving || !field || value === undefined}
+          >
+            {saving ? '正在修改…' : `应用到 ${rows.length} 条记录`}
+          </button>
+        </>
+      }
+    >
+      <div className="stack-form">
+        <p className="owned-batch-note">
+          只修改下面选择的一个字段；其他字段、未勾选记录和现有精灵引用保持不变。
+        </p>
+        {error && <div className="form-error">{error}</div>}
+        {editableFields.length === 0 ? (
+          <EmptyState title="没有可批量修改的字段" description="引用资料和派生字段不会参与批量修改。" />
+        ) : (
+          <>
+            <FormRow label="修改字段">
+              <select
+                className="select"
+                value={field?.key || ''}
+                onChange={(event) => {
+                  setFieldKey(event.target.value)
+                  setValue(undefined)
+                }}
+              >
+                {editableFields.map((item) => (
+                  <option key={item.id} value={item.key}>{item.name}</option>
+                ))}
+              </select>
+            </FormRow>
+            <FormRow label="统一修改为">
+              <FieldInput
+                field={field}
+                value={value ?? defaultValueForType(field.type)}
+                onChange={setValue}
+              />
+              {value === undefined && <small className="owned-batch-help">请选择目标值后才能应用。</small>}
+            </FormRow>
+          </>
+        )}
+      </div>
+    </Modal>
   )
 }
 
@@ -294,7 +636,10 @@ export function OwnedFormModal({ table, fields, row, rows, collectionMode, initi
   const shinyBlocked = values.shiny === 'yes' && selectedRefRow && !selectedHasShinyForm
 
   function setFieldValue(key, value) {
-    setValues((prev) => ({ ...prev, [key]: value }))
+    setValues((prev) => {
+      const next = { ...prev, [key]: value }
+      return key === 'appearance' && value ? valuesWithAppearance(next) : next
+    })
   }
 
   async function handleSubmit(e) {
@@ -305,20 +650,21 @@ export function OwnedFormModal({ table, fields, row, rows, collectionMode, initi
       return
     }
     setSaving(true)
+    const savedValues = values.appearance ? valuesWithAppearance(values) : values
     if (row) {
-      await updateRow(row.id, { ...row.values, ...values })
+      await updateRow(row.id, { ...row.values, ...savedValues })
     } else {
       const refField = fields.find((field) => field.type === 'reference')
       const duplicate = collectionMode === 'single' && refField
         ? rows.find((item) =>
-            item.values?.[refField.key] && item.values?.[refField.key] === values[refField.key],
+            item.values?.[refField.key] && item.values?.[refField.key] === savedValues[refField.key],
           )
         : null
-      if (duplicate) await updateRow(duplicate.id, { ...duplicate.values, ...values })
-      else await createRow(table.id, values)
+      if (duplicate) await updateRow(duplicate.id, { ...duplicate.values, ...savedValues })
+      else await createRow(table.id, savedValues)
     }
     setSaving(false)
-    onSaved?.({ ...values })
+    onSaved?.({ ...savedValues })
     onClose()
   }
 
