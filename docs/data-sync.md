@@ -41,10 +41,11 @@ db.version(1).stores({
 
 - 阅读资料包位于 `public/presets/reading-companion/`，属于版本化静态内容，不写入 IndexedDB。
 - 当前章节使用 `readerState:{sceneId}:{editionId}` 作为 `meta.key`；值包含 `packageId`、`bookId`、`sceneId`、`editionId`、`currentChapterId` 和更新时间。
-- 读者确认名称保存在同一记录的 `observedEntities`。资料包外地点经过使用者选择公网地图候选后，可以附带 `mapLocation`，其中仅保存供应商、候选 id、显示地址和经纬度；它是个人确认的现代位置，不会写回正式阅读资料包。
+- 读者确认名称保存在同一记录的 `observedEntities`。每个名称使用 `firstSeenChapterId` 保存最早确认章节，使用 `encounterChapterIds` 保存读者明确记录过的章节集合，并可保存最多 500 字的个人 `note`；旧记录缺少章节集合时继续以最早确认章节作为唯一记录。资料包外地点经过使用者选择公网地图候选后，可以附带 `mapLocation`，其中仅保存供应商、候选 id、显示地址和经纬度；它是个人确认的现代位置，不会写回正式阅读资料包。
 - 同一书籍版本在不同场景中相互隔离。记录随全量 JSON 导出/导入传输，并遵循相同 key 覆盖、本地其他 key 保留的合并语义。
 - 用户粘贴的段落和选择的截图不写入 IndexedDB。剧透授权属于单次界面状态，不写入 `meta`。
 - 阅读伴侣与洛克王国分别保存模型供应商、接口地址和模型 ID 到浏览器 `localStorage`，API Key 只保存在各自的 `sessionStorage` 项中；两套配置可以显式复制为一次性快照，复制后互不联动。模型配置不进入 Dexie、导出文件或预置资料；请求结果只存在当前页面内存缓存，洛克王国扫描纠错、收集检查说明和性格解释均不自动落库。
+- 阅读设置中的“导出当前书反馈”使用独立白名单格式，只包含应用版本与部署提交标识、当前书及版本信息、当前章节、`observedEntities`、个人备注和已确认地图位置。反馈包不包含其他场景、资料表、模型或地图 Key、当前段落、截图、OCR 文字和临时模型结果，也不提供导入恢复语义；完整备份与恢复继续使用首页全局导出。
 
 ### `catalogTables.kind` 与收集记录 / 统计视图
 

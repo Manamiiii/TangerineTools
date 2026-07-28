@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "1.3.0",
+  "packageVersion": "1.10.0",
   "id": "reader-package-gone-with-the-wind-zh-9787570202188",
   "book": {
     "id": "gone-with-the-wind",
@@ -350,9 +350,10 @@
       "useFor": [
         "edition",
         "chapter_structure",
-        "book_description_names"
+        "book_description_names",
+        "book_description_context"
       ],
-      "notes": "用于确认 ISBN、译者、出版社、出版时间、连续 1–63 章结构，以及详情页简介中出现的斯佳丽、瑞德、艾希礼、梅兰妮四个短名；不包含正文，不能用于确认首次出现章节。"
+      "notes": "用于确认 ISBN、译者、出版社、出版时间、连续 1–63 章结构，以及详情页简介中出现的斯佳丽、瑞德、艾希礼、梅兰妮四个短名和“美国南方”“种植园”“林肯”“南北战争”四个无剧情背景词；不包含正文，不能用于确认首次出现章节。"
     },
     {
       "id": "source-reader-excerpt-early-institutions",
@@ -368,18 +369,182 @@
       "notes": "读者曾提供包含“弗吉尼亚大学、亚拉巴马大学和南卡罗来纳大学”的当前译本文字，并单独确认同一早期阅读内容使用“费耶特维尔女子学院”；只用于确认四个中文名称确实属于该版本，不保存上下文、不推断客观首次出现章节。"
     },
     {
+      "id": "source-nps-colonial-plantation-system",
+      "kind": "public-history",
+      "label": "U.S. National Park Service · Rise of the Colonial Plantation System",
+      "organization": "U.S. National Park Service",
+      "url": "https://home.nps.gov/articles/plantationsystem.htm",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_concept_note",
+        "plantation_definition"
+      ],
+      "rightsStatus": "public-government-reference",
+      "notes": "用于概括 plantation 作为大面积农业用地及其劳动制度背景；不采用页面内容推断作品情节、具体庄园或章节位置。"
+    },
+    {
+      "id": "source-loc-abraham-lincoln-biography",
+      "kind": "public-history",
+      "label": "Library of Congress · Abraham Lincoln Biography",
+      "organization": "Library of Congress",
+      "url": "https://www.loc.gov/exhibits/civil-war-in-america/biographies/abraham-lincoln.html",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_person_note",
+        "historical_identity"
+      ],
+      "rightsStatus": "public-government-reference",
+      "notes": "用于确认林肯的生卒年、总统身份和任内经历美国内战；不把历史人物资料与作品人物或后续剧情关联。"
+    },
+    {
+      "id": "source-nps-civil-war-overview",
+      "kind": "public-history",
+      "label": "U.S. National Park Service · The Civil War Overview",
+      "organization": "U.S. National Park Service",
+      "url": "https://www.nps.gov/civilwar/index.htm",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_event_note",
+        "historical_dates"
+      ],
+      "rightsStatus": "public-government-reference",
+      "notes": "用于确认美国内战发生于 1861–1865 年及其涉及联邦存续、奴隶制和公民权的广义历史背景；不用于作品章节或剧情解释。"
+    },
+    {
+      "id": "source-nps-enslavement-abolition",
+      "kind": "public-history",
+      "label": "U.S. National Park Service · Enslavement & Abolition",
+      "organization": "U.S. National Park Service",
+      "url": "https://www.nps.gov/subjects/enslavement/about.htm",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_concept_note",
+        "enslavement",
+        "abolition",
+        "emancipation"
+      ],
+      "rightsStatus": "public-government-reference",
+      "notes": "用于解释美国奴隶制、废奴与解放的基础历史语境；不把制度背景与作品人物、行动或后续命运关联。"
+    },
+    {
+      "id": "source-nps-reconstruction-overview",
+      "kind": "public-history",
+      "label": "U.S. National Park Service · Reconstruction Era Overview",
+      "organization": "U.S. National Park Service",
+      "url": "https://home.nps.gov/articles/000/a-short-overview-of-the-reconstruction-era-and-ulysses-s-grant-s-presidency.htm",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_concept_note",
+        "reconstruction_definition",
+        "historical_dates"
+      ],
+      "rightsStatus": "public-government-reference",
+      "notes": "用于说明重建时期的常见 1865–1877 口径和更宽的历史解释；不用于推断作品跨越的具体年份、章节或人物经历。"
+    },
+    {
+      "id": "source-national-archives-civil-war-documents",
+      "kind": "public-archive",
+      "label": "U.S. National Archives · Civil War Documents",
+      "organization": "U.S. National Archives and Records Administration",
+      "url": "https://www.archives.gov/education/lessons/civil-war-docs",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_concept_note",
+        "confederacy_definition",
+        "union_context"
+      ],
+      "rightsStatus": "public-government-reference",
+      "notes": "用于确认南方州脱离联邦并组成 Confederate States of America 的基础历史事实；不采用档案教学页解释作品立场或剧情。"
+    },
+    {
+      "id": "source-loc-confederate-states-records",
+      "kind": "public-archive",
+      "label": "Library of Congress · Confederate States of America Records",
+      "organization": "Library of Congress",
+      "url": "https://www.loc.gov/collections/confederate-states-of-america-records/about-this-collection/",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_concept_note",
+        "confederacy_name",
+        "historical_dates"
+      ],
+      "rightsStatus": "public-government-reference",
+      "notes": "用于确认 Confederate States of America 的政府记录主要集中于 1861–1865 年及其机构性质；不用于指定译本名称或章节定位。"
+    },
+    {
+      "id": "source-zgbk-american-civil-war",
+      "kind": "chinese-encyclopedia",
+      "label": "《中国大百科全书》第三版网络版 · 美国内战",
+      "organization": "中国大百科全书出版社",
+      "url": "https://www.zgbk.com/ecph/words?Name=%E7%BE%8E%E5%9B%BD%E5%86%85%E6%88%98&SiteID=1&SourceID=557288&Type=bkzyb&subSourceType=000003000012000007",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "chinese_term",
+        "safe_event_note",
+        "historical_dates"
+      ],
+      "rightsStatus": "reference-only",
+      "notes": "用于确认“美国内战”“美国南北战争”等中文名称和 1861–1865 年日期；不用于作品章节或剧情解释。"
+    },
+    {
+      "id": "source-zgbk-emancipation-proclamation",
+      "kind": "chinese-encyclopedia",
+      "label": "《中国大百科全书》第三版网络版 · 《解放奴隶宣言》",
+      "organization": "中国大百科全书出版社",
+      "url": "https://www.zgbk.com/ecph/words?ID=27218&SiteID=1&SubID=51422&Type=bkzyb",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "chinese_term",
+        "safe_event_note",
+        "historical_date"
+      ],
+      "rightsStatus": "reference-only",
+      "notes": "用于确认《解放奴隶宣言》的通行中文名、英文名和 1863 年 1 月 1 日颁布日期；不用于解释作品中的影响或人物行动。"
+    },
+    {
+      "id": "source-zgbk-abolitionist-movement",
+      "kind": "chinese-encyclopedia",
+      "label": "《中国大百科全书》第三版网络版 · 美国废奴运动",
+      "organization": "中国大百科全书出版社",
+      "url": "https://www.zgbk.com/ecph/words?ID=394450&SiteID=1&SubID=51422&Type=bkzyb",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "chinese_term",
+        "safe_concept_note",
+        "abolition_definition"
+      ],
+      "rightsStatus": "reference-only",
+      "notes": "用于确认“美国废奴运动”指以废除奴隶制度为宗旨的社会运动；不用于作品人物立场或剧情解释。"
+    },
+    {
+      "id": "source-cssn-civil-war-slave-trade",
+      "kind": "chinese-academic-news",
+      "label": "中国社会科学网 · 内战时期美国南方的奴隶贸易",
+      "organization": "中国社会科学网 / 中国社会科学报",
+      "url": "https://www.cssn.cn/skwxsdt/gjhy/202407/t20240726_5767090.shtml",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "chinese_term",
+        "confederacy_alias",
+        "historical_context"
+      ],
+      "rightsStatus": "reference-only",
+      "notes": "用于确认“美利坚联盟国”“南方联邦”作为 Confederate States of America 的中文称呼，并辅助说明奴隶制与其历史背景；不把书评内容用于作品剧情或章节定位。"
+    },
+    {
       "id": "source-university-of-virginia-official",
       "kind": "institution-official",
-      "label": "University of Virginia · Official Contact and Rotunda History",
+      "label": "University of Virginia · About UVA",
       "organization": "University of Virginia",
-      "url": "https://www.virginia.edu/contact-us/",
+      "url": "https://www.virginia.edu/about-uva/",
       "accessedAt": "2026-07-28",
       "useFor": [
         "modern_institution_name",
+        "institution_history",
         "modern_location"
       ],
       "rightsStatus": "reference-only",
-      "notes": "用于确认 University of Virginia 的现代机构名称和 Charlottesville 地址；地图点采用校内 Rotunda 作为清楚标注的校园参考点，不表示校园边界。"
+      "notes": "用于确认 University of Virginia 由 Thomas Jefferson 创建、1819 年获弗吉尼亚州议会特许并位于 Charlottesville；地图点采用校内 Rotunda 作为清楚标注的校园参考点，不表示校园边界。"
     },
     {
       "id": "source-university-of-alabama-official",
@@ -456,6 +621,20 @@
       "notes": "页面明确说明 Peachtree Street 因小说而广为人知，并确认其为亚特兰大现实街道；指定译本中文名称和可用线形几何仍需核对。"
     },
     {
+      "id": "source-atlanta-history-center-civil-war",
+      "kind": "museum-research",
+      "label": "Atlanta History Center · Turning Point: The American Civil War",
+      "organization": "Atlanta History Center",
+      "url": "https://www.atlantahistorycenter.com/exhibitions/turning-point-the-american-civil-war/",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_place_note",
+        "atlanta_historical_context"
+      ],
+      "rightsStatus": "reference-only",
+      "notes": "用于确认美国内战时期亚特兰大是交通、工业和军需储运中心；不用于解释作品情节、人物行动或指定译本章节。"
+    },
+    {
       "id": "source-census-2025-gazetteer",
       "kind": "modern-geography",
       "label": "U.S. Census Bureau · 2025 Gazetteer Files",
@@ -469,6 +648,35 @@
       ],
       "rightsStatus": "public-government-data",
       "notes": "用于现代真实地点的名称、GEOID、行政层级和代表坐标；代表坐标不是边界，历史边界仍需另行核对。"
+    },
+    {
+      "id": "source-census-regions-and-divisions",
+      "kind": "modern-geography",
+      "label": "U.S. Census Bureau · Geographic Levels · Regions and Divisions",
+      "organization": "United States Census Bureau",
+      "url": "https://www.census.gov/programs-surveys/economic-census/guidance-geographies/levels.html",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_place_note",
+        "statistical_south_region"
+      ],
+      "rightsStatus": "public-government-data",
+      "notes": "用于说明人口普查局把 South Region 作为统计分区，并进一步分成 South Atlantic、East South Central 和 West South Central；该统计口径不替代历史语境中的美国南方边界。"
+    },
+    {
+      "id": "source-new-georgia-encyclopedia-quick-facts",
+      "kind": "state-encyclopedia",
+      "label": "New Georgia Encyclopedia · Georgia Quick Facts",
+      "organization": "New Georgia Encyclopedia",
+      "url": "https://www.georgiaencyclopedia.org/quick-facts/",
+      "accessedAt": "2026-07-28",
+      "useFor": [
+        "safe_place_note",
+        "statehood",
+        "state_capital"
+      ],
+      "rightsStatus": "reference-only",
+      "notes": "用于确认佐治亚于 1788 年成为美国第 4 个州，亚特兰大自 1868 年起为州府；不用于作品章节或剧情解释。"
     },
     {
       "id": "source-census-2025-georgia-incorporated-places",
@@ -654,9 +862,206 @@
       },
       "sourceIds": [
         "source-census-2025-gazetteer",
-        "source-new-georgia-encyclopedia-gwtw"
+        "source-new-georgia-encyclopedia-gwtw",
+        "source-new-georgia-encyclopedia-quick-facts"
+      ],
+      "safeNote": "佐治亚于 1788 年成为美国第 4 个州；亚特兰大自 1868 年起为州府。",
+      "safeNoteSourceIds": [
+        "source-new-georgia-encyclopedia-quick-facts"
       ],
       "scopeNote": "坐标是现代州级代表坐标，不表示州界，也不表示作品年代的行政边界。"
+    },
+    {
+      "id": "place-american-south",
+      "name": "美国南方",
+      "originalName": "Southern United States",
+      "aliases": [],
+      "kind": "place",
+      "placeKind": "approximate",
+      "activation": "exact-reader-input",
+      "parentLabel": "美国（范围随历史语境变化）",
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-census-regions-and-divisions"
+      ],
+      "safeNote": "“美国南方”不是单一行政区。美国人口普查局在统计上设置 South Region，并分为南大西洋、东南中部和西南中部三个分区；历史语境中的范围不一定与这一统计口径相同。",
+      "safeNoteSourceIds": [
+        "source-census-regions-and-divisions"
+      ],
+      "scopeNote": "详情页简介确认该背景词；系统只标记为模糊区域，不提供中心点、边界或剧情意义。"
+    },
+    {
+      "id": "concept-plantation",
+      "name": "种植园",
+      "originalName": "Plantation",
+      "aliases": [],
+      "kind": "concept",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-nps-colonial-plantation-system"
+      ],
+      "safeNote": "在美国历史语境中，种植园通常指大规模农业用地；其生产体系常依赖契约劳工和被奴役者，具体作物与劳动方式因地区和时期而异。",
+      "safeNoteSourceIds": [
+        "source-nps-colonial-plantation-system"
+      ],
+      "scopeNote": "详情页简介确认该背景词；系统只提供概念名称，不预置制度说明或剧情解释。"
+    },
+    {
+      "id": "person-abraham-lincoln",
+      "name": "林肯",
+      "originalName": "Abraham Lincoln",
+      "aliases": [],
+      "kind": "person",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-loc-abraham-lincoln-biography"
+      ],
+      "safeNote": "亚伯拉罕·林肯（1809–1865）是美国第 16 任总统；他于 1860 年当选，并在任内经历了 1861–1865 年的美国内战。",
+      "safeNoteSourceIds": [
+        "source-loc-abraham-lincoln-biography"
+      ],
+      "scopeNote": "详情页简介确认该历史人物短名；系统不预置作品人物关系、历史评价或剧情联系。"
+    },
+    {
+      "id": "event-american-civil-war",
+      "name": "南北战争",
+      "originalName": "American Civil War",
+      "aliases": [
+        "美国内战",
+        "美国南北战争",
+        "American Civil War"
+      ],
+      "kind": "event",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-weread-edition-metadata",
+        "source-nps-civil-war-overview",
+        "source-zgbk-american-civil-war"
+      ],
+      "safeNote": "美国南北战争发生于 1861–1865 年；其历史背景涉及联邦存续、奴隶制以及此后持续发展的公民权问题。",
+      "safeNoteSourceIds": [
+        "source-nps-civil-war-overview",
+        "source-zgbk-american-civil-war"
+      ],
+      "scopeNote": "详情页简介确认“南北战争”属于本书背景词；注释只解释独立历史背景，不建立它与作品剧情的联系。"
+    },
+    {
+      "id": "concept-enslavement",
+      "name": "奴隶制",
+      "originalName": "Slavery",
+      "aliases": [
+        "奴隶制度",
+        "蓄奴制",
+        "Slavery",
+        "Enslavement"
+      ],
+      "kind": "concept",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-nps-enslavement-abolition",
+        "source-nps-civil-war-overview"
+      ],
+      "safeNote": "美国历史中的奴隶制把被奴役者置于强制劳动和被剥夺自由的制度中。到美国内战时期，奴隶制已成为长期政治冲突的核心议题之一。",
+      "safeNoteSourceIds": [
+        "source-nps-enslavement-abolition",
+        "source-nps-civil-war-overview"
+      ],
+      "scopeNote": "只解释制度背景，不把它与书中任何人物的身份、立场、行动或命运关联。"
+    },
+    {
+      "id": "concept-american-abolitionist-movement",
+      "name": "废奴运动",
+      "originalName": "Abolitionist Movement",
+      "aliases": [
+        "美国废奴运动",
+        "Abolitionist Movement",
+        "Abolitionism"
+      ],
+      "kind": "concept",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-nps-enslavement-abolition",
+        "source-zgbk-abolitionist-movement"
+      ],
+      "safeNote": "美国废奴运动是以结束奴隶制度为目标的社会运动，延续时间早于美国内战，并与奴隶制问题的公共争论相伴发展。",
+      "safeNoteSourceIds": [
+        "source-nps-enslavement-abolition",
+        "source-zgbk-abolitionist-movement"
+      ],
+      "scopeNote": "只提供历史概念定义，不据此判断作品人物是否属于、支持或反对某一运动。"
+    },
+    {
+      "id": "event-emancipation-proclamation",
+      "name": "《解放奴隶宣言》",
+      "originalName": "Emancipation Proclamation",
+      "aliases": [
+        "解放奴隶宣言",
+        "解放黑人奴隶宣言",
+        "Emancipation Proclamation"
+      ],
+      "kind": "event",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-nps-enslavement-abolition",
+        "source-zgbk-emancipation-proclamation"
+      ],
+      "safeNote": "《解放奴隶宣言》由美国总统林肯于 1863 年 1 月 1 日颁布，宣布南部叛乱州受奴役者获得自由；它没有在颁布当天直接覆盖美国所有受奴役者。",
+      "safeNoteSourceIds": [
+        "source-nps-enslavement-abolition",
+        "source-zgbk-emancipation-proclamation"
+      ],
+      "scopeNote": "只说明历史文件的基本范围，不解释它在作品中的出现方式、影响或后续情节。"
+    },
+    {
+      "id": "concept-reconstruction-era",
+      "name": "重建时期",
+      "originalName": "Reconstruction Era",
+      "aliases": [
+        "战后重建",
+        "美国重建时期",
+        "南方重建",
+        "Reconstruction",
+        "Reconstruction Era"
+      ],
+      "kind": "concept",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-nps-reconstruction-overview"
+      ],
+      "safeNote": "“重建时期”通常指美国内战结束后重组南方政治与社会秩序、重新定义公民权的阶段，常见年代口径是 1865–1877 年；部分研究采用从 1861 年延伸到 20 世纪初的更宽范围。",
+      "safeNoteSourceIds": [
+        "source-nps-reconstruction-overview"
+      ],
+      "scopeNote": "只解释历史术语及不同年代口径，不据此推断本书剧情跨越的具体时间。"
+    },
+    {
+      "id": "concept-confederate-states-of-america",
+      "name": "美利坚联盟国",
+      "originalName": "Confederate States of America",
+      "aliases": [
+        "南方联邦",
+        "邦联",
+        "南部邦联",
+        "Confederacy",
+        "Confederate States of America",
+        "CSA"
+      ],
+      "kind": "concept",
+      "activation": "exact-reader-input",
+      "sourceIds": [
+        "source-national-archives-civil-war-documents",
+        "source-loc-confederate-states-records",
+        "source-cssn-civil-war-slave-trade"
+      ],
+      "safeNote": "美利坚联盟国是美国南部脱离联邦的州在 1861 年组成的政权，通常也称南方联邦或邦联；其政府和军事活动延续至 1865 年美国内战结束。",
+      "safeNoteSourceIds": [
+        "source-national-archives-civil-war-documents",
+        "source-loc-confederate-states-records",
+        "source-cssn-civil-war-slave-trade"
+      ],
+      "scopeNote": "只解释历史名称，不据此判断作品人物的阵营、立场或命运。"
     },
     {
       "id": "place-clayton-county-georgia",
@@ -676,6 +1081,10 @@
       },
       "sourceIds": [
         "source-census-2025-gazetteer",
+        "source-new-georgia-encyclopedia-clayton-county"
+      ],
+      "safeNote": "克莱顿县位于亚特兰大以南，1858 年由佐治亚州议会设立；县治是琼斯伯勒。",
+      "safeNoteSourceIds": [
         "source-new-georgia-encyclopedia-clayton-county"
       ],
       "scopeNote": "坐标是现代县级代表坐标；公开资料确认其与作品创作背景有关，但不能据此断言正文直接出现该名称。"
@@ -698,7 +1107,12 @@
       },
       "sourceIds": [
         "source-census-2025-georgia-incorporated-places",
-        "source-atlanta-history-center-so-red-the-rose"
+        "source-atlanta-history-center-so-red-the-rose",
+        "source-atlanta-history-center-civil-war"
+      ],
+      "safeNote": "美国内战时期，亚特兰大是美国南方重要的交通、工业和军需储运中心。",
+      "safeNoteSourceIds": [
+        "source-atlanta-history-center-civil-war"
       ],
       "scopeNote": "坐标是现代行政地点的代表坐标，不表示作品年代的城市边界。"
     },
@@ -720,6 +1134,10 @@
       },
       "sourceIds": [
         "source-census-2025-georgia-incorporated-places",
+        "source-new-georgia-encyclopedia-clayton-county"
+      ],
+      "safeNote": "琼斯伯勒是克莱顿县县治，早期名为 Leaksville，1845 年以铁路工程师 Samuel Goode Jones 的姓氏重新命名。",
+      "safeNoteSourceIds": [
         "source-new-georgia-encyclopedia-clayton-county"
       ],
       "scopeNote": "公开资料确认其现代位置和创作背景联系，不代表已经证明正文直接出现该地名。"
@@ -781,6 +1199,10 @@
         "source-university-of-virginia-official",
         "source-openstreetmap-nominatim-research"
       ],
+      "safeNote": "弗吉尼亚大学由托马斯·杰斐逊创建，1819 年获弗吉尼亚州议会特许，位于夏洛茨维尔。",
+      "safeNoteSourceIds": [
+        "source-university-of-virginia-official"
+      ],
       "scopeNote": "当前译本片段确认中文名称；地图使用校内 Rotunda 作为现代校园参考点，不表示校园边界或故事年代范围。"
     },
     {
@@ -803,6 +1225,10 @@
         "source-reader-excerpt-early-institutions",
         "source-university-of-alabama-official",
         "source-openstreetmap-nominatim-research"
+      ],
+      "safeNote": "阿拉巴马州议会于 1820 年设立这所公立大学；学校 1831 年首次开课，到 19 世纪 60 年代已使用 The University of Alabama 这一名称。",
+      "safeNoteSourceIds": [
+        "source-university-of-alabama-official"
       ],
       "scopeNote": "当前译本片段确认中文名称；坐标是现代校园代表点，不表示校园边界或故事年代范围。"
     },
@@ -827,6 +1253,10 @@
         "source-university-of-south-carolina-official",
         "source-openstreetmap-nominatim-research"
       ],
+      "safeNote": "学校于 1801 年以 South Carolina College 之名创立，1906 年起固定使用 University of South Carolina 这一名称。",
+      "safeNoteSourceIds": [
+        "source-university-of-south-carolina-official"
+      ],
       "scopeNote": "当前译本片段使用现代中文校名；官方校史说明故事年代机构名不同，坐标仅表示现代校园代表点。"
     },
     {
@@ -847,6 +1277,10 @@
       },
       "sourceIds": [
         "source-reader-excerpt-early-institutions",
+        "source-dlg-fayetteville-academy"
+      ],
+      "safeNote": "现实中的 Fayetteville Academy 曾设在建于 1855 年的 Holliday-Dorsey-Fife 宅邸；Digital Library of Georgia 将其说明为小说中虚构学校的原型。",
+      "safeNoteSourceIds": [
         "source-dlg-fayetteville-academy"
       ],
       "scopeNote": "当前译本片段确认中文名称；地图点来自现实 Fayetteville Academy 原型资料，不表示虚构学校存在精确现实坐标。"

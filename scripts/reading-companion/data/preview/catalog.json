@@ -11,7 +11,16 @@
         "id": "reader-package-gone-with-the-wind-zh-9787570202188",
         "title": "飘",
         "editionLabel": "长江文艺出版社 · 2018年5月",
-        "path": "presets/reading-companion/gone-with-the-wind-zh-9787570202188.json"
+        "path": "presets/reading-companion/gone-with-the-wind-zh-9787570202188.json",
+        "preparedSummary": {
+          "entityCount": 23,
+          "place": 11,
+          "person": 5,
+          "concept": 5,
+          "event": 2,
+          "factCount": 0,
+          "sourceCount": 30
+        }
       }
     ]
   }

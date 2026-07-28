@@ -1,6 +1,7 @@
 import {
   READING_PACKAGE_SCHEMA_VERSION,
   assertReadingPackage,
+  summarizeReadingPackage,
 } from './readingCompanion.js'
 
 const MAX_PERSONAL_CHAPTERS = 1000
@@ -328,5 +329,6 @@ export function personalCatalogEntry(pkg) {
     ].filter((value) => value && value !== '未知').join(' · ') || '个人书籍',
     source: 'personal',
     cover: pkg.book.cover || { theme: PERSONAL_BOOK_COVER_THEMES[0] },
+    preparedSummary: summarizeReadingPackage(pkg),
   }
 }

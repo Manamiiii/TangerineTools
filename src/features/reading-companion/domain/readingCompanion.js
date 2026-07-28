@@ -61,6 +61,31 @@ function isNonEmptyString(value) {
   return typeof value === 'string' && value.trim().length > 0
 }
 
+export function summarizeReadingPackage(pkg) {
+  const preparedEntities = [...new Map([
+    ...(Array.isArray(pkg?.onDemandEntities) ? pkg.onDemandEntities : []),
+    ...(Array.isArray(pkg?.entities) ? pkg.entities : []),
+  ].map((entity, index) => [
+    entity?.id || `${entity?.kind || 'unknown'}:${entity?.name || index}`,
+    entity,
+  ])).values()]
+  const kindCounts = preparedEntities.reduce((counts, entity) => {
+    if (VALID_ENTITY_KINDS.has(entity?.kind)) counts[entity.kind] += 1
+    return counts
+  }, {
+    place: 0,
+    person: 0,
+    concept: 0,
+    event: 0,
+  })
+  return {
+    entityCount: preparedEntities.length,
+    ...kindCounts,
+    factCount: Array.isArray(pkg?.facts) ? pkg.facts.length : 0,
+    sourceCount: Array.isArray(pkg?.sources) ? pkg.sources.length : 0,
+  }
+}
+
 export function readingStateKey(sceneId, editionId) {
   if (!isNonEmptyString(sceneId) || !isNonEmptyString(editionId)) {
     throw new Error('阅读状态需要有效的场景和版本 id')
@@ -76,6 +101,18 @@ export function normalizeObservedEntityName(name) {
   return typeof name === 'string'
     ? name.normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase()
     : ''
+}
+
+export function observedEntityEncounterChapterIds(entity, chapters = []) {
+  const chapterIds = [
+    ...(Array.isArray(entity?.encounterChapterIds) ? entity.encounterChapterIds : []),
+    entity?.firstSeenChapterId,
+  ].filter((chapterId) => isNonEmptyString(chapterId))
+  const uniqueChapterIds = [...new Set(chapterIds)]
+  if (!Array.isArray(chapters) || chapters.length === 0) return uniqueChapterIds
+  return uniqueChapterIds
+    .filter((chapterId) => chapterIndex(chapters, chapterId) >= 0)
+    .sort((left, right) => chapterIndex(chapters, left) - chapterIndex(chapters, right))
 }
 
 export function upsertObservedEntity(observedEntities, candidate, chapters) {
@@ -98,6 +135,7 @@ export function upsertObservedEntity(observedEntities, candidate, chapters) {
       name,
       kind: candidate.kind,
       firstSeenChapterId: candidate.firstSeenChapterId,
+      encounterChapterIds: [candidate.firstSeenChapterId],
       ...(candidate.kind === OBSERVED_ENTITY_KIND.PLACE
         ? {
             placeKind: VALID_OBSERVED_PLACE_KINDS.has(candidate.placeKind)
@@ -109,13 +147,38 @@ export function upsertObservedEntity(observedEntities, candidate, chapters) {
   }
 
   const existing = current[existingIndex]
-  const existingChapterIndex = chapterIndex(chapters, existing.firstSeenChapterId)
-  if (existingChapterIndex >= 0 && existingChapterIndex <= candidateChapterIndex) return current
+  const existingEncounterChapterIds = observedEntityEncounterChapterIds(existing, chapters)
+  if (existingEncounterChapterIds.includes(candidate.firstSeenChapterId)) return current
+  const encounterChapterIds = [...existingEncounterChapterIds, candidate.firstSeenChapterId]
+    .sort((left, right) => chapterIndex(chapters, left) - chapterIndex(chapters, right))
+  const firstSeenChapterId = encounterChapterIds[0]
   return current.map((item, index) => (
     index === existingIndex
-      ? { ...existing, name, firstSeenChapterId: candidate.firstSeenChapterId }
+      ? {
+          ...existing,
+          name: firstSeenChapterId === candidate.firstSeenChapterId ? name : existing.name,
+          firstSeenChapterId,
+          encounterChapterIds,
+        }
       : item
   ))
+}
+
+export function updateObservedEntityNote(observedEntities, observedEntityId, note) {
+  if (!Array.isArray(observedEntities)) throw new Error('已遇到名称记录无效')
+  const index = observedEntities.findIndex((item) => item?.id === observedEntityId)
+  if (index < 0) throw new Error('找不到要添加备注的名称')
+  const normalizedNote = typeof note === 'string' ? note.trim() : ''
+  if (normalizedNote.length > 500) throw new Error('个人备注不能超过 500 个字')
+  return observedEntities.map((item, itemIndex) => {
+    if (itemIndex !== index) return item
+    if (!normalizedNote) {
+      const next = { ...item }
+      delete next.note
+      return next
+    }
+    return { ...item, note: normalizedNote }
+  })
 }
 
 export function updateObservedPlaceKind(observedEntities, observedEntityId, placeKind) {
@@ -354,6 +417,30 @@ export function matchOnDemandEntity(onDemandEntities, observedName, kind) {
     && [entity.name, entity.originalName, ...(entity.aliases || [])]
       .some((name) => normalizeObservedEntityName(name) === normalizedName)
   )) || null
+}
+
+export function readingEntitySafeNoteSources(entity, sources) {
+  if (!isNonEmptyString(entity?.safeNote)
+    || !Array.isArray(entity.safeNoteSourceIds)
+    || !Array.isArray(sources)) {
+    return []
+  }
+  const sourcesById = new Map(sources.map((source) => [source?.id, source]))
+  return entity.safeNoteSourceIds.flatMap((sourceId) => {
+    const source = sourcesById.get(sourceId)
+    if (!source || !isNonEmptyString(source.url)) return []
+    try {
+      const url = new URL(source.url)
+      if (!['http:', 'https:'].includes(url.protocol)) return []
+    } catch {
+      return []
+    }
+    return [{
+      id: source.id,
+      label: source.label || source.organization || source.id,
+      url: source.url,
+    }]
+  })
 }
 
 function textContainsExactTerm(text, term) {
@@ -749,12 +836,29 @@ export function validateReadingPackage(pkg) {
       || entity.aliases.some((alias) => !isNonEmptyString(alias))) {
       errors.push(`${label}.aliases 必须是字符串数组`)
     }
+    if (entity.safeNote !== undefined
+      && (!isNonEmptyString(entity.safeNote) || entity.safeNote.length > 400)) {
+      errors.push(`${label}.safeNote 必须是 1–400 字符的非空字符串`)
+    }
     if (!Array.isArray(entity.sourceIds) || entity.sourceIds.length === 0) {
       errors.push(`${label}.sourceIds 必须是非空数组`)
     } else {
       for (const sourceId of entity.sourceIds) {
         if (!sourceIds.has(sourceId)) errors.push(`${label} 引用了未知来源：${sourceId}`)
       }
+    }
+    if (entity.safeNote !== undefined) {
+      if (!Array.isArray(entity.safeNoteSourceIds) || entity.safeNoteSourceIds.length === 0) {
+        errors.push(`${label}.safeNoteSourceIds 必须引用至少一个注释来源`)
+      } else {
+        for (const sourceId of entity.safeNoteSourceIds) {
+          if (!entity.sourceIds?.includes(sourceId)) {
+            errors.push(`${label}.safeNoteSourceIds 必须属于 sourceIds：${sourceId}`)
+          }
+        }
+      }
+    } else if (entity.safeNoteSourceIds !== undefined) {
+      errors.push(`${label}.safeNoteSourceIds 不能脱离 safeNote 单独存在`)
     }
     if (entity.kind === 'place') {
       if (!VALID_PLACE_KINDS.has(entity.placeKind)) errors.push(`${label}.placeKind 无效`)

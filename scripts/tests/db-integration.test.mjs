@@ -9,7 +9,14 @@ const [creatures, skills, migration] = await Promise.all([
   readFile(new URL('public/presets/rockKingdomSkillRows.json', repoUrl), 'utf8').then(JSON.parse),
   readFile(new URL('public/presets/rockKingdomPresetMigration.json', repoUrl), 'utf8').then(JSON.parse),
 ])
-const { db, ensureSeeded, getReadingState, importAllData, saveReadingState } = await import('../../src/db.js')
+const {
+  db,
+  ensureSeeded,
+  exportAllData,
+  getReadingState,
+  importAllData,
+  saveReadingState,
+} = await import('../../src/db.js')
 const {
   deletePersonalReadingPackage,
   loadPersonalReadingPackage,
@@ -75,6 +82,58 @@ test('reading progress uses namespaced meta records and merges updates', async (
   }])
   assert.equal(state.sceneId, sceneId)
   assert.equal(state.editionId, editionId)
+})
+
+test('full backup restores reading notes and confirmed map locations', async () => {
+  await resetDatabase()
+  const sceneId = 'scene-reader-backup'
+  const editionId = 'edition-reader-backup'
+  await saveReadingState(sceneId, editionId, {
+    packageId: 'reader-package-backup',
+    bookId: 'reader-book-backup',
+    currentChapterId: 'chapter-08',
+    observedEntities: [{
+      id: 'observed-place-backup',
+      name: '测试地点',
+      kind: 'place',
+      placeKind: 'real',
+      firstSeenChapterId: 'chapter-03',
+      encounterChapterIds: ['chapter-03', 'chapter-08'],
+      note: '测试备注',
+      mapLocation: {
+        mode: 'exact',
+        resultId: 'map-result-backup',
+        label: 'Test Place',
+        providerId: 'international',
+        latitude: 33.75,
+        longitude: -84.39,
+      },
+    }],
+  })
+  const backup = await exportAllData()
+
+  await resetDatabase()
+  await importAllData(backup)
+
+  const restored = await getReadingState(sceneId, editionId)
+  assert.equal(restored.currentChapterId, 'chapter-08')
+  assert.deepEqual(restored.observedEntities, [{
+    id: 'observed-place-backup',
+    name: '测试地点',
+    kind: 'place',
+    placeKind: 'real',
+    firstSeenChapterId: 'chapter-03',
+    encounterChapterIds: ['chapter-03', 'chapter-08'],
+    note: '测试备注',
+    mapLocation: {
+      mode: 'exact',
+      resultId: 'map-result-backup',
+      label: 'Test Place',
+      providerId: 'international',
+      latitude: 33.75,
+      longitude: -84.39,
+    },
+  }])
 })
 
 test('deleting a personal reading package also removes its namespaced reading state', async () => {
