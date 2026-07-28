@@ -7,7 +7,7 @@
 | 标识 | 使用位置 | 输入 | 允许输出 | 落库方式 |
 |---|---|---|---|---|
 | `personal-book-knowledge-v1` | 用户在工具中创建或补充个人书籍 | 书名、作者、译者、出版社、出版时间、ISBN、原作语言 | 最多 50 个名称、原文名、别名、类型和保守地点分类 | 自动合并到个人书籍隐藏 `onDemandEntities` |
-| `formal-reading-package-candidates-v2` | Codex 或其他维护模型预制内置书 | 版本信息、已核验公开来源摘录、可用的指定版本章节证据 | 带来源和阻塞项的实体、事实候选；可选的独立无剧情短注释 | 只能写入 staging；经过 preview 和显式 apply 才能发布 |
+| `formal-reading-package-candidates-v3` | Codex 或其他维护模型预制内置书 | 版本信息、已核验公开来源摘录、可用的指定版本章节证据 | 带来源和阻塞项的实体、事实候选；可选的独立无剧情短注释及其精确来源 | 只能写入 staging；经过 preview 和显式 apply 才能发布 |
 
 运行时提示词的可执行源位于 `src/features/reading-companion/model/promptCatalog.js`。修改其标识、消息或输出契约时必须同步更新本文和领域测试。缓存键包含提示词标识，升级标识会自然避开旧页面缓存。
 
@@ -24,7 +24,7 @@
 
 ## 内置书正式预制
 
-当用户要求“预制某本书”时，维护者使用 `formal-reading-package-candidates-v2`。用户只需尽可能提供版本信息；用户没有读过该书时，不要求其判断人物关系、剧情事实或首次出现章节。无法由来源和指定版本证据确定的内容保留为候选和阻塞项。
+当用户要求“预制某本书”时，维护者使用 `formal-reading-package-candidates-v3`。用户只需尽可能提供版本信息；用户没有读过该书时，不要求其判断人物关系、剧情事实或首次出现章节。无法由来源和指定版本证据确定的内容保留为候选和阻塞项。
 
 正式预制分为两步：
 
@@ -34,7 +34,7 @@
 ### 标准系统提示词
 
 ```text
-提示词版本：formal-reading-package-candidates-v2
+提示词版本：formal-reading-package-candidates-v3
 
 你为 TangerineTools 阅读伴侣准备内置书资料包的研究候选。
 只使用输入中列出的书籍版本、来源和证据；训练记忆只能帮助发现歧义，不能作为 sourceIds 或发布依据。
@@ -53,8 +53,9 @@
 10. candidate 必须至少包含一个 blockers 项；宁可保留阻塞，也不要猜测。
 11. 不要把候选内容放入正式 entities、facts 或 onDemandEntities。
 12. 实体可以包含可选 safeNote，但只能概括来源明确支持、脱离作品剧情仍成立的背景知识，最长 400 字；不得解释该实体在书中的意义、关系、行动、命运或后续影响。
-13. safeNote 必须由该候选的 sourceIds 直接支持；不能仅凭训练记忆生成。
-14. 只返回 JSON，不返回解释性正文。
+13. safeNote 必须同时给出非空 safeNoteSourceIds；其中每一项必须属于该候选的 sourceIds，并直接支持注释内容，不能把只支持名称、地图坐标或版本译名的来源列为注释来源。
+14. 不能仅凭训练记忆生成 safeNote 或 safeNoteSourceIds。
+15. 只返回 JSON，不返回解释性正文。
 ```
 
 ### 标准用户输入
@@ -97,7 +98,7 @@
 
 ```json
 {
-  "promptVersion": "formal-reading-package-candidates-v2",
+  "promptVersion": "formal-reading-package-candidates-v3",
   "sourceCandidates": [
     {
       "id": "source-stable-id",
@@ -121,7 +122,8 @@
         "kind": "person|place|concept|event",
         "aliases": [],
         "revealAt": null,
-        "safeNote": "可选；最长 400 字的独立无剧情背景说明"
+        "safeNote": "可选；最长 400 字的独立无剧情背景说明",
+        "safeNoteSourceIds": ["直接支持 safeNote 的 source-stable-id"]
       },
       "sourceIds": ["source-stable-id"],
       "blockers": ["missing_edition_chapter_evidence"],

@@ -87,6 +87,7 @@ import {
   OBSERVED_PLACE_KIND,
   matchOnDemandEntity,
   normalizeObservedEntityName,
+  readingEntitySafeNoteSources,
   readingPlaceRelations,
   readerConfirmedMapEntities,
   scanOnDemandEntities,
@@ -1394,9 +1395,37 @@ function ObservedPagination({
   )
 }
 
+function ReadingSafeNote({ entity, sources, className }) {
+  if (!entity?.safeNote) return null
+  const noteSources = readingEntitySafeNoteSources(entity, sources)
+  return (
+    <div className={className}>
+      <strong>无剧透背景</strong>
+      <p>{entity.safeNote}</p>
+      {noteSources.length > 0 && (
+        <div className="reader-safe-note-sources">
+          <span>资料来源</span>
+          {noteSources.map((source) => (
+            <a
+              href={source.url}
+              key={source.id}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {source.label}
+              <ExternalLink size={12} aria-hidden="true" />
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function ObservedEntitiesPanel({
   observedEntities,
   onDemandEntities,
+  sources,
   currentChapterId,
   currentChapter,
   chapters,
@@ -1642,12 +1671,11 @@ function ObservedEntitiesPanel({
                                 : OBSERVED_KIND_LABELS[match.kind]}
                             </span>
                             {match.parentLabel && <span>{match.parentLabel}</span>}
-                            {match.safeNote && (
-                              <div className="reader-observed-safe-note">
-                                <b>无剧透背景</b>
-                                <p>{match.safeNote}</p>
-                              </div>
-                            )}
+                            <ReadingSafeNote
+                              entity={match}
+                              sources={sources}
+                              className="reader-observed-safe-note"
+                            />
                             {match.scopeNote && <small>{match.scopeNote}</small>}
                           </div>
                         )}
@@ -1718,6 +1746,7 @@ function ReadingMapPanel({
   entities,
   observedEntities,
   onDemandEntities,
+  sources,
   currentChapterId,
   chapters,
   onChangeObservedEntities,
@@ -2254,12 +2283,11 @@ function ReadingMapPanel({
               {selectedPlace.scopeNote && (
                 <p className="reader-place-scope-note">{selectedPlace.scopeNote}</p>
               )}
-              {selectedPlace.safeNote && (
-                <div className="reader-place-safe-note">
-                  <strong>无剧透背景</strong>
-                  <p>{selectedPlace.safeNote}</p>
-                </div>
-              )}
+              <ReadingSafeNote
+                entity={selectedPlace}
+                sources={sources}
+                className="reader-place-safe-note"
+              />
               {placeRelations.length > 0 && (
                 <div className="reader-place-relations">
                   <strong>与其他已读地点</strong>
@@ -3178,6 +3206,7 @@ export function ReaderTool({ scene }) {
           <ObservedEntitiesPanel
             observedEntities={observedEntities}
             onDemandEntities={readingPackage.onDemandEntities || []}
+            sources={readingPackage.sources || []}
             currentChapterId={currentChapterId}
             currentChapter={currentChapter}
             chapters={readingPackage.chapters}
@@ -3191,6 +3220,7 @@ export function ReaderTool({ scene }) {
               entities={visibleMapEntities}
               observedEntities={observedEntities}
               onDemandEntities={readingPackage.onDemandEntities || []}
+              sources={readingPackage.sources || []}
               currentChapterId={currentChapterId}
               chapters={readingPackage.chapters}
               onChangeObservedEntities={changeObservedEntities}

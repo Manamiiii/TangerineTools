@@ -15,6 +15,7 @@ import {
   matchOnDemandEntity,
   normalizeObservedEntityName,
   projectReadingPlaces,
+  readingEntitySafeNoteSources,
   readingPlaceRelations,
   readerConfirmedMapEntities,
   readingStateKey,
@@ -538,6 +539,14 @@ test('Gone with the Wind exact-input dictionary recognizes audited names without
   assert.match(contextMatches[1].entity.safeNote, /大规模农业用地/)
   assert.match(contextMatches[2].entity.safeNote, /美国第 16 任总统/)
   assert.match(contextMatches[3].entity.safeNote, /1861–1865 年/)
+  assert.deepEqual(
+    readingEntitySafeNoteSources(contextMatches[1].entity, readingPackage.sources),
+    [{
+      id: 'source-nps-colonial-plantation-system',
+      label: 'U.S. National Park Service · Rise of the Colonial Plantation System',
+      url: 'https://home.nps.gov/articles/plantationsystem.htm',
+    }],
+  )
 })
 
 test('package validation rejects duplicate chapters and unknown fact references', () => {
@@ -556,6 +565,27 @@ test('package validation rejects duplicate chapters and unknown fact references'
   assert.ok(errors.some((error) => error.includes('已知章节')))
   assert.ok(errors.some((error) => error.includes('未知实体')))
   assert.ok(errors.some((error) => error.includes('safeNote')))
+})
+
+test('safe reading notes expose only their explicitly assigned HTTP sources', () => {
+  const plantation = readingPackage.onDemandEntities.find(
+    (entity) => entity.id === 'concept-plantation',
+  )
+  const unsafeSources = readingPackage.sources.map((source) => (
+    source.id === plantation.safeNoteSourceIds[0]
+      ? { ...source, url: 'javascript:alert(1)' }
+      : source
+  ))
+  assert.deepEqual(readingEntitySafeNoteSources(plantation, unsafeSources), [])
+
+  const invalidPackage = structuredClone(readingPackage)
+  delete invalidPackage.onDemandEntities.find(
+    (entity) => entity.id === 'concept-plantation',
+  ).safeNoteSourceIds
+  assert.ok(
+    validateReadingPackage(invalidPackage)
+      .some((error) => error.includes('safeNoteSourceIds')),
+  )
 })
 
 test('package validation requires auditable place boundaries and avoids fabricated fictional points', () => {
@@ -1092,7 +1122,7 @@ test('personal book preparation returns only bounded names and no generated fact
   assert.equal(READING_PROMPT_IDS.personalBookKnowledge, 'personal-book-knowledge-v1')
   assert.equal(
     READING_PROMPT_IDS.formalPackageCandidates,
-    'formal-reading-package-candidates-v2',
+    'formal-reading-package-candidates-v3',
   )
   assert.match(
     personalBookKnowledgeMessages({ title: '测试书' })[0].content,
@@ -1653,6 +1683,12 @@ test('research candidates require provenance and blockers and never publish impl
   assert.throws(
     () => buildReadingPreviewFromStaging(staging),
     /safeNote 必须是 1–400 字符的非空字符串/,
+  )
+  delete staging.entityCandidates[0].entity.safeNote
+  staging.entityCandidates[0].entity.safeNote = '独立背景'
+  assert.throws(
+    () => buildReadingPreviewFromStaging(staging),
+    /safeNoteSourceIds 必须引用至少一个注释来源/,
   )
   delete staging.entityCandidates[0].entity.safeNote
   staging.factCandidates = [{

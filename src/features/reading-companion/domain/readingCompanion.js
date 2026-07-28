@@ -381,6 +381,30 @@ export function matchOnDemandEntity(onDemandEntities, observedName, kind) {
   )) || null
 }
 
+export function readingEntitySafeNoteSources(entity, sources) {
+  if (!isNonEmptyString(entity?.safeNote)
+    || !Array.isArray(entity.safeNoteSourceIds)
+    || !Array.isArray(sources)) {
+    return []
+  }
+  const sourcesById = new Map(sources.map((source) => [source?.id, source]))
+  return entity.safeNoteSourceIds.flatMap((sourceId) => {
+    const source = sourcesById.get(sourceId)
+    if (!source || !isNonEmptyString(source.url)) return []
+    try {
+      const url = new URL(source.url)
+      if (!['http:', 'https:'].includes(url.protocol)) return []
+    } catch {
+      return []
+    }
+    return [{
+      id: source.id,
+      label: source.label || source.organization || source.id,
+      url: source.url,
+    }]
+  })
+}
+
 function textContainsExactTerm(text, term) {
   const normalizedText = typeof text === 'string' ? text.normalize('NFKC').toLocaleLowerCase() : ''
   const normalizedTerm = normalizeObservedEntityName(term)
@@ -784,6 +808,19 @@ export function validateReadingPackage(pkg) {
       for (const sourceId of entity.sourceIds) {
         if (!sourceIds.has(sourceId)) errors.push(`${label} 引用了未知来源：${sourceId}`)
       }
+    }
+    if (entity.safeNote !== undefined) {
+      if (!Array.isArray(entity.safeNoteSourceIds) || entity.safeNoteSourceIds.length === 0) {
+        errors.push(`${label}.safeNoteSourceIds 必须引用至少一个注释来源`)
+      } else {
+        for (const sourceId of entity.safeNoteSourceIds) {
+          if (!entity.sourceIds?.includes(sourceId)) {
+            errors.push(`${label}.safeNoteSourceIds 必须属于 sourceIds：${sourceId}`)
+          }
+        }
+      }
+    } else if (entity.safeNoteSourceIds !== undefined) {
+      errors.push(`${label}.safeNoteSourceIds 不能脱离 safeNote 单独存在`)
     }
     if (entity.kind === 'place') {
       if (!VALID_PLACE_KINDS.has(entity.placeKind)) errors.push(`${label}.placeKind 无效`)

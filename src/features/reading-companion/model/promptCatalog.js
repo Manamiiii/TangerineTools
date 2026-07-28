@@ -1,6 +1,6 @@
 export const READING_PROMPT_IDS = Object.freeze({
   personalBookKnowledge: 'personal-book-knowledge-v1',
-  formalPackageCandidates: 'formal-reading-package-candidates-v2',
+  formalPackageCandidates: 'formal-reading-package-candidates-v3',
 })
 
 export function personalBookKnowledgeMessages(bookContext) {

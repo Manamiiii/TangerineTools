@@ -5298,7 +5298,7 @@ img {
   background: #faf5ff;
 }
 
-.reader-observed-safe-note b,
+.reader-observed-safe-note strong,
 .reader-place-safe-note strong {
   color: #6d28d9;
   font-size: 11px;
@@ -5310,6 +5310,32 @@ img {
   color: #334155;
   font-size: 12px;
   line-height: 1.55;
+}
+
+.reader-safe-note-sources {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 8px;
+  padding-top: 3px;
+  border-top: 1px solid #e9d5ff;
+  color: #6b7280;
+  font-size: 11px;
+}
+
+.reader-safe-note-sources a {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  max-width: 100%;
+  color: #6d28d9;
+  font-weight: 650;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.reader-safe-note-sources a:hover {
+  text-decoration: underline;
 }
 
 .reader-observed-unlink {

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "packageVersion": "1.7.0",
+  "packageVersion": "1.8.0",
   "id": "reader-package-gone-with-the-wind-zh-9787570202188",
   "book": {
     "id": "gone-with-the-wind",
@@ -742,6 +742,9 @@
         "source-nps-colonial-plantation-system"
       ],
       "safeNote": "在美国历史语境中，种植园通常指大规模农业用地；其生产体系常依赖契约劳工和被奴役者，具体作物与劳动方式因地区和时期而异。",
+      "safeNoteSourceIds": [
+        "source-nps-colonial-plantation-system"
+      ],
       "scopeNote": "详情页简介确认该背景词；系统只提供概念名称，不预置制度说明或剧情解释。"
     },
     {
@@ -756,6 +759,9 @@
         "source-loc-abraham-lincoln-biography"
       ],
       "safeNote": "亚伯拉罕·林肯（1809–1865）是美国第 16 任总统；他于 1860 年当选，并在任内经历了 1861–1865 年的美国内战。",
+      "safeNoteSourceIds": [
+        "source-loc-abraham-lincoln-biography"
+      ],
       "scopeNote": "详情页简介确认该历史人物短名；系统不预置作品人物关系、历史评价或剧情联系。"
     },
     {
@@ -770,6 +776,9 @@
         "source-nps-civil-war-overview"
       ],
       "safeNote": "美国南北战争发生于 1861–1865 年；其历史背景涉及联邦存续、奴隶制以及此后持续发展的公民权问题。",
+      "safeNoteSourceIds": [
+        "source-nps-civil-war-overview"
+      ],
       "scopeNote": "详情页简介确认该历史事件名称；系统不预置事件说明或它与作品剧情的联系。"
     },
     {
@@ -793,6 +802,9 @@
         "source-new-georgia-encyclopedia-clayton-county"
       ],
       "safeNote": "克莱顿县位于亚特兰大以南，1858 年由佐治亚州议会设立；县治是琼斯伯勒。",
+      "safeNoteSourceIds": [
+        "source-new-georgia-encyclopedia-clayton-county"
+      ],
       "scopeNote": "坐标是现代县级代表坐标；公开资料确认其与作品创作背景有关，但不能据此断言正文直接出现该名称。"
     },
     {
@@ -817,6 +829,9 @@
         "source-atlanta-history-center-civil-war"
       ],
       "safeNote": "美国内战时期，亚特兰大是美国南方重要的交通、工业和军需储运中心。",
+      "safeNoteSourceIds": [
+        "source-atlanta-history-center-civil-war"
+      ],
       "scopeNote": "坐标是现代行政地点的代表坐标，不表示作品年代的城市边界。"
     },
     {
@@ -840,6 +855,9 @@
         "source-new-georgia-encyclopedia-clayton-county"
       ],
       "safeNote": "琼斯伯勒是克莱顿县县治，早期名为 Leaksville，1845 年以铁路工程师 Samuel Goode Jones 的姓氏重新命名。",
+      "safeNoteSourceIds": [
+        "source-new-georgia-encyclopedia-clayton-county"
+      ],
       "scopeNote": "公开资料确认其现代位置和创作背景联系，不代表已经证明正文直接出现该地名。"
     },
     {
@@ -900,6 +918,9 @@
         "source-openstreetmap-nominatim-research"
       ],
       "safeNote": "弗吉尼亚大学由托马斯·杰斐逊创建，1819 年获弗吉尼亚州议会特许，位于夏洛茨维尔。",
+      "safeNoteSourceIds": [
+        "source-university-of-virginia-official"
+      ],
       "scopeNote": "当前译本片段确认中文名称；地图使用校内 Rotunda 作为现代校园参考点，不表示校园边界或故事年代范围。"
     },
     {
@@ -924,6 +945,9 @@
         "source-openstreetmap-nominatim-research"
       ],
       "safeNote": "阿拉巴马州议会于 1820 年设立这所公立大学；学校 1831 年首次开课，到 19 世纪 60 年代已使用 The University of Alabama 这一名称。",
+      "safeNoteSourceIds": [
+        "source-university-of-alabama-official"
+      ],
       "scopeNote": "当前译本片段确认中文名称；坐标是现代校园代表点，不表示校园边界或故事年代范围。"
     },
     {
@@ -948,6 +972,9 @@
         "source-openstreetmap-nominatim-research"
       ],
       "safeNote": "学校于 1801 年以 South Carolina College 之名创立，1906 年起固定使用 University of South Carolina 这一名称。",
+      "safeNoteSourceIds": [
+        "source-university-of-south-carolina-official"
+      ],
       "scopeNote": "当前译本片段使用现代中文校名；官方校史说明故事年代机构名不同，坐标仅表示现代校园代表点。"
     },
     {
@@ -971,6 +998,9 @@
         "source-dlg-fayetteville-academy"
       ],
       "safeNote": "现实中的 Fayetteville Academy 曾设在建于 1855 年的 Holliday-Dorsey-Fife 宅邸；Digital Library of Georgia 将其说明为小说中虚构学校的原型。",
+      "safeNoteSourceIds": [
+        "source-dlg-fayetteville-academy"
+      ],
       "scopeNote": "当前译本片段确认中文名称；地图点来自现实 Fayetteville Academy 原型资料，不表示虚构学校存在精确现实坐标。"
     }
   ]
