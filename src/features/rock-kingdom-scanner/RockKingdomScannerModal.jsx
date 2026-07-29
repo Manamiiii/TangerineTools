@@ -5,15 +5,22 @@ import { createRow, db } from '../../db.js'
 import { FieldInput } from '../../components/catalog.jsx'
 import { FormRow, Modal } from '../../components/common.jsx'
 import { recognizeStructuredImageText } from '../ocr/localOcr.js'
-import { captureVideoFrame, cropImageSource, loadImageSource } from './frameCapture.js'
+import {
+  captureVideoFrame,
+  captureVideoSignature,
+  cropImageSource,
+  loadImageSource,
+} from './frameCapture.js'
 import {
   ROCK_SCANNER_CROP_PROFILE,
+  ROCK_SCANNER_STABILITY_REGION,
   bestScanMatch,
   catalogNameCandidates,
   isScannerFrameReady,
   rankScanCandidates,
   recognizeGenderColor,
   scannerOptionCandidates,
+  selectStableScannerSamples,
   valuesWithAppearance,
 } from '../../domain/rockKingdomScanner.js'
 import { ModelSettingsModal } from '../model/ModelSettingsModal.jsx'
@@ -36,6 +43,11 @@ function formatTime(seconds) {
 
 function waitForSeek(video, time) {
   return new Promise((resolve, reject) => {
+    const targetTime = Math.min(Math.max(0, time), Math.max(0, video.duration - 0.05))
+    if (video.readyState >= 2 && Math.abs(video.currentTime - targetTime) < 0.01) {
+      resolve()
+      return
+    }
     const cleanup = () => {
       video.removeEventListener('seeked', onSeeked)
       video.removeEventListener('error', onError)
@@ -50,7 +62,7 @@ function waitForSeek(video, time) {
     }
     video.addEventListener('seeked', onSeeked, { once: true })
     video.addEventListener('error', onError, { once: true })
-    video.currentTime = Math.min(Math.max(0, time), Math.max(0, video.duration - 0.05))
+    video.currentTime = targetTime
   })
 }
 
@@ -222,6 +234,58 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       } else {
         setProgress(`已提取 ${items.length} 帧，请删除切换动画和重复画面。`)
       }
+    } catch (extractError) {
+      items.forEach((item) => releaseLocalUrl(item.url))
+      setError(extractError.message)
+    } finally {
+      setBusy('')
+    }
+  }
+
+  async function extractStableFrames() {
+    const video = videoRef.current
+    if (!video?.duration) {
+      setError('请先选择并加载一个视频。')
+      return
+    }
+    const stepSeconds = Math.max(0.4, video.duration / 3000)
+    const sampleCount = Math.max(1, Math.ceil(video.duration / stepSeconds))
+    setBusy('extract-smart')
+    setError('')
+    const samples = []
+    const items = []
+    try {
+      for (let index = 0; index < sampleCount; index += 1) {
+        const time = Math.min(video.duration - 0.05, index * stepSeconds)
+        setProgress(`正在检测稳定画面 ${index + 1} / ${sampleCount}`)
+        await waitForSeek(video, time)
+        samples.push({
+          time,
+          signature: captureVideoSignature(video, ROCK_SCANNER_STABILITY_REGION),
+        })
+      }
+      const stableSamples = selectStableScannerSamples(samples)
+      for (let index = 0; index < stableSamples.length; index += 1) {
+        const sample = stableSamples[index]
+        setProgress(`正在保存稳定画面 ${index + 1} / ${stableSamples.length}`)
+        await waitForSeek(video, sample.time)
+        const captured = await captureVideoFrame(video)
+        items.push({
+          id: frameId(),
+          url: createLocalUrl(captured.blob),
+          sourceName: videoName,
+          time: sample.time,
+          width: captured.width,
+          height: captured.height,
+          values: { ...ownedDefaults, appearance: 'none', partnerMark: 'none' },
+          raw: {},
+          confidence: {},
+          reviewed: false,
+          status: '稳定画面，待识别',
+        })
+      }
+      addFrames(items)
+      setProgress(`智能提取完成：检测 ${sampleCount} 个时间点，保留 ${items.length} 张稳定且不重复的画面。`)
     } catch (extractError) {
       items.forEach((item) => releaseLocalUrl(item.url))
       setError(extractError.message)
@@ -429,11 +493,11 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           <summary>Windows 录屏与文件位置</summary>
           <ol>
             <li>在游戏里打开精灵总览页，按 <kbd>Win</kbd> + <kbd>Alt</kbd> + <kbd>R</kbd> 开始录制；结束时再按一次。</li>
-            <li>每只精灵停留约 2 秒，只需要手动切换，不要使用连点器、按键脚本或自动操作。</li>
+            <li>每只精灵停留约 1.5～2 秒，只需要手动切换，不要使用连点器、按键脚本或自动操作。</li>
             <li>Xbox Game Bar 默认保存到“此电脑 → 视频 → 捕获”，通常是 <code>%USERPROFILE%\Videos\Captures</code>。</li>
             <li>也可以用 OBS 录制；在 OBS 的“设置 → 输出 → 录像路径”查看文件位置。</li>
             <li>手机录屏如果可以选择编码，优先使用 H.264 / AVC；H.265 / HEVC 是否能播放取决于 Windows 的视频解码组件。</li>
-            <li>导入后按间隔提取画面，先删除切换动画和重复帧，再进行 OCR 与人工复核。</li>
+            <li>优先使用“智能提取”：工具会等待右侧信息稳定并自动跳过切换动画和重复画面，再进行 OCR 与人工复核。</li>
           </ol>
           <p>视频、截图和 OCR 默认只在当前浏览器本地处理，原媒体不会写入 IndexedDB。只有点击“AI 纠错”时，当前帧的低置信 OCR 文字和有限候选会发送给已配置模型，图片不会发送。</p>
         </details>
@@ -471,7 +535,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
             />
           </label>
           <label className="scanner-interval">
-            <span>提取间隔</span>
+            <span>备用间隔</span>
             <input
               className="input"
               type="number"
@@ -483,8 +547,11 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
             />
             <span>秒</span>
           </label>
+          <button type="button" className="btn btn-primary" disabled={!videoUrl || Boolean(busy)} onClick={extractStableFrames}>
+            {busy === 'extract-smart' ? '检测中…' : '智能提取稳定画面'}
+          </button>
           <button type="button" className="btn" disabled={!videoUrl || Boolean(busy)} onClick={extractAtInterval}>
-            按间隔提取
+            备用：按间隔提取
           </button>
         </div>
 

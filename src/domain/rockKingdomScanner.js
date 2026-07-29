@@ -48,6 +48,58 @@ export const ROCK_SCANNER_CROP_PROFILE = {
   appearance: { label: '外观', x: 0.903125, y: 0.645833, width: 0.04375, height: 0.097222 },
 }
 
+export const ROCK_SCANNER_STABILITY_REGION = {
+  x: 0.66,
+  y: 0.1,
+  width: 0.335,
+  height: 0.78,
+}
+
+export function scannerSignatureDifference(left, right, topFraction = 0.15) {
+  if (!left?.length || left.length !== right?.length) return Number.POSITIVE_INFINITY
+  const histogram = new Uint32Array(256)
+  for (let index = 0; index < left.length; index += 1) {
+    histogram[Math.abs(left[index] - right[index])] += 1
+  }
+  const count = Math.max(1, Math.ceil(left.length * topFraction))
+  let total = 0
+  let remaining = count
+  for (let difference = 255; difference >= 0 && remaining > 0; difference -= 1) {
+    const take = Math.min(remaining, histogram[difference])
+    total += difference * take
+    remaining -= take
+  }
+  return total / count
+}
+
+export function selectStableScannerSamples(
+  samples = [],
+  { windowSize = 3, stableThreshold = 7, duplicateThreshold = 8 } = {},
+) {
+  const selected = []
+  let insideStableRun = false
+  for (let index = windowSize - 1; index < samples.length; index += 1) {
+    const window = samples.slice(index - windowSize + 1, index + 1)
+    const stable = window.slice(1).every((sample, offset) => (
+      scannerSignatureDifference(window[offset].signature, sample.signature) <= stableThreshold
+    )) && scannerSignatureDifference(window[0].signature, window.at(-1).signature) <= stableThreshold
+    if (!stable) {
+      insideStableRun = false
+      continue
+    }
+    if (insideStableRun) continue
+    insideStableRun = true
+    const candidate = window.at(-1)
+    const previous = selected.at(-1)
+    if (
+      previous
+      && scannerSignatureDifference(previous.signature, candidate.signature) <= duplicateThreshold
+    ) continue
+    selected.push(candidate)
+  }
+  return selected
+}
+
 function partnerMarkForeground(red, green, blue) {
   const redBlueGap = Math.max(0, red - blue - 18) / 80
   const greenBlueGap = Math.max(0, green - blue - 8) / 65

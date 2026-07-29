@@ -15,6 +15,8 @@ import {
   normalizedPartnerMarkMask,
   partnerMarkMaskSimilarity,
   recognizeGenderColor,
+  scannerSignatureDifference,
+  selectStableScannerSamples,
   valuesWithAppearance,
 } from '../../src/domain/rockKingdomScanner.js'
 
@@ -133,6 +135,34 @@ test('partner mark matching accepts a clear shape, rejects ambiguity, and recogn
   assert.equal(bestPartnerMarkTemplateMatch(sample, [different, exact])?.value, 'exact')
   assert.equal(bestPartnerMarkTemplateMatch(sample, [exact, { ...exact, value: 'duplicate' }]), null)
   assert.equal(bestPartnerMarkTemplateMatch(normalizedPartnerMarkMask(markPixels()), [exact])?.value, 'none')
+})
+
+test('stable frame selection skips transitions, long duplicate runs, and a failed switch', () => {
+  const signature = (value, accent = 0) => {
+    const result = new Uint8Array(40).fill(value)
+    result[0] = value + accent
+    result[1] = value + accent
+    return result
+  }
+  const samples = [
+    { time: 0, signature: signature(20) },
+    { time: 0.4, signature: signature(20, 1) },
+    { time: 0.8, signature: signature(20) },
+    { time: 1.2, signature: signature(80) },
+    { time: 1.6, signature: signature(20) },
+    { time: 2, signature: signature(20, 1) },
+    { time: 2.4, signature: signature(20) },
+    { time: 2.8, signature: signature(100) },
+    { time: 3.2, signature: signature(45) },
+    { time: 3.6, signature: signature(45, 1) },
+    { time: 4, signature: signature(45) },
+    { time: 4.4, signature: signature(45) },
+  ]
+  assert.equal(scannerSignatureDifference(signature(20), signature(20, 1)) < 7, true)
+  assert.deepEqual(
+    selectStableScannerSamples(samples).map((sample) => sample.time),
+    [0.8, 4],
+  )
 })
 
 test('scan matching tolerates labels, suffixes, whitespace, and one OCR error', () => {

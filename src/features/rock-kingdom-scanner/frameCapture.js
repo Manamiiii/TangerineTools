@@ -22,6 +22,39 @@ export async function captureVideoFrame(video) {
   }
 }
 
+export function captureVideoSignature(video, region, width = 80, height = 48) {
+  if (!video?.videoWidth || !video?.videoHeight) throw new Error('视频画面尚未加载完成。')
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const sourceX = Math.round(video.videoWidth * region.x)
+  const sourceY = Math.round(video.videoHeight * region.y)
+  const sourceWidth = Math.round(video.videoWidth * region.width)
+  const sourceHeight = Math.round(video.videoHeight * region.height)
+  const context = canvas.getContext('2d', { willReadFrequently: true })
+  context.imageSmoothingEnabled = true
+  context.imageSmoothingQuality = 'high'
+  context.drawImage(
+    video,
+    sourceX,
+    sourceY,
+    sourceWidth,
+    sourceHeight,
+    0,
+    0,
+    width,
+    height,
+  )
+  const rgba = context.getImageData(0, 0, width, height).data
+  const signature = new Uint8Array(width * height)
+  for (let source = 0, target = 0; source < rgba.length; source += 4, target += 1) {
+    signature[target] = Math.round(
+      rgba[source] * 0.2126 + rgba[source + 1] * 0.7152 + rgba[source + 2] * 0.0722,
+    )
+  }
+  return signature
+}
+
 export async function loadImageSource(source) {
   const image = new Image()
   image.decoding = 'async'
