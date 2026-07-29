@@ -121,6 +121,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   const [videoUrl, setVideoUrl] = useState('')
   const [videoName, setVideoName] = useState('')
   const [videoDimensions, setVideoDimensions] = useState(null)
+  const [extractionSummary, setExtractionSummary] = useState(null)
   const [frames, setFrames] = useState([])
   const [selectedId, setSelectedId] = useState('')
   const [intervalSeconds, setIntervalSeconds] = useState(2)
@@ -210,6 +211,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     const count = Math.min(300, Math.ceil(video.duration / intervalSeconds))
     setBusy('extract')
     setError('')
+    setExtractionSummary(null)
     const items = []
     try {
       for (let index = 0; index < count; index += 1) {
@@ -262,6 +264,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     const sampleCount = Math.max(1, Math.ceil(video.duration / stepSeconds))
     setBusy('extract-smart')
     setError('')
+    setExtractionSummary(null)
     const samples = []
     const items = []
     try {
@@ -297,6 +300,11 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         })
       }
       addFrames(items)
+      setExtractionSummary({
+        checked: sampleCount,
+        kept: items.length,
+        stepSeconds,
+      })
       setProgress(`智能提取完成：检测 ${sampleCount} 个时间点，保留 ${items.length} 张稳定且不重复的画面。`)
     } catch (extractError) {
       items.forEach((item) => releaseLocalUrl(item.url))
@@ -528,6 +536,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                 setVideoUrl(createLocalUrl(file))
                 setVideoName(file.name)
                 setVideoDimensions(null)
+                setExtractionSummary(null)
                 event.target.value = ''
               }}
             />
@@ -539,6 +548,12 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
             <span className="scanner-device-status">
               {videoDimensions.width}×{videoDimensions.height}
               {videoDimensions.matches ? ' · 固定设备' : ' · 规格不匹配'}
+            </span>
+          )}
+          {extractionSummary && (
+            <span className="scanner-device-status">
+              智能提取：检查 {extractionSummary.checked} 个时间点 · 保留 {extractionSummary.kept} 张
+              · 步长约 {extractionSummary.stepSeconds.toFixed(2)} 秒
             </span>
           )}
         </div>
