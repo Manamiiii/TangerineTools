@@ -19,6 +19,7 @@ import { ModelSettingsModal } from '../model/ModelSettingsModal.jsx'
 import { MODEL_CONFIG_SCOPE, modelConfigIsComplete } from '../model/modelConfig.js'
 import { useModelConfig } from '../model/useModelConfig.js'
 import { correctRockScannerFields } from '../rock-kingdom-model/rockKingdomModel.js'
+import { recognizeRockAppearance } from './appearanceRecognition.js'
 
 function frameId() {
   return `scan-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
@@ -253,6 +254,11 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       raw[key === 'name' ? 'ref' : key] = await recognizeStructuredImageText(crop)
     }
     const matched = recognizedPatch(raw, fields, nameCandidates)
+    const appearanceMatch = await recognizeRockAppearance(image)
+    if (appearanceMatch) {
+      matched.patch.appearance = appearanceMatch.value
+      matched.confidence.appearance = appearanceMatch.score
+    }
     patchFrame(frame.id, {
       raw,
       confidence: matched.confidence,
@@ -582,6 +588,13 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                         <small className="scanner-ocr-raw">
                           OCR：{selected.raw[field.key]}
                           {selected.confidence[field.key] ? ` · 匹配 ${Math.round(selected.confidence[field.key] * 100)}%` : ''}
+                        </small>
+                      )}
+                      {field.key === 'appearance' && (
+                        <small className="scanner-ocr-raw">
+                          {selected.confidence.appearance
+                            ? `本地图标匹配 ${Math.round(selected.confidence.appearance * 100)}%，请对照原图复核。`
+                            : '当前仅有 9 种清晰模板；未识别时请手动选择，不能把空值直接视为普通外观。'}
                         </small>
                       )}
                       {field.key === 'partnerMark' && (
