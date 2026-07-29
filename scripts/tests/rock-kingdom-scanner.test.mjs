@@ -4,12 +4,16 @@ import { access } from 'node:fs/promises'
 
 import {
   ROCK_APPEARANCE_TEMPLATES,
+  ROCK_PARTNER_MARK_TEMPLATES,
   appearanceTemplateSimilarity,
   appearanceFlags,
   bestAppearanceTemplateMatch,
+  bestPartnerMarkTemplateMatch,
   bestScanMatch,
   isScannerFrameReady,
   normalizeScanText,
+  normalizedPartnerMarkMask,
+  partnerMarkMaskSimilarity,
   recognizeGenderColor,
   valuesWithAppearance,
 } from '../../src/domain/rockKingdomScanner.js'
@@ -86,6 +90,49 @@ test('gender color recognition accepts clear symbols and rejects weak or mixed e
     ...Array(4).fill([48, 132, 238]),
     ...Array(4).fill([225, 55, 92]),
   )), null)
+})
+
+test('partner mark templates cover all nine game marks', async () => {
+  assert.deepEqual(ROCK_PARTNER_MARK_TEMPLATES.map((template) => template.value), [
+    'fruit',
+    'lightning',
+    'home',
+    'hp',
+    'patk',
+    'matk',
+    'pdef',
+    'mdef',
+    'spd',
+  ])
+  await Promise.all(ROCK_PARTNER_MARK_TEMPLATES.map((template) => access(
+    new URL(`../../public/icons/rock-kingdom-partner-marks/${template.fileName}`, import.meta.url),
+  )))
+})
+
+test('partner mark matching accepts a clear shape, rejects ambiguity, and recognizes no mark', () => {
+  function markPixels(activePoints = []) {
+    const width = 9
+    const height = 9
+    const active = new Set(activePoints.map(([x, y]) => `${x}:${y}`))
+    const pixels = new Uint8ClampedArray(width * height * 4)
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const offset = (y * width + x) * 4
+        pixels.set(active.has(`${x}:${y}`) ? [220, 165, 45, 255] : [39, 43, 45, 255], offset)
+      }
+    }
+    return { data: pixels, width, height }
+  }
+  const sample = normalizedPartnerMarkMask(markPixels([[3, 2], [4, 2], [3, 3], [4, 3], [4, 4]]))
+  const exact = { value: 'exact', ...sample }
+  const different = {
+    value: 'different',
+    ...normalizedPartnerMarkMask(markPixels([[1, 1], [1, 2], [1, 3], [1, 4], [1, 5]])),
+  }
+  assert.equal(partnerMarkMaskSimilarity(sample, exact), 1)
+  assert.equal(bestPartnerMarkTemplateMatch(sample, [different, exact])?.value, 'exact')
+  assert.equal(bestPartnerMarkTemplateMatch(sample, [exact, { ...exact, value: 'duplicate' }]), null)
+  assert.equal(bestPartnerMarkTemplateMatch(normalizedPartnerMarkMask(markPixels()), [exact])?.value, 'none')
 })
 
 test('scan matching tolerates labels, suffixes, whitespace, and one OCR error', () => {

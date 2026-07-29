@@ -21,6 +21,7 @@ import { MODEL_CONFIG_SCOPE, modelConfigIsComplete } from '../model/modelConfig.
 import { useModelConfig } from '../model/useModelConfig.js'
 import { correctRockScannerFields } from '../rock-kingdom-model/rockKingdomModel.js'
 import { recognizeRockAppearance } from './appearanceRecognition.js'
+import { recognizeRockPartnerMark } from './partnerMarkRecognition.js'
 
 function frameId() {
   return `scan-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
@@ -267,6 +268,11 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     if (genderMatch) {
       matched.patch.gender = genderMatch.value
       matched.confidence.gender = genderMatch.confidence
+    }
+    const partnerMarkMatch = await recognizeRockPartnerMark(image)
+    if (partnerMarkMatch) {
+      matched.patch.partnerMark = partnerMarkMatch.value
+      matched.confidence.partnerMark = partnerMarkMatch.score
     }
     const appearanceMatch = await recognizeRockAppearance(image)
     if (appearanceMatch) {
@@ -620,7 +626,9 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                       )}
                       {field.key === 'partnerMark' && (
                         <small className="scanner-ocr-raw">
-                          请对照血脉左侧的小图标复核；取得清晰的九枚图标素材前不自动猜测。
+                          {selected.confidence.partnerMark
+                            ? `本地图标匹配 ${Math.round(selected.confidence.partnerMark * 100)}%，请对照血脉左侧图标复核。`
+                            : '未达到本地图标匹配门槛，请对照血脉左侧图标手动选择。'}
                         </small>
                       )}
                       {field.key === 'gender' && (
