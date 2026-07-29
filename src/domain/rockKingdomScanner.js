@@ -253,7 +253,7 @@ export function partnerMarkMaskSimilarity(sample, template, maximumShift = 2) {
 export function bestPartnerMarkTemplateMatch(
   sample,
   templates = [],
-  { minimumScore = 0.42, minimumGap = 0.035 } = {},
+  { minimumScore = 0.62, minimumGap = 0.06 } = {},
 ) {
   if (!sample) return { value: 'none', label: '无', score: 0.96 }
   const ranked = templates
@@ -433,9 +433,29 @@ export function rankScanCandidates(rawText, candidates = []) {
   return ranked.sort((left, right) => right.score - left.score)
 }
 
-export function bestScanMatch(rawText, candidates = [], minimumScore = 0.48) {
-  const best = rankScanCandidates(rawText, candidates)[0]
-  return best && best.score >= minimumScore ? best : null
+export function bestScanMatch(rawText, candidates = [], options = 0.48) {
+  const { minimumScore, minimumGap } = typeof options === 'number'
+    ? { minimumScore: options, minimumGap: 0 }
+    : { minimumScore: 0.48, minimumGap: 0, ...options }
+  const ranked = rankScanCandidates(rawText, candidates)
+  const best = ranked[0]
+  if (!best || best.score < minimumScore) return null
+  const distinctRunnerUp = ranked.find((candidate) => candidate.term !== best.term)
+  if (distinctRunnerUp && best.score - distinctRunnerUp.score < minimumGap) return null
+  return best
+}
+
+export function scannerCharacterWhitelist(candidates = []) {
+  const characters = new Set()
+  for (const candidate of candidates) {
+    const terms = [candidate.label, ...(candidate.aliases || [])]
+    for (const term of terms) {
+      for (const character of String(term || '').normalize('NFKC')) {
+        if (/[\p{Script=Han}\p{Letter}\p{Number}]/u.test(character)) characters.add(character)
+      }
+    }
+  }
+  return [...characters].join('')
 }
 
 export function catalogNameCandidates(rows = [], fields = []) {

@@ -75,7 +75,7 @@ export async function recognizeImageText(image, onProgress, options) {
 export async function recognizeStructuredImageText(
   image,
   onProgress,
-  { pageSegmentationMode = '6' } = {},
+  { pageSegmentationMode = '6', characterWhitelist = '' } = {},
 ) {
   if (!image) throw new Error('请先选择一张截图')
   progressListener = onProgress
@@ -87,7 +87,10 @@ export async function recognizeStructuredImageText(
   }
   try {
     const worker = await metadataWorkerPromise
-    await worker.setParameters({ tessedit_pageseg_mode: pageSegmentationMode })
+    await worker.setParameters({
+      tessedit_pageseg_mode: pageSegmentationMode,
+      tessedit_char_whitelist: characterWhitelist,
+    })
     const result = await worker.recognize(image)
     return normalizeOcrText(result?.data?.text, { preserveLines: true })
   } finally {

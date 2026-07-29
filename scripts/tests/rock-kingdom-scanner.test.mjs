@@ -16,6 +16,7 @@ import {
   partnerMarkMaskSimilarity,
   recognizeGenderColor,
   scannerAnchorQuality,
+  scannerCharacterWhitelist,
   scannerSignatureDifference,
   selectStableScannerSamples,
   valuesWithAppearance,
@@ -138,6 +139,21 @@ test('partner mark matching accepts a clear shape, rejects ambiguity, and recogn
   assert.equal(bestPartnerMarkTemplateMatch(normalizedPartnerMarkMask(markPixels()), [exact])?.value, 'none')
 })
 
+test('partner mark matching rejects a weak 50 percent shape match', () => {
+  const sample = {
+    pixels: new Float32Array(28 * 28).fill(1),
+    width: 28,
+    height: 28,
+  }
+  const weak = {
+    value: 'weak',
+    pixels: Float32Array.from(sample.pixels, (value, index) => index % 2 ? value : 0),
+    width: 28,
+    height: 28,
+  }
+  assert.equal(bestPartnerMarkTemplateMatch(sample, [weak]), null)
+})
+
 test('stable frame selection skips transitions, long duplicate runs, and a failed switch', () => {
   const signature = (value, accent = 0) => {
     const result = new Uint8Array(40).fill(value)
@@ -200,6 +216,37 @@ test('scan matching tolerates labels, suffixes, whitespace, and one OCR error', 
   assert.equal(bestScanMatch('爱分亨', options)?.value, 'sharing')
   assert.equal(bestScanMatch('', options), null)
   assert.equal(normalizeScanText('S2 异色·炫彩'), 's2异色炫彩')
+})
+
+test('scan matching can require a distinct best finite-vocabulary candidate', () => {
+  const candidates = [
+    { value: 'one', label: '板板壳' },
+    { value: 'two', label: '板壳壳' },
+  ]
+  assert.equal(bestScanMatch('板板壳', candidates, { minimumScore: 0.62, minimumGap: 0.08 })?.value, 'one')
+  assert.equal(bestScanMatch('板壳', candidates, { minimumScore: 0.62, minimumGap: 0.08 }), null)
+})
+
+test('scan matching treats catalog forms with the same visible game name as one OCR identity', () => {
+  const candidates = [
+    { value: 'ordinary', label: '板板壳' },
+    { value: 'variant', label: '板板壳（蜕皮时的样子）' },
+    { value: 'other', label: '鸭吉吉' },
+  ]
+  assert.equal(
+    bestScanMatch('板板吉', candidates, { minimumScore: 0.62, minimumGap: 0.08 })?.value,
+    'ordinary',
+  )
+})
+
+test('scanner OCR whitelist only contains finite candidate characters', () => {
+  assert.equal(
+    scannerCharacterWhitelist([
+      { label: '机械方方' },
+      { label: 'S1 炫彩', aliases: ['一阶炫彩'] },
+    ]),
+    '机械方S1炫彩一阶',
+  )
 })
 
 test('scanner frames require both a creature reference and explicit review before saving', () => {

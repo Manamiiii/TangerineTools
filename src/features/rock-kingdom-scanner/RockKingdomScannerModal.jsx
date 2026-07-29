@@ -10,6 +10,7 @@ import {
   captureVideoSignature,
   cropImageSource,
   loadImageSource,
+  prepareScannerTextCrop,
 } from './frameCapture.js'
 import {
   ROCK_SCANNER_CROP_PROFILE,
@@ -21,6 +22,7 @@ import {
   rankScanCandidates,
   recognizeGenderColor,
   scannerAnchorQuality,
+  scannerCharacterWhitelist,
   scannerOptionCandidates,
   selectStableScannerSamples,
   valuesWithAppearance,
@@ -79,22 +81,43 @@ function fieldByKey(fields, key) {
   return fields.find((field) => field.key === key)
 }
 
-function recognizedPatch(raw, fields, nameCandidates) {
-  const patch = {}
-  const confidence = {}
-  const matchers = {
+function scannerCandidateSets(fields, nameCandidates) {
+  return {
     ref: nameCandidates,
     nature: scannerOptionCandidates(fieldByKey(fields, 'nature')),
     bloodline: scannerOptionCandidates(fieldByKey(fields, 'bloodline')),
     specialty: scannerOptionCandidates(fieldByKey(fields, 'specialty')),
   }
+}
+
+const SCANNER_MATCH_OPTIONS = {
+  ref: { minimumScore: 0.62, minimumGap: 0.08 },
+  nature: { minimumScore: 0.56, minimumGap: 0.06 },
+  bloodline: { minimumScore: 0.56, minimumGap: 0.06 },
+  specialty: { minimumScore: 0.56, minimumGap: 0.06 },
+}
+
+function bestVariantMatch(rawTexts, candidates, options) {
+  return rawTexts
+    .map((rawText) => ({ rawText, match: bestScanMatch(rawText, candidates, options) }))
+    .filter((result) => result.match)
+    .sort((left, right) => right.match.score - left.match.score)[0] || null
+}
+
+function recognizedPatch(rawVariants, fields, nameCandidates) {
+  const patch = {}
+  const confidence = {}
+  const raw = {}
+  const matchers = scannerCandidateSets(fields, nameCandidates)
   for (const [key, candidates] of Object.entries(matchers)) {
-    const match = bestScanMatch(raw[key], candidates)
-    if (!match) continue
-    patch[key] = match.value
-    confidence[key] = match.score
+    const texts = [...new Set((rawVariants[key] || []).filter(Boolean))]
+    const result = bestVariantMatch(texts, candidates, SCANNER_MATCH_OPTIONS[key])
+    raw[key] = result?.rawText || texts[0] || ''
+    if (!result) continue
+    patch[key] = result.match.value
+    confidence[key] = result.match.score
   }
-  return { patch, confidence }
+  return { patch, confidence, raw }
 }
 
 export function RockKingdomScannerModal({ table, fields, onClose }) {
@@ -333,17 +356,32 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   async function recognizeFrame(frame) {
     patchFrame(frame.id, { status: '识别中' })
     const image = await loadImageSource(frame.url)
-    const raw = {}
+    const rawVariants = {}
+    const candidateSets = scannerCandidateSets(fields, nameCandidates)
     for (const key of ['name', 'bloodline', 'nature', 'specialty']) {
+      const fieldKey = key === 'name' ? 'ref' : key
       setProgress(`正在识别 ${frame.sourceName}${frame.time == null ? '' : ` ${formatTime(frame.time)}`} · ${ROCK_SCANNER_CROP_PROFILE[key].label}`)
       const crop = cropImageSource(image, ROCK_SCANNER_CROP_PROFILE[key])
-      raw[key === 'name' ? 'ref' : key] = await recognizeStructuredImageText(
+      const options = {
+        pageSegmentationMode: key === 'name' ? '8' : '7',
+        characterWhitelist: scannerCharacterWhitelist(candidateSets[fieldKey]),
+      }
+      const firstText = await recognizeStructuredImageText(
         crop,
         undefined,
-        { pageSegmentationMode: key === 'name' ? '8' : '7' },
+        options,
       )
+      rawVariants[fieldKey] = [firstText]
+      const firstMatch = bestScanMatch(firstText, candidateSets[fieldKey], SCANNER_MATCH_OPTIONS[fieldKey])
+      if (!firstMatch || firstMatch.score < 0.78) {
+        rawVariants[fieldKey].push(await recognizeStructuredImageText(
+          prepareScannerTextCrop(crop),
+          undefined,
+          options,
+        ))
+      }
     }
-    const matched = recognizedPatch(raw, fields, nameCandidates)
+    const matched = recognizedPatch(rawVariants, fields, nameCandidates)
     const genderCrop = cropImageSource(image, ROCK_SCANNER_CROP_PROFILE.gender, 1)
     const genderMatch = recognizeGenderColor(
       genderCrop.getContext('2d', { willReadFrequently: true })
@@ -364,7 +402,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       matched.confidence.appearance = appearanceMatch.score
     }
     patchFrame(frame.id, {
-      raw,
+      raw: matched.raw,
       confidence: matched.confidence,
       values: { ...frame.values, ...matched.patch },
       reviewed: false,
@@ -405,20 +443,19 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   }
 
   function correctionFields(frame) {
-    const candidateSets = {
-      ref: nameCandidates,
-      nature: scannerOptionCandidates(fieldByKey(fields, 'nature')),
-      bloodline: scannerOptionCandidates(fieldByKey(fields, 'bloodline')),
-      specialty: scannerOptionCandidates(fieldByKey(fields, 'specialty')),
-    }
+    const candidateSets = scannerCandidateSets(fields, nameCandidates)
     return Object.entries(candidateSets).flatMap(([key, candidates]) => {
       const rawText = frame.raw?.[key] || ''
       const confidence = Number(frame.confidence?.[key]) || 0
       if (!rawText || (frame.values?.[key] && confidence >= 0.78)) return []
+      const ranked = rankScanCandidates(rawText, candidates)
+      if (!ranked[0] || ranked[0].score < 0.42) return []
       return [{
         key,
         rawText,
-        candidates: rankScanCandidates(rawText, candidates).slice(0, 16),
+        candidates: ranked
+          .filter((candidate) => candidate.score >= Math.max(0.42, ranked[0].score - 0.16))
+          .slice(0, 8),
       }]
     })
   }
@@ -696,7 +733,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                     className="btn"
                     onClick={correctSelectedWithModel}
                     disabled={Boolean(busy) || correctionFields(selected).length === 0}
-                    title={correctionFields(selected).length === 0 ? '先运行本机 OCR；只有未匹配或低置信字段才会发送' : ''}
+                    title={correctionFields(selected).length === 0 ? '仅纠正有文字证据的低置信字段；图标字段和空白 OCR 需要手动复核' : ''}
                   >
                     <Sparkles size={15} /> {busy === 'model' ? '纠错中…' : 'AI 纠错低置信字段'}
                   </button>
@@ -742,8 +779,8 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                       {field.key === 'partnerMark' && (
                         <small className="scanner-ocr-raw">
                           {selected.confidence.partnerMark
-                            ? `本地图标匹配 ${Math.round(selected.confidence.partnerMark * 100)}%，请对照血脉左侧图标复核。`
-                            : '未达到本地图标匹配门槛，请对照血脉左侧图标手动选择。'}
+                            ? `本地图标匹配 ${Math.round(selected.confidence.partnerMark * 100)}%，请对照血脉左侧图标复核；图标不会发送给 AI。`
+                            : '未达到 62% 本地图标匹配门槛，请对照血脉左侧图标手动选择；AI 不会猜图标。'}
                         </small>
                       )}
                       {field.key === 'gender' && (
