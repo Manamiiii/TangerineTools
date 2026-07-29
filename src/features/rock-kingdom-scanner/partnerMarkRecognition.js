@@ -3,6 +3,7 @@ import {
   ROCK_SCANNER_CROP_PROFILE,
   bestPartnerMarkTemplateMatch,
   normalizedPartnerMarkMask,
+  rankPartnerMarkTemplateMatches,
 } from '../../domain/rockKingdomScanner.js'
 import { cropImageSource, loadImageSource } from './frameCapture.js'
 
@@ -41,5 +42,8 @@ export async function recognizeRockPartnerMark(image) {
   const crop = cropImageSource(image, ROCK_SCANNER_CROP_PROFILE.partnerMark, 1)
   const sample = normalizedPartnerMarkMask(canvasImageData(crop))
   const templates = await loadPartnerMarkTemplates()
-  return bestPartnerMarkTemplateMatch(sample, templates)
+  return {
+    match: bestPartnerMarkTemplateMatch(sample, templates),
+    ranked: rankPartnerMarkTemplateMatches(sample, templates).slice(0, 2),
+  }
 }

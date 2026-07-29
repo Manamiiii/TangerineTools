@@ -7405,12 +7405,8 @@ img {
 .scanner-preview i {
   position: absolute;
   box-sizing: border-box;
-  border: 2px solid #f59e0b;
-  background: rgb(245 158 11 / 12%);
-  color: #fff;
-  font-size: 10px;
-  font-style: normal;
-  text-shadow: 0 1px 2px #000;
+  border: 1px solid rgb(245 158 11 / 72%);
+  background: transparent;
   pointer-events: none;
 }
 .scanner-fields {

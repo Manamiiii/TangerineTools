@@ -73,8 +73,9 @@ export const OWNED_PARTNER_MARK_OPTIONS = [
 ]
 
 export const OWNED_SPECIALTY_OPTIONS = [
+  { value: 'none', label: '无', color: '#94a3b8' },
   { value: 'mercy', label: '慈悲为怀', color: '#059669' },
-  { value: 'brave', label: '勇敢', color: '#dc2626' },
+  { value: 'brave', label: '无畏', aliases: ['勇敢'], color: '#dc2626' },
   { value: 'homebody', label: '家里蹲', color: '#64748b' },
   { value: 'dexterous', label: '灵巧', color: '#0891b2' },
   { value: 'rideTogether', label: '同乘', color: '#2563eb' },

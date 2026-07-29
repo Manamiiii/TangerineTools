@@ -48,6 +48,16 @@ export const ROCK_SCANNER_CROP_PROFILE = {
   appearance: { label: '外观', x: 0.903125, y: 0.645833, width: 0.04375, height: 0.097222 },
 }
 
+export const ROCK_SCANNER_IDENTITY_CROP_PROFILE = {
+  trait: { label: '特性', x: 0.68, y: 0.815, width: 0.13, height: 0.055 },
+  hp: { label: '生命', x: 0.785, y: 0.35, width: 0.055, height: 0.055 },
+  patk: { label: '物攻', x: 0.715, y: 0.43, width: 0.055, height: 0.055 },
+  matk: { label: '魔攻', x: 0.865, y: 0.43, width: 0.055, height: 0.055 },
+  pdef: { label: '物防', x: 0.715, y: 0.57, width: 0.055, height: 0.055 },
+  mdef: { label: '魔防', x: 0.865, y: 0.57, width: 0.055, height: 0.055 },
+  spd: { label: '速度', x: 0.785, y: 0.64, width: 0.055, height: 0.055 },
+}
+
 export const ROCK_SCANNER_STABILITY_REGION = {
   x: 0.66,
   y: 0.1,
@@ -222,6 +232,9 @@ export function normalizedPartnerMarkMask(imageData, targetSize = 28) {
 function shiftedPartnerMarkSimilarity(sample, template, shiftX, shiftY) {
   let intersection = 0
   let union = 0
+  let dotProduct = 0
+  let sampleMagnitude = 0
+  let templateMagnitude = 0
   for (let y = 0; y < sample.height; y += 1) {
     for (let x = 0; x < sample.width; x += 1) {
       const sampleWeight = sample.pixels[y * sample.width + x]
@@ -233,9 +246,15 @@ function shiftedPartnerMarkSimilarity(sample, template, shiftX, shiftY) {
         : 0
       intersection += Math.min(sampleWeight, templateWeight)
       union += Math.max(sampleWeight, templateWeight)
+      dotProduct += sampleWeight * templateWeight
+      sampleMagnitude += sampleWeight ** 2
+      templateMagnitude += templateWeight ** 2
     }
   }
-  return union > 0 ? intersection / union : 0
+  if (union <= 0) return 0
+  const overlap = intersection / union
+  const cosine = dotProduct / Math.max(Math.sqrt(sampleMagnitude * templateMagnitude), Number.EPSILON)
+  return overlap * 0.35 + cosine * 0.65
 }
 
 export function partnerMarkMaskSimilarity(sample, template, maximumShift = 2) {
@@ -253,16 +272,21 @@ export function partnerMarkMaskSimilarity(sample, template, maximumShift = 2) {
 export function bestPartnerMarkTemplateMatch(
   sample,
   templates = [],
-  { minimumScore = 0.62, minimumGap = 0.06 } = {},
+  { minimumScore = 0.68, minimumGap = 0.06 } = {},
 ) {
   if (!sample) return { value: 'none', label: '无', score: 0.96 }
-  const ranked = templates
-    .map((template) => ({ ...template, score: partnerMarkMaskSimilarity(sample, template) }))
-    .sort((left, right) => right.score - left.score)
+  const ranked = rankPartnerMarkTemplateMatches(sample, templates)
   const best = ranked[0]
   if (!best || best.score < minimumScore) return null
   if (ranked[1] && best.score - ranked[1].score < minimumGap) return null
   return best
+}
+
+export function rankPartnerMarkTemplateMatches(sample, templates = []) {
+  if (!sample) return []
+  return templates
+    .map((template) => ({ ...template, score: partnerMarkMaskSimilarity(sample, template) }))
+    .sort((left, right) => right.score - left.score)
 }
 
 export function recognizeGenderColor(imageData) {
@@ -440,6 +464,7 @@ export function bestScanMatch(rawText, candidates = [], options = 0.48) {
   const ranked = rankScanCandidates(rawText, candidates)
   const best = ranked[0]
   if (!best || best.score < minimumScore) return null
+  if (best.score === 1 && best.term === normalizeScanText(rawText)) return best
   const distinctRunnerUp = ranked.find((candidate) => candidate.term !== best.term)
   if (distinctRunnerUp && best.score - distinctRunnerUp.score < minimumGap) return null
   return best
@@ -466,6 +491,11 @@ export function catalogNameCandidates(rows = [], fields = []) {
     .map((row) => ({
       value: row.id,
       label: String(row.values?.[nameField.key] || '').trim(),
+      traitName: String(row.values?.traitName || '').trim(),
+      stats: Object.fromEntries(
+        ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
+          .map((key) => [key, Number(row.values?.[key]) || 0]),
+      ),
     }))
     .filter((candidate) => candidate.label)
 }
@@ -474,5 +504,123 @@ export function scannerOptionCandidates(field) {
   return (field?.options || []).map((option) => ({
     value: option.value,
     label: option.label,
+    aliases: option.aliases,
   }))
+}
+
+const SCANNER_SHAPE_STAT_KEYS = ['patk', 'matk', 'pdef', 'mdef', 'spd']
+
+export function scannerStatShapeSimilarity(panelStats = {}, baseStats = {}) {
+  // 等级和升星主要改变整体尺度；去均值后的相关性只比较五维轮廓。
+  // 生命使用不同成长公式，因此不参与形态自动判别。
+  const pairs = SCANNER_SHAPE_STAT_KEYS
+    .map((key) => [Number(panelStats[key]), Number(baseStats[key])])
+    .filter(([panel, base]) => panel > 0 && base > 0)
+  if (pairs.length < 4) return 0
+  const panelMean = pairs.reduce((sum, [panel]) => sum + panel, 0) / pairs.length
+  const baseMean = pairs.reduce((sum, [, base]) => sum + base, 0) / pairs.length
+  let covariance = 0
+  let panelMagnitude = 0
+  let baseMagnitude = 0
+  for (const [panel, base] of pairs) {
+    const centeredPanel = panel - panelMean
+    const centeredBase = base - baseMean
+    covariance += centeredPanel * centeredBase
+    panelMagnitude += centeredPanel ** 2
+    baseMagnitude += centeredBase ** 2
+  }
+  const correlation = covariance / Math.max(
+    Math.sqrt(panelMagnitude * baseMagnitude),
+    Number.EPSILON,
+  )
+  return Math.max(0, Math.min(1, (correlation + 1) / 2))
+}
+
+function distinctCandidateRunnerUp(ranked, best) {
+  return ranked.find((candidate) => candidate.term !== best.term)
+}
+
+function nameCandidatePool(rawName, candidates, minimumScore = 0.62, minimumGap = 0.08) {
+  const ranked = rankScanCandidates(rawName, candidates)
+  const best = ranked[0]
+  if (!best || best.score < minimumScore) return { pool: [], score: 0 }
+  const exactVisibleName = best.score === 1 && best.term === normalizeScanText(rawName)
+  const runnerUp = distinctCandidateRunnerUp(ranked, best)
+  if (!exactVisibleName && runnerUp && best.score - runnerUp.score < minimumGap) {
+    return { pool: [], score: best.score }
+  }
+  return {
+    pool: ranked.filter((candidate) => candidate.term === best.term && candidate.score === best.score),
+    score: best.score,
+  }
+}
+
+function traitCandidatePool(rawTrait, candidates) {
+  if (!rawTrait) return []
+  const traits = [...new Map(candidates
+    .filter((candidate) => candidate.traitName)
+    .map((candidate) => [
+      candidate.traitName,
+      { value: candidate.traitName, label: candidate.traitName },
+    ])).values()]
+  const match = bestScanMatch(rawTrait, traits, { minimumScore: 0.62, minimumGap: 0.08 })
+  if (!match) return []
+  return candidates.filter((candidate) => normalizeScanText(candidate.traitName) === normalizeScanText(match.label))
+}
+
+export function resolveScannerReference({
+  rawName = '',
+  rawTrait = '',
+  panelStats = {},
+  candidates = [],
+  minimumShapeScore = 0.82,
+  minimumShapeGap = 0.06,
+} = {}) {
+  const nameMatch = nameCandidatePool(rawName, candidates)
+  let pool = nameMatch.pool
+  let source = 'name'
+  if (pool.length === 1) {
+    return { value: pool[0].value, score: nameMatch.score, source, candidates: pool }
+  }
+  const traitPool = traitCandidatePool(rawTrait, candidates)
+  if (pool.length > 1 && traitPool.length > 0) {
+    const traitIds = new Set(traitPool.map((candidate) => candidate.value))
+    const intersection = pool.filter((candidate) => traitIds.has(candidate.value))
+    if (intersection.length > 0) pool = intersection
+  } else if (pool.length === 0 && traitPool.length > 0) {
+    pool = traitPool
+    source = 'trait'
+  }
+  if (pool.length === 1) {
+    return { value: pool[0].value, score: Math.max(nameMatch.score, 0.82), source, candidates: pool }
+  }
+  if (pool.length === 0) {
+    return { value: '', score: 0, source: 'unresolved', candidates: [] }
+  }
+  const ranked = pool
+    .map((candidate) => ({
+      ...candidate,
+      shapeScore: scannerStatShapeSimilarity(panelStats, candidate.stats),
+    }))
+    .sort((left, right) => right.shapeScore - left.shapeScore)
+  const best = ranked[0]
+  const runnerUp = ranked[1]
+  if (
+    !best
+    || best.shapeScore < minimumShapeScore
+    || (runnerUp && best.shapeScore - runnerUp.shapeScore < minimumShapeGap)
+  ) {
+    return {
+      value: '',
+      score: best?.shapeScore || nameMatch.score,
+      source: 'ambiguous',
+      candidates: ranked,
+    }
+  }
+  return {
+    value: best.value,
+    score: best.shapeScore,
+    source: source === 'name' ? 'name+stats' : 'trait+stats',
+    candidates: ranked,
+  }
 }

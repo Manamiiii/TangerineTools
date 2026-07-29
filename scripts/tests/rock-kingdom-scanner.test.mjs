@@ -15,12 +15,15 @@ import {
   normalizedPartnerMarkMask,
   partnerMarkMaskSimilarity,
   recognizeGenderColor,
+  resolveScannerReference,
   scannerAnchorQuality,
   scannerCharacterWhitelist,
   scannerSignatureDifference,
+  scannerStatShapeSimilarity,
   selectStableScannerSamples,
   valuesWithAppearance,
 } from '../../src/domain/rockKingdomScanner.js'
+import { OWNED_SPECIALTY_OPTIONS } from '../../src/domain/owned.js'
 
 function syntheticPixels(width, height, foreground = [220, 80, 150]) {
   const pixels = new Uint8ClampedArray(width * height * 4)
@@ -227,6 +230,13 @@ test('scan matching can require a distinct best finite-vocabulary candidate', ()
   assert.equal(bestScanMatch('板壳', candidates, { minimumScore: 0.62, minimumGap: 0.08 }), null)
 })
 
+test('an exact short game name wins over a longer evolution name containing it', () => {
+  assert.equal(bestScanMatch('地鼠', [
+    { value: 'ground-mouse', label: '地鼠（枯水期的样子）' },
+    { value: 'evolved', label: '遁地鼠（枯水期的样子）' },
+  ], { minimumScore: 0.62, minimumGap: 0.08 })?.value, 'ground-mouse')
+})
+
 test('scan matching treats catalog forms with the same visible game name as one OCR identity', () => {
   const candidates = [
     { value: 'ordinary', label: '板板壳' },
@@ -247,6 +257,68 @@ test('scanner OCR whitelist only contains finite candidate characters', () => {
     ]),
     '机械方S1炫彩一阶',
   )
+})
+
+test('scanner specialty vocabulary includes visible empty and current fearless labels', () => {
+  assert.equal(OWNED_SPECIALTY_OPTIONS.find((option) => option.value === 'none')?.label, '无')
+  assert.deepEqual(
+    OWNED_SPECIALTY_OPTIONS.find((option) => option.value === 'brave'),
+    { value: 'brave', label: '无畏', aliases: ['勇敢'], color: '#dc2626' },
+  )
+})
+
+test('stat shape resolves parenthesized forms without depending on level scale', () => {
+  const candidates = [
+    {
+      value: 'dry',
+      label: '地鼠（枯水期的样子）',
+      traitName: '警惕',
+      stats: { patk: 71, matk: 31, pdef: 72, mdef: 51, spd: 66 },
+    },
+    {
+      value: 'water',
+      label: '地鼠（储水时的样子）',
+      traitName: '警惕',
+      stats: { patk: 71, matk: 14, pdef: 51, mdef: 79, spd: 60 },
+    },
+  ]
+  const panelStats = { patk: 192, matk: 112, pdef: 194, mdef: 152, spd: 182 }
+  assert.equal(scannerStatShapeSimilarity(panelStats, candidates[0].stats), 1)
+  assert.equal(resolveScannerReference({
+    rawName: '地鼠',
+    rawTrait: '警惕',
+    panelStats,
+    candidates,
+  }).value, 'dry')
+})
+
+test('trait and stat shape can resolve a custom nickname conservatively', () => {
+  const candidates = [
+    {
+      value: 'physical',
+      label: '鸭吉吉（蓬松的样子）',
+      traitName: '挺起胸脯',
+      stats: { patk: 95, matk: 35, pdef: 55, mdef: 45, spd: 105 },
+    },
+    {
+      value: 'magical',
+      label: '鸭吉吉（紧实的样子）',
+      traitName: '挺起胸脯',
+      stats: { patk: 35, matk: 95, pdef: 45, mdef: 55, spd: 105 },
+    },
+  ]
+  assert.equal(resolveScannerReference({
+    rawName: '梦梦',
+    rawTrait: '挺起胸脯',
+    panelStats: { patk: 80, matk: 200, pdef: 100, mdef: 120, spd: 220 },
+    candidates,
+  }).value, 'magical')
+  assert.equal(resolveScannerReference({
+    rawName: '梦梦',
+    rawTrait: '挺起胸脯',
+    panelStats: { patk: 100, matk: 100, pdef: 100, mdef: 100, spd: 100 },
+    candidates,
+  }).value, '')
 })
 
 test('scanner frames require both a creature reference and explicit review before saving', () => {

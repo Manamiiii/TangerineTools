@@ -15,12 +15,14 @@ import {
 import {
   ROCK_SCANNER_CROP_PROFILE,
   ROCK_SCANNER_DEVICE_PROFILE,
+  ROCK_SCANNER_IDENTITY_CROP_PROFILE,
   ROCK_SCANNER_STABILITY_REGION,
   bestScanMatch,
   catalogNameCandidates,
   isScannerFrameReady,
   rankScanCandidates,
   recognizeGenderColor,
+  resolveScannerReference,
   scannerAnchorQuality,
   scannerCharacterWhitelist,
   scannerOptionCandidates,
@@ -81,9 +83,8 @@ function fieldByKey(fields, key) {
   return fields.find((field) => field.key === key)
 }
 
-function scannerCandidateSets(fields, nameCandidates) {
+function scannerCandidateSets(fields) {
   return {
-    ref: nameCandidates,
     nature: scannerOptionCandidates(fieldByKey(fields, 'nature')),
     bloodline: scannerOptionCandidates(fieldByKey(fields, 'bloodline')),
     specialty: scannerOptionCandidates(fieldByKey(fields, 'specialty')),
@@ -91,10 +92,34 @@ function scannerCandidateSets(fields, nameCandidates) {
 }
 
 const SCANNER_MATCH_OPTIONS = {
-  ref: { minimumScore: 0.62, minimumGap: 0.08 },
   nature: { minimumScore: 0.56, minimumGap: 0.06 },
   bloodline: { minimumScore: 0.56, minimumGap: 0.06 },
   specialty: { minimumScore: 0.56, minimumGap: 0.06 },
+}
+
+function bestVariantText(rawTexts, candidates) {
+  return [...new Set(rawTexts.filter(Boolean))]
+    .map((rawText) => ({
+      rawText,
+      score: rankScanCandidates(rawText, candidates)[0]?.score || 0,
+    }))
+    .sort((left, right) => right.score - left.score)[0]?.rawText
+    || rawTexts.find(Boolean)
+    || ''
+}
+
+function bestReferenceText(rawTexts, candidates) {
+  const firstText = rawTexts.find(Boolean) || ''
+  const firstScore = rankScanCandidates(firstText, candidates)[0]?.score || 0
+  if (firstScore >= 0.62 || firstScore < 0.42) return firstText
+  const retry = rawTexts.slice(1)
+    .map((rawText) => ({
+      rawText,
+      match: bestScanMatch(rawText, candidates, { minimumScore: 0.82, minimumGap: 0.08 }),
+    }))
+    .filter((result) => result.match)
+    .sort((left, right) => right.match.score - left.match.score)[0]
+  return retry?.rawText || firstText
 }
 
 function bestVariantMatch(rawTexts, candidates, options) {
@@ -104,11 +129,11 @@ function bestVariantMatch(rawTexts, candidates, options) {
     .sort((left, right) => right.match.score - left.match.score)[0] || null
 }
 
-function recognizedPatch(rawVariants, fields, nameCandidates) {
+function recognizedPatch(rawVariants, fields) {
   const patch = {}
   const confidence = {}
   const raw = {}
-  const matchers = scannerCandidateSets(fields, nameCandidates)
+  const matchers = scannerCandidateSets(fields)
   for (const [key, candidates] of Object.entries(matchers)) {
     const texts = [...new Set((rawVariants[key] || []).filter(Boolean))]
     const result = bestVariantMatch(texts, candidates, SCANNER_MATCH_OPTIONS[key])
@@ -118,6 +143,33 @@ function recognizedPatch(rawVariants, fields, nameCandidates) {
     confidence[key] = result.match.score
   }
   return { patch, confidence, raw }
+}
+
+function traitCandidates(nameCandidates) {
+  return [...new Map(nameCandidates
+    .filter((candidate) => candidate.traitName)
+    .map((candidate) => [
+      candidate.traitName,
+      { value: candidate.traitName, label: candidate.traitName },
+    ])).values()]
+}
+
+function parsePanelStat(value) {
+  const match = String(value || '').match(/\d{1,4}/)
+  return match ? Number(match[0]) : 0
+}
+
+function identityEvidenceLabel(identity) {
+  if (!identity) return ''
+  const sourceLabels = {
+    name: '游戏名称',
+    'name+stats': '同名候选 + 六维形状',
+    trait: '特性',
+    'trait+stats': '特性 + 六维形状',
+    ambiguous: '同名候选仍无法区分',
+    unresolved: '昵称/名称无法关联资料库',
+  }
+  return sourceLabels[identity.source] || identity.source
 }
 
 export function RockKingdomScannerModal({ table, fields, onClose }) {
@@ -357,31 +409,92 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     patchFrame(frame.id, { status: '识别中' })
     const image = await loadImageSource(frame.url)
     const rawVariants = {}
-    const candidateSets = scannerCandidateSets(fields, nameCandidates)
+    const candidateSets = {
+      ref: nameCandidates,
+      ...scannerCandidateSets(fields),
+    }
     for (const key of ['name', 'bloodline', 'nature', 'specialty']) {
       const fieldKey = key === 'name' ? 'ref' : key
       setProgress(`正在识别 ${frame.sourceName}${frame.time == null ? '' : ` ${formatTime(frame.time)}`} · ${ROCK_SCANNER_CROP_PROFILE[key].label}`)
       const crop = cropImageSource(image, ROCK_SCANNER_CROP_PROFILE[key])
-      const options = {
+      const baseOptions = {
         pageSegmentationMode: key === 'name' ? '8' : '7',
-        characterWhitelist: scannerCharacterWhitelist(candidateSets[fieldKey]),
       }
       const firstText = await recognizeStructuredImageText(
         crop,
         undefined,
-        options,
+        baseOptions,
       )
       rawVariants[fieldKey] = [firstText]
-      const firstMatch = bestScanMatch(firstText, candidateSets[fieldKey], SCANNER_MATCH_OPTIONS[fieldKey])
+      const firstMatch = bestScanMatch(
+        firstText,
+        candidateSets[fieldKey],
+        SCANNER_MATCH_OPTIONS[fieldKey] || { minimumScore: 0.62, minimumGap: 0.08 },
+      )
       if (!firstMatch || firstMatch.score < 0.78) {
         rawVariants[fieldKey].push(await recognizeStructuredImageText(
           prepareScannerTextCrop(crop),
           undefined,
-          options,
+          {
+            ...baseOptions,
+            characterWhitelist: scannerCharacterWhitelist(candidateSets[fieldKey]),
+          },
         ))
       }
     }
-    const matched = recognizedPatch(rawVariants, fields, nameCandidates)
+    const matched = recognizedPatch(rawVariants, fields)
+    matched.raw.ref = bestReferenceText(rawVariants.ref, nameCandidates)
+    let identity = resolveScannerReference({
+      rawName: matched.raw.ref,
+      candidates: nameCandidates,
+    })
+    if (!identity.value) {
+      const availableTraits = traitCandidates(nameCandidates)
+      setProgress(`正在识别 ${frame.sourceName}${frame.time == null ? '' : ` ${formatTime(frame.time)}`} · 特性和六维形态`)
+      const traitCrop = cropImageSource(image, ROCK_SCANNER_IDENTITY_CROP_PROFILE.trait)
+      const traitRaw = await recognizeStructuredImageText(
+        traitCrop,
+        undefined,
+        { pageSegmentationMode: '7' },
+      )
+      const traitVariants = [traitRaw]
+      const traitMatch = bestScanMatch(
+        traitRaw,
+        availableTraits,
+        { minimumScore: 0.62, minimumGap: 0.08 },
+      )
+      if (!traitMatch || traitMatch.score < 0.78) {
+        traitVariants.push(await recognizeStructuredImageText(
+          prepareScannerTextCrop(traitCrop),
+          undefined,
+          {
+            pageSegmentationMode: '7',
+            characterWhitelist: scannerCharacterWhitelist(availableTraits),
+          },
+        ))
+      }
+      const rawTrait = bestVariantText(traitVariants, availableTraits)
+      const panelStats = {}
+      for (const statKey of ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']) {
+        const statCrop = cropImageSource(image, ROCK_SCANNER_IDENTITY_CROP_PROFILE[statKey])
+        panelStats[statKey] = parsePanelStat(await recognizeStructuredImageText(
+          statCrop,
+          undefined,
+          { pageSegmentationMode: '7', characterWhitelist: '0123456789' },
+        ))
+      }
+      identity = resolveScannerReference({
+        rawName: matched.raw.ref,
+        rawTrait,
+        panelStats,
+        candidates: nameCandidates,
+      })
+      identity = { ...identity, rawTrait, panelStats }
+    }
+    if (identity.value) {
+      matched.patch.ref = identity.value
+      matched.confidence.ref = identity.score
+    }
     const genderCrop = cropImageSource(image, ROCK_SCANNER_CROP_PROFILE.gender, 1)
     const genderMatch = recognizeGenderColor(
       genderCrop.getContext('2d', { willReadFrequently: true })
@@ -391,10 +504,10 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       matched.patch.gender = genderMatch.value
       matched.confidence.gender = genderMatch.confidence
     }
-    const partnerMarkMatch = await recognizeRockPartnerMark(image)
-    if (partnerMarkMatch) {
-      matched.patch.partnerMark = partnerMarkMatch.value
-      matched.confidence.partnerMark = partnerMarkMatch.score
+    const partnerMarkResult = await recognizeRockPartnerMark(image)
+    if (partnerMarkResult.match) {
+      matched.patch.partnerMark = partnerMarkResult.match.value
+      matched.confidence.partnerMark = partnerMarkResult.match.score
     }
     const appearanceMatch = await recognizeRockAppearance(image)
     if (appearanceMatch) {
@@ -405,8 +518,14 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       raw: matched.raw,
       confidence: matched.confidence,
       values: { ...frame.values, ...matched.patch },
+      identity,
+      partnerMarkCandidates: partnerMarkResult.ranked,
       reviewed: false,
-      status: matched.patch.ref ? '待复核' : '未匹配精灵',
+      status: matched.patch.ref
+        ? '待复核'
+        : identity.source === 'ambiguous'
+          ? '同名形态待选择'
+          : '未匹配精灵',
     })
   }
 
@@ -443,7 +562,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   }
 
   function correctionFields(frame) {
-    const candidateSets = scannerCandidateSets(fields, nameCandidates)
+    const candidateSets = scannerCandidateSets(fields)
     return Object.entries(candidateSets).flatMap(([key, candidates]) => {
       const rawText = frame.raw?.[key] || ''
       const confidence = Number(frame.confidence?.[key]) || 0
@@ -710,15 +829,14 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                     <i
                       key={key}
                       title={crop.label}
+                      aria-label={crop.label}
                       style={{
                         left: `${crop.x * 100}%`,
                         top: `${crop.y * 100}%`,
                         width: `${crop.width * 100}%`,
                         height: `${crop.height * 100}%`,
                       }}
-                    >
-                      {crop.label}
-                    </i>
+                    />
                   ))}
                 </div>
                 <div className="scanner-review-actions">
@@ -769,6 +887,15 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                           {selected.confidence[field.key] ? ` · 匹配 ${Math.round(selected.confidence[field.key] * 100)}%` : ''}
                         </small>
                       )}
+                      {field.key === 'ref' && selected.identity && (
+                        <small className="scanner-ocr-raw">
+                          识别依据：{identityEvidenceLabel(selected.identity)}
+                          {selected.identity.candidates?.length > 1
+                            ? ` · 候选 ${selected.identity.candidates.slice(0, 4).map((candidate) => candidate.label).join('、')}`
+                            : ''}
+                          {selected.identity.rawTrait ? ` · 特性 OCR：${selected.identity.rawTrait}` : ''}
+                        </small>
+                      )}
                       {field.key === 'appearance' && (
                         <small className="scanner-ocr-raw">
                           {selected.confidence.appearance
@@ -780,7 +907,11 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                         <small className="scanner-ocr-raw">
                           {selected.confidence.partnerMark
                             ? `本地图标匹配 ${Math.round(selected.confidence.partnerMark * 100)}%，请对照血脉左侧图标复核；图标不会发送给 AI。`
-                            : '未达到 62% 本地图标匹配门槛，请对照血脉左侧图标手动选择；AI 不会猜图标。'}
+                            : selected.partnerMarkCandidates?.length
+                              ? `未达到本地图标门槛；最佳候选：${selected.partnerMarkCandidates
+                                .map((candidate) => `${candidate.label} ${Math.round(candidate.score * 100)}%`)
+                                .join('，')}。请手动复核。`
+                              : '未检测到伙伴标记前景，请对照血脉左侧图标手动选择；AI 不会猜图标。'}
                         </small>
                       )}
                       {field.key === 'gender' && (
