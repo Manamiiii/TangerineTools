@@ -160,6 +160,8 @@ npm run lint
 │   ├── constants.js / utils.js            # 全局约定与通用工具
 │   ├── main.jsx                           # React 挂载入口
 │   └── styles.css                         # 全局样式唯一入口
+├── test-data/rock-kingdom-scanner/
+│   └── phone-overview-hevc-2400x1080.mp4 # 手机总览录屏人工回归素材
 ├── AGENTS.md                              # 长期开发边界和必读约束
 ├── index.html
 ├── package.json
