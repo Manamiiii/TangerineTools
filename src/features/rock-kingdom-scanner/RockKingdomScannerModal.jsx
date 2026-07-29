@@ -13,12 +13,14 @@ import {
 } from './frameCapture.js'
 import {
   ROCK_SCANNER_CROP_PROFILE,
+  ROCK_SCANNER_DEVICE_PROFILE,
   ROCK_SCANNER_STABILITY_REGION,
   bestScanMatch,
   catalogNameCandidates,
   isScannerFrameReady,
   rankScanCandidates,
   recognizeGenderColor,
+  scannerAnchorQuality,
   scannerOptionCandidates,
   selectStableScannerSamples,
   valuesWithAppearance,
@@ -118,6 +120,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   )
   const [videoUrl, setVideoUrl] = useState('')
   const [videoName, setVideoName] = useState('')
+  const [videoDimensions, setVideoDimensions] = useState(null)
   const [frames, setFrames] = useState([])
   const [selectedId, setSelectedId] = useState('')
   const [intervalSeconds, setIntervalSeconds] = useState(2)
@@ -248,7 +251,14 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       setError('请先选择并加载一个视频。')
       return
     }
-    const stepSeconds = Math.max(0.4, video.duration / 3000)
+    if (
+      video.videoWidth !== ROCK_SCANNER_DEVICE_PROFILE.width
+      || video.videoHeight !== ROCK_SCANNER_DEVICE_PROFILE.height
+    ) {
+      setError(`当前仅支持${ROCK_SCANNER_DEVICE_PROFILE.label}录屏；这个视频是 ${video.videoWidth}×${video.videoHeight}。`)
+      return
+    }
+    const stepSeconds = Math.max(0.45, video.duration / 2600)
     const sampleCount = Math.max(1, Math.ceil(video.duration / stepSeconds))
     setBusy('extract-smart')
     setError('')
@@ -259,9 +269,11 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         const time = Math.min(video.duration - 0.05, index * stepSeconds)
         setProgress(`正在检测稳定画面 ${index + 1} / ${sampleCount}`)
         await waitForSeek(video, time)
+        const signature = captureVideoSignature(video, ROCK_SCANNER_STABILITY_REGION)
         samples.push({
           time,
-          signature: captureVideoSignature(video, ROCK_SCANNER_STABILITY_REGION),
+          signature,
+          anchorQuality: scannerAnchorQuality(signature),
         })
       }
       const stableSamples = selectStableScannerSamples(samples)
@@ -490,14 +502,13 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     >
       <div className="scanner-shell">
         <details className="scanner-guide" open>
-          <summary>Windows 录屏与文件位置</summary>
+          <summary>固定手机录屏方式</summary>
           <ol>
-            <li>在游戏里打开精灵总览页，按 <kbd>Win</kbd> + <kbd>Alt</kbd> + <kbd>R</kbd> 开始录制；结束时再按一次。</li>
-            <li>每只精灵停留约 1.5～2 秒，只需要手动切换，不要使用连点器、按键脚本或自动操作。</li>
-            <li>Xbox Game Bar 默认保存到“此电脑 → 视频 → 捕获”，通常是 <code>%USERPROFILE%\Videos\Captures</code>。</li>
-            <li>也可以用 OBS 录制；在 OBS 的“设置 → 输出 → 录像路径”查看文件位置。</li>
-            <li>手机录屏如果可以选择编码，优先使用 H.264 / AVC；H.265 / HEVC 是否能播放取决于 Windows 的视频解码组件。</li>
-            <li>优先使用“智能提取”：工具会等待右侧信息稳定并自动跳过切换动画和重复画面，再进行 OCR 与人工复核。</li>
+            <li>固定使用当前手机横屏录制：2400×1080、16 Mbps、24 fps、无声音。</li>
+            <li>关闭“显示屏幕触摸”和“显示导航键点击”，避免触点覆盖识别区域。</li>
+            <li>在精灵总览页开始录制，每只精灵停留约 1.5～2 秒，只手动切换精灵。</li>
+            <li>导入原始 HEVC MP4，使用“智能提取”；不要先经过聊天软件压缩或视频剪辑转码。</li>
+            <li>工具会同时检查信息面板稳定度和名称、血脉、雷达数值、性格、特长锚点，只保留终态且不重复的画面。</li>
           </ol>
           <p>视频、截图和 OCR 默认只在当前浏览器本地处理，原媒体不会写入 IndexedDB。只有点击“AI 纠错”时，当前帧的低置信 OCR 文字和有限候选会发送给已配置模型，图片不会发送。</p>
         </details>
@@ -508,7 +519,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
             选择视频
             <input
               type="file"
-              accept="video/mp4,video/webm,video/quicktime"
+              accept="video/mp4"
               hidden
               onChange={(event) => {
                 const file = event.target.files?.[0]
@@ -516,44 +527,57 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                 releaseLocalUrl(videoUrl)
                 setVideoUrl(createLocalUrl(file))
                 setVideoName(file.name)
+                setVideoDimensions(null)
                 event.target.value = ''
               }}
             />
-          </label>
-          <label className="btn">
-            <FileImage size={15} />
-            选择截图
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              hidden
-              onChange={(event) => {
-                addImageFiles(event.target.files || [])
-                event.target.value = ''
-              }}
-            />
-          </label>
-          <label className="scanner-interval">
-            <span>备用间隔</span>
-            <input
-              className="input"
-              type="number"
-              min="0.5"
-              max="30"
-              step="0.5"
-              value={intervalSeconds}
-              onChange={(event) => setIntervalSeconds(Math.max(0.5, Number(event.target.value) || 2))}
-            />
-            <span>秒</span>
           </label>
           <button type="button" className="btn btn-primary" disabled={!videoUrl || Boolean(busy)} onClick={extractStableFrames}>
             {busy === 'extract-smart' ? '检测中…' : '智能提取稳定画面'}
           </button>
-          <button type="button" className="btn" disabled={!videoUrl || Boolean(busy)} onClick={extractAtInterval}>
-            备用：按间隔提取
-          </button>
+          {videoDimensions && (
+            <span className="scanner-device-status">
+              {videoDimensions.width}×{videoDimensions.height}
+              {videoDimensions.matches ? ' · 固定设备' : ' · 规格不匹配'}
+            </span>
+          )}
         </div>
+
+        <details className="scanner-guide">
+          <summary>备用导入与排错</summary>
+          <div className="scanner-import-row">
+            <label className="btn">
+              <FileImage size={15} />
+              选择截图
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                hidden
+                onChange={(event) => {
+                  addImageFiles(event.target.files || [])
+                  event.target.value = ''
+                }}
+              />
+            </label>
+            <label className="scanner-interval">
+              <span>固定间隔</span>
+              <input
+                className="input"
+                type="number"
+                min="0.5"
+                max="30"
+                step="0.5"
+                value={intervalSeconds}
+                onChange={(event) => setIntervalSeconds(Math.max(0.5, Number(event.target.value) || 2))}
+              />
+              <span>秒</span>
+            </label>
+            <button type="button" className="btn" disabled={!videoUrl || Boolean(busy)} onClick={extractAtInterval}>
+              按间隔提取
+            </button>
+          </div>
+        </details>
 
         {videoUrl && (
           <div className="scanner-video">
@@ -562,7 +586,16 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
               src={videoUrl}
               controls
               preload="metadata"
-              onError={() => setError('浏览器无法解码这个视频。请优先导出 H.264 / AVC 编码，或先用系统相册、剪辑工具转换后再导入。')}
+              onLoadedMetadata={(event) => {
+                const video = event.currentTarget
+                setVideoDimensions({
+                  width: video.videoWidth,
+                  height: video.videoHeight,
+                  matches: video.videoWidth === ROCK_SCANNER_DEVICE_PROFILE.width
+                    && video.videoHeight === ROCK_SCANNER_DEVICE_PROFILE.height,
+                })
+              }}
+              onError={() => setError('无法解码固定手机录制的原始 HEVC MP4；请确认文件完整且未被聊天软件压缩或转码。')}
             />
             <button type="button" className="btn" onClick={addCurrentVideoFrame} disabled={Boolean(busy)}>
               <Camera size={15} /> 添加当前画面
@@ -601,7 +634,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
               <div className="scanner-empty">
                 <ScanLine size={28} />
                 <strong>加入一个画面后开始复核</strong>
-                <span>目前的裁切位置按你提供的总览截图标定，Windows 实机截图到位后还会继续校准。</span>
+                <span>裁切和终态锚点按固定手机的 2400×1080 横屏画面标定。</span>
               </div>
             ) : (
               <>

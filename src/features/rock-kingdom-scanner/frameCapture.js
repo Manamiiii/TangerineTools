@@ -22,7 +22,7 @@ export async function captureVideoFrame(video) {
   }
 }
 
-export function captureVideoSignature(video, region, width = 80, height = 48) {
+export function captureVideoSignature(video, region, width = 120, height = 80) {
   if (!video?.videoWidth || !video?.videoHeight) throw new Error('视频画面尚未加载完成。')
   const canvas = document.createElement('canvas')
   canvas.width = width

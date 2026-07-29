@@ -15,6 +15,7 @@ import {
   normalizedPartnerMarkMask,
   partnerMarkMaskSimilarity,
   recognizeGenderColor,
+  scannerAnchorQuality,
   scannerSignatureDifference,
   selectStableScannerSamples,
   valuesWithAppearance,
@@ -163,6 +164,29 @@ test('stable frame selection skips transitions, long duplicate runs, and a faile
     selectStableScannerSamples(samples).map((sample) => sample.time),
     [0.8, 4],
   )
+})
+
+test('stable frame selection prefers the sharpest anchored terminal frame', () => {
+  const base = new Uint8Array(40).fill(30)
+  const selected = selectStableScannerSamples([
+    { time: 0, signature: base, anchorQuality: 0.12 },
+    { time: 0.45, signature: base, anchorQuality: 0.28 },
+    { time: 0.9, signature: base, anchorQuality: 0.74 },
+    { time: 1.35, signature: base, anchorQuality: 0.63 },
+  ])
+  assert.deepEqual(selected.map((sample) => sample.time), [0.9])
+})
+
+test('anchor quality rewards crisp content in the fixed information regions', () => {
+  const width = 120
+  const height = 80
+  const blank = new Uint8Array(width * height).fill(35)
+  const crisp = blank.slice()
+  for (let y = 2; y < height - 2; y += 4) {
+    for (let x = 8; x < width - 8; x += 6) crisp[y * width + x] = 230
+  }
+  assert.equal(scannerAnchorQuality(blank, width, height), 0)
+  assert.equal(scannerAnchorQuality(crisp, width, height) > 0.4, true)
 })
 
 test('scan matching tolerates labels, suffixes, whitespace, and one OCR error', () => {

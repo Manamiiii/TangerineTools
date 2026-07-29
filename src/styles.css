@@ -7317,6 +7317,11 @@ img {
   font-size: 13px;
 }
 .scanner-interval .input { width: 72px; }
+
+.scanner-device-status {
+  color: var(--muted);
+  font-size: 12px;
+}
 .scanner-video { align-items: flex-end; }
 .scanner-video video {
   width: min(520px, 100%);

@@ -55,6 +55,64 @@ export const ROCK_SCANNER_STABILITY_REGION = {
   height: 0.78,
 }
 
+export const ROCK_SCANNER_DEVICE_PROFILE = {
+  width: 2400,
+  height: 1080,
+  label: '固定手机 · 2400×1080 横屏',
+}
+
+const ROCK_SCANNER_ANCHOR_REGIONS = [
+  { x: 0.07, y: 0.02, width: 0.38, height: 0.12, weight: 1.2 },
+  { x: 0.57, y: 0.09, width: 0.34, height: 0.13, weight: 1.1 },
+  { x: 0.2, y: 0.3, width: 0.7, height: 0.47, weight: 0.8 },
+  { x: 0.2, y: 0.82, width: 0.32, height: 0.14, weight: 1 },
+  { x: 0.56, y: 0.82, width: 0.34, height: 0.14, weight: 1 },
+]
+
+function signatureRegionQuality(signature, width, height, region) {
+  const left = Math.max(0, Math.floor(width * region.x))
+  const top = Math.max(0, Math.floor(height * region.y))
+  const right = Math.min(width - 1, Math.ceil(width * (region.x + region.width)))
+  const bottom = Math.min(height - 1, Math.ceil(height * (region.y + region.height)))
+  const histogram = new Uint32Array(256)
+  let pixelCount = 0
+  let edgeCount = 0
+  for (let y = top; y < bottom; y += 1) {
+    for (let x = left; x < right; x += 1) {
+      const current = signature[y * width + x]
+      const horizontal = Math.abs(current - signature[y * width + x + 1])
+      const vertical = Math.abs(current - signature[(y + 1) * width + x])
+      const edge = Math.max(horizontal, vertical)
+      histogram[edge] += 1
+      pixelCount += 1
+      if (edge >= 18) edgeCount += 1
+    }
+  }
+  if (!pixelCount) return 0
+  const topCount = Math.max(1, Math.ceil(pixelCount * 0.2))
+  let remaining = topCount
+  let edgeTotal = 0
+  for (let edge = 255; edge >= 0 && remaining > 0; edge -= 1) {
+    const take = Math.min(remaining, histogram[edge])
+    edgeTotal += edge * take
+    remaining -= take
+  }
+  const sharpness = Math.min(1, edgeTotal / topCount / 80)
+  const coverage = Math.min(1, edgeCount / pixelCount / 0.08)
+  return sharpness * 0.72 + coverage * 0.28
+}
+
+export function scannerAnchorQuality(signature, width = 120, height = 80) {
+  if (!signature?.length || signature.length !== width * height) return 0
+  let weightedQuality = 0
+  let totalWeight = 0
+  for (const region of ROCK_SCANNER_ANCHOR_REGIONS) {
+    weightedQuality += signatureRegionQuality(signature, width, height, region) * region.weight
+    totalWeight += region.weight
+  }
+  return weightedQuality / totalWeight
+}
+
 export function scannerSignatureDifference(left, right, topFraction = 0.15) {
   if (!left?.length || left.length !== right?.length) return Number.POSITIVE_INFINITY
   const histogram = new Uint32Array(256)
@@ -74,29 +132,41 @@ export function scannerSignatureDifference(left, right, topFraction = 0.15) {
 
 export function selectStableScannerSamples(
   samples = [],
-  { windowSize = 3, stableThreshold = 7, duplicateThreshold = 8 } = {},
+  {
+    windowSize = 3,
+    stableThreshold = 7,
+    duplicateThreshold = 8,
+    minimumAnchorQuality = 0.4,
+  } = {},
 ) {
   const selected = []
-  let insideStableRun = false
+  let stableRun = []
+  const finishStableRun = () => {
+    if (stableRun.length === 0) return
+    const candidate = stableRun.reduce((best, sample) => (
+      (sample.anchorQuality ?? 1) > (best.anchorQuality ?? 1) ? sample : best
+    ))
+    stableRun = []
+    if (candidate.anchorQuality != null && candidate.anchorQuality < minimumAnchorQuality) return
+    const previous = selected.at(-1)
+    if (
+      previous
+      && scannerSignatureDifference(previous.signature, candidate.signature) <= duplicateThreshold
+    ) return
+    selected.push(candidate)
+  }
   for (let index = windowSize - 1; index < samples.length; index += 1) {
     const window = samples.slice(index - windowSize + 1, index + 1)
     const stable = window.slice(1).every((sample, offset) => (
       scannerSignatureDifference(window[offset].signature, sample.signature) <= stableThreshold
     )) && scannerSignatureDifference(window[0].signature, window.at(-1).signature) <= stableThreshold
     if (!stable) {
-      insideStableRun = false
+      finishStableRun()
       continue
     }
-    if (insideStableRun) continue
-    insideStableRun = true
-    const candidate = window.at(-1)
-    const previous = selected.at(-1)
-    if (
-      previous
-      && scannerSignatureDifference(previous.signature, candidate.signature) <= duplicateThreshold
-    ) continue
-    selected.push(candidate)
+    stableRun.push(window.at(-1))
   }
+  finishStableRun()
   return selected
 }
 
