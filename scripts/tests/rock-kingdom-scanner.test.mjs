@@ -10,6 +10,7 @@ import {
   bestScanMatch,
   isScannerFrameReady,
   normalizeScanText,
+  recognizeGenderColor,
   valuesWithAppearance,
 } from '../../src/domain/rockKingdomScanner.js'
 
@@ -66,6 +67,25 @@ test('appearance matching accepts a distinct template and rejects an ambiguous p
   assert.equal(appearanceTemplateSimilarity(sample, exact), 1)
   assert.equal(bestAppearanceTemplateMatch(sample, [different, exact])?.value, 'exact')
   assert.equal(bestAppearanceTemplateMatch(sample, [exact, { ...exact, value: 'duplicate' }]), null)
+})
+
+test('gender color recognition accepts clear symbols and rejects weak or mixed evidence', () => {
+  const pixels = (...colors) => ({
+    data: new Uint8ClampedArray(colors.flatMap((color) => [...color, 255])),
+  })
+  assert.equal(recognizeGenderColor(pixels(
+    ...Array(8).fill([48, 132, 238]),
+    ...Array(2).fill([230, 230, 230]),
+  ))?.value, 'male')
+  assert.equal(recognizeGenderColor(pixels(
+    ...Array(8).fill([225, 55, 92]),
+    ...Array(2).fill([230, 230, 230]),
+  ))?.value, 'female')
+  assert.equal(recognizeGenderColor(pixels(...Array(8).fill([230, 230, 230]))), null)
+  assert.equal(recognizeGenderColor(pixels(
+    ...Array(4).fill([48, 132, 238]),
+    ...Array(4).fill([225, 55, 92]),
+  )), null)
 })
 
 test('scan matching tolerates labels, suffixes, whitespace, and one OCR error', () => {

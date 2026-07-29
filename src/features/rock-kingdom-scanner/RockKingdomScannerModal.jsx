@@ -12,6 +12,7 @@ import {
   catalogNameCandidates,
   isScannerFrameReady,
   rankScanCandidates,
+  recognizeGenderColor,
   scannerOptionCandidates,
   valuesWithAppearance,
 } from '../../domain/rockKingdomScanner.js'
@@ -258,6 +259,15 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       )
     }
     const matched = recognizedPatch(raw, fields, nameCandidates)
+    const genderCrop = cropImageSource(image, ROCK_SCANNER_CROP_PROFILE.gender, 1)
+    const genderMatch = recognizeGenderColor(
+      genderCrop.getContext('2d', { willReadFrequently: true })
+        .getImageData(0, 0, genderCrop.width, genderCrop.height),
+    )
+    if (genderMatch) {
+      matched.patch.gender = genderMatch.value
+      matched.confidence.gender = genderMatch.confidence
+    }
     const appearanceMatch = await recognizeRockAppearance(image)
     if (appearanceMatch) {
       matched.patch.appearance = appearanceMatch.value
@@ -278,7 +288,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     setError('')
     try {
       await recognizeFrame(selected)
-      setProgress('识别完成。请核对所有字段，外观和性别需要手动选择。')
+      setProgress('识别完成。请核对所有字段；未识别的外观或性别需要手动选择。')
     } catch (recognizeError) {
       patchFrame(selected.id, { status: '识别失败' })
       setError(recognizeError.message)
@@ -611,6 +621,13 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                       {field.key === 'partnerMark' && (
                         <small className="scanner-ocr-raw">
                           请对照血脉左侧的小图标复核；取得清晰的九枚图标素材前不自动猜测。
+                        </small>
+                      )}
+                      {field.key === 'gender' && (
+                        <small className="scanner-ocr-raw">
+                          {selected.confidence.gender
+                            ? `本地颜色识别 ${Math.round(selected.confidence.gender * 100)}%，请对照名称右侧符号复核。`
+                            : '未清楚识别名称右侧的蓝色♂或红色♀，请手动选择。'}
                         </small>
                       )}
                     </FormRow>

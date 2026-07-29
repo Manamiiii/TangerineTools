@@ -28,11 +28,39 @@ export const ROCK_APPEARANCE_TEMPLATES = [
 export const ROCK_SCANNER_CROP_PROFILE = {
   // 根据用户提供的 1280 × 576 总览图标定。坐标使用比例，允许等比例缩放。
   name: { label: '名称', x: 0.688, y: 0.125, width: 0.105, height: 0.06 },
-  partnerMark: { label: '伙伴标记', x: 0.805, y: 0.155, width: 0.052, height: 0.105 },
+  gender: { label: '性别', x: 0.688, y: 0.12, width: 0.112, height: 0.075 },
+  partnerMark: { label: '伙伴标记', x: 0.85, y: 0.185, width: 0.038, height: 0.06 },
   bloodline: { label: '血脉', x: 0.9, y: 0.185, width: 0.055, height: 0.06 },
   nature: { label: '性格', x: 0.735, y: 0.755, width: 0.095, height: 0.07 },
   specialty: { label: '特长', x: 0.855, y: 0.755, width: 0.095, height: 0.07 },
   appearance: { label: '外观', x: 0.903125, y: 0.645833, width: 0.04375, height: 0.097222 },
+}
+
+export function recognizeGenderColor(imageData) {
+  const pixels = imageData?.data || imageData?.pixels
+  if (!pixels?.length) return null
+  let maleEvidence = 0
+  let femaleEvidence = 0
+  for (let offset = 0; offset < pixels.length; offset += 4) {
+    const red = pixels[offset]
+    const green = pixels[offset + 1]
+    const blue = pixels[offset + 2]
+    if (blue >= 105) {
+      maleEvidence += Math.max(0, blue - red - 20) * Math.min(1, (blue - 90) / 100)
+    }
+    if (red >= 120) {
+      femaleEvidence += Math.max(0, red - green - 25, red - blue - 15)
+        * Math.min(1, (red - 105) / 100)
+    }
+  }
+  const strongest = Math.max(maleEvidence, femaleEvidence)
+  const weakest = Math.min(maleEvidence, femaleEvidence)
+  if (strongest < 320 || strongest < weakest * 1.45) return null
+  const dominance = strongest / Math.max(strongest + weakest, 1)
+  return {
+    value: maleEvidence > femaleEvidence ? 'male' : 'female',
+    confidence: Math.min(0.99, 0.72 + dominance * 0.22),
+  }
 }
 
 function pixelAt(pixels, width, height, x, y) {
