@@ -92,8 +92,14 @@ import {
 } from '../../../src/features/reading-companion/model/promptCatalog.js'
 import {
   READING_FEEDBACK_KIND,
+  READING_FEEDBACK_SCHEMA_VERSION,
   createReadingFeedbackBundle,
 } from '../../../src/features/reading-companion/domain/feedbackBundle.js'
+import {
+  readingDiagnosticErrorCode,
+  readingTrialDiagnosticsSnapshot,
+  recordReadingTrialDiagnostic,
+} from '../../../src/features/reading-companion/domain/trialDiagnostics.js'
 
 const repoUrl = new URL('../../../', import.meta.url)
 const readingPackage = JSON.parse(
@@ -114,6 +120,7 @@ test('reading companion keeps feature code and maintenance files in dedicated di
     'src/features/reading-companion/db/seed.js',
     'src/features/reading-companion/domain/personalBooks.js',
     'src/features/reading-companion/domain/feedbackBundle.js',
+    'src/features/reading-companion/domain/trialDiagnostics.js',
     'src/features/reading-companion/domain/readingCompanion.js',
     'src/features/reading-companion/map/geocoding.js',
     'src/features/reading-companion/map/mapConfig.js',
@@ -1688,6 +1695,36 @@ test('reading preview publishes only approved sources and keeps candidates pendi
 })
 
 test('single-book feedback exports only whitelisted reading data', () => {
+  const stored = new Map()
+  const storage = {
+    getItem: (key) => stored.get(key) || null,
+    setItem: (key, value) => stored.set(key, value),
+  }
+  recordReadingTrialDiagnostic({
+    area: 'model',
+    action: 'model-excerpt-analysis',
+    outcome: 'success',
+    providerId: 'zhipu',
+    at: '2026-07-28T11:58:00.000Z',
+    storage,
+  })
+  recordReadingTrialDiagnostic({
+    area: 'map',
+    action: 'map-search',
+    outcome: 'error',
+    providerId: 'international',
+    error: new Error('Failed to fetch secret-query 亚特兰大'),
+    at: '2026-07-28T11:59:00.000Z',
+    storage,
+  })
+  const diagnostics = readingTrialDiagnosticsSnapshot({
+    storage,
+    navigatorLike: {
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0) Chrome/140.0.0.0 Safari/537.36',
+      language: 'zh-CN',
+      onLine: true,
+    },
+  })
   const payload = createReadingFeedbackBundle({
     appVersion: '0.1.0',
     appBuild: 'abc1234',
@@ -1710,6 +1747,7 @@ test('single-book feedback exports only whitelisted reading data', () => {
         name: '亚特兰大',
         kind: 'place',
         placeKind: 'real',
+        packageEntityId: 'place-atlanta',
         firstSeenChapterId: 'chapter-02',
         encounterChapterIds: ['chapter-02', 'chapter-04'],
         note: '个人备注',
@@ -1725,9 +1763,12 @@ test('single-book feedback exports only whitelisted reading data', () => {
         },
       }],
     },
+    diagnostics,
     exportedAt: '2026-07-28T12:00:00.000Z',
   })
   assert.equal(payload.kind, READING_FEEDBACK_KIND)
+  assert.equal(payload.schemaVersion, READING_FEEDBACK_SCHEMA_VERSION)
+  assert.equal(payload.schemaVersion, 2)
   assert.deepEqual(payload.app, { version: '0.1.0', build: 'abc1234' })
   assert.equal(payload.book.packageVersion, readingPackage.packageVersion)
   assert.equal(payload.reading.currentChapterId, 'chapter-04')
@@ -1740,7 +1781,9 @@ test('single-book feedback exports only whitelisted reading data', () => {
     placeCount: 1,
     conceptCount: 0,
     eventCount: 0,
+    pairedEntityCount: 1,
   })
+  assert.equal(payload.reading.observedEntities[0].packageEntityId, 'place-atlanta')
   assert.deepEqual(payload.reading.observedEntities[0].mapLocation, {
     mode: 'exact',
     resultId: 'map-result',
@@ -1749,6 +1792,23 @@ test('single-book feedback exports only whitelisted reading data', () => {
     latitude: 33.75,
     longitude: -84.39,
   })
+  assert.deepEqual(payload.diagnostics.runtime, {
+    browser: 'Chrome',
+    browserMajor: '140',
+    os: 'Windows',
+    language: 'zh-CN',
+    online: true,
+  })
+  assert.deepEqual(payload.diagnostics.summary, {
+    eventCount: 2,
+    successCount: 1,
+    errorCount: 1,
+    byAction: {
+      'model-excerpt-analysis': { success: 1, error: 0 },
+      'map-search': { success: 0, error: 1 },
+    },
+  })
+  assert.equal(payload.diagnostics.events[1].errorCode, 'network')
   const serialized = JSON.stringify(payload)
   for (const forbidden of [
     '不应导出的原文',
@@ -1757,9 +1817,109 @@ test('single-book feedback exports only whitelisted reading data', () => {
     'transientModelResult',
     'rawProviderResponse',
     'unrelatedSecret',
+    'secret-query',
   ]) {
     assert.equal(serialized.includes(forbidden), false)
   }
+})
+
+test('reading diagnostics classify failures without retaining messages or arbitrary fields', () => {
+  assert.equal(readingDiagnosticErrorCode({ status: 429 }), 'rate-limit')
+  assert.equal(readingDiagnosticErrorCode(new Error('请求超时')), 'timeout')
+  assert.equal(readingDiagnosticErrorCode(new Error('请填写 API Key')), 'configuration')
+
+  const payload = createReadingFeedbackBundle({
+    appVersion: '0.1.0',
+    appBuild: 'local',
+    scene: { id: 'scene-reading', name: '经典文学阅读' },
+    readingPackage,
+    readingState: {},
+    diagnostics: {
+      runtime: {
+        browser: 'Injected Browser',
+        browserMajor: '140<script>',
+        os: 'Injected OS',
+        language: 'zh-CN<script>',
+        online: false,
+        userAgent: 'secret-user-agent',
+      },
+      events: [{
+        at: '2026-07-28T12:00:00.000Z',
+        area: 'model',
+        action: 'model-question',
+        outcome: 'error',
+        providerId: 'openai',
+        errorCode: 'authentication',
+        message: 'secret question and key',
+        excerpt: 'secret excerpt',
+      }, {
+        area: 'unknown-area',
+        action: 'unknown-action',
+        outcome: 'success',
+      }],
+    },
+  })
+  assert.deepEqual(payload.diagnostics.runtime, {
+    browser: 'Other',
+    browserMajor: '',
+    os: 'Other',
+    language: 'zh-CNscript',
+    online: false,
+  })
+  assert.equal(payload.diagnostics.events.length, 1)
+  assert.equal(payload.diagnostics.events[0].errorCode, 'authentication')
+  const serialized = JSON.stringify(payload)
+  assert.equal(serialized.includes('secret'), false)
+  assert.equal(serialized.includes('userAgent'), false)
+})
+
+test('reading diagnostics stay bounded and never block when session storage is unavailable', () => {
+  const stored = new Map()
+  const storage = {
+    getItem: (key) => stored.get(key) || null,
+    setItem: (key, value) => stored.set(key, value),
+  }
+  for (let index = 0; index < 35; index += 1) {
+    recordReadingTrialDiagnostic({
+      area: 'ocr',
+      action: 'ocr-excerpt',
+      outcome: 'success',
+      providerId: 'local',
+      at: new Date(Date.UTC(2026, 6, 29, 1, index)).toISOString(),
+      storage,
+    })
+  }
+  const snapshot = readingTrialDiagnosticsSnapshot({
+    storage,
+    navigatorLike: null,
+  })
+  assert.equal(snapshot.events.length, 30)
+  assert.equal(snapshot.summary.successCount, 30)
+  assert.equal(snapshot.events[0].at, '2026-07-29T01:05:00.000Z')
+
+  const unavailableStorage = {
+    getItem: () => {
+      throw new Error('blocked')
+    },
+    setItem: () => {
+      throw new Error('blocked')
+    },
+  }
+  assert.doesNotThrow(() => recordReadingTrialDiagnostic({
+    area: 'ocr',
+    action: 'ocr-excerpt',
+    outcome: 'error',
+    providerId: 'local',
+    error: new Error('OCR failed'),
+    storage: unavailableStorage,
+  }))
+  assert.equal(
+    readingTrialDiagnosticsSnapshot({
+      storage: unavailableStorage,
+      navigatorLike: null,
+    }).events.length,
+    0,
+  )
 })
 
 test('reading package quality audit keeps gaps and blockers inspectable', async () => {
