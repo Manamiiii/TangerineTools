@@ -1,5 +1,7 @@
+import { sanitizeReadingTrialDiagnostics } from './trialDiagnostics.js'
+
 export const READING_FEEDBACK_KIND = 'tangerine-reading-feedback'
-export const READING_FEEDBACK_SCHEMA_VERSION = 1
+export const READING_FEEDBACK_SCHEMA_VERSION = 2
 
 const OBSERVED_ENTITY_FIELDS = [
   'id',
@@ -9,6 +11,7 @@ const OBSERVED_ENTITY_FIELDS = [
   'firstSeenChapterId',
   'encounterChapterIds',
   'note',
+  'packageEntityId',
 ]
 
 const MAP_LOCATION_FIELDS = [
@@ -50,6 +53,9 @@ export function summarizeReadingFeedback(observedEntities = []) {
     placeCount: entities.filter((entity) => entity?.kind === 'place').length,
     conceptCount: entities.filter((entity) => entity?.kind === 'concept').length,
     eventCount: entities.filter((entity) => entity?.kind === 'event').length,
+    pairedEntityCount: entities.filter((entity) => (
+      typeof entity?.packageEntityId === 'string' && entity.packageEntityId
+    )).length,
   }
 }
 
@@ -60,6 +66,7 @@ export function createReadingFeedbackBundle({
   readingPackage,
   readingState,
   currentChapterId,
+  diagnostics,
   exportedAt = new Date().toISOString(),
 }) {
   if (!readingPackage?.id || !readingPackage?.book?.id || !readingPackage?.edition?.id) {
@@ -108,5 +115,6 @@ export function createReadingFeedbackBundle({
       observedEntities,
     },
     summary: summarizeReadingFeedback(observedEntities),
+    diagnostics: sanitizeReadingTrialDiagnostics(diagnostics),
   }
 }
