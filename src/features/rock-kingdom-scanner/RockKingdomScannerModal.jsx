@@ -251,7 +251,11 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     for (const key of ['name', 'bloodline', 'nature', 'specialty']) {
       setProgress(`正在识别 ${frame.sourceName}${frame.time == null ? '' : ` ${formatTime(frame.time)}`} · ${ROCK_SCANNER_CROP_PROFILE[key].label}`)
       const crop = cropImageSource(image, ROCK_SCANNER_CROP_PROFILE[key])
-      raw[key === 'name' ? 'ref' : key] = await recognizeStructuredImageText(crop)
+      raw[key === 'name' ? 'ref' : key] = await recognizeStructuredImageText(
+        crop,
+        undefined,
+        { pageSegmentationMode: key === 'name' ? '8' : '7' },
+      )
     }
     const matched = recognizedPatch(raw, fields, nameCandidates)
     const appearanceMatch = await recognizeRockAppearance(image)
@@ -412,6 +416,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
             <li>每只精灵停留约 2 秒，只需要手动切换，不要使用连点器、按键脚本或自动操作。</li>
             <li>Xbox Game Bar 默认保存到“此电脑 → 视频 → 捕获”，通常是 <code>%USERPROFILE%\Videos\Captures</code>。</li>
             <li>也可以用 OBS 录制；在 OBS 的“设置 → 输出 → 录像路径”查看文件位置。</li>
+            <li>手机录屏如果可以选择编码，优先使用 H.264 / AVC；H.265 / HEVC 是否能播放取决于 Windows 的视频解码组件。</li>
             <li>导入后按间隔提取画面，先删除切换动画和重复帧，再进行 OCR 与人工复核。</li>
           </ol>
           <p>视频、截图和 OCR 默认只在当前浏览器本地处理，原媒体不会写入 IndexedDB。只有点击“AI 纠错”时，当前帧的低置信 OCR 文字和有限候选会发送给已配置模型，图片不会发送。</p>
@@ -469,7 +474,13 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
 
         {videoUrl && (
           <div className="scanner-video">
-            <video ref={videoRef} src={videoUrl} controls preload="metadata" />
+            <video
+              ref={videoRef}
+              src={videoUrl}
+              controls
+              preload="metadata"
+              onError={() => setError('浏览器无法解码这个视频。请优先导出 H.264 / AVC 编码，或先用系统相册、剪辑工具转换后再导入。')}
+            />
             <button type="button" className="btn" onClick={addCurrentVideoFrame} disabled={Boolean(busy)}>
               <Camera size={15} /> 添加当前画面
             </button>
