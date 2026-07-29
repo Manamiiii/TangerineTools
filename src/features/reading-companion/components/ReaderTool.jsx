@@ -74,6 +74,10 @@ import {
   createReadingFeedbackBundle,
   summarizeReadingFeedback,
 } from '../domain/feedbackBundle.js'
+import {
+  readingTrialDiagnosticsSnapshot,
+  recordReadingTrialDiagnostic,
+} from '../domain/trialDiagnostics.js'
 
 const APP_BUILD = String(import.meta.env.VITE_APP_BUILD || 'local').slice(0, 7)
 const EMPTY_OBSERVED_ENTITIES = Object.freeze([])
@@ -405,6 +409,12 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
         correctedFields,
       })
       setStatus('已填入识别到的书籍信息，请核对后创建。')
+      recordReadingTrialDiagnostic({
+        area: 'book',
+        action: 'book-metadata-scan',
+        outcome: 'success',
+        providerId: configured ? modelConfig.providerId : 'local',
+      })
     } catch (error) {
       setMetadataScan({
         state: 'error',
@@ -415,6 +425,13 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
         correctedFields: [],
       })
       setStatus(error?.message || '书籍详情截图识别失败')
+      recordReadingTrialDiagnostic({
+        area: 'book',
+        action: 'book-metadata-scan',
+        outcome: 'error',
+        providerId: modelConfig.apiKey.trim() ? modelConfig.providerId : 'local',
+        error,
+      })
     }
   }
 
@@ -424,9 +441,22 @@ function PersonalBookCreator({ onCreate, onCancel, modelConfig }) {
     setStatus('')
     try {
       await onCreate(form)
+      recordReadingTrialDiagnostic({
+        area: 'book',
+        action: 'book-create',
+        outcome: 'success',
+        providerId: form.prepareWithModel ? modelConfig.providerId : 'local',
+      })
     } catch (error) {
       setStatus(error?.message || '创建书籍失败')
       setSaving(false)
+      recordReadingTrialDiagnostic({
+        area: 'book',
+        action: 'book-create',
+        outcome: 'error',
+        providerId: form.prepareWithModel ? modelConfig.providerId : 'local',
+        error,
+      })
     }
   }
 
@@ -772,9 +802,22 @@ function ModelAnalysisPanel({
           ? '发现了这段里的新名称。看到确实出现的名称时，直接记在本章即可。'
           : '这次没有发现新的名称。',
       )
+      recordReadingTrialDiagnostic({
+        area: 'model',
+        action: 'model-excerpt-analysis',
+        outcome: 'success',
+        providerId: modelConfig.providerId,
+      })
     } catch (error) {
       setRequestState('error')
       setMessage(error?.message || '模型识别失败')
+      recordReadingTrialDiagnostic({
+        area: 'model',
+        action: 'model-excerpt-analysis',
+        outcome: 'error',
+        providerId: modelConfig.providerId,
+        error,
+      })
     }
   }
 
@@ -975,9 +1018,22 @@ function PersonalBookPreparationPanel({
           ? `已准备 ${addedCount} 个基础名称。以后它们在当前原文中出现时，系统会自动发现。`
           : '这次没有发现新的基础名称，现有资料已经保留。',
       )
+      recordReadingTrialDiagnostic({
+        area: 'model',
+        action: 'model-personal-book-preparation',
+        outcome: 'success',
+        providerId: modelConfig.providerId,
+      })
     } catch (error) {
       setRequestState('error')
       setMessage(error?.message || '基础资料准备失败')
+      recordReadingTrialDiagnostic({
+        area: 'model',
+        action: 'model-personal-book-preparation',
+        outcome: 'error',
+        providerId: modelConfig.providerId,
+        error,
+      })
     }
   }
 
@@ -1059,9 +1115,22 @@ function ReadingQuestionPanel({
       })
       setResult(answer)
       setRequestState('done')
+      recordReadingTrialDiagnostic({
+        area: 'model',
+        action: 'model-question',
+        outcome: 'success',
+        providerId: modelConfig.providerId,
+      })
     } catch (error) {
       setRequestState('error')
       setMessage(error?.message || '当前内容答疑失败')
+      recordReadingTrialDiagnostic({
+        area: 'model',
+        action: 'model-question',
+        outcome: 'error',
+        providerId: modelConfig.providerId,
+        error,
+      })
     }
   }
 
@@ -1147,6 +1216,7 @@ function ReadingServiceSettings({
         readingPackage,
         readingState,
         currentChapterId,
+        diagnostics: readingTrialDiagnosticsSnapshot(),
       })
       const blob = new Blob([JSON.stringify(payload, null, 2)], {
         type: 'application/json',
@@ -1159,8 +1229,21 @@ function ReadingServiceSettings({
       link.click()
       URL.revokeObjectURL(url)
       setMessage('阅读反馈包已导出。')
+      recordReadingTrialDiagnostic({
+        area: 'feedback',
+        action: 'feedback-export',
+        outcome: 'success',
+        providerId: 'local',
+      })
     } catch (error) {
       setMessage(error?.message || '阅读反馈包导出失败。')
+      recordReadingTrialDiagnostic({
+        area: 'feedback',
+        action: 'feedback-export',
+        outcome: 'error',
+        providerId: 'local',
+        error,
+      })
     }
   }
 
@@ -1394,7 +1477,7 @@ function ReadingServiceSettings({
           <div><span>地图确认</span><strong>{feedbackSummary.mappedPlaceCount}</strong></div>
         </div>
         <p className="reader-settings-intro">
-          只导出当前书的版本、进度、已遇到记录、备注和地图确认。不包含 API Key、段落、截图或其他场景数据。
+          只导出当前书的版本、进度、已遇到记录、备注、地图确认和脱敏运行诊断。不包含 API Key、段落、搜索词、截图、模型内容或其他场景数据。
         </p>
         <button type="button" className="btn reader-feedback-export" onClick={exportReadingFeedback}>
           <Download size={14} />
@@ -2187,9 +2270,22 @@ function ReadingMapPanel({
       setLookupQuery(suggestions[0])
       setTranslationState('done')
       setLookupMessage(`已结合《${bookTitle}》生成地图检索词，请选择或修改后搜索。`)
+      recordReadingTrialDiagnostic({
+        area: 'model',
+        action: 'map-query-suggestion',
+        outcome: 'success',
+        providerId: modelConfig.providerId,
+      })
     } catch (error) {
       setTranslationState('error')
       setLookupMessage(error?.message || '生成英文搜索词失败')
+      recordReadingTrialDiagnostic({
+        area: 'model',
+        action: 'map-query-suggestion',
+        outcome: 'error',
+        providerId: modelConfig.providerId,
+        error,
+      })
     }
   }
 
@@ -2197,9 +2293,11 @@ function ReadingMapPanel({
     setTranslationState('working')
     setLookupResults([])
     setLookupState('idle')
+    let requestedModelSuggestion = false
     try {
       let suggestions = lookupSuggestions
       if (suggestions.length === 0 && modelConfig.apiKey) {
+        requestedModelSuggestion = true
         suggestions = await suggestReadingPlaceQueries({
           endpoint: modelConfig.endpoint,
           model: modelConfig.model,
@@ -2221,9 +2319,26 @@ function ReadingMapPanel({
           ? '已切换为参考区域兜底，并选用最宽泛的地区候选。请搜索并确认所在城市或地区；结果不会保存为精确坐标。'
           : '已切换为参考区域兜底。请把搜索词改成所在城市、州或地区；结果不会保存为精确坐标。',
       )
+      if (requestedModelSuggestion) {
+        recordReadingTrialDiagnostic({
+          area: 'model',
+          action: 'map-query-suggestion',
+          outcome: 'success',
+          providerId: modelConfig.providerId,
+        })
+      }
     } catch (error) {
       setTranslationState('error')
       setLookupMessage(error?.message || '生成参考区域搜索词失败')
+      if (requestedModelSuggestion) {
+        recordReadingTrialDiagnostic({
+          area: 'model',
+          action: 'map-query-suggestion',
+          outcome: 'error',
+          providerId: modelConfig.providerId,
+          error,
+        })
+      }
     }
   }
 
@@ -2243,11 +2358,34 @@ function ReadingMapPanel({
       if (lookupRequestRef.current !== requestId) return
       setLookupResults(results)
       setLookupState('ready')
-      if (results.length === 0) setLookupMessage('没有找到候选；可以补充英文名、州或国家后重试。')
+      if (results.length === 0) {
+        setLookupMessage('没有找到候选；可以补充英文名、州或国家后重试。')
+        recordReadingTrialDiagnostic({
+          area: 'map',
+          action: 'map-search',
+          outcome: 'error',
+          providerId,
+          error: new Error('没有搜索结果'),
+        })
+      } else {
+        recordReadingTrialDiagnostic({
+          area: 'map',
+          action: 'map-search',
+          outcome: 'success',
+          providerId,
+        })
+      }
     } catch (error) {
       if (lookupRequestRef.current !== requestId) return
       setLookupState('error')
       setLookupMessage(error?.message || '地图搜索失败')
+      recordReadingTrialDiagnostic({
+        area: 'map',
+        action: 'map-search',
+        outcome: 'error',
+        providerId,
+        error,
+      })
     }
   }
 
@@ -2284,8 +2422,21 @@ function ReadingMapPanel({
           ? `已把“${lookupTarget.name}”标在参考区域内；圆圈不代表精确位置。`
           : `已把“${lookupTarget.name}”作为个人确认的现实地点加入地图。`,
       )
+      recordReadingTrialDiagnostic({
+        area: 'map',
+        action: 'map-result-confirmation',
+        outcome: 'success',
+        providerId,
+      })
     } catch (error) {
       setLookupMessage(error?.message || '保存地图位置失败')
+      recordReadingTrialDiagnostic({
+        area: 'map',
+        action: 'map-result-confirmation',
+        outcome: 'error',
+        providerId,
+        error,
+      })
     }
   }
 
@@ -3076,8 +3227,21 @@ export function ReaderTool({ scene }) {
         pkg = prepared.package
         await savePersonalReadingPackage(pkg)
         preparationStatus = `书籍已创建，并自动准备了 ${prepared.addedCount} 个基础名称。`
+        recordReadingTrialDiagnostic({
+          area: 'model',
+          action: 'model-personal-book-preparation',
+          outcome: 'success',
+          providerId: modelConfig.providerId,
+        })
       } catch (error) {
         preparationStatus = `书籍已创建；AI 基础资料暂时没有准备成功：${error?.message || '模型请求失败'}`
+        recordReadingTrialDiagnostic({
+          area: 'model',
+          action: 'model-personal-book-preparation',
+          outcome: 'error',
+          providerId: modelConfig.providerId,
+          error,
+        })
       }
     } else if (form.prepareWithModel) {
       preparationStatus = '书籍已创建。配置模型后，可在阅读页一键准备基础资料。'
@@ -3316,14 +3480,34 @@ export function ReaderTool({ scene }) {
       if (!text) {
         setOcrState('empty')
         setInputStatus('OCR 没有识别出文字，可以换一张更清晰的截图。')
+        recordReadingTrialDiagnostic({
+          area: 'ocr',
+          action: 'ocr-excerpt',
+          outcome: 'error',
+          providerId: 'local',
+          error: new Error('没有识别出文字'),
+        })
         return
       }
       changeExcerpt(text)
       setOcrState('done')
       setInputStatus('OCR 文字已放入当前段落，请先核对再扫描或调用模型。')
+      recordReadingTrialDiagnostic({
+        area: 'ocr',
+        action: 'ocr-excerpt',
+        outcome: 'success',
+        providerId: 'local',
+      })
     } catch (error) {
       setOcrState('error')
       setInputStatus(`本机 OCR 失败：${error?.message || '无法初始化识别引擎'}`)
+      recordReadingTrialDiagnostic({
+        area: 'ocr',
+        action: 'ocr-excerpt',
+        outcome: 'error',
+        providerId: 'local',
+        error,
+      })
     }
   }
 
