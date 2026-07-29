@@ -409,7 +409,7 @@
 
 阅读伴侣适合作为新的专用工具，例如内部值 `reader`。经典文学场景可以同时启用通用资料库和阅读伴侣；地图、剧透门禁和问答使用专用组件，不把业务判断塞进通用资料表组件。
 
-阅读伴侣运行时代码集中在 `src/features/reading-companion/`，维护脚本、版本化研究数据和专用测试集中在 `scripts/reading-companion/`。公共目录只承担工具注册、Dexie 实例、播种编排、兼容导出和全局样式；专用样式因项目约定保留在 `src/styles.css`，并使用 `reader-` 前缀隔离。
+阅读伴侣运行时代码集中在 `src/features/reading-companion/`；书架、建书和安装入口由独立的 `ReadingLibrary` 组件承担，书内任务编排由 `ReaderTool` 承担，地图、领域规则、模型契约和持久化继续按子目录隔离。维护脚本、版本化研究数据和专用测试集中在 `scripts/reading-companion/`。公共目录只承担工具注册、Dexie 实例、播种编排、兼容导出和全局样式；专用样式因项目约定保留在 `src/styles.css`，并使用 `reader-` 前缀隔离。
 
 ### 数据边界
 
