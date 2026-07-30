@@ -326,6 +326,53 @@ export function recognizeGenderColor(imageData) {
   }
 }
 
+export function recognizeScannerStatTone(imageData) {
+  const pixels = imageData?.data || imageData?.pixels
+  if (!pixels?.length) return { tone: 'unknown', confidence: 0 }
+  let whiteEvidence = 0
+  let yellowEvidence = 0
+  for (let offset = 0; offset < pixels.length; offset += 4) {
+    const red = pixels[offset]
+    const green = pixels[offset + 1]
+    const blue = pixels[offset + 2]
+    const maximum = Math.max(red, green, blue)
+    const minimum = Math.min(red, green, blue)
+    if (minimum >= 165 && maximum - minimum <= 22) {
+      whiteEvidence += 1
+    }
+    if (
+      red >= 175
+      && green >= 125
+      && blue <= 185
+      && red - blue >= 45
+      && green - blue >= 15
+    ) {
+      yellowEvidence += 1
+    }
+  }
+  const strongest = Math.max(whiteEvidence, yellowEvidence)
+  if (strongest < 8) {
+    return { tone: 'unknown', confidence: 0, whiteEvidence, yellowEvidence }
+  }
+  if (whiteEvidence >= 12 && whiteEvidence >= yellowEvidence * 1.8) {
+    return {
+      tone: 'white',
+      confidence: Math.min(0.99, whiteEvidence / Math.max(whiteEvidence + yellowEvidence, 1)),
+      whiteEvidence,
+      yellowEvidence,
+    }
+  }
+  if (yellowEvidence >= 8 && yellowEvidence >= whiteEvidence * 0.75) {
+    return {
+      tone: 'yellow',
+      confidence: Math.min(0.99, yellowEvidence / Math.max(whiteEvidence + yellowEvidence, 1)),
+      whiteEvidence,
+      yellowEvidence,
+    }
+  }
+  return { tone: 'unknown', confidence: 0, whiteEvidence, yellowEvidence }
+}
+
 export function recognizeScannerStarCount(imageData) {
   const pixels = imageData?.data || imageData?.pixels
   const width = Number(imageData?.width)
@@ -631,6 +678,7 @@ export function scannerCultivationFit(
     level = 0,
     stars = null,
     nature = null,
+    statTones = {},
   } = {},
 ) {
   const normalizedLevel = Number(level)
@@ -638,10 +686,14 @@ export function scannerCultivationFit(
   const comparableKeys = SCANNER_FORMULA_STAT_KEYS.filter((key) => (
     Number(panelStats[key]) > 0 && Number(baseStats[key]) > 0
   ))
+  const whiteStatKeys = comparableKeys.filter((key) => statTones[key]?.tone === 'white')
+  const useWhiteStats = whiteStatKeys.length >= 3
+  const formulaStatKeys = useWhiteStats ? whiteStatKeys : comparableKeys
   if (
-    comparableKeys.length < 5
+    formulaStatKeys.length < (useWhiteStats ? 3 : 5)
     || normalizedLevel < 1
     || normalizedLevel > MAX_CULTIVATION_LEVEL
+    || stars == null
     || !Number.isInteger(normalizedStars)
     || normalizedStars < 0
     || normalizedStars > MAX_CULTIVATION_STARS
@@ -650,10 +702,11 @@ export function scannerCultivationFit(
   ) return null
   let best = null
   for (const individualStats of SCANNER_INDIVIDUAL_ALLOCATIONS) {
+    if (useWhiteStats && whiteStatKeys.some((key) => individualStats[key] > 0)) continue
     let squaredError = 0
     let absoluteError = 0
     const predictedStats = {}
-    for (const key of comparableKeys) {
+    for (const key of formulaStatKeys) {
       const predicted = calculateCultivatedStat(baseStats[key], key, {
         level: normalizedLevel,
         stars: normalizedStars,
@@ -665,17 +718,46 @@ export function scannerCultivationFit(
       squaredError += difference ** 2
       absoluteError += Math.abs(difference)
     }
-    const rmse = Math.sqrt(squaredError / comparableKeys.length)
+    const rmse = Math.sqrt(squaredError / formulaStatKeys.length)
     if (best && rmse >= best.rmse) continue
     best = {
       rmse,
-      mae: absoluteError / comparableKeys.length,
+      mae: absoluteError / formulaStatKeys.length,
       score: Math.exp(-rmse / 6),
       predictedStats,
       individualStats: { ...individualStats },
+      mode: useWhiteStats ? 'white-first' : 'all-stats',
+      statKeys: [...formulaStatKeys],
+      whiteStatKeys: [...whiteStatKeys],
     }
   }
   return best
+}
+
+function formulaFailureCode({
+  level,
+  stars,
+  nature,
+  panelStats,
+  statTones,
+  best,
+  runnerUp,
+  maximumFormulaRmse,
+  minimumFormulaRmseGap,
+}) {
+  const recognizedStatKeys = SCANNER_FORMULA_STAT_KEYS.filter((key) => Number(panelStats[key]) > 0)
+  const whiteStatKeys = recognizedStatKeys.filter((key) => statTones[key]?.tone === 'white')
+  if (Number(level) < 1 || Number(level) > MAX_CULTIVATION_LEVEL) return 'missing-level'
+  if (stars == null || !Number.isInteger(Number(stars))) return 'missing-stars'
+  if (!nature?.raise || !nature?.lower) return 'missing-nature'
+  if (recognizedStatKeys.length < 5 && whiteStatKeys.length < 3) return 'insufficient-stats'
+  if (!best?.cultivationFit) return 'formula-unavailable'
+  if (best.cultivationFit.rmse > maximumFormulaRmse) return 'best-error-too-high'
+  if (
+    runnerUp?.cultivationFit
+    && runnerUp.cultivationFit.rmse - best.cultivationFit.rmse < minimumFormulaRmseGap
+  ) return 'candidate-gap-too-small'
+  return 'resolved'
 }
 
 function distinctCandidateRunnerUp(ranked, best) {
@@ -717,6 +799,7 @@ export function resolveScannerReference({
   level = 0,
   stars = null,
   nature = null,
+  statTones = {},
   candidates = [],
   minimumShapeScore = 0.82,
   minimumShapeGap = 0.06,
@@ -752,6 +835,7 @@ export function resolveScannerReference({
         level,
         stars,
         nature,
+        statTones,
       }),
     }))
     .sort((left, right) => {
@@ -764,6 +848,31 @@ export function resolveScannerReference({
     })
   const best = ranked[0]
   const runnerUp = ranked[1]
+  const formulaFailure = formulaFailureCode({
+    level,
+    stars,
+    nature,
+    panelStats,
+    statTones,
+    best,
+    runnerUp,
+    maximumFormulaRmse,
+    minimumFormulaRmseGap,
+  })
+  const recognizedStatKeys = SCANNER_FORMULA_STAT_KEYS.filter((key) => Number(panelStats[key]) > 0)
+  const whiteStatKeys = recognizedStatKeys.filter((key) => statTones[key]?.tone === 'white')
+  const diagnostics = {
+    failure: formulaFailure,
+    recognizedStatKeys,
+    whiteStatKeys,
+    yellowStatKeys: recognizedStatKeys.filter((key) => statTones[key]?.tone === 'yellow'),
+    mode: best?.cultivationFit?.mode || (whiteStatKeys.length >= 3 ? 'white-first' : 'unavailable'),
+    maximumFormulaRmse,
+    minimumFormulaRmseGap,
+    rmseGap: best?.cultivationFit && runnerUp?.cultivationFit
+      ? runnerUp.cultivationFit.rmse - best.cultivationFit.rmse
+      : null,
+  }
   if (
     best?.cultivationFit
     && best.cultivationFit.rmse <= maximumFormulaRmse
@@ -779,6 +888,16 @@ export function resolveScannerReference({
       candidates: ranked,
       level: Number(level),
       stars: Number(stars),
+      diagnostics,
+    }
+  }
+  if (best?.cultivationFit && formulaFailure !== 'resolved') {
+    return {
+      value: '',
+      score: best.cultivationFit.score,
+      source: 'ambiguous',
+      candidates: ranked,
+      diagnostics,
     }
   }
   if (
@@ -791,6 +910,7 @@ export function resolveScannerReference({
       score: best?.shapeScore || nameMatch.score,
       source: 'ambiguous',
       candidates: ranked,
+      diagnostics,
     }
   }
   return {
@@ -798,5 +918,6 @@ export function resolveScannerReference({
     score: best.shapeScore,
     source: source === 'name' ? 'name+stats' : 'trait+stats',
     candidates: ranked,
+    diagnostics,
   }
 }

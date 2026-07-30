@@ -7753,6 +7753,20 @@ img {
 }
 .scanner-fields .form-row { margin: 0; }
 .scanner-ocr-raw { display: block; margin-top: 4px; color: var(--text-muted); }
+.scanner-formula-diagnostics {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+.scanner-formula-diagnostics strong { color: var(--text); }
+.scanner-formula-diagnostics em { color: var(--primary); font-style: normal; font-weight: 600; }
 .scanner-empty {
   display: grid;
   place-items: center;

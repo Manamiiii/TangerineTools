@@ -24,6 +24,7 @@ import {
   parseScannerLevel,
   rankScanCandidates,
   recognizeGenderColor,
+  recognizeScannerStatTone,
   recognizeScannerStarCount,
   resolveScannerReference,
   scannerAnchorQuality,
@@ -176,6 +177,78 @@ function identityEvidenceLabel(identity) {
     unresolved: '昵称/名称无法关联资料库',
   }
   return sourceLabels[identity.source] || identity.source
+}
+
+const SCANNER_STAT_LABELS = {
+  hp: '生命',
+  patk: '物攻',
+  matk: '魔攻',
+  pdef: '物防',
+  mdef: '魔防',
+  spd: '速度',
+}
+
+const SCANNER_STAT_TONE_LABELS = {
+  white: '白',
+  yellow: '黄',
+  unknown: '颜色不明',
+}
+
+function formulaFailureLabel(identity) {
+  const diagnostics = identity?.diagnostics
+  const labels = {
+    'missing-level': '等级未识别，公式未启动。',
+    'missing-stars': '星级未识别，公式未启动。',
+    'missing-nature': '性格未识别；请先手动选择性格，再点击“按公式重判形态”。',
+    'insufficient-stats': '可用六维不足：需要至少 5 项数字，或至少 3 项可靠白色未加成数值。',
+    'formula-unavailable': '当前输入无法生成合法培养面板。',
+    'best-error-too-high': `最佳候选误差超过 ${diagnostics?.maximumFormulaRmse ?? 2.5}。`,
+    'candidate-gap-too-small': `前两名误差差距低于 ${diagnostics?.minimumFormulaRmseGap ?? 1.5}。`,
+    resolved: '公式误差和候选差距均达到自动采用门槛。',
+  }
+  return labels[diagnostics?.failure] || '当前没有形态公式诊断。'
+}
+
+function ScannerFormulaDiagnostics({ identity }) {
+  if (!identity?.diagnostics) return null
+  const diagnostics = identity.diagnostics
+  const statsText = Object.entries(SCANNER_STAT_LABELS).map(([key, label]) => {
+    const value = Number(identity.panelStats?.[key]) || 0
+    const tone = identity.statTones?.[key]?.tone || 'unknown'
+    return `${label} ${value || '未识别'}（${SCANNER_STAT_TONE_LABELS[tone]}）`
+  }).join(' / ')
+  const candidates = (identity.candidates || []).slice(0, 4)
+  return (
+    <div className="scanner-formula-diagnostics">
+      <strong>形态公式诊断</strong>
+      <span>
+        输入：{identity.level ? `${identity.level}级` : '等级未识别'}
+        {' / '}{identity.stars == null ? '星级未识别' : `${identity.stars}星`}
+        {' / '}{identity.nature?.name || '性格未识别'}
+      </span>
+      <span>OCR 六维：{statsText}</span>
+      <span>
+        口径：{diagnostics.mode === 'white-first'
+          ? `优先使用白色未加成项（${diagnostics.whiteStatKeys.map((key) => SCANNER_STAT_LABELS[key]).join('、')}）`
+          : '使用全部已识别数值并枚举天分'}
+      </span>
+      {candidates.length > 0 && (
+        <span>
+          候选误差：{candidates.map((candidate) => (
+            `${candidate.label} ${candidate.cultivationFit
+              ? candidate.cultivationFit.rmse.toFixed(2)
+              : '未计算'}`
+          )).join(' / ')}
+        </span>
+      )}
+      {diagnostics.rmseGap != null && <span>前两名差距：{diagnostics.rmseGap.toFixed(2)}</span>}
+      <span>
+        自动门槛：最佳误差不超过 {diagnostics.maximumFormulaRmse}
+        {' / '}前两名差距至少 {diagnostics.minimumFormulaRmseGap}
+      </span>
+      <em>{formulaFailureLabel(identity)}</em>
+    </div>
+  )
 }
 
 export function RockKingdomScannerModal({ table, fields, onClose }) {
@@ -493,8 +566,13 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           .getImageData(0, 0, starsCrop.width, starsCrop.height),
       )
       const panelStats = {}
+      const statTones = {}
       for (const statKey of ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']) {
         const statCrop = cropImageSource(image, ROCK_SCANNER_IDENTITY_CROP_PROFILE[statKey])
+        statTones[statKey] = recognizeScannerStatTone(
+          statCrop.getContext('2d', { willReadFrequently: true })
+            .getImageData(0, 0, statCrop.width, statCrop.height),
+        )
         panelStats[statKey] = parsePanelStat(await recognizeStructuredImageText(
           statCrop,
           undefined,
@@ -511,6 +589,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         level,
         stars,
         nature,
+        statTones,
         candidates: nameCandidates,
       })
       identity = {
@@ -521,6 +600,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         stars,
         nature,
         panelStats,
+        statTones,
       }
     }
     if (identity.value) {
@@ -605,6 +685,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       level: selected.identity.level,
       stars: selected.identity.stars,
       nature,
+      statTones: selected.identity.statTones,
       candidates: nameCandidates,
     })
     patchFrame(selected.id, {
@@ -622,6 +703,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         stars: selected.identity.stars,
         nature,
         panelStats: selected.identity.panelStats,
+        statTones: selected.identity.statTones,
       },
       reviewed: false,
       status: identity.value ? '公式已重判，待复核' : '公式仍无法区分',
@@ -919,8 +1001,15 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                     type="button"
                     className="btn"
                     onClick={recheckSelectedWithFormula}
-                    disabled={Boolean(busy) || !selected.identity?.level || selected.identity?.stars == null}
-                    title="修改性格后，用已识别的等级、星级和六维重新判断同名形态"
+                    disabled={
+                      Boolean(busy)
+                      || !selected.identity?.level
+                      || selected.identity?.stars == null
+                      || !selected.values.nature
+                    }
+                    title={selected.values.nature
+                      ? '修改性格后，用已识别的等级、星级和六维重新判断同名形态'
+                      : '请先选择性格，再按公式重判形态'}
                   >
                     按公式重判形态
                   </button>
@@ -969,19 +1058,16 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                         </small>
                       )}
                       {field.key === 'ref' && selected.identity && (
-                        <small className="scanner-ocr-raw">
-                          识别依据：{identityEvidenceLabel(selected.identity)}
-                          {selected.identity.candidates?.length > 1
-                            ? ` · 候选 ${selected.identity.candidates.slice(0, 4).map((candidate) => candidate.label).join('、')}`
-                            : ''}
-                          {selected.identity.rawTrait ? ` · 特性 OCR：${selected.identity.rawTrait}` : ''}
-                          {selected.identity.level
-                            ? ` · ${selected.identity.level} 级 / ${selected.identity.stars ?? '?'} 星`
-                            : ''}
-                          {selected.identity.candidates?.[0]?.cultivationFit
-                            ? ` · 公式误差 ${selected.identity.candidates[0].cultivationFit.rmse.toFixed(1)}`
-                            : ''}
-                        </small>
+                        <>
+                          <small className="scanner-ocr-raw">
+                            识别依据：{identityEvidenceLabel(selected.identity)}
+                            {selected.identity.candidates?.length > 1
+                              ? ` · 候选 ${selected.identity.candidates.slice(0, 4).map((candidate) => candidate.label).join('、')}`
+                              : ''}
+                            {selected.identity.rawTrait ? ` · 特性 OCR：${selected.identity.rawTrait}` : ''}
+                          </small>
+                          <ScannerFormulaDiagnostics identity={selected.identity} />
+                        </>
                       )}
                       {field.key === 'appearance' && (
                         <small className="scanner-ocr-raw">

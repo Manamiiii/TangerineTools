@@ -17,6 +17,7 @@ import {
   parseScannerLevel,
   partnerMarkMaskSimilarity,
   recognizeGenderColor,
+  recognizeScannerStatTone,
   recognizeScannerStarCount,
   resolveScannerReference,
   scannerAnchorQuality,
@@ -109,6 +110,16 @@ test('gender color recognition accepts clear symbols and rejects weak or mixed e
     ...Array(4).fill([48, 132, 238]),
     ...Array(4).fill([225, 55, 92]),
   )), null)
+})
+
+test('stat tone recognition separates white base values from yellow talent values', () => {
+  const white = syntheticPixels(20, 20, [224, 224, 220])
+  const yellow = syntheticPixels(20, 20, [232, 185, 106])
+  const dark = syntheticPixels(20, 20, [70, 72, 68])
+
+  assert.equal(recognizeScannerStatTone(white).tone, 'white')
+  assert.equal(recognizeScannerStatTone(yellow).tone, 'yellow')
+  assert.equal(recognizeScannerStatTone(dark).tone, 'unknown')
 })
 
 test('partner mark templates cover no mark and all nine game marks', async () => {
@@ -368,6 +379,60 @@ test('level and star formula exactly separates the two Board Shell forms', () =>
   })
   assert.equal(resolved.value, 'ordinary')
   assert.equal(resolved.source, 'name+formula')
+})
+
+test('three white unboosted stats can resolve Board Shell when yellow values are unreliable', () => {
+  const panelStats = { hp: 999, patk: 22, matk: 999, pdef: 43, mdef: 51, spd: 999 }
+  const statTones = {
+    hp: { tone: 'yellow' },
+    patk: { tone: 'white' },
+    matk: { tone: 'yellow' },
+    pdef: { tone: 'white' },
+    mdef: { tone: 'white' },
+    spd: { tone: 'yellow' },
+  }
+  const nature = { raise: 'spd', lower: 'patk' }
+  const ordinaryStats = { hp: 67, patk: 28, matk: 72, pdef: 64, mdef: 81, spd: 45 }
+  const sheddingStats = { hp: 88, patk: 24, matk: 72, pdef: 56, mdef: 59, spd: 48 }
+  const resolved = resolveScannerReference({
+    rawName: '板板壳',
+    rawTrait: '缩壳',
+    panelStats,
+    statTones,
+    level: 1,
+    stars: 0,
+    nature,
+    candidates: [
+      { value: 'ordinary', label: '板板壳', traitName: '缩壳', stats: ordinaryStats },
+      { value: 'shedding', label: '板板壳（蜕皮时的样子）', traitName: '缩壳', stats: sheddingStats },
+    ],
+  })
+
+  assert.equal(resolved.value, 'ordinary')
+  assert.equal(resolved.source, 'name+formula')
+  assert.equal(resolved.diagnostics.mode, 'white-first')
+  assert.deepEqual(resolved.diagnostics.whiteStatKeys, ['patk', 'pdef', 'mdef'])
+  assert.equal(resolved.candidates[0].cultivationFit.rmse, 0)
+})
+
+test('formula diagnostics explain a candidate gap that is too small', () => {
+  const stats = { hp: 67, patk: 28, matk: 72, pdef: 64, mdef: 81, spd: 45 }
+  const resolved = resolveScannerReference({
+    rawName: '板板壳',
+    panelStats: { hp: 48, patk: 22, matk: 49, pdef: 43, mdef: 51, spd: 39 },
+    level: 1,
+    stars: 0,
+    nature: { raise: 'spd', lower: 'patk' },
+    minimumFormulaRmseGap: 1.5,
+    candidates: [
+      { value: 'one', label: '板板壳', stats },
+      { value: 'two', label: '板板壳（相同数据）', stats },
+    ],
+  })
+
+  assert.equal(resolved.value, '')
+  assert.equal(resolved.diagnostics.failure, 'candidate-gap-too-small')
+  assert.equal(resolved.diagnostics.rmseGap, 0)
 })
 
 test('cultivation fit reproduces a middle-level Duck form from the scanner video', () => {
