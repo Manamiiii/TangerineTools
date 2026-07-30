@@ -22,7 +22,10 @@
 
 ## 回归素材
 
-`test-data/rock-kingdom-scanner/phone-overview-hevc-2400x1080.mp4` 是固定设备的 2400 × 1080、H.265 / HEVC 总览录屏，用于人工验证视频解码、终态筛选、去重、裁切、中文 OCR 和图标匹配。该文件不位于 `public`，不会进入 Vite 生产构建；验证时从扫描器的文件选择框直接导入。
+- `test-data/rock-kingdom-scanner/phone-overview-hevc-2400x1080.mp4` 是原固定设备的 2400 × 1080、H.265 / HEVC 总览录屏，用于回归既有视频解码、终态筛选、去重、裁切、中文 OCR 和图标匹配。
+- `test-data/rock-kingdom-scanner/phone-overview-hevc-3200x1440.mp4` 是主录制设备的 3200 × 1440、H.265 / HEVC 总览录屏，用于校准新设备准入、等比例裁切、性能和稳定画面提取。
+
+这些文件不位于 `public`，不会进入 Vite 生产构建；验证时从扫描器的文件选择框直接导入。MP4 回归素材通过 Git LFS 维护，避免超过 GitHub 普通文件大小限制。
 
 ## 采集字段
 
