@@ -19,6 +19,7 @@ import {
   STAT_LABELS,
 } from '../domain/nature.js'
 import { natureRetentionAdvice, summarizeOwnedNatureRecords } from '../domain/natureRetention.js'
+import { buildNatureCoverage, summarizeNatureCoverage } from '../domain/natureCoverage.js'
 import { pveOverviewSummary, pveStarText } from '../domain/naturePve.js'
 import { buildNatureAnalysisInput, buildPopulationStatSummary, extractRowSummary } from '../domain/natureRowAdapter.js'
 import { buildOwnedNatureIndex, buildOwnedNatureRecordIndex } from '../domain/owned.js'
@@ -73,6 +74,11 @@ export function NatureTool({ scene }) {
   const [input, setInput] = useState(draftInput)
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [quickAddNature, setQuickAddNature] = useState(null)
+  const [viewMode, setViewMode] = useState('single')
+
+  useEffect(() => {
+    ensureOwnedTable(scene.id)
+  }, [scene.id])
 
   function handleQuickAddSaved(savedValues = {}) {
     if (!quickAddNature) return
@@ -205,67 +211,100 @@ export function NatureTool({ scene }) {
 
   return (
     <div className="nature-tool">
-      <RowImportPanel scene={scene} onImport={handleImport} />
+      <div className="nature-view-switch" aria-label="性格推荐视图">
+        <button
+          type="button"
+          className={viewMode === 'single' ? 'active' : ''}
+          onClick={() => setViewMode('single')}
+        >
+          单只分析
+        </button>
+        <button
+          type="button"
+          className={viewMode === 'coverage' ? 'active' : ''}
+          onClick={() => setViewMode('coverage')}
+        >
+          全局完成度
+        </button>
+      </div>
 
-      {draftInput.sourceRowId ? (
-        <CreatureAnalysisOverview input={draftInput} />
-      ) : (
-        <ManualNatureInput
-          input={draftInput}
-          onNameChange={(name) => setDraftInput((prev) => ({ ...prev, name }))}
-          onStatChange={updateStat}
-          onCalculate={() => {
-            setInput(draftInput)
-            setSelectedIndex(0)
+      {viewMode === 'coverage' ? (
+        <NatureCoveragePanel
+          scene={scene}
+          onOpen={(payload) => {
+            handleImport(payload)
+            setViewMode('single')
           }}
         />
-      )}
-
-      {hasAnyStat ? (
+      ) : (
         <>
-          <IndividualStatSelector
-            value={input.individualStats}
-            onToggle={toggleIndividualStat}
+          <RowImportPanel
+            scene={scene}
+            selectedRowId={draftInput.sourceRowId}
+            onImport={handleImport}
           />
-          <NaturePveOverview forms={pveForms} />
-          <NatureFixedEvidence nature={candidates[0]} forms={pveForms} />
-          <div className="nature-workbench">
-            <NatureCandidateList
-              candidates={candidates}
-              activeIndex={activeIndex}
-              onSelect={setSelectedIndex}
-              ownedNatures={input.ownedNatures}
-              ownedNatureRecords={input.ownedNatureRecords}
-              onQuickAdd={input.ownedContext ? setQuickAddNature : null}
+
+          {draftInput.sourceRowId ? (
+            <CreatureAnalysisOverview input={draftInput} />
+          ) : (
+            <ManualNatureInput
+              input={draftInput}
+              onNameChange={(name) => setDraftInput((prev) => ({ ...prev, name }))}
+              onStatChange={updateStat}
+              onCalculate={() => {
+                setInput(draftInput)
+                setSelectedIndex(0)
+              }}
             />
-            <NatureResult
-              nature={nature}
-              creatureName={input.name}
-              baseStats={formulaBaseStats}
-              adjustedStats={adjustedStats}
-              candidates={candidates}
+          )}
+
+          {hasAnyStat ? (
+            <>
+              <IndividualStatSelector
+                value={input.individualStats}
+                onToggle={toggleIndividualStat}
+              />
+              <NaturePveOverview forms={pveForms} />
+              <NatureFixedEvidence nature={candidates[0]} forms={pveForms} />
+              <div className="nature-workbench">
+                <NatureCandidateList
+                  candidates={candidates}
+                  activeIndex={activeIndex}
+                  onSelect={setSelectedIndex}
+                  ownedNatures={input.ownedNatures}
+                  ownedNatureRecords={input.ownedNatureRecords}
+                  onQuickAdd={input.ownedContext ? setQuickAddNature : null}
+                />
+                <NatureResult
+                  nature={nature}
+                  creatureName={input.name}
+                  baseStats={formulaBaseStats}
+                  adjustedStats={adjustedStats}
+                  candidates={candidates}
+                />
+              </div>
+            </>
+          ) : (
+            <EmptyState
+              title="选择精灵后查看推荐"
+              description="在上方输入框中搜索精灵；也可以展开手动输入六维。"
             />
-          </div>
+          )}
+          {quickAddNature && input.ownedContext && (
+            <OwnedFormModal
+              table={input.ownedContext.table}
+              fields={input.ownedContext.fields.filter((field) => !field.hidden)}
+              rows={input.ownedContext.rows}
+              collectionMode={input.ownedContext.table.collectionMode || 'single'}
+              initialValues={{
+                [input.ownedContext.referenceKey]: input.sourceRowId,
+                [input.ownedContext.natureKey]: quickAddNature.id,
+              }}
+              onClose={() => setQuickAddNature(null)}
+              onSaved={handleQuickAddSaved}
+            />
+          )}
         </>
-      ) : (
-        <EmptyState
-          title="选择精灵后查看推荐"
-          description="在上方输入框中搜索精灵；也可以展开手动输入六维。"
-        />
-      )}
-      {quickAddNature && input.ownedContext && (
-        <OwnedFormModal
-          table={input.ownedContext.table}
-          fields={input.ownedContext.fields.filter((field) => !field.hidden)}
-          rows={input.ownedContext.rows}
-          collectionMode={input.ownedContext.table.collectionMode || 'single'}
-          initialValues={{
-            [input.ownedContext.referenceKey]: input.sourceRowId,
-            [input.ownedContext.natureKey]: quickAddNature.id,
-          }}
-          onClose={() => setQuickAddNature(null)}
-          onSaved={handleQuickAddSaved}
-        />
       )}
     </div>
   )
@@ -418,20 +457,76 @@ function IndividualStatSelector({ value = {}, onToggle }) {
   )
 }
 
+async function loadOwnedNatureContext(sceneId, creatureTableId) {
+  const ownedTables = await db.catalogTables
+    .where('sceneId')
+    .equals(sceneId)
+    .filter((table) => table.kind === 'owned')
+    .toArray()
+  const sources = []
+  let quickAddContext = null
+  for (const table of ownedTables) {
+    const ownedFields = await db.catalogFields.where('tableId').equals(table.id).toArray()
+    const refFields = ownedFields.filter((field) => field.type === 'reference' && field.referenceTableId === creatureTableId)
+    const natureField = ownedFields.find((field) => field.key === 'nature' || field.name === '性格')
+    const shinyField = ownedFields.find((field) => field.key === 'shiny' || field.name === '个体异色')
+    const colorfulField = ownedFields.find((field) => field.key === 'colorful' || field.name === '是否炫彩')
+    if (refFields.length === 0 || !natureField) continue
+    const ownedRows = await db.catalogRows.where('tableId').equals(table.id).toArray()
+    sources.push({
+      rows: ownedRows,
+      referenceKeys: refFields.map((field) => field.key),
+      natureKey: natureField.key,
+      shinyKey: shinyField?.key,
+      colorfulKey: colorfulField?.key,
+    })
+    if (!quickAddContext) {
+      quickAddContext = {
+        table,
+        fields: ownedFields.sort((a, b) => a.order - b.order),
+        rows: ownedRows,
+        referenceKey: refFields[0].key,
+        natureKey: natureField.key,
+        shinyKey: shinyField?.key,
+        colorfulKey: colorfulField?.key,
+      }
+    }
+  }
+  const creatureRows = await db.catalogRows.where('tableId').equals(creatureTableId).toArray()
+  const equivalentReferences = buildEvolutionReferenceGroups(creatureRows)
+  return {
+    index: buildOwnedNatureIndex(sources, equivalentReferences),
+    recordIndex: buildOwnedNatureRecordIndex(sources, equivalentReferences),
+    quickAddContext,
+  }
+}
+
+function buildImportedNaturePayload(target, visibleRows, fields, skillRows, ownedContext) {
+  const sameNumberRows = getSameNumberRows(target, visibleRows, fields)
+  return {
+    ...buildNatureAnalysisInput(target, sameNumberRows, fields, skillRows, visibleRows),
+    sourceRowId: target.id,
+    sourceMeta: {
+      image: target.values?.image || '',
+      no: target.values?.no || '',
+      form: target.values?.form || '',
+    },
+    populationStats: buildPopulationStatSummary(visibleRows, fields, target),
+    ownedNatures: ownedContext.index.get(target.id) || {},
+    ownedNatureRecords: ownedContext.recordIndex.get(target.id) || {},
+    ownedContext: ownedContext.quickAddContext,
+  }
+}
+
 // 从场景已有资料表中选择一行，带入名称/六维/特性标签。
 // 场景下没有任何资料表时返回 null，保证性格工具可以完全独立使用。
-function RowImportPanel({ scene, onImport }) {
+function RowImportPanel({ scene, selectedRowId, onImport }) {
   const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
   const skillTableId = ROCK_KINGDOM_PRESET.tables[1].id
   const creatureTable = useLiveQuery(
     () => db.catalogTables.get(creatureTableId),
     [scene.id],
   )
-  const [rowId, setRowId] = useState(null)
-
-  useEffect(() => {
-    ensureOwnedTable(scene.id)
-  }, [scene.id])
 
   const fields = useLiveQuery(
     () => db.catalogFields.where('tableId').equals(creatureTableId).sortBy('order'),
@@ -445,49 +540,10 @@ function RowImportPanel({ scene, onImport }) {
     () => db.catalogRows.where('tableId').equals(skillTableId).toArray(),
     [skillTableId],
   )
-  const ownedContext = useLiveQuery(async () => {
-    const ownedTables = await db.catalogTables
-      .where('sceneId')
-      .equals(scene.id)
-      .filter((table) => table.kind === 'owned')
-      .toArray()
-    const sources = []
-    let quickAddContext = null
-    for (const table of ownedTables) {
-      const ownedFields = await db.catalogFields.where('tableId').equals(table.id).toArray()
-      const refFields = ownedFields.filter((field) => field.type === 'reference' && field.referenceTableId === creatureTableId)
-      const natureField = ownedFields.find((field) => field.key === 'nature' || field.name === '性格')
-      const shinyField = ownedFields.find((field) => field.key === 'shiny' || field.name === '个体异色')
-      const colorfulField = ownedFields.find((field) => field.key === 'colorful' || field.name === '是否炫彩')
-      if (refFields.length === 0 || !natureField) continue
-      const ownedRows = await db.catalogRows.where('tableId').equals(table.id).toArray()
-      sources.push({
-        rows: ownedRows,
-        referenceKeys: refFields.map((field) => field.key),
-        natureKey: natureField.key,
-        shinyKey: shinyField?.key,
-        colorfulKey: colorfulField?.key,
-      })
-      if (!quickAddContext) {
-        quickAddContext = {
-          table,
-          fields: ownedFields.sort((a, b) => a.order - b.order),
-          rows: ownedRows,
-          referenceKey: refFields[0].key,
-          natureKey: natureField.key,
-          shinyKey: shinyField?.key,
-          colorfulKey: colorfulField?.key,
-        }
-      }
-    }
-    const creatureRows = await db.catalogRows.where('tableId').equals(creatureTableId).toArray()
-    const equivalentReferences = buildEvolutionReferenceGroups(creatureRows)
-    return {
-      index: buildOwnedNatureIndex(sources, equivalentReferences),
-      recordIndex: buildOwnedNatureRecordIndex(sources, equivalentReferences),
-      quickAddContext,
-    }
-  }, [scene.id, creatureTableId])
+  const ownedContext = useLiveQuery(
+    () => loadOwnedNatureContext(scene.id, creatureTableId),
+    [scene.id, creatureTableId],
+  )
 
   if (creatureTable === undefined || !fields || !rows || !skillRows || !ownedContext) return null
   if (!creatureTable) {
@@ -518,38 +574,202 @@ function RowImportPanel({ scene, onImport }) {
 
   function importRow(target) {
     if (!target) return
-    const sameNumberRows = getSameNumberRows(target, visibleRows, fields)
-    onImport({
-      ...buildNatureAnalysisInput(target, sameNumberRows, fields, skillRows, visibleRows),
-      sourceRowId: target.id,
-      sourceMeta: {
-        image: target.values?.image || '',
-        no: target.values?.no || '',
-        form: target.values?.form || '',
-      },
-      populationStats: buildPopulationStatSummary(visibleRows, fields, target),
-      ownedNatures: ownedContext.index.get(target.id) || {},
-      ownedNatureRecords: ownedContext.recordIndex.get(target.id) || {},
-      ownedContext: ownedContext.quickAddContext,
-    })
+    onImport(buildImportedNaturePayload(target, visibleRows, fields, skillRows, ownedContext))
   }
 
   return (
     <div className="nature-import-panel">
       <SearchableSelect
         className="nature-creature-picker"
-        value={rowId || ''}
+        value={selectedRowId || ''}
         options={options}
         placeholder="搜索并选择精灵"
         searchPlaceholder="输入编号、名称或形态"
         emptyText="没有匹配的可培养形态"
         onChange={(nextRowId) => {
-          setRowId(nextRowId || null)
           if (!nextRowId) onImport(null)
           else importRow(selectableRows.find((row) => row.id === nextRowId))
         }}
       />
     </div>
+  )
+}
+
+function coverageStatusLabel(status) {
+  if (status === 'complete') return '已全部拥有'
+  if (status === 'repairable') return '银镜后完成'
+  return '仍有缺口'
+}
+
+function NatureCoverageProgress({ label, counts }) {
+  const covered = counts.exact + counts.repairable
+  return (
+    <span className="nature-coverage-progress">
+      <strong>{label} {covered}/{counts.total}</strong>
+      <small>成品 {counts.exact}{counts.repairable > 0 ? ` · 可修 ${counts.repairable}` : ''}</small>
+    </span>
+  )
+}
+
+function NatureCoveragePanel({ scene, onOpen }) {
+  const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
+  const skillTableId = ROCK_KINGDOM_PRESET.tables[1].id
+  const [keyword, setKeyword] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const creatureTable = useLiveQuery(
+    () => db.catalogTables.get(creatureTableId),
+    [scene.id],
+  )
+  const fields = useLiveQuery(
+    () => db.catalogFields.where('tableId').equals(creatureTableId).sortBy('order'),
+    [creatureTableId],
+  )
+  const rows = useLiveQuery(
+    () => db.catalogRows.where('tableId').equals(creatureTableId).toArray(),
+    [creatureTableId],
+  )
+  const skillRows = useLiveQuery(
+    () => db.catalogRows.where('tableId').equals(skillTableId).toArray(),
+    [skillTableId],
+  )
+  const ownedContext = useLiveQuery(
+    () => loadOwnedNatureContext(scene.id, creatureTableId),
+    [scene.id, creatureTableId],
+  )
+  const coverageRows = useMemo(() => {
+    if (!fields || !rows || !skillRows || !ownedContext) return []
+    const visibleRows = visibleRockKingdomCreatureRows(rows).sort(compareRockKingdomCreatureRows)
+    return primaryRockKingdomNatureRows(visibleRows).flatMap((target) => {
+      const sameNumberRows = getSameNumberRows(target, visibleRows, fields)
+      const analysis = buildNatureAnalysisInput(target, sameNumberRows, fields, skillRows, [])
+      const candidates = evaluateNatureProfiles(
+        analysis.stats,
+        analysis.traitTags,
+        analysis.skillInfo,
+        analysis.analysisProfiles,
+        {
+          primaryProfileId: target.id,
+          primaryProfileLabel: [analysis.name, target.values?.form].filter(Boolean).join(' · '),
+        },
+      )
+      const coverage = buildNatureCoverage(
+        candidates,
+        ownedContext.recordIndex.get(target.id) || {},
+      )
+      if (coverage.total === 0) return []
+      return [{
+        target,
+        visibleRows,
+        summary: extractRowSummary(target, fields),
+        coverage,
+      }]
+    })
+  }, [fields, rows, skillRows, ownedContext])
+  const summary = useMemo(() => summarizeNatureCoverage(coverageRows), [coverageRows])
+  const filteredRows = useMemo(() => {
+    const normalizedKeyword = keyword.trim().toLowerCase()
+    return coverageRows.filter((row) => {
+      if (statusFilter !== 'all' && row.coverage.status !== statusFilter) return false
+      if (!normalizedKeyword) return true
+      return [row.summary.no, row.summary.name, row.summary.form]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(normalizedKeyword))
+    })
+  }, [coverageRows, keyword, statusFilter])
+
+  if (creatureTable === undefined || !fields || !rows || !skillRows || !ownedContext) {
+    return <div className="nature-coverage-loading">正在计算全部精灵的性格完成度…</div>
+  }
+  if (!creatureTable) {
+    return <EmptyState title="缺少精灵资料" description="尚未找到洛克王国精灵基础资料表。" />
+  }
+
+  return (
+    <section className="nature-coverage">
+      <div className="nature-coverage-heading">
+        <div>
+          <strong>推荐与可保留性格完成度</strong>
+          <span>同编号形态合并计算；一个稀有个体只能通过残缺魔镜覆盖一个缺失性格。</span>
+        </div>
+        <div className="nature-coverage-controls">
+          <input
+            className="input"
+            value={keyword}
+            onChange={(event) => setKeyword(event.target.value)}
+            placeholder="搜索编号、名称或形态"
+          />
+          <select className="select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+            <option value="all">全部状态</option>
+            <option value="incomplete">仍有缺口</option>
+            <option value="repairable">银镜后完成</option>
+            <option value="complete">已全部拥有</option>
+          </select>
+        </div>
+      </div>
+      <div className="nature-coverage-summary">
+        <span className="complete"><strong>{summary.complete}</strong><small>已全部拥有</small></span>
+        <span className="repairable"><strong>{summary.repairable}</strong><small>银镜后完成</small></span>
+        <span className="incomplete"><strong>{summary.incomplete}</strong><small>仍有缺口</small></span>
+        <span><strong>{summary.missing}</strong><small>缺失性格总数</small></span>
+      </div>
+      <div className="nature-coverage-list">
+        {filteredRows.map((row) => {
+          const missingEntries = row.coverage.entries.filter((entry) => entry.status !== 'exact')
+          return (
+            <details className={`nature-coverage-row ${row.coverage.status}`} key={row.target.id}>
+              <summary>
+                <span className="nature-coverage-creature">
+                  {row.target.values?.image && <img src={row.target.values.image} alt="" />}
+                  <span>
+                    <strong>{row.summary.name}</strong>
+                    <small>{[row.summary.no, row.summary.form].filter(Boolean).join(' · ')}</small>
+                  </span>
+                </span>
+                <NatureCoverageProgress label="推荐" counts={row.coverage.recommended} />
+                <NatureCoverageProgress label="可保留" counts={row.coverage.keepable} />
+                <span className={`nature-coverage-status ${row.coverage.status}`}>
+                  {coverageStatusLabel(row.coverage.status)}
+                  {row.coverage.missing > 0 && <small>缺 {row.coverage.missing}</small>}
+                </span>
+              </summary>
+              <div className="nature-coverage-detail">
+                <div className="nature-coverage-chips">
+                  {row.coverage.entries.map((entry) => (
+                    <span className={entry.status} key={entry.candidate.id}>
+                      {natureName(entry.candidate)}
+                      <small>{entry.status === 'exact' ? '已有' : entry.status === 'repairable' ? '银镜可修' : '缺少'}</small>
+                    </span>
+                  ))}
+                </div>
+                <div className="nature-coverage-actions">
+                  <span>
+                    {missingEntries.length > 0
+                      ? `待处理：${missingEntries.map((entry) => natureName(entry.candidate)).join('、')}`
+                      : '所有推荐与可保留性格均已有成品。'}
+                  </span>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => onOpen(buildImportedNaturePayload(
+                      row.target,
+                      row.visibleRows,
+                      fields,
+                      skillRows,
+                      ownedContext,
+                    ))}
+                  >
+                    打开单只分析
+                  </button>
+                </div>
+              </div>
+            </details>
+          )
+        })}
+        {filteredRows.length === 0 && (
+          <EmptyState title="没有匹配的精灵" description="可以更换完成状态或搜索条件。" />
+        )}
+      </div>
+    </section>
   )
 }
 
