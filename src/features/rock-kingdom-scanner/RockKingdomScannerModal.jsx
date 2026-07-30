@@ -20,17 +20,16 @@ import {
   ROCK_SCANNER_STABILITY_REGION,
   bestScanMatch,
   catalogNameCandidates,
+  constrainScannerFormulaInputs,
   isScannerFrameReady,
   parseScannerLevel,
   rankScanCandidates,
   recognizeGenderColor,
   recognizeScannerStatTone,
   recognizeScannerStarCount,
-  reconcileScannerPanelStat,
   resolveScannerReference,
   scannerAnchorQuality,
   scannerCharacterWhitelist,
-  scannerLegalPanelStatValues,
   scannerOptionCandidates,
   selectScannerPanelStat,
   selectScannerLevel,
@@ -264,6 +263,17 @@ function ScannerFormulaDiagnostics({ identity }) {
         <span>
           等级重试：{identity.levelOcr.rawVariants.filter(Boolean).join(' / ') || '均为空'}
           {identity.levelOcr.ambiguous ? '（结果冲突）' : ''}
+          {identity.levelOcr.formulaInferred ? `（联合公式推断为 ${identity.level} 级）` : ''}
+        </span>
+      )}
+      {diagnostics.constraintAttempts?.length > 0 && (
+        <span>
+          联合约束：{diagnostics.constraintAttempts.map((attempt) => (
+            `${attempt.level}级·${attempt.label}，${attempt.evidenceCount}项证据，误差 ${attempt.rmse.toFixed(2)}`
+          )).join(' / ')}
+          {diagnostics.constraintAttemptGap != null
+            ? `；前两组差距 ${diagnostics.constraintAttemptGap.toFixed(2)}`
+            : ''}
         </span>
       )}
       {candidates.length > 0 && (
@@ -614,7 +624,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       const rawLevel = levelVariants.find((value) => parseScannerLevel(value) === levelOcr.value)
         || levelVariants.find(Boolean)
         || ''
-      const level = levelOcr.value
+      let level = levelOcr.value
       const starsCrop = cropImageSource(image, ROCK_SCANNER_IDENTITY_CROP_PROFILE.stars, 1)
       const stars = recognizeScannerStarCount(
         starsCrop.getContext('2d', { willReadFrequently: true })
@@ -670,33 +680,37 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         statTones,
         candidates: nameCandidates,
       })
-      if (identity.candidates?.length > 0) {
-        let panelStatsChanged = false
-        for (const statKey of ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']) {
-          const reconciled = reconcileScannerPanelStat(
-            panelStatOcr[statKey],
-            scannerLegalPanelStatValues(identity.candidates, statKey, {
-              level,
-              stars,
-              nature,
-              tone: statTones[statKey]?.tone,
-            }),
-          )
-          if (reconciled.value !== panelStatOcr[statKey].value) panelStatsChanged = true
-          panelStatOcr[statKey] = reconciled
-          panelStats[statKey] = reconciled.value
-        }
-        if (panelStatsChanged) {
-          identity = resolveScannerReference({
-            rawName: matched.raw.ref,
-            rawTrait,
-            panelStats,
-            level,
-            stars,
-            nature,
-            statTones,
-            candidates: nameCandidates,
-          })
+      if (identity.candidates?.length > 1) {
+        const constrained = constrainScannerFormulaInputs({
+          rawName: matched.raw.ref,
+          rawTrait,
+          panelStatOcr,
+          levelOcr,
+          stars,
+          nature,
+          statTones,
+          candidates: identity.candidates,
+        })
+        if (constrained.applied) {
+          level = constrained.level
+          levelOcr = {
+            ...levelOcr,
+            value: level,
+            formulaInferred: constrained.levelInferred,
+          }
+          Object.assign(panelStats, constrained.panelStats)
+          Object.assign(panelStatOcr, constrained.panelStatOcr)
+          identity = constrained.identity
+        } else if (constrained.attempts.length > 0) {
+          identity = {
+            ...identity,
+            diagnostics: {
+              ...identity.diagnostics,
+              constraintAttempts: constrained.attempts,
+              constraintAttemptGap: constrained.attemptGap,
+              minimumConstraintAttemptGap: constrained.minimumAttemptGap,
+            },
+          }
         }
       }
       identity = {
@@ -783,20 +797,49 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   }
 
   function recheckSelectedWithFormula() {
-    if (!selected?.identity?.level || selected.identity.stars == null) return
+    if (!selected?.identity || selected.identity.stars == null) return
     const natureOption = fieldByKey(fields, 'nature')?.options
       ?.find((option) => option.value === selected.values.nature)
     const nature = parseNatureOption(natureOption || {})
-    const identity = resolveScannerReference({
+    const constraintCandidates = selected.identity.candidates?.length > 1
+      ? selected.identity.candidates
+      : nameCandidates
+    const constrained = constrainScannerFormulaInputs({
       rawName: selected.raw?.ref,
       rawTrait: selected.identity.rawTrait,
-      panelStats: selected.identity.panelStats,
-      level: selected.identity.level,
+      panelStatOcr: selected.identity.panelStatOcr,
+      levelOcr: selected.identity.levelOcr,
       stars: selected.identity.stars,
       nature,
       statTones: selected.identity.statTones,
-      candidates: nameCandidates,
+      candidates: constraintCandidates,
     })
+    const level = constrained.applied ? constrained.level : selected.identity.level
+    const panelStats = constrained.applied
+      ? constrained.panelStats
+      : selected.identity.panelStats
+    const panelStatOcr = constrained.applied
+      ? constrained.panelStatOcr
+      : selected.identity.panelStatOcr
+    const levelOcr = constrained.applied
+      ? {
+          ...selected.identity.levelOcr,
+          value: level,
+          formulaInferred: constrained.levelInferred,
+        }
+      : selected.identity.levelOcr
+    const identity = constrained.applied
+      ? constrained.identity
+      : resolveScannerReference({
+          rawName: selected.raw?.ref,
+          rawTrait: selected.identity.rawTrait,
+          panelStats,
+          level,
+          stars: selected.identity.stars,
+          nature,
+          statTones: selected.identity.statTones,
+          candidates: nameCandidates,
+        })
     patchFrame(selected.id, {
       values: identity.value
         ? { ...selected.values, ref: identity.value }
@@ -808,12 +851,12 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         ...identity,
         rawTrait: selected.identity.rawTrait,
         rawLevel: selected.identity.rawLevel,
-        levelOcr: selected.identity.levelOcr,
-        level: selected.identity.level,
+        levelOcr,
+        level,
         stars: selected.identity.stars,
         nature,
-        panelStats: selected.identity.panelStats,
-        panelStatOcr: selected.identity.panelStatOcr,
+        panelStats,
+        panelStatOcr,
         statTones: selected.identity.statTones,
       },
       reviewed: false,
@@ -1114,12 +1157,11 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                     onClick={recheckSelectedWithFormula}
                     disabled={
                       Boolean(busy)
-                      || !selected.identity?.level
                       || selected.identity?.stars == null
                       || !selected.values.nature
                     }
                     title={selected.values.nature
-                      ? '修改性格后，用已识别的等级、星级和六维重新判断同名形态'
+                      ? '修改性格后，用等级候选、星级和六维联合重新判断同名形态'
                       : '请先选择性格，再按公式重判形态'}
                   >
                     按公式重判形态

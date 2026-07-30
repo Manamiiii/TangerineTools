@@ -746,19 +746,21 @@ export function reconcileScannerPanelStat(result = {}, legalValues = []) {
   const legal = new Set(legalValues.map(Number).filter((value) => value > 0))
   const currentValue = Number(result.value) || 0
   if (currentValue === 0 && (result.candidates || []).length === 0) return result
-  if (legal.size === 0 || legal.has(currentValue)) return result
+  if (legal.size === 0) return result
 
   const exactRepairs = new Set(
     (result.candidates || []).map(Number).filter((value) => legal.has(value)),
   )
   if (exactRepairs.size === 1) {
+    const repairedValue = [...exactRepairs][0]
     return {
       ...result,
-      value: [...exactRepairs][0],
+      value: repairedValue,
       ambiguous: false,
-      formulaRepaired: true,
+      formulaRepaired: repairedValue !== currentValue,
     }
   }
+  if (legal.has(currentValue)) return result
 
   const repairs = new Set()
   for (const candidate of result.candidates || []) {
@@ -786,6 +788,92 @@ export function reconcileScannerPanelStat(result = {}, legalValues = []) {
     ambiguous: (result.candidates || []).length > 0,
     rejectedByFormula: true,
   }
+}
+
+function scannerConstrainedStatChoices(result = {}, legalValues = []) {
+  const legal = [...new Set(legalValues.map(Number).filter((value) => value > 0))]
+  const recognizedValues = [...new Set([
+    Number(result.value) || 0,
+    ...(result.candidates || []).map(Number),
+  ].filter((value) => value > 0))]
+  if (recognizedValues.length === 0 || legal.length === 0) return []
+  const choices = new Map()
+  const addChoice = (value, repairCost, recognizedValue) => {
+    const previous = choices.get(value)
+    if (previous && previous.repairCost <= repairCost) return
+    choices.set(value, { value, repairCost, recognizedValue })
+  }
+  for (const recognizedValue of recognizedValues) {
+    if (legal.includes(recognizedValue)) addChoice(recognizedValue, 0, recognizedValue)
+    const recognized = String(recognizedValue)
+    for (const legalValue of legal) {
+      const expected = String(legalValue)
+      if (
+        recognized.length > expected.length
+        && (recognized.startsWith(expected) || recognized.endsWith(expected))
+      ) {
+        addChoice(
+          legalValue,
+          0.35 + (recognized.length - expected.length) * 0.1,
+          recognizedValue,
+        )
+      }
+    }
+  }
+  return [...choices.values()]
+    .sort((left, right) => left.repairCost - right.repairCost || left.value - right.value)
+    .slice(0, 4)
+}
+
+function scannerConstrainedPanelCombinations(
+  panelStatOcr,
+  candidates,
+  { level, stars, nature, statTones },
+) {
+  let combinations = [{
+    panelStats: {},
+    panelStatOcr: {},
+    repairCost: 0,
+    evidenceCount: 0,
+  }]
+  for (const key of SCANNER_FORMULA_STAT_KEYS) {
+    const result = panelStatOcr[key] || { value: 0, candidates: [], ambiguous: false }
+    const choices = scannerConstrainedStatChoices(
+      result,
+      scannerLegalPanelStatValues(candidates, key, {
+        level,
+        stars,
+        nature,
+        tone: statTones[key]?.tone,
+      }),
+    )
+    const alternatives = choices.length > 0 ? choices : [{ value: 0, repairCost: 0 }]
+    combinations = combinations.flatMap((combination) => alternatives.map((choice) => ({
+      panelStats: { ...combination.panelStats, [key]: choice.value },
+      panelStatOcr: {
+        ...combination.panelStatOcr,
+        [key]: choice.value > 0
+          ? {
+              ...result,
+              value: choice.value,
+              ambiguous: false,
+              formulaRepaired: choice.value !== Number(result.value || 0),
+            }
+          : {
+              ...result,
+              value: 0,
+              rejectedByFormula: (result.candidates || []).length > 0,
+            },
+      },
+      repairCost: combination.repairCost + choice.repairCost,
+      evidenceCount: combination.evidenceCount + (choice.value > 0 ? 1 : 0),
+    })))
+      .sort((left, right) => (
+        right.evidenceCount - left.evidenceCount || left.repairCost - right.repairCost
+      ))
+      .slice(0, 96)
+  }
+  return combinations
 }
 
 export function scannerStatShapeSimilarity(panelStats = {}, baseStats = {}) {
@@ -1092,5 +1180,134 @@ export function resolveScannerReference({
     source: source === 'name' ? 'name+stats' : 'trait+stats',
     candidates: ranked,
     diagnostics,
+  }
+}
+
+export function constrainScannerFormulaInputs({
+  rawName = '',
+  rawTrait = '',
+  panelStatOcr = {},
+  levelOcr = {},
+  stars = null,
+  nature = null,
+  statTones = {},
+  candidates = [],
+  minimumAttemptGap = 0.75,
+} = {}) {
+  if (
+    candidates.length < 2
+    || stars == null
+    || !Number.isInteger(Number(stars))
+    || !nature?.raise
+    || !nature?.lower
+  ) {
+    return { applied: false, attempts: [], failure: 'missing-formula-input' }
+  }
+  const recognizedLevel = Number(levelOcr.value) || 0
+  const candidateLevels = [...new Set((levelOcr.candidates || [])
+    .map(Number)
+    .filter((value) => value >= 1 && value <= MAX_CULTIVATION_LEVEL))]
+  const levels = recognizedLevel
+    ? [recognizedLevel]
+    : candidateLevels.length > 0
+      ? candidateLevels
+      : Array.from({ length: MAX_CULTIVATION_LEVEL }, (_, index) => index + 1)
+  const attempts = []
+  for (const level of levels) {
+    const combinations = scannerConstrainedPanelCombinations(panelStatOcr, candidates, {
+      level,
+      stars: Number(stars),
+      nature,
+      statTones,
+    })
+    for (const combination of combinations) {
+      const identity = resolveScannerReference({
+        rawName,
+        rawTrait,
+        panelStats: combination.panelStats,
+        level,
+        stars,
+        nature,
+        statTones,
+        candidates,
+      })
+      if (!identity.value || !identity.source.endsWith('+formula')) continue
+      const selectedCandidate = identity.candidates.find((candidate) => (
+        candidate.value === identity.value
+      ))
+      const rmse = selectedCandidate?.cultivationFit?.rmse
+      if (!Number.isFinite(rmse)) continue
+      attempts.push({
+        level,
+        identity,
+        panelStats: combination.panelStats,
+        panelStatOcr: combination.panelStatOcr,
+        evidenceCount: combination.evidenceCount,
+        repairCost: combination.repairCost,
+        rmse,
+        totalCost: rmse + combination.repairCost,
+      })
+    }
+  }
+  const distinctAttempts = new Map()
+  for (const attempt of attempts.sort((left, right) => (
+    right.evidenceCount - left.evidenceCount
+    || left.totalCost - right.totalCost
+  ))) {
+    const key = `${attempt.level}:${attempt.identity.value}`
+    if (!distinctAttempts.has(key)) distinctAttempts.set(key, attempt)
+  }
+  const ranked = [...distinctAttempts.values()]
+    .sort((left, right) => (
+      right.evidenceCount - left.evidenceCount
+      || left.totalCost - right.totalCost
+    ))
+  const best = ranked[0]
+  const runnerUp = ranked[1]
+  if (!best) return { applied: false, attempts: [], failure: 'no-legal-attempt' }
+  const attemptGap = runnerUp
+    ? runnerUp.totalCost - best.totalCost
+      + (best.evidenceCount - runnerUp.evidenceCount) * 2
+    : null
+  const levelWasInferred = recognizedLevel !== best.level
+  const decisive = !levelWasInferred || runnerUp == null || attemptGap >= minimumAttemptGap
+  const summarizedAttempts = ranked.slice(0, 4).map((attempt) => ({
+    level: attempt.level,
+    value: attempt.identity.value,
+    label: attempt.identity.candidates.find((candidate) => (
+      candidate.value === attempt.identity.value
+    ))?.label || attempt.identity.value,
+    evidenceCount: attempt.evidenceCount,
+    repairCost: attempt.repairCost,
+    rmse: attempt.rmse,
+    totalCost: attempt.totalCost,
+  }))
+  if (!decisive) {
+    return {
+      applied: false,
+      attempts: summarizedAttempts,
+      attemptGap,
+      minimumAttemptGap,
+      failure: 'attempt-gap-too-small',
+    }
+  }
+  return {
+    applied: true,
+    level: best.level,
+    levelInferred: levelWasInferred,
+    panelStats: best.panelStats,
+    panelStatOcr: best.panelStatOcr,
+    identity: {
+      ...best.identity,
+      diagnostics: {
+        ...best.identity.diagnostics,
+        constraintAttempts: summarizedAttempts,
+        constraintAttemptGap: attemptGap,
+        minimumConstraintAttemptGap: minimumAttemptGap,
+      },
+    },
+    attempts: summarizedAttempts,
+    attemptGap,
+    minimumAttemptGap,
   }
 }

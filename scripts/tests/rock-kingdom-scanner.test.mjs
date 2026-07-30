@@ -11,6 +11,7 @@ import {
   bestAppearanceTemplateMatch,
   bestPartnerMarkTemplateMatch,
   bestScanMatch,
+  constrainScannerFormulaInputs,
   isScannerFrameReady,
   normalizeScanText,
   normalizedPartnerMarkMask,
@@ -626,11 +627,7 @@ test('real Duck OCR candidates recover level 13 and resolve Burning Duck from fo
     { value: 'burning', label: '鸭吉吉（燃了鸭）', traitName: '挺起胸脯', stats: { hp: 108, patk: 89, matk: 41, pdef: 74, mdef: 48, spd: 115 } },
     { value: 'rise', label: '鸭吉吉（起来鸭）', traitName: '挺起胸脯', stats: { hp: 107, patk: 53, matk: 125, pdef: 80, mdef: 113, spd: 100 } },
   ]
-  const options = {
-    level: selectScannerLevel(['/60', '1350', '1350']).value,
-    stars: 0,
-    nature: { raise: 'mdef', lower: 'patk' },
-  }
+  const nature = { raise: 'mdef', lower: 'patk' }
   const statTones = {
     hp: { tone: 'yellow' },
     patk: { tone: 'yellow' },
@@ -639,21 +636,28 @@ test('real Duck OCR candidates recover level 13 and resolve Burning Duck from fo
     mdef: { tone: 'yellow' },
     spd: { tone: 'white' },
   }
-  const panelStats = {
-    hp: 108,
-    patk: reconcileScannerPanelStat(
-      { value: 0, candidates: [4627, 527, 62, 852], ambiguous: true },
-      scannerLegalPanelStatValues(candidates, 'patk', { ...options, tone: 'yellow' }),
-    ).value,
-    matk: 36,
-    pdef: reconcileScannerPanelStat(
-      { value: 0, candidates: [5, 457, 57], ambiguous: true },
-      scannerLegalPanelStatValues(candidates, 'pdef', { ...options, tone: 'white' }),
-    ).value,
-    mdef: 0,
-    spd: 0,
+  const panelStatOcr = {
+    hp: { value: 108, candidates: [108], ambiguous: false },
+    patk: { value: 0, candidates: [4627, 527, 62, 852], ambiguous: true },
+    matk: { value: 36, candidates: [36], ambiguous: false },
+    pdef: { value: 0, candidates: [5, 457, 57], ambiguous: true },
+    mdef: { value: 3, candidates: [3], ambiguous: false },
+    spd: { value: 2, candidates: [2], ambiguous: false },
   }
-  assert.deepEqual(panelStats, {
+  const constrained = constrainScannerFormulaInputs({
+    rawName: '鸭吉吉',
+    rawTrait: '挺起胸脯',
+    panelStatOcr,
+    levelOcr: { value: 0, candidates: [], ambiguous: false, rawVariants: ['/60'] },
+    stars: 0,
+    nature,
+    statTones,
+    candidates,
+  })
+  assert.equal(constrained.applied, true)
+  assert.equal(constrained.level, 13)
+  assert.equal(constrained.levelInferred, true)
+  assert.deepEqual(constrained.panelStats, {
     hp: 108,
     patk: 62,
     matk: 36,
@@ -661,18 +665,35 @@ test('real Duck OCR candidates recover level 13 and resolve Burning Duck from fo
     mdef: 0,
     spd: 0,
   })
-  const resolved = resolveScannerReference({
-    rawName: '鸭吉吉',
-    rawTrait: '挺起胸脯',
-    panelStats,
-    statTones,
-    candidates,
-    ...options,
+  assert.equal(constrained.identity.value, 'burning')
+  assert.equal(constrained.identity.source, 'name+formula')
+  assert.equal(constrained.identity.diagnostics.mode, 'mixed-evidence')
+  assert.equal(constrained.identity.candidates[0].cultivationFit.rmse, 0)
+})
+
+test('joint formula constraints do not force an indistinguishable form or level', () => {
+  const stats = { hp: 108, patk: 89, matk: 41, pdef: 74, mdef: 48, spd: 115 }
+  const panelStatOcr = Object.fromEntries(
+    Object.entries({ hp: 108, patk: 62, matk: 36, pdef: 57, mdef: 46, spd: 82 })
+      .map(([key, value]) => [key, { value, candidates: [value], ambiguous: false }]),
+  )
+  const constrained = constrainScannerFormulaInputs({
+    rawName: 'same',
+    rawTrait: 'same trait',
+    panelStatOcr,
+    levelOcr: { value: 0, candidates: [], ambiguous: false },
+    stars: 0,
+    nature: { raise: 'mdef', lower: 'patk' },
+    statTones: Object.fromEntries(
+      ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd'].map((key) => [key, { tone: 'unknown' }]),
+    ),
+    candidates: [
+      { value: 'one', label: 'same', traitName: 'same trait', stats },
+      { value: 'two', label: 'same', traitName: 'same trait', stats },
+    ],
   })
-  assert.equal(resolved.value, 'burning')
-  assert.equal(resolved.source, 'name+formula')
-  assert.equal(resolved.diagnostics.mode, 'mixed-evidence')
-  assert.equal(resolved.candidates[0].cultivationFit.rmse, 0)
+  assert.equal(constrained.applied, false)
+  assert.equal(constrained.failure, 'no-legal-attempt')
 })
 
 test('cultivation fit accepts a lower talent tier with one boosted stat', () => {
