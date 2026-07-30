@@ -5,7 +5,7 @@ import { createRow, db } from '../../db.js'
 import { FieldInput } from '../../components/catalog.jsx'
 import { FormRow, Modal } from '../../components/common.jsx'
 import { RockKingdomStatFormulaGuide } from '../../components/RockKingdomStatFormulaGuide.jsx'
-import { recognizeStructuredImageText } from '../ocr/localOcr.js'
+import { recognizeNumericImageText, recognizeStructuredImageText } from '../ocr/localOcr.js'
 import {
   captureVideoFrame,
   captureVideoSignature,
@@ -577,25 +577,29 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           statCrop.getContext('2d', { willReadFrequently: true })
             .getImageData(0, 0, statCrop.width, statCrop.height),
         )
-        const preparedStatCrop = prepareScannerTextCrop(statCrop, { width: 512, height: 160 })
         const rawVariants = []
         rawVariants.push(await recognizeStructuredImageText(
           statCrop,
           undefined,
           { pageSegmentationMode: '7', characterWhitelist: '0123456789' },
         ))
-        rawVariants.push(await recognizeStructuredImageText(
-          preparedStatCrop,
-          undefined,
-          { pageSegmentationMode: '7', characterWhitelist: '0123456789' },
-        ))
-        rawVariants.push(await recognizeStructuredImageText(
-          preparedStatCrop,
-          undefined,
-          { pageSegmentationMode: '8', characterWhitelist: '0123456789' },
-        ))
+        rawVariants.push(await recognizeNumericImageText(statCrop))
+        const rawResult = selectScannerPanelStat(rawVariants, { trustedVariantCount: 2 })
+        if (!rawResult.value) {
+          const preparedStatCrop = prepareScannerTextCrop(statCrop, { width: 512, height: 160 })
+          rawVariants.push(await recognizeNumericImageText(
+            preparedStatCrop,
+            undefined,
+            { pageSegmentationMode: '7' },
+          ))
+          rawVariants.push(await recognizeNumericImageText(
+            preparedStatCrop,
+            undefined,
+            { pageSegmentationMode: '8' },
+          ))
+        }
         panelStatOcr[statKey] = {
-          ...selectScannerPanelStat(rawVariants),
+          ...selectScannerPanelStat(rawVariants, { trustedVariantCount: 2 }),
           rawVariants,
         }
         panelStats[statKey] = panelStatOcr[statKey].value

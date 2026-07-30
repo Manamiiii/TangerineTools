@@ -89,26 +89,51 @@ export function parseScannerPanelStat(value) {
   return Number(digits) || 0
 }
 
-export function selectScannerPanelStat(rawVariants = []) {
+export function selectScannerPanelStat(rawVariants = [], { trustedVariantCount = 1 } = {}) {
   const parsed = rawVariants
     .map(parseScannerPanelStat)
+  const trustedCandidates = [...new Set(parsed
+    .slice(0, trustedVariantCount)
+    .filter((value) => value > 0))]
+  const fallbackValues = parsed
+    .slice(trustedVariantCount)
     .filter((value) => value > 0)
-  const candidates = [...new Set(parsed)]
-  if (candidates.length === 0) {
+  const fallbackCandidates = [...new Set(fallbackValues)]
+  const candidates = [...new Set([...trustedCandidates, ...fallbackCandidates])]
+
+  if (trustedCandidates.length === 1) {
+    return { value: trustedCandidates[0], candidates, ambiguous: false }
+  }
+  if (trustedCandidates.length > 1) {
+    const fallbackVotes = fallbackValues.filter((value) => trustedCandidates.includes(value))
+    const resolved = trustedCandidates.find((candidate) => (
+      fallbackVotes.filter((value) => value === candidate).length
+      > fallbackVotes.filter((value) => value !== candidate).length
+    ))
+    return {
+      value: resolved || 0,
+      candidates,
+      ambiguous: !resolved,
+    }
+  }
+
+  const parsedFallback = fallbackValues
+  const candidatesOnly = fallbackCandidates
+  if (candidatesOnly.length === 0) {
     return { value: 0, candidates: [], ambiguous: false }
   }
 
-  const counts = new Map(candidates.map((value) => [
+  const counts = new Map(candidatesOnly.map((value) => [
     value,
-    parsed.filter((candidate) => candidate === value).length,
+    parsedFallback.filter((candidate) => candidate === value).length,
   ]))
-  const ranked = candidates
+  const ranked = candidatesOnly
     .map((value, firstIndex) => ({ value, count: counts.get(value), firstIndex }))
     .sort((left, right) => right.count - left.count || left.firstIndex - right.firstIndex)
   const ambiguous = ranked.length > 1 && ranked[0].count === ranked[1].count
   return {
     value: ambiguous ? 0 : ranked[0].value,
-    candidates,
+    candidates: candidatesOnly,
     ambiguous,
   }
 }

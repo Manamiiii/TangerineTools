@@ -39,21 +39,31 @@ test('scanner accepts the fixed 3200 by 1440 recording profile', () => {
   })
 })
 
-test('panel stat OCR joins split digits and requires a winner when retries conflict', () => {
+test('panel stat OCR prefers raw engines and only uses processed retries as fallback', () => {
   assert.equal(parseScannerPanelStat('1 3 5'), 135)
   assert.equal(parseScannerPanelStat('速度 203'), 203)
   assert.equal(parseScannerPanelStat('12345'), 0)
-  assert.deepEqual(selectScannerPanelStat(['15', '135', '135']), {
+  assert.deepEqual(selectScannerPanelStat(['22', '', '222', '222'], { trustedVariantCount: 2 }), {
+    value: 22,
+    candidates: [22, 222],
+    ambiguous: false,
+  })
+  assert.deepEqual(selectScannerPanelStat(['', '135', '35', '35'], { trustedVariantCount: 2 }), {
+    value: 135,
+    candidates: [135, 35],
+    ambiguous: false,
+  })
+  assert.deepEqual(selectScannerPanelStat(['15', '135', '135'], { trustedVariantCount: 2 }), {
     value: 135,
     candidates: [15, 135],
     ambiguous: false,
   })
-  assert.deepEqual(selectScannerPanelStat(['', '43', '']), {
+  assert.deepEqual(selectScannerPanelStat(['', '', '43', ''], { trustedVariantCount: 2 }), {
     value: 43,
     candidates: [43],
     ambiguous: false,
   })
-  assert.deepEqual(selectScannerPanelStat(['15', '135', '']), {
+  assert.deepEqual(selectScannerPanelStat(['15', '135', ''], { trustedVariantCount: 2 }), {
     value: 0,
     candidates: [15, 135],
     ambiguous: true,
