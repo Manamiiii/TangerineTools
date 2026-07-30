@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { access } from 'node:fs/promises'
+import { access, readFile } from 'node:fs/promises'
 
 import {
   ROCK_APPEARANCE_TEMPLATES,
@@ -99,8 +99,9 @@ test('gender color recognition accepts clear symbols and rejects weak or mixed e
   )), null)
 })
 
-test('partner mark templates cover all nine game marks', async () => {
+test('partner mark templates cover no mark and all nine game marks', async () => {
   assert.deepEqual(ROCK_PARTNER_MARK_TEMPLATES.map((template) => template.value), [
+    'none',
     'fruit',
     'lightning',
     'home',
@@ -111,9 +112,17 @@ test('partner mark templates cover all nine game marks', async () => {
     'mdef',
     'spd',
   ])
-  await Promise.all(ROCK_PARTNER_MARK_TEMPLATES.map((template) => access(
-    new URL(`../../public/icons/rock-kingdom-partner-marks/${template.fileName}`, import.meta.url),
-  )))
+  await Promise.all(ROCK_PARTNER_MARK_TEMPLATES.map(async (template) => {
+    const url = new URL(
+      `../../public/icons/rock-kingdom-partner-marks/${template.fileName}`,
+      import.meta.url,
+    )
+    await access(url)
+    const image = await readFile(url)
+    assert.equal(image.subarray(1, 4).toString(), 'PNG')
+    assert.equal(image.readUInt32BE(16), 72)
+    assert.equal(image.readUInt32BE(20), 72)
+  }))
 })
 
 test('partner mark matching accepts a clear shape, rejects ambiguity, and recognizes no mark', () => {

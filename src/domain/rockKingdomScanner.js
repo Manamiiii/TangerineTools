@@ -26,6 +26,7 @@ export const ROCK_APPEARANCE_TEMPLATES = [
 ]
 
 export const ROCK_PARTNER_MARK_TEMPLATES = [
+  { value: 'none', label: '无', fileName: 'none.png' },
   { value: 'fruit', label: '果实', fileName: 'fruit.png' },
   { value: 'lightning', label: '闪电', fileName: 'lightning.png' },
   { value: 'home', label: '房屋', fileName: 'home.png' },
@@ -41,7 +42,7 @@ export const ROCK_SCANNER_CROP_PROFILE = {
   // 根据用户提供的 1280 × 576 总览图标定。坐标使用比例，允许等比例缩放。
   name: { label: '名称', x: 0.688, y: 0.125, width: 0.105, height: 0.06 },
   gender: { label: '性别', x: 0.688, y: 0.12, width: 0.112, height: 0.075 },
-  partnerMark: { label: '伙伴标记', x: 0.858, y: 0.185, width: 0.03, height: 0.06 },
+  partnerMark: { label: '伙伴标记', x: 0.861875, y: 0.188889, width: 0.0225, height: 0.05 },
   bloodline: { label: '血脉', x: 0.9, y: 0.185, width: 0.055, height: 0.06 },
   nature: { label: '性格', x: 0.735, y: 0.755, width: 0.095, height: 0.07 },
   specialty: { label: '特长', x: 0.855, y: 0.755, width: 0.095, height: 0.07 },
