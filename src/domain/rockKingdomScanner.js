@@ -478,7 +478,8 @@ export function parseScannerLevel(value) {
   const match = source.match(/(?:^|\D)([1-5]?\d|60)\s*\/\s*60(?:\D|$)/)
     || source.match(/^([1-5]?\d|60)$/)
   if (match) return Number(match[1])
-  const compact = source.replace(/\D/g, '').match(/^([1-5]?\d|60)60$/)
+  // 等级面板分母固定为 60；部分浏览器 OCR 会把末尾 60 读成 50。
+  const compact = source.replace(/\D/g, '').match(/^([1-5]?\d|60)(?:50|60)$/)
   return compact ? Number(compact[1]) : 0
 }
 

@@ -502,8 +502,9 @@ test('level recognition keeps only the current one-to-sixty panel level', () => 
   assert.equal(parseScannerLevel(' 44 / 60 '), 44)
   assert.equal(parseScannerLevel('60/60'), 60)
   assert.equal(parseScannerLevel('1360'), 13)
+  assert.equal(parseScannerLevel('1350'), 13)
   assert.equal(parseScannerLevel('0/18770'), 0)
-  assert.deepEqual(selectScannerLevel(['', '1360', '13/60']), {
+  assert.deepEqual(selectScannerLevel(['/60', '1350', '1350']), {
     value: 13,
     candidates: [13],
     ambiguous: false,
@@ -626,7 +627,7 @@ test('real Duck OCR candidates recover level 13 and resolve Burning Duck from fo
     { value: 'rise', label: '鸭吉吉（起来鸭）', traitName: '挺起胸脯', stats: { hp: 107, patk: 53, matk: 125, pdef: 80, mdef: 113, spd: 100 } },
   ]
   const options = {
-    level: selectScannerLevel(['', '1360', '13/60']).value,
+    level: selectScannerLevel(['/60', '1350', '1350']).value,
     stars: 0,
     nature: { raise: 'mdef', lower: 'patk' },
   }
