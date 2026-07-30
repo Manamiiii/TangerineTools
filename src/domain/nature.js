@@ -377,7 +377,13 @@ export function analyzeSkillInfo(skillInfo = {}) {
   const effectTagCounts = Object.fromEntries(
     [...new Set(items.flatMap((item) => item.effectTags))].map((tag) => [tag, countTagged(items, tag)]),
   )
-  const speedRequired = Boolean(effectTagCounts.priority || effectTagCounts.speed)
+  const speedEvidenceCount = items.filter((item) =>
+    item.effectTags.includes('priority') || item.effectTags.includes('speed')).length
+  const speedRequired = speedEvidenceCount > 0
+  const coreSpeedRequired = speedEvidenceCount >= 3
+  const slowEvidenceCount = items.filter((item) =>
+    /先手\s*[-−]\s*\d|后手|后出手|对方先(?:行动|出手)/.test(skillItemText(item))).length
+  const slowRequired = slowEvidenceCount >= 2
   const backLoaded = Boolean(effectTagCounts.counterAttack)
   const control = Boolean(effectTagCounts.control)
   const sustain = Boolean(effectTagCounts.healing || effectTagCounts.damageReduction)
@@ -394,6 +400,10 @@ export function analyzeSkillInfo(skillInfo = {}) {
     attackMode,
     routeGap: Math.round(routeGap * 10) / 10,
     speedRequired,
+    coreSpeedRequired,
+    speedEvidenceCount,
+    slowRequired,
+    slowEvidenceCount,
     backLoaded,
     control,
     support,
@@ -421,8 +431,8 @@ export function analyzeSkillInfo(skillInfo = {}) {
         attackMode === 'physical' && '物理路线',
         attackMode === 'magical' && '魔法路线',
         attackMode === 'mixed' && '双攻',
-        speedRequired && '先手',
-        backLoaded && '后手',
+        coreSpeedRequired ? '核心先手' : speedRequired && '速度线索',
+        backLoaded && '应对/反击',
         control && '控制',
         sustain && '续航/减伤',
         support && '辅助',
@@ -538,7 +548,7 @@ export function analyzeSpeedProfile(baseStats = {}, traitTags = [], roles = null
   const roleList = roles || inferRoles(stats, traitTags)
   const speedTraitTags = ['spdLean', 'conditionalSpeedBoost', 'swiftSkill']
   const hasExplicitSpeedDemand =
-    Boolean(skillProfile?.speedRequired) ||
+    Boolean(skillProfile?.coreSpeedRequired) ||
     traitTags.some((tag) => speedTraitTags.includes(tag))
   const speedProjection = projectStandardSpeedLine(stats.spd)
   const speedSkillShouldRaiseConcern =
@@ -563,7 +573,7 @@ export function analyzeSpeedProfile(baseStats = {}, traitTags = [], roles = null
       ...speedConcern,
       level: 'medium',
       label: SPEED_CONCERN_LABELS.medium,
-      reason: `技能或特性线索明确需要先手；加速满个体面板可越过基础速度 ${STAT_PERCENTILE_BANDS.spd.p50} 的中速竞争线`,
+      reason: `核心技能组或特性明确需要先手；加速满个体面板可越过基础速度 ${STAT_PERCENTILE_BANDS.spd.p50} 的中速竞争线`,
     }
   }
   const raised = speedProjection.raisedEquivalentBase
@@ -581,6 +591,7 @@ export function analyzeSpeedProfile(baseStats = {}, traitTags = [], roles = null
     loweredCrossedAnchors: crossedSpeedAnchors(lowered, stats.spd),
     standard,
     concern: speedConcern,
+    hasExplicitSpeedDemand,
     note: `满速度个体最终面板：无修正 ${standard.maxIndividual}，加速 ${standard.raised}，减速 ${standard.lowered}；锚点按相同满速度个体的最终面板比较。实战仍会受技能优先级与临场速度变化影响。`,
   }
 }
@@ -933,6 +944,10 @@ export function evaluateNatureCandidate(
   const lowerBand = analysis.percentiles[candidate.lower]?.score || 0
 
   let score = 25
+  const canTreatSpeedAsSacrifice =
+    stats.spd < STAT_PERCENTILE_BANDS.spd.p25 ||
+    skillProfile.slowRequired ||
+    skillProfile.boostTransfer
   score += raiseCore * 11
   score += raiseTrait * 7
   score += Math.max(0, raiseBand - 2) * 4
@@ -961,15 +976,22 @@ export function evaluateNatureCandidate(
     }
   }
   if (candidate.lower === 'spd') {
-    const speedPenalty = { high: 14, medium: 7, low: 2 }[speedProfile.concern.level]
+    const speedPenalty = speedProfile.concern.level === 'low' && !canTreatSpeedAsSacrifice
+      ? 10
+      : { high: 14, medium: 7, low: 2 }[speedProfile.concern.level]
     score -= speedPenalty
     if (speedProfile.loweredTier !== speedProfile.baseTier || speedProfile.loweredCrossedAnchors.length > 0) {
       const message = `基础速度 ${speedProfile.base} 属于${speedProfile.baseTier}；减速满个体最终面板 ${speedProfile.standard.lowered}，相当于无修正满个体基础速度约 ${speedProfile.lowered}，会失去 ${speedProfile.loweredCrossedAnchors.join(' / ') || '无'} 锚点。${speedProfile.concern.reason}`
-      if (speedProfile.concern.level === 'low') reasons.push(`${message}，可作为低速路线的牺牲项`)
+      if (speedProfile.concern.level === 'low' && canTreatSpeedAsSacrifice) reasons.push(`${message}，可作为低速路线的牺牲项`)
       else warnings.push(message)
     }
   }
-  if (candidate.lower === 'spd' && roles.slice(0, 2).some((r) => r.key === 'bulky') && speedProfile.concern.level === 'low') {
+  if (
+    candidate.lower === 'spd' &&
+    roles.slice(0, 2).some((r) => r.key === 'bulky') &&
+    speedProfile.concern.level === 'low' &&
+    canTreatSpeedAsSacrifice
+  ) {
     score += 16
     reasons.push('当前主定位偏耐久站场且速度未进入竞争圈，减速可作为捕捉时的低成本牺牲项')
   }
@@ -1113,9 +1135,9 @@ export function evaluateNatureCandidate(
     score -= 10
     warnings.push('特性或技能机制依赖迅捷；迅捷技能对位仍会拼速度，弱化速度会降低同迅捷对位能力')
   }
-  if (skillProfile.backLoaded && candidate.lower === 'spd') {
+  if (skillProfile.slowRequired && candidate.lower === 'spd') {
     score += 10
-    reasons.push('技能线索存在后手/反击收益，减速可作为战术牺牲项')
+    reasons.push('技能文本明确存在后手或负先制收益，减速可作为战术牺牲项')
   }
   if (skillProfile.boostTransfer && candidate.lower === 'spd') {
     score += 8
@@ -1197,7 +1219,7 @@ export function evaluateNatureCandidate(
       traitTags.includes('swiftSkill'))
   const baseHardRisk =
     (lowerCore >= 3.8 && !skillPlausibleSingleAttackRoute && !isMixedAttackTradeoff && !balancedMixedAttackSacrifice &&
-      !(candidate.lower === 'spd' && speedProfile.concern.level === 'low')) ||
+      !(candidate.lower === 'spd' && speedProfile.concern.level === 'low' && canTreatSpeedAsSacrifice)) ||
     (candidate.lower === 'spd' && speedIsPrimaryCore) ||
     (candidate.lower === 'hp' && roles.some((r) => ['bulky', 'support'].includes(r.key)) && lowerExpendable < 1)
   const lowersStandoutDefense =

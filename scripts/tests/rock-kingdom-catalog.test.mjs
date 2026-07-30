@@ -225,7 +225,7 @@ test('speed anchors compare final panels with the same max individual value', ()
     { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 65 },
     [],
     null,
-    { speedRequired: true },
+    { speedRequired: true, coreSpeedRequired: true },
   )
   assert.equal(profile.standard.maxIndividual, 165)
   assert.equal(profile.standard.raised, 188)
@@ -235,26 +235,39 @@ test('speed anchors compare final panels with the same max individual value', ()
   assert.equal(profile.concern.level, 'medium')
 })
 
-test('formula crossing only rescues the 65 to 83 speed band with explicit speed demand', () => {
-  const speedSkill = {
+test('formula crossing only rescues the 65 to 83 speed band with core speed demand', () => {
+  const incidentalSpeedSkill = {
     skills: [
       { category: 'physical', power: 80, effectTags: ['speed'], effect: '行动后提升速度。' },
     ],
   }
+  const coreSpeedSkills = {
+    skills: [
+      { category: 'physical', power: 80, effectTags: ['speed'], effect: '行动后提升速度。' },
+      { category: 'status', effectTags: ['priority'], effect: '下一次行动获得先手。' },
+      { category: 'status', effectTags: ['speed'], effect: '提升自己的速度。' },
+    ],
+  }
+  const incidental = evaluateAllNatures(
+    { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 65 },
+    [],
+    incidentalSpeedSkill,
+  )
   const crossing = evaluateAllNatures(
     { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 65 },
     [],
-    speedSkill,
+    coreSpeedSkills,
   )
   const belowBand = evaluateAllNatures(
     { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 64 },
     [],
-    speedSkill,
+    coreSpeedSkills,
   )
   const belowBandWithSpeedTrait = evaluateAllNatures(
     { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 64 },
     ['spdLean'],
   )
+  assert.equal(incidental.find((candidate) => candidate.name === '开朗')?.decision, 'notRecommended')
   assert.notEqual(crossing.find((candidate) => candidate.name === '开朗')?.decision, 'notRecommended')
   assert.equal(belowBand.find((candidate) => candidate.name === '开朗')?.decision, 'notRecommended')
   assert.equal(
@@ -520,8 +533,11 @@ test('balanced mixed attackers keep both routes when skill counts remain close',
     return evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
       .find((candidate) => candidate.name === nature)?.decision
   }
-  assert.equal(decisionFor('NO.023', '开朗'), 'keepable')
-  assert.equal(decisionFor('NO.023', '胆小'), 'keepable')
+  assert.equal(decisionFor('NO.023', '开朗'), 'notRecommended')
+  assert.equal(decisionFor('NO.023', '胆小'), 'notRecommended')
+  assert.equal(decisionFor('NO.023', '踏实'), 'notRecommended')
+  assert.equal(decisionFor('NO.023', '勇敢'), 'notRecommended')
+  assert.equal(decisionFor('NO.023', '冷静'), 'notRecommended')
   assert.equal(decisionFor('NO.038', '开朗'), 'keepable')
   assert.equal(decisionFor('NO.038', '胆小'), 'keepable')
   assert.equal(decisionFor('NO.038', '天真'), 'notRecommended')
@@ -557,6 +573,9 @@ test('a confirmed speed-dependent mixed attacker can use formula-crossing speed 
   const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
   assert.equal(candidates.find((candidate) => candidate.name === '开朗')?.decision, 'keepable')
   assert.equal(candidates.find((candidate) => candidate.name === '胆小')?.decision, 'keepable')
+  assert.equal(candidates.find((candidate) => candidate.name === '踏实')?.decision, 'keepable')
+  assert.equal(candidates.find((candidate) => candidate.name === '勇敢')?.decision, 'keepable')
+  assert.equal(candidates.find((candidate) => candidate.name === '冷静')?.decision, 'keepable')
 })
 
 test('functional forms do not sacrifice their standout defense', () => {
