@@ -6,8 +6,6 @@ import {
   ROCK_APPEARANCE_TEMPLATES,
   ROCK_PARTNER_MARK_TEMPLATES,
   ROCK_SCANNER_DEVICE_PROFILE,
-  ROCK_SCANNER_IDENTITY_CROP_PROFILE,
-  ROCK_SCANNER_STAT_VALUE_CROP_PROFILE,
   appearanceTemplateSimilarity,
   appearanceFlags,
   bestAppearanceTemplateMatch,
@@ -41,17 +39,6 @@ test('scanner accepts the fixed 3200 by 1440 recording profile', () => {
     height: 1440,
     label: '固定手机 · 3200×1440 横屏',
   })
-})
-
-test('panel stat value crops stay inside tone crops and exclude the leading icon area', () => {
-  for (const key of ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']) {
-    const tone = ROCK_SCANNER_IDENTITY_CROP_PROFILE[key]
-    const value = ROCK_SCANNER_STAT_VALUE_CROP_PROFILE[key]
-    assert.ok(value.x > tone.x)
-    assert.ok(value.x + value.width <= tone.x + tone.width)
-    assert.equal(value.y, tone.y)
-    assert.equal(value.height, tone.height)
-  }
 })
 
 test('panel formula repairs an extra icon digit and rejects an impossible short value', () => {
@@ -93,6 +80,83 @@ test('panel formula repairs an extra icon digit and rejects an impossible short 
     ambiguous: true,
     rejectedByFormula: true,
   })
+  assert.deepEqual(reconcileScannerPanelStat({
+    value: 0,
+    candidates: [],
+    ambiguous: false,
+  }, legalSpeed), {
+    value: 0,
+    candidates: [],
+    ambiguous: false,
+  })
+})
+
+test('Board Shell resolves after formula validation repairs 943 and discards speed 7', () => {
+  const candidates = [
+    {
+      value: 'ordinary',
+      label: '板板壳',
+      traitName: '缩壳',
+      stats: { hp: 67, patk: 28, matk: 72, pdef: 64, mdef: 81, spd: 45 },
+    },
+    {
+      value: 'shedding',
+      label: '板板壳（蜕皮时的样子）',
+      traitName: '缩壳',
+      stats: { hp: 88, patk: 24, matk: 72, pdef: 56, mdef: 59, spd: 48 },
+    },
+  ]
+  const panelStats = { hp: 48, patk: 22, matk: 49, pdef: 943, mdef: 51, spd: 7 }
+  const statTones = Object.fromEntries([
+    ['hp', 'yellow'],
+    ['patk', 'white'],
+    ['matk', 'yellow'],
+    ['pdef', 'white'],
+    ['mdef', 'white'],
+    ['spd', 'yellow'],
+  ].map(([key, tone]) => [key, { tone }]))
+  const options = {
+    level: 1,
+    stars: 0,
+    nature: { raise: 'spd', lower: 'patk' },
+  }
+  const initial = resolveScannerReference({
+    rawName: '板板壳',
+    rawTrait: '缩壳',
+    panelStats,
+    statTones,
+    candidates,
+    ...options,
+  })
+  for (const key of ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']) {
+    const result = reconcileScannerPanelStat({
+      value: panelStats[key],
+      candidates: [panelStats[key]],
+      ambiguous: false,
+    }, scannerLegalPanelStatValues(initial.candidates, key, {
+      ...options,
+      tone: statTones[key].tone,
+    }))
+    panelStats[key] = result.value
+  }
+  assert.deepEqual(panelStats, {
+    hp: 48,
+    patk: 22,
+    matk: 49,
+    pdef: 43,
+    mdef: 51,
+    spd: 0,
+  })
+  const resolved = resolveScannerReference({
+    rawName: '板板壳',
+    rawTrait: '缩壳',
+    panelStats,
+    statTones,
+    candidates,
+    ...options,
+  })
+  assert.equal(resolved.value, 'ordinary')
+  assert.equal(resolved.source, 'name+formula')
 })
 
 test('panel stat OCR prefers raw engines and only uses processed retries as fallback', () => {

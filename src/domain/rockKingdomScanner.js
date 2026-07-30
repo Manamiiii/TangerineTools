@@ -68,17 +68,6 @@ export const ROCK_SCANNER_IDENTITY_CROP_PROFILE = {
   spd: { label: '速度', x: 0.785, y: 0.64, width: 0.055, height: 0.055 },
 }
 
-export const ROCK_SCANNER_STAT_VALUE_CROP_PROFILE = {
-  // 雷达数值左侧紧邻六维图标，右侧部分项目紧邻升降箭头。
-  // 数字 OCR 使用更窄的区域；颜色识别仍使用上面的完整区域。
-  hp: { label: '生命数字', x: 0.796, y: 0.35, width: 0.032, height: 0.055 },
-  patk: { label: '物攻数字', x: 0.726, y: 0.43, width: 0.03, height: 0.055 },
-  matk: { label: '魔攻数字', x: 0.876, y: 0.43, width: 0.03, height: 0.055 },
-  pdef: { label: '物防数字', x: 0.726, y: 0.57, width: 0.03, height: 0.055 },
-  mdef: { label: '魔防数字', x: 0.876, y: 0.57, width: 0.03, height: 0.055 },
-  spd: { label: '速度数字', x: 0.796, y: 0.64, width: 0.032, height: 0.055 },
-}
-
 export const ROCK_SCANNER_STABILITY_REGION = {
   x: 0.66,
   y: 0.1,
@@ -734,6 +723,7 @@ export function scannerLegalPanelStatValues(
 export function reconcileScannerPanelStat(result = {}, legalValues = []) {
   const legal = new Set(legalValues.map(Number).filter((value) => value > 0))
   const currentValue = Number(result.value) || 0
+  if (currentValue === 0 && (result.candidates || []).length === 0) return result
   if (legal.size === 0 || legal.has(currentValue)) return result
 
   const repairs = new Set()

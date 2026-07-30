@@ -17,7 +17,6 @@ import {
   ROCK_SCANNER_CROP_PROFILE,
   ROCK_SCANNER_DEVICE_PROFILE,
   ROCK_SCANNER_IDENTITY_CROP_PROFILE,
-  ROCK_SCANNER_STAT_VALUE_CROP_PROFILE,
   ROCK_SCANNER_STABILITY_REGION,
   bestScanMatch,
   catalogNameCandidates,
@@ -600,7 +599,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           toneCrop.getContext('2d', { willReadFrequently: true })
             .getImageData(0, 0, toneCrop.width, toneCrop.height),
         )
-        const statCrop = cropImageSource(image, ROCK_SCANNER_STAT_VALUE_CROP_PROFILE[statKey])
+        const statCrop = toneCrop
         const rawVariants = []
         rawVariants.push(await recognizeStructuredImageText(
           statCrop,
