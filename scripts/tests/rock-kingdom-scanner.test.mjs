@@ -6,6 +6,8 @@ import {
   ROCK_APPEARANCE_TEMPLATES,
   ROCK_PARTNER_MARK_TEMPLATES,
   ROCK_SCANNER_DEVICE_PROFILE,
+  ROCK_SCANNER_IDENTITY_CROP_PROFILE,
+  ROCK_SCANNER_STAT_VALUE_CROP_PROFILE,
   appearanceTemplateSimilarity,
   appearanceFlags,
   bestAppearanceTemplateMatch,
@@ -20,11 +22,13 @@ import {
   recognizeGenderColor,
   recognizeScannerStatTone,
   recognizeScannerStarCount,
+  reconcileScannerPanelStat,
   resolveScannerReference,
   scannerAnchorQuality,
   scannerCharacterWhitelist,
   scannerSignatureDifference,
   scannerCultivationFit,
+  scannerLegalPanelStatValues,
   scannerStatShapeSimilarity,
   selectScannerPanelStat,
   selectStableScannerSamples,
@@ -36,6 +40,58 @@ test('scanner accepts the fixed 3200 by 1440 recording profile', () => {
     width: 3200,
     height: 1440,
     label: '固定手机 · 3200×1440 横屏',
+  })
+})
+
+test('panel stat value crops stay inside tone crops and exclude the leading icon area', () => {
+  for (const key of ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']) {
+    const tone = ROCK_SCANNER_IDENTITY_CROP_PROFILE[key]
+    const value = ROCK_SCANNER_STAT_VALUE_CROP_PROFILE[key]
+    assert.ok(value.x > tone.x)
+    assert.ok(value.x + value.width <= tone.x + tone.width)
+    assert.equal(value.y, tone.y)
+    assert.equal(value.height, tone.height)
+  }
+})
+
+test('panel formula repairs an extra icon digit and rejects an impossible short value', () => {
+  const candidates = [
+    { value: 'ordinary', stats: { pdef: 64, spd: 45 } },
+    { value: 'shedding', stats: { pdef: 56, spd: 48 } },
+  ]
+  const options = {
+    level: 1,
+    stars: 0,
+    nature: { raise: 'spd', lower: 'patk' },
+  }
+  const legalPdef = scannerLegalPanelStatValues(candidates, 'pdef', {
+    ...options,
+    tone: 'white',
+  })
+  const legalSpeed = scannerLegalPanelStatValues(candidates, 'spd', {
+    ...options,
+    tone: 'yellow',
+  })
+  assert.ok(legalPdef.includes(43))
+  assert.deepEqual(reconcileScannerPanelStat({
+    value: 943,
+    candidates: [943],
+    ambiguous: false,
+  }, legalPdef), {
+    value: 43,
+    candidates: [943],
+    ambiguous: false,
+    formulaRepaired: true,
+  })
+  assert.deepEqual(reconcileScannerPanelStat({
+    value: 7,
+    candidates: [7],
+    ambiguous: false,
+  }, legalSpeed), {
+    value: 0,
+    candidates: [7],
+    ambiguous: true,
+    rejectedByFormula: true,
   })
 })
 

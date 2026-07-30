@@ -17,6 +17,7 @@ import {
   ROCK_SCANNER_CROP_PROFILE,
   ROCK_SCANNER_DEVICE_PROFILE,
   ROCK_SCANNER_IDENTITY_CROP_PROFILE,
+  ROCK_SCANNER_STAT_VALUE_CROP_PROFILE,
   ROCK_SCANNER_STABILITY_REGION,
   bestScanMatch,
   catalogNameCandidates,
@@ -26,9 +27,11 @@ import {
   recognizeGenderColor,
   recognizeScannerStatTone,
   recognizeScannerStarCount,
+  reconcileScannerPanelStat,
   resolveScannerReference,
   scannerAnchorQuality,
   scannerCharacterWhitelist,
+  scannerLegalPanelStatValues,
   scannerOptionCandidates,
   selectScannerPanelStat,
   selectStableScannerSamples,
@@ -215,13 +218,33 @@ function ScannerFormulaDiagnostics({ identity }) {
   }).join(' / ')
   const uncertainOcr = Object.entries(SCANNER_STAT_LABELS).flatMap(([key, label]) => {
     const result = identity.panelStatOcr?.[key]
-    if (!result || (result.value && result.candidates.length <= 1)) return []
+    if (
+      !result
+      || (
+        result.value
+        && result.candidates.length <= 1
+        && !result.formulaRepaired
+      )
+    ) return []
     const candidates = result.candidates.length > 0 ? result.candidates.join('、') : '均为空'
-    return [`${label}：${candidates}${result.ambiguous ? '（结果冲突）' : ''}`]
+    const note = result.formulaRepaired
+      ? `（公式纠正为 ${result.value}）`
+      : result.rejectedByFormula
+        ? '（超出合法面板）'
+        : result.ambiguous
+          ? '（结果冲突）'
+          : ''
+    return [`${label}：${candidates}${note}`]
   })
   const candidates = (identity.candidates || []).slice(0, 4)
   return (
-    <div className="scanner-formula-diagnostics">
+    <div
+      className="scanner-formula-diagnostics"
+      onClick={(event) => {
+        event.preventDefault()
+        event.stopPropagation()
+      }}
+    >
       <strong>形态公式诊断</strong>
       <span>
         输入：{identity.level ? `${identity.level}级` : '等级未识别'}
@@ -572,11 +595,12 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       const panelStatOcr = {}
       const statTones = {}
       for (const statKey of ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']) {
-        const statCrop = cropImageSource(image, ROCK_SCANNER_IDENTITY_CROP_PROFILE[statKey])
+        const toneCrop = cropImageSource(image, ROCK_SCANNER_IDENTITY_CROP_PROFILE[statKey])
         statTones[statKey] = recognizeScannerStatTone(
-          statCrop.getContext('2d', { willReadFrequently: true })
-            .getImageData(0, 0, statCrop.width, statCrop.height),
+          toneCrop.getContext('2d', { willReadFrequently: true })
+            .getImageData(0, 0, toneCrop.width, toneCrop.height),
         )
+        const statCrop = cropImageSource(image, ROCK_SCANNER_STAT_VALUE_CROP_PROFILE[statKey])
         const rawVariants = []
         rawVariants.push(await recognizeStructuredImageText(
           statCrop,
@@ -617,6 +641,35 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         statTones,
         candidates: nameCandidates,
       })
+      if (identity.candidates?.length > 0) {
+        let panelStatsChanged = false
+        for (const statKey of ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']) {
+          const reconciled = reconcileScannerPanelStat(
+            panelStatOcr[statKey],
+            scannerLegalPanelStatValues(identity.candidates, statKey, {
+              level,
+              stars,
+              nature,
+              tone: statTones[statKey]?.tone,
+            }),
+          )
+          if (reconciled.value !== panelStatOcr[statKey].value) panelStatsChanged = true
+          panelStatOcr[statKey] = reconciled
+          panelStats[statKey] = reconciled.value
+        }
+        if (panelStatsChanged) {
+          identity = resolveScannerReference({
+            rawName: matched.raw.ref,
+            rawTrait,
+            panelStats,
+            level,
+            stars,
+            nature,
+            statTones,
+            candidates: nameCandidates,
+          })
+        }
+      }
       identity = {
         ...identity,
         rawTrait,
