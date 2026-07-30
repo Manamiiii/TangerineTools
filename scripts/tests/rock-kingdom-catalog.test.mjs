@@ -155,6 +155,51 @@ test('cultivation formula reproduces the level-one Board Shell scanner panel', (
   assert.equal(cultivationNatureModifier('pdef', { raise: 'pdef', lower: 'spd' }, 5), 1.2)
 })
 
+test('cultivation formula reproduces user-verified qualification and radar panels', () => {
+  const panel = (baseStats, individualStats, nature, level, stars) => Object.fromEntries(
+    Object.entries(baseStats).map(([key, baseValue]) => [
+      key,
+      calculateCultivatedStat(baseValue, key, {
+        level,
+        stars,
+        individualDisplayValue: individualStats[key] || 0,
+        natureModifier: cultivationNatureModifier(key, nature, stars),
+      }),
+    ]),
+  )
+
+  assert.deepEqual(
+    panel(
+      { hp: 120, patk: 80, matk: 80, pdef: 105, mdef: 105, spd: 92 },
+      { patk: 10, matk: 10, spd: 10 },
+      { raise: 'spd', lower: 'mdef' },
+      60,
+      5,
+    ),
+    { hp: 374, patk: 181, matk: 181, pdef: 175, mdef: 163, spd: 223 },
+  )
+  assert.deepEqual(
+    panel(
+      { hp: 149, patk: 53, matk: 124, pdef: 90, mdef: 129, spd: 70 },
+      { hp: 8, matk: 8, spd: 8 },
+      { raise: 'matk', lower: 'patk' },
+      60,
+      0,
+    ),
+    { hp: 330, patk: 61, matk: 166, pdef: 109, mdef: 152, spd: 91 },
+  )
+  assert.deepEqual(
+    panel(
+      { hp: 51, patk: 53, matk: 53, pdef: 80, mdef: 44, spd: 54 },
+      { hp: 8, patk: 8, mdef: 8 },
+      { raise: 'patk', lower: 'matk' },
+      1,
+      0,
+    ),
+    { hp: 40, patk: 43, matk: 33, pdef: 51, mdef: 34, spd: 38 },
+  )
+})
+
 test('standard stat formula applies three editable individual bonuses and nature multipliers', () => {
   const baseStats = { hp: 97, patk: 114, matk: 110, pdef: 101, mdef: 89, spd: 120 }
   const individualStats = { hp: 10, patk: 10, matk: 0, pdef: 0, mdef: 0, spd: 10 }

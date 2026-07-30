@@ -39,6 +39,7 @@ import { useModelConfig } from '../features/model/useModelConfig.js'
 import { explainRockNature } from '../features/rock-kingdom-model/rockKingdomModel.js'
 import { EmptyState, FormRow, OptionTag, SearchableSelect, StatsChart } from './common.jsx'
 import { OwnedFormModal } from './owned.jsx'
+import { RockKingdomStatFormulaGuide } from './RockKingdomStatFormulaGuide.jsx'
 
 const EMPTY_STATS = Object.fromEntries(STATS_DIMENSIONS.map((d) => [d.key, '']))
 const EMPTY_INDIVIDUAL_STATS = Object.fromEntries(STATS_DIMENSIONS.map((d) => [d.key, 0]))
@@ -1425,6 +1426,7 @@ function NatureStatsBars({ nature, baseStats, adjustedStats }) {
   return (
     <div className="nature-bars">
       <div className="nature-formula-caption">公式面板（已计入所选个体与当前性格）</div>
+      <RockKingdomStatFormulaGuide />
       {STATS_DIMENSIONS.map((d) => {
         const base = baseStats[d.key] || 0
         const adjusted = adjustedStats[d.key] || 0

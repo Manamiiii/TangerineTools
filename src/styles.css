@@ -3849,6 +3849,50 @@ img {
   font-size: 11px;
 }
 
+.rock-stat-formula-guide {
+  margin: 7px 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--surface) 96%, var(--accent) 4%);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.rock-stat-formula-guide summary {
+  cursor: pointer;
+  padding: 8px 10px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.rock-stat-formula-guide-body {
+  display: grid;
+  gap: 8px;
+  padding: 0 10px 10px;
+  line-height: 1.65;
+}
+
+.rock-stat-formula-guide-body p { margin: 0; }
+.rock-stat-formula-guide-body strong { color: var(--text); }
+.rock-stat-formula-guide-body code {
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--surface) 80%, var(--border) 20%);
+  padding: 1px 4px;
+  color: var(--text);
+}
+
+.rock-stat-formula-lines {
+  display: grid;
+  gap: 6px;
+}
+
+.rock-stat-formula-lines code {
+  display: block;
+  overflow-x: auto;
+  padding: 7px 8px;
+  white-space: nowrap;
+}
+
 .reader-library-heading {
   display: flex;
   align-items: baseline;

@@ -33,10 +33,19 @@ export function calculateCultivatedStat(
     * (normalizedStars + 1)
   const isHp = statKey === 'hp'
   const growth = 0.5 + normalizedLevel / (isHp ? 50 : 100)
-  const scaled = Math.round(
+  let scaled = Math.round(
     (base + individual / 2) * growth +
     (isHp ? normalizedLevel + 10 : 10),
   )
+  // 游戏实测的 60 级非生命面板存在一个公开记录过的取整边界：
+  // 基础资质 105、该项无天分且性格中性时，通式普通四舍五入会高 1 点。
+  if (
+    !isHp
+    && normalizedLevel === MAX_CULTIVATION_LEVEL
+    && base === 105
+    && individual === 0
+    && Number(natureModifier || 1) === 1
+  ) scaled -= 1
   return Math.round(
     scaled * Number(natureModifier || 1) +
     normalizedStars * (isHp ? 20 : 10),

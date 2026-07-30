@@ -4,6 +4,7 @@ import { Camera, Check, FileImage, ScanLine, Settings2, Sparkles, Trash2, Video 
 import { createRow, db } from '../../db.js'
 import { FieldInput } from '../../components/catalog.jsx'
 import { FormRow, Modal } from '../../components/common.jsx'
+import { RockKingdomStatFormulaGuide } from '../../components/RockKingdomStatFormulaGuide.jsx'
 import { recognizeStructuredImageText } from '../ocr/localOcr.js'
 import {
   captureVideoFrame,
@@ -745,6 +746,8 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           </ol>
           <p>视频、截图和 OCR 默认只在当前浏览器本地处理，原媒体不会写入 IndexedDB。只有点击“AI 纠错”时，当前帧的低置信 OCR 文字和有限候选会发送给已配置模型，图片不会发送。</p>
         </details>
+
+        <RockKingdomStatFormulaGuide scanner />
 
         <div className="scanner-import-row">
           <label className="btn">
