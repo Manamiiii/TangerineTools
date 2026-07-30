@@ -33,6 +33,7 @@ import {
   scannerLegalPanelStatValues,
   scannerOptionCandidates,
   selectScannerPanelStat,
+  selectScannerLevel,
   selectStableScannerSamples,
   valuesWithAppearance,
 } from '../../domain/rockKingdomScanner.js'
@@ -198,7 +199,7 @@ function formulaFailureLabel(identity) {
     'missing-level': '等级未识别，公式未启动。',
     'missing-stars': '星级未识别，公式未启动。',
     'missing-nature': '性格未识别；请先手动选择性格，再点击“按公式重判形态”。',
-    'insufficient-stats': '可用六维不足：需要至少 5 项数字，或至少 3 项可靠白色未加成数值。',
+    'insufficient-stats': '可用六维不足：需要至少 5 项数字、至少 3 项可靠白色数值，或 4 项数字且其中至少 2 项为可靠白色。',
     'formula-unavailable': '当前输入无法生成合法培养面板。',
     'best-error-too-high': `最佳候选误差超过 ${diagnostics?.maximumFormulaRmse ?? 2.5}。`,
     'candidate-gap-too-small': `前两名误差差距低于 ${diagnostics?.minimumFormulaRmseGap ?? 1.5}。`,
@@ -255,8 +256,16 @@ function ScannerFormulaDiagnostics({ identity }) {
       <span>
         口径：{diagnostics.mode === 'white-first'
           ? `优先使用白色未加成项（${diagnostics.whiteStatKeys.map((key) => SCANNER_STAT_LABELS[key]).join('、')}）`
-          : '使用全部已识别数值并枚举天分'}
+          : diagnostics.mode === 'mixed-evidence'
+            ? `使用四项以上数值；白色项固定未加成（${diagnostics.whiteStatKeys.map((key) => SCANNER_STAT_LABELS[key]).join('、')}），其余枚举天分`
+            : '使用全部已识别数值并枚举天分'}
       </span>
+      {identity.levelOcr?.rawVariants?.length > 0 && (
+        <span>
+          等级重试：{identity.levelOcr.rawVariants.filter(Boolean).join(' / ') || '均为空'}
+          {identity.levelOcr.ambiguous ? '（结果冲突）' : ''}
+        </span>
+      )}
       {candidates.length > 0 && (
         <span>
           候选误差：{candidates.map((candidate) => (
@@ -579,12 +588,33 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       }
       const rawTrait = bestVariantText(traitVariants, availableTraits)
       const levelCrop = cropImageSource(image, ROCK_SCANNER_IDENTITY_CROP_PROFILE.level)
-      const rawLevel = await recognizeStructuredImageText(
+      const levelVariants = []
+      levelVariants.push(await recognizeStructuredImageText(
         levelCrop,
         undefined,
         { pageSegmentationMode: '7', characterWhitelist: '0123456789/' },
-      )
-      const level = parseScannerLevel(rawLevel)
+      ))
+      levelVariants.push(await recognizeNumericImageText(levelCrop))
+      let levelOcr = selectScannerLevel(levelVariants)
+      if (!levelOcr.value) {
+        const preparedLevelCrop = prepareScannerTextCrop(levelCrop, { width: 512, height: 160 })
+        levelVariants.push(await recognizeNumericImageText(
+          preparedLevelCrop,
+          undefined,
+          { pageSegmentationMode: '7' },
+        ))
+        levelVariants.push(await recognizeNumericImageText(
+          preparedLevelCrop,
+          undefined,
+          { pageSegmentationMode: '8' },
+        ))
+        levelOcr = selectScannerLevel(levelVariants)
+      }
+      levelOcr = { ...levelOcr, rawVariants: levelVariants }
+      const rawLevel = levelVariants.find((value) => parseScannerLevel(value) === levelOcr.value)
+        || levelVariants.find(Boolean)
+        || ''
+      const level = levelOcr.value
       const starsCrop = cropImageSource(image, ROCK_SCANNER_IDENTITY_CROP_PROFILE.stars, 1)
       const stars = recognizeScannerStarCount(
         starsCrop.getContext('2d', { willReadFrequently: true })
@@ -673,6 +703,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         ...identity,
         rawTrait,
         rawLevel,
+        levelOcr,
         level,
         stars,
         nature,
@@ -777,6 +808,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         ...identity,
         rawTrait: selected.identity.rawTrait,
         rawLevel: selected.identity.rawLevel,
+        levelOcr: selected.identity.levelOcr,
         level: selected.identity.level,
         stars: selected.identity.stars,
         nature,

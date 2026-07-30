@@ -477,7 +477,28 @@ export function parseScannerLevel(value) {
   const source = String(value || '').trim()
   const match = source.match(/(?:^|\D)([1-5]?\d|60)\s*\/\s*60(?:\D|$)/)
     || source.match(/^([1-5]?\d|60)$/)
-  return match ? Number(match[1]) : 0
+  if (match) return Number(match[1])
+  const compact = source.replace(/\D/g, '').match(/^([1-5]?\d|60)60$/)
+  return compact ? Number(compact[1]) : 0
+}
+
+export function selectScannerLevel(rawVariants = []) {
+  const parsed = rawVariants.map(parseScannerLevel).filter((value) => value > 0)
+  const candidates = [...new Set(parsed)]
+  if (candidates.length === 0) return { value: 0, candidates: [], ambiguous: false }
+  const ranked = candidates
+    .map((value, firstIndex) => ({
+      value,
+      firstIndex,
+      count: parsed.filter((candidate) => candidate === value).length,
+    }))
+    .sort((left, right) => right.count - left.count || left.firstIndex - right.firstIndex)
+  const ambiguous = ranked.length > 1 && ranked[0].count === ranked[1].count
+  return {
+    value: ambiguous ? 0 : ranked[0].value,
+    candidates,
+    ambiguous,
+  }
 }
 
 function pixelAt(pixels, width, height, x, y) {
@@ -726,6 +747,18 @@ export function reconcileScannerPanelStat(result = {}, legalValues = []) {
   if (currentValue === 0 && (result.candidates || []).length === 0) return result
   if (legal.size === 0 || legal.has(currentValue)) return result
 
+  const exactRepairs = new Set(
+    (result.candidates || []).map(Number).filter((value) => legal.has(value)),
+  )
+  if (exactRepairs.size === 1) {
+    return {
+      ...result,
+      value: [...exactRepairs][0],
+      ambiguous: false,
+      formulaRepaired: true,
+    }
+  }
+
   const repairs = new Set()
   for (const candidate of result.candidates || []) {
     const recognized = String(candidate)
@@ -823,9 +856,10 @@ export function scannerCultivationFit(
   ))
   const whiteStatKeys = comparableKeys.filter((key) => statTones[key]?.tone === 'white')
   const useWhiteStats = whiteStatKeys.length >= 3
+  const useMixedEvidence = !useWhiteStats && whiteStatKeys.length >= 2 && comparableKeys.length >= 4
   const formulaStatKeys = useWhiteStats ? whiteStatKeys : comparableKeys
   if (
-    formulaStatKeys.length < (useWhiteStats ? 3 : 5)
+    formulaStatKeys.length < (useWhiteStats ? 3 : useMixedEvidence ? 4 : 5)
     || normalizedLevel < 1
     || normalizedLevel > MAX_CULTIVATION_LEVEL
     || stars == null
@@ -837,7 +871,7 @@ export function scannerCultivationFit(
   ) return null
   let best = null
   for (const individualStats of SCANNER_INDIVIDUAL_ALLOCATIONS) {
-    if (useWhiteStats && whiteStatKeys.some((key) => individualStats[key] > 0)) continue
+    if ((useWhiteStats || useMixedEvidence) && whiteStatKeys.some((key) => individualStats[key] > 0)) continue
     let squaredError = 0
     let absoluteError = 0
     const predictedStats = {}
@@ -861,7 +895,7 @@ export function scannerCultivationFit(
       score: Math.exp(-rmse / 6),
       predictedStats,
       individualStats: { ...individualStats },
-      mode: useWhiteStats ? 'white-first' : 'all-stats',
+      mode: useWhiteStats ? 'white-first' : useMixedEvidence ? 'mixed-evidence' : 'all-stats',
       statKeys: [...formulaStatKeys],
       whiteStatKeys: [...whiteStatKeys],
     }
@@ -885,7 +919,10 @@ function formulaFailureCode({
   if (Number(level) < 1 || Number(level) > MAX_CULTIVATION_LEVEL) return 'missing-level'
   if (stars == null || !Number.isInteger(Number(stars))) return 'missing-stars'
   if (!nature?.raise || !nature?.lower) return 'missing-nature'
-  if (recognizedStatKeys.length < 5 && whiteStatKeys.length < 3) return 'insufficient-stats'
+  const hasMixedEvidence = recognizedStatKeys.length >= 4 && whiteStatKeys.length >= 2
+  if (recognizedStatKeys.length < 5 && whiteStatKeys.length < 3 && !hasMixedEvidence) {
+    return 'insufficient-stats'
+  }
   if (!best?.cultivationFit) return 'formula-unavailable'
   if (best.cultivationFit.rmse > maximumFormulaRmse) return 'best-error-too-high'
   if (

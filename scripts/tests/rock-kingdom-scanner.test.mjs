@@ -29,6 +29,7 @@ import {
   scannerLegalPanelStatValues,
   scannerStatShapeSimilarity,
   selectScannerPanelStat,
+  selectScannerLevel,
   selectStableScannerSamples,
   valuesWithAppearance,
 } from '../../src/domain/rockKingdomScanner.js'
@@ -500,7 +501,13 @@ test('level recognition keeps only the current one-to-sixty panel level', () => 
   assert.equal(parseScannerLevel('1/60'), 1)
   assert.equal(parseScannerLevel(' 44 / 60 '), 44)
   assert.equal(parseScannerLevel('60/60'), 60)
+  assert.equal(parseScannerLevel('1360'), 13)
   assert.equal(parseScannerLevel('0/18770'), 0)
+  assert.deepEqual(selectScannerLevel(['', '1360', '13/60']), {
+    value: 13,
+    candidates: [13],
+    ambiguous: false,
+  })
 })
 
 test('level and star formula exactly separates the two Board Shell forms', () => {
@@ -607,6 +614,64 @@ test('cultivation fit reproduces a middle-level Duck form from the scanner video
     mdef: 7,
     spd: 0,
   })
+})
+
+test('real Duck OCR candidates recover level 13 and resolve Burning Duck from four stats', () => {
+  const candidates = [
+    { value: 'fluffy', label: '鸭吉吉（蓬松的样子）', traitName: '挺起胸脯', stats: { hp: 136, patk: 95, matk: 35, pdef: 55, mdef: 45, spd: 105 } },
+    { value: 'solid', label: '鸭吉吉（紧实的样子）', traitName: '挺起胸脯', stats: { hp: 136, patk: 35, matk: 95, pdef: 45, mdef: 55, spd: 105 } },
+    { value: 'urgent', label: '鸭吉吉（急急急鸭）', traitName: '挺起胸脯', stats: { hp: 130, patk: 95, matk: 35, pdef: 55, mdef: 45, spd: 110 } },
+    { value: 'wait', label: '鸭吉吉（等一等鸭）', traitName: '挺起胸脯', stats: { hp: 137, patk: 35, matk: 94, pdef: 46, mdef: 57, spd: 100 } },
+    { value: 'burning', label: '鸭吉吉（燃了鸭）', traitName: '挺起胸脯', stats: { hp: 108, patk: 89, matk: 41, pdef: 74, mdef: 48, spd: 115 } },
+    { value: 'rise', label: '鸭吉吉（起来鸭）', traitName: '挺起胸脯', stats: { hp: 107, patk: 53, matk: 125, pdef: 80, mdef: 113, spd: 100 } },
+  ]
+  const options = {
+    level: selectScannerLevel(['', '1360', '13/60']).value,
+    stars: 0,
+    nature: { raise: 'mdef', lower: 'patk' },
+  }
+  const statTones = {
+    hp: { tone: 'yellow' },
+    patk: { tone: 'yellow' },
+    matk: { tone: 'white' },
+    pdef: { tone: 'white' },
+    mdef: { tone: 'yellow' },
+    spd: { tone: 'white' },
+  }
+  const panelStats = {
+    hp: 108,
+    patk: reconcileScannerPanelStat(
+      { value: 0, candidates: [4627, 527, 62, 852], ambiguous: true },
+      scannerLegalPanelStatValues(candidates, 'patk', { ...options, tone: 'yellow' }),
+    ).value,
+    matk: 36,
+    pdef: reconcileScannerPanelStat(
+      { value: 0, candidates: [5, 457, 57], ambiguous: true },
+      scannerLegalPanelStatValues(candidates, 'pdef', { ...options, tone: 'white' }),
+    ).value,
+    mdef: 0,
+    spd: 0,
+  }
+  assert.deepEqual(panelStats, {
+    hp: 108,
+    patk: 62,
+    matk: 36,
+    pdef: 57,
+    mdef: 0,
+    spd: 0,
+  })
+  const resolved = resolveScannerReference({
+    rawName: '鸭吉吉',
+    rawTrait: '挺起胸脯',
+    panelStats,
+    statTones,
+    candidates,
+    ...options,
+  })
+  assert.equal(resolved.value, 'burning')
+  assert.equal(resolved.source, 'name+formula')
+  assert.equal(resolved.diagnostics.mode, 'mixed-evidence')
+  assert.equal(resolved.candidates[0].cultivationFit.rmse, 0)
 })
 
 test('cultivation fit accepts a lower talent tier with one boosted stat', () => {
