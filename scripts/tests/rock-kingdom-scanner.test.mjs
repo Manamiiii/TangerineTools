@@ -12,6 +12,7 @@ import {
   bestPartnerMarkTemplateMatch,
   bestScanMatch,
   constrainScannerFormulaInputs,
+  findScannerDuplicateCandidates,
   isScannerFrameReady,
   normalizeScanText,
   normalizedPartnerMarkMask,
@@ -750,4 +751,47 @@ test('scanner frames require both a creature reference and explicit review befor
   assert.equal(isScannerFrameReady({ reviewed: false, values: { ref: 'creature-1' } }), false)
   assert.equal(isScannerFrameReady({ reviewed: true, values: { ref: '' } }), false)
   assert.equal(isScannerFrameReady({ reviewed: true, values: { ref: 'creature-1' } }), true)
+})
+
+test('scanner duplicate detection requires stable identity evidence and ignores mutable marks', () => {
+  const existing = [{
+    id: 'owned-one',
+    createdAt: '2026-07-30T00:00:00.000Z',
+    values: {
+      ref: 'duck-burning',
+      appearance: 'none',
+      nature: 'alert',
+      gender: 'female',
+      specialty: 'share',
+      bloodline: 'electric',
+      partnerMark: 'fruit',
+    },
+  }]
+  const exact = findScannerDuplicateCandidates({
+    ...existing[0].values,
+    partnerMark: 'speed',
+  }, existing)
+  assert.equal(exact.length, 1)
+  assert.equal(exact[0].level, 'exact')
+  assert.equal(exact[0].blocking, true)
+  assert.equal(exact[0].partnerMarkMatches, false)
+
+  const likely = findScannerDuplicateCandidates({
+    ref: 'duck-burning',
+    appearance: 'none',
+    nature: 'alert',
+    gender: 'female',
+    specialty: '',
+  }, existing)
+  assert.equal(likely[0].level, 'likely')
+  assert.deepEqual(likely[0].missingKeys, ['specialty'])
+
+  const differentNature = findScannerDuplicateCandidates({
+    ref: 'duck-burning',
+    appearance: 'none',
+    nature: 'brave',
+    gender: 'female',
+    specialty: 'none',
+  }, existing)
+  assert.equal(differentNature.length, 0)
 })

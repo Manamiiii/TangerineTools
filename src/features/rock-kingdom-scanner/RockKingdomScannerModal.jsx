@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Camera, Check, FileImage, ScanLine, Settings2, Sparkles, Trash2, Video } from 'lucide-react'
+import { AlertTriangle, Camera, Check, FileImage, ScanLine, Settings2, Sparkles, Trash2, Video } from 'lucide-react'
 import { createRow, db } from '../../db.js'
 import { FieldInput } from '../../components/catalog.jsx'
 import { FormRow, Modal } from '../../components/common.jsx'
@@ -21,6 +21,7 @@ import {
   bestScanMatch,
   catalogNameCandidates,
   constrainScannerFormulaInputs,
+  findScannerDuplicateCandidates,
   isScannerFrameReady,
   parseScannerLevel,
   rankScanCandidates,
@@ -103,6 +104,19 @@ const SCANNER_MATCH_OPTIONS = {
   nature: { minimumScore: 0.56, minimumGap: 0.06 },
   bloodline: { minimumScore: 0.56, minimumGap: 0.06 },
   specialty: { minimumScore: 0.56, minimumGap: 0.06 },
+}
+
+const SCANNER_DUPLICATE_FIELD_LABELS = {
+  appearance: '外观',
+  nature: '性格',
+  gender: '性别',
+  specialty: '特长',
+}
+
+function scannerFieldValueLabel(fields, key, value) {
+  const field = fieldByKey(fields, key)
+  const option = field?.options?.find((item) => item.value === value)
+  return option?.label || String(value || '未记录')
 }
 
 function bestVariantText(rawTexts, candidates) {
@@ -312,6 +326,10 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       : [],
     [refField?.referenceTableId || ''],
   )
+  const ownedRows = useLiveQuery(
+    () => db.catalogRows.where('tableId').equals(table.id).toArray(),
+    [table.id],
+  )
   const nameCandidates = useMemo(
     () => catalogNameCandidates(catalogRows || [], catalogFields || []),
     [catalogRows, catalogFields],
@@ -336,6 +354,10 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   } = useModelConfig(MODEL_CONFIG_SCOPE.ROCK_KINGDOM)
 
   const selected = frames.find((frame) => frame.id === selectedId) || frames[0]
+  const selectedDuplicateCandidates = selected
+    ? findScannerDuplicateCandidates(selected.values, ownedRows || [])
+    : []
+  const selectedHasBlockingDuplicate = selectedDuplicateCandidates.some((item) => item.blocking)
 
   useEffect(() => {
     if (!selectedId && frames[0]) setSelectedId(frames[0].id)
@@ -522,6 +544,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           ...frame,
           values: { ...frame.values, [key]: value },
           confidence: { ...frame.confidence, [key]: 1 },
+          duplicateDecision: '',
           reviewed: false,
           status: '待确认',
         }
@@ -755,6 +778,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       values: { ...frame.values, ...matched.patch },
       identity,
       partnerMarkCandidates: partnerMarkResult.ranked,
+      duplicateDecision: '',
       reviewed: false,
       status: matched.patch.ref
         ? '待复核'
@@ -859,6 +883,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         panelStatOcr,
         statTones: selected.identity.statTones,
       },
+      duplicateDecision: '',
       reviewed: false,
       status: identity.value ? '公式已重判，待复核' : '公式仍无法区分',
     })
@@ -907,6 +932,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       patchFrame(selected.id, {
         values: nextValues,
         confidence: nextConfidence,
+        duplicateDecision: '',
         reviewed: false,
         status: 'AI 已补全，待复核',
       })
@@ -924,8 +950,18 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     if (selectedId === frame.id) setSelectedId('')
   }
 
+  function frameHasBlockingDuplicate(frame) {
+    return findScannerDuplicateCandidates(frame.values, ownedRows || [])
+      .some((candidate) => candidate.blocking)
+  }
+
+  function frameCanSave(frame) {
+    if (!isScannerFrameReady(frame)) return false
+    return !frameHasBlockingDuplicate(frame) || frame.duplicateDecision === 'add'
+  }
+
   async function saveReviewed() {
-    const ready = frames.filter(isScannerFrameReady)
+    const ready = frames.filter(frameCanSave)
     if (ready.length === 0) {
       setError('至少需要明确确认一帧完整记录。')
       return
@@ -938,8 +974,9 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         await createRow(table.id, valuesWithAppearance(ready[index].values))
       }
       setProgress(`已写入 ${ready.length} 条收集记录。`)
+      const savedIds = new Set(ready.map((frame) => frame.id))
       setFrames((current) => current.filter((frame) => {
-        if (!frame.values.ref) return true
+        if (!savedIds.has(frame.id)) return true
         releaseLocalUrl(frame.url)
         return false
       }))
@@ -953,7 +990,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
 
   const editableKeys = ['ref', 'nature', 'bloodline', 'appearance', 'specialty', 'partnerMark', 'gender']
   const editableFields = editableKeys.map((key) => fieldByKey(fields, key)).filter(Boolean)
-  const readyCount = frames.filter(isScannerFrameReady).length
+  const readyCount = frames.filter(frameCanSave).length
 
   return (
     <Modal
@@ -1147,6 +1184,77 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                     />
                   ))}
                 </div>
+                {selectedDuplicateCandidates.length > 0 && (
+                  <div className={`scanner-duplicate-warning ${selectedHasBlockingDuplicate ? 'is-blocking' : ''}`}>
+                    <div className="scanner-duplicate-heading">
+                      <AlertTriangle size={17} />
+                      <strong>
+                        {selectedHasBlockingDuplicate
+                          ? `发现 ${selectedDuplicateCandidates.length} 条高度相似的已有记录`
+                          : `发现 ${selectedDuplicateCandidates.length} 条可能相近的已有记录`}
+                      </strong>
+                    </div>
+                    <p>
+                      这是相似度提醒，不会自动覆盖或删除记录。等级、星级和雷达六维会随培养变化，不作为长期身份字段。
+                    </p>
+                    <details>
+                      <summary>查看已有记录与比较依据</summary>
+                      <ul>
+                        {selectedDuplicateCandidates.slice(0, 6).map((candidate) => (
+                          <li key={candidate.row.id}>
+                            <strong>
+                              {candidate.level === 'exact'
+                                ? '四项完全一致'
+                                : candidate.level === 'likely'
+                                  ? '高度相似'
+                                  : '部分相似'}
+                            </strong>
+                            <span>
+                              {Object.keys(SCANNER_DUPLICATE_FIELD_LABELS).map((key) => (
+                                `${SCANNER_DUPLICATE_FIELD_LABELS[key]}：${
+                                  scannerFieldValueLabel(fields, key, candidate.row.values?.[key])
+                                }`
+                              )).join(' · ')}
+                            </span>
+                            <small>
+                              一致：{candidate.matchingKeys
+                                .map((key) => SCANNER_DUPLICATE_FIELD_LABELS[key])
+                                .join('、') || '无'}
+                              {candidate.conflictingKeys.length > 0
+                                ? ` · 不同：${candidate.conflictingKeys
+                                    .map((key) => SCANNER_DUPLICATE_FIELD_LABELS[key])
+                                    .join('、')}`
+                                : ''}
+                              {' · '}血脉{candidate.bloodlineMatches ? '相同' : '不同或缺失'}
+                              {' · '}伙伴标记{candidate.partnerMarkMatches ? '相同' : '不同或缺失'}
+                              {candidate.row.createdAt
+                                ? ` · 录入于 ${new Date(candidate.row.createdAt).toLocaleString('zh-CN')}`
+                                : ''}
+                            </small>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                    <div className="scanner-duplicate-actions">
+                      {selectedHasBlockingDuplicate && (
+                        <button
+                          type="button"
+                          className={`btn ${selected.duplicateDecision === 'add' ? 'btn-primary' : ''}`}
+                          onClick={() => patchFrame(selected.id, {
+                            duplicateDecision: 'add',
+                            reviewed: false,
+                            status: '已确认仍然新增，待确认记录',
+                          })}
+                        >
+                          {selected.duplicateDecision === 'add' ? '已选择仍然新增' : '仍然新增'}
+                        </button>
+                      )}
+                      <button type="button" className="btn" onClick={() => removeFrame(selected)}>
+                        跳过本帧
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <div className="scanner-review-actions">
                   <button type="button" className="btn btn-primary" onClick={recognizeSelected} disabled={Boolean(busy)}>
                     <ScanLine size={15} /> 识别当前画面
@@ -1181,7 +1289,20 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                   <button
                     type="button"
                     className={`btn ${selected.reviewed ? 'btn-primary' : ''}`}
-                    disabled={Boolean(busy) || !selected.values.ref}
+                    disabled={
+                      Boolean(busy)
+                      || !selected.values.ref
+                      || (
+                        !selected.reviewed
+                        && selectedHasBlockingDuplicate
+                        && selected.duplicateDecision !== 'add'
+                      )
+                    }
+                    title={
+                      selectedHasBlockingDuplicate && selected.duplicateDecision !== 'add'
+                        ? '请先查看已有记录，并选择仍然新增或跳过本帧'
+                        : ''
+                    }
                     onClick={() => patchFrame(selected.id, {
                       reviewed: !selected.reviewed,
                       status: selected.reviewed ? '待确认' : '已确认',

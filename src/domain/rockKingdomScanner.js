@@ -585,6 +585,76 @@ export function isScannerFrameReady(frame) {
   return Boolean(frame?.reviewed && frame?.values?.ref)
 }
 
+export const SCANNER_DUPLICATE_IDENTITY_KEYS = [
+  'appearance',
+  'nature',
+  'gender',
+  'specialty',
+]
+
+function scannerComparableValue(value) {
+  if (Array.isArray(value)) return value.map(String).sort().join('|')
+  if (value == null) return ''
+  return String(value).trim()
+}
+
+export function findScannerDuplicateCandidates(values = {}, rows = []) {
+  const reference = scannerComparableValue(values.ref)
+  if (!reference) return []
+  return rows.flatMap((row) => {
+    if (scannerComparableValue(row.values?.ref) !== reference) return []
+    const matchingKeys = []
+    const conflictingKeys = []
+    const missingKeys = []
+    for (const key of SCANNER_DUPLICATE_IDENTITY_KEYS) {
+      const scannedValue = scannerComparableValue(values[key])
+      const existingValue = scannerComparableValue(row.values?.[key])
+      if (!scannedValue || !existingValue) {
+        missingKeys.push(key)
+      } else if (scannedValue === existingValue) {
+        matchingKeys.push(key)
+      } else {
+        conflictingKeys.push(key)
+      }
+    }
+    const rareAppearanceMatch = (
+      scannerComparableValue(values.appearance)
+      && scannerComparableValue(values.appearance) !== 'none'
+      && matchingKeys.includes('appearance')
+    )
+    const exact = conflictingKeys.length === 0 && missingKeys.length === 0
+    const likely = !exact
+      && conflictingKeys.length === 0
+      && (matchingKeys.length >= 3 || (rareAppearanceMatch && matchingKeys.length >= 2))
+    const possible = !exact && !likely && matchingKeys.length >= 2 && conflictingKeys.length <= 1
+    if (!exact && !likely && !possible) return []
+    return [{
+      row,
+      level: exact ? 'exact' : likely ? 'likely' : 'possible',
+      blocking: exact || likely,
+      matchingKeys,
+      conflictingKeys,
+      missingKeys,
+      partnerMarkMatches: (
+        scannerComparableValue(values.partnerMark)
+        && scannerComparableValue(row.values?.partnerMark)
+        && scannerComparableValue(values.partnerMark)
+          === scannerComparableValue(row.values?.partnerMark)
+      ),
+      bloodlineMatches: (
+        scannerComparableValue(values.bloodline)
+        && scannerComparableValue(row.values?.bloodline)
+        && scannerComparableValue(values.bloodline)
+          === scannerComparableValue(row.values?.bloodline)
+      ),
+    }]
+  }).sort((left, right) => (
+    Number(right.blocking) - Number(left.blocking)
+    || right.matchingKeys.length - left.matchingKeys.length
+    || left.conflictingKeys.length - right.conflictingKeys.length
+  ))
+}
+
 export function normalizeScanText(value) {
   return String(value || '')
     .normalize('NFKC')
