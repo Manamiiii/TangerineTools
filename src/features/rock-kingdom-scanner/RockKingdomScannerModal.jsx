@@ -665,10 +665,10 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       }
     >
       <div className="scanner-shell">
-        <details className="scanner-guide" open>
+        <details className="scanner-guide">
           <summary>固定手机录屏方式</summary>
           <ol>
-            <li>固定使用当前手机横屏录制：2400×1080、16 Mbps、24 fps、无声音。</li>
+            <li>固定使用当前手机横屏录制：3200×1440、16 Mbps、24 fps、无声音。</li>
             <li>关闭“显示屏幕触摸”和“显示导航键点击”，避免触点覆盖识别区域。</li>
             <li>在精灵总览页开始录制，每只精灵停留约 1.5～2 秒，只手动切换精灵。</li>
             <li>导入原始 HEVC MP4，使用“智能提取”；不要先经过聊天软件压缩或视频剪辑转码。</li>
@@ -805,7 +805,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
               <div className="scanner-empty">
                 <ScanLine size={28} />
                 <strong>加入一个画面后开始复核</strong>
-                <span>裁切和终态锚点按固定手机的 2400×1080 横屏画面标定。</span>
+                <span>裁切和终态锚点按固定手机的 3200×1440 横屏画面标定。</span>
               </div>
             ) : (
               <>

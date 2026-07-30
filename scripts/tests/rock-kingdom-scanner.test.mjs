@@ -5,6 +5,7 @@ import { access, readFile } from 'node:fs/promises'
 import {
   ROCK_APPEARANCE_TEMPLATES,
   ROCK_PARTNER_MARK_TEMPLATES,
+  ROCK_SCANNER_DEVICE_PROFILE,
   appearanceTemplateSimilarity,
   appearanceFlags,
   bestAppearanceTemplateMatch,
@@ -23,6 +24,14 @@ import {
   selectStableScannerSamples,
   valuesWithAppearance,
 } from '../../src/domain/rockKingdomScanner.js'
+
+test('scanner accepts the fixed 3200 by 1440 recording profile', () => {
+  assert.deepEqual(ROCK_SCANNER_DEVICE_PROFILE, {
+    width: 3200,
+    height: 1440,
+    label: '固定手机 · 3200×1440 横屏',
+  })
+})
 import { OWNED_SPECIALTY_OPTIONS } from '../../src/domain/owned.js'
 
 function syntheticPixels(width, height, foreground = [220, 80, 150]) {

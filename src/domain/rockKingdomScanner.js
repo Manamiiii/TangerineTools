@@ -67,9 +67,9 @@ export const ROCK_SCANNER_STABILITY_REGION = {
 }
 
 export const ROCK_SCANNER_DEVICE_PROFILE = {
-  width: 2400,
-  height: 1080,
-  label: '固定手机 · 2400×1080 横屏',
+  width: 3200,
+  height: 1440,
+  label: '固定手机 · 3200×1440 横屏',
 }
 
 const ROCK_SCANNER_ANCHOR_REGIONS = [
