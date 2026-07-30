@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 artifacts/
+.tmp-video-repack/
 *.local
 
 # Codex credentials and local session state must never enter the repository.
