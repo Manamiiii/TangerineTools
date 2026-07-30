@@ -81,6 +81,38 @@ export const ROCK_SCANNER_DEVICE_PROFILE = {
   label: '固定手机 · 3200×1440 横屏',
 }
 
+export function parseScannerPanelStat(value) {
+  const digits = String(value || '')
+    .normalize('NFKC')
+    .replace(/\D/g, '')
+  if (!digits || digits.length > 4) return 0
+  return Number(digits) || 0
+}
+
+export function selectScannerPanelStat(rawVariants = []) {
+  const parsed = rawVariants
+    .map(parseScannerPanelStat)
+    .filter((value) => value > 0)
+  const candidates = [...new Set(parsed)]
+  if (candidates.length === 0) {
+    return { value: 0, candidates: [], ambiguous: false }
+  }
+
+  const counts = new Map(candidates.map((value) => [
+    value,
+    parsed.filter((candidate) => candidate === value).length,
+  ]))
+  const ranked = candidates
+    .map((value, firstIndex) => ({ value, count: counts.get(value), firstIndex }))
+    .sort((left, right) => right.count - left.count || left.firstIndex - right.firstIndex)
+  const ambiguous = ranked.length > 1 && ranked[0].count === ranked[1].count
+  return {
+    value: ambiguous ? 0 : ranked[0].value,
+    candidates,
+    ambiguous,
+  }
+}
+
 const ROCK_SCANNER_ANCHOR_REGIONS = [
   { x: 0.07, y: 0.02, width: 0.38, height: 0.12, weight: 1.2 },
   { x: 0.57, y: 0.09, width: 0.34, height: 0.13, weight: 1.1 },

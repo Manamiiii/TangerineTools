@@ -14,6 +14,7 @@ import {
   isScannerFrameReady,
   normalizeScanText,
   normalizedPartnerMarkMask,
+  parseScannerPanelStat,
   parseScannerLevel,
   partnerMarkMaskSimilarity,
   recognizeGenderColor,
@@ -25,6 +26,7 @@ import {
   scannerSignatureDifference,
   scannerCultivationFit,
   scannerStatShapeSimilarity,
+  selectScannerPanelStat,
   selectStableScannerSamples,
   valuesWithAppearance,
 } from '../../src/domain/rockKingdomScanner.js'
@@ -34,6 +36,27 @@ test('scanner accepts the fixed 3200 by 1440 recording profile', () => {
     width: 3200,
     height: 1440,
     label: '固定手机 · 3200×1440 横屏',
+  })
+})
+
+test('panel stat OCR joins split digits and requires a winner when retries conflict', () => {
+  assert.equal(parseScannerPanelStat('1 3 5'), 135)
+  assert.equal(parseScannerPanelStat('速度 203'), 203)
+  assert.equal(parseScannerPanelStat('12345'), 0)
+  assert.deepEqual(selectScannerPanelStat(['15', '135', '135']), {
+    value: 135,
+    candidates: [15, 135],
+    ambiguous: false,
+  })
+  assert.deepEqual(selectScannerPanelStat(['', '43', '']), {
+    value: 43,
+    candidates: [43],
+    ambiguous: false,
+  })
+  assert.deepEqual(selectScannerPanelStat(['15', '135', '']), {
+    value: 0,
+    candidates: [15, 135],
+    ambiguous: true,
   })
 })
 import { OWNED_SPECIALTY_OPTIONS } from '../../src/domain/owned.js'

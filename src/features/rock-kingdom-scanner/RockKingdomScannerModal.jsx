@@ -30,6 +30,7 @@ import {
   scannerAnchorQuality,
   scannerCharacterWhitelist,
   scannerOptionCandidates,
+  selectScannerPanelStat,
   selectStableScannerSamples,
   valuesWithAppearance,
 } from '../../domain/rockKingdomScanner.js'
@@ -159,11 +160,6 @@ function traitCandidates(nameCandidates) {
     ])).values()]
 }
 
-function parsePanelStat(value) {
-  const match = String(value || '').match(/\d{1,4}/)
-  return match ? Number(match[0]) : 0
-}
-
 function identityEvidenceLabel(identity) {
   if (!identity) return ''
   const sourceLabels = {
@@ -217,6 +213,12 @@ function ScannerFormulaDiagnostics({ identity }) {
     const tone = identity.statTones?.[key]?.tone || 'unknown'
     return `${label} ${value || '未识别'}（${SCANNER_STAT_TONE_LABELS[tone]}）`
   }).join(' / ')
+  const uncertainOcr = Object.entries(SCANNER_STAT_LABELS).flatMap(([key, label]) => {
+    const result = identity.panelStatOcr?.[key]
+    if (!result || (result.value && result.candidates.length <= 1)) return []
+    const candidates = result.candidates.length > 0 ? result.candidates.join('、') : '均为空'
+    return [`${label}：${candidates}${result.ambiguous ? '（结果冲突）' : ''}`]
+  })
   const candidates = (identity.candidates || []).slice(0, 4)
   return (
     <div className="scanner-formula-diagnostics">
@@ -227,6 +229,7 @@ function ScannerFormulaDiagnostics({ identity }) {
         {' / '}{identity.nature?.name || '性格未识别'}
       </span>
       <span>OCR 六维：{statsText}</span>
+      {uncertainOcr.length > 0 && <span>数字重试：{uncertainOcr.join(' / ')}</span>}
       <span>
         口径：{diagnostics.mode === 'white-first'
           ? `优先使用白色未加成项（${diagnostics.whiteStatKeys.map((key) => SCANNER_STAT_LABELS[key]).join('、')}）`
@@ -566,6 +569,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           .getImageData(0, 0, starsCrop.width, starsCrop.height),
       )
       const panelStats = {}
+      const panelStatOcr = {}
       const statTones = {}
       for (const statKey of ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']) {
         const statCrop = cropImageSource(image, ROCK_SCANNER_IDENTITY_CROP_PROFILE[statKey])
@@ -573,11 +577,28 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           statCrop.getContext('2d', { willReadFrequently: true })
             .getImageData(0, 0, statCrop.width, statCrop.height),
         )
-        panelStats[statKey] = parsePanelStat(await recognizeStructuredImageText(
+        const preparedStatCrop = prepareScannerTextCrop(statCrop, { width: 512, height: 160 })
+        const rawVariants = []
+        rawVariants.push(await recognizeStructuredImageText(
           statCrop,
           undefined,
           { pageSegmentationMode: '7', characterWhitelist: '0123456789' },
         ))
+        rawVariants.push(await recognizeStructuredImageText(
+          preparedStatCrop,
+          undefined,
+          { pageSegmentationMode: '7', characterWhitelist: '0123456789' },
+        ))
+        rawVariants.push(await recognizeStructuredImageText(
+          preparedStatCrop,
+          undefined,
+          { pageSegmentationMode: '8', characterWhitelist: '0123456789' },
+        ))
+        panelStatOcr[statKey] = {
+          ...selectScannerPanelStat(rawVariants),
+          rawVariants,
+        }
+        panelStats[statKey] = panelStatOcr[statKey].value
       }
       const natureOption = fieldByKey(fields, 'nature')?.options
         ?.find((option) => option.value === matched.patch.nature)
@@ -600,6 +621,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         stars,
         nature,
         panelStats,
+        panelStatOcr,
         statTones,
       }
     }
@@ -703,6 +725,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         stars: selected.identity.stars,
         nature,
         panelStats: selected.identity.panelStats,
+        panelStatOcr: selected.identity.panelStatOcr,
         statTones: selected.identity.statTones,
       },
       reviewed: false,
