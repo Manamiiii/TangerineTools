@@ -20,8 +20,10 @@ import {
   bestScanMatch,
   catalogNameCandidates,
   isScannerFrameReady,
+  parseScannerLevel,
   rankScanCandidates,
   recognizeGenderColor,
+  recognizeScannerStarCount,
   resolveScannerReference,
   scannerAnchorQuality,
   scannerCharacterWhitelist,
@@ -29,6 +31,7 @@ import {
   selectStableScannerSamples,
   valuesWithAppearance,
 } from '../../domain/rockKingdomScanner.js'
+import { parseNatureOption } from '../../domain/nature.js'
 import { ModelSettingsModal } from '../model/ModelSettingsModal.jsx'
 import { MODEL_CONFIG_SCOPE, modelConfigIsComplete } from '../model/modelConfig.js'
 import { useModelConfig } from '../model/useModelConfig.js'
@@ -164,8 +167,10 @@ function identityEvidenceLabel(identity) {
   const sourceLabels = {
     name: '游戏名称',
     'name+stats': '同名候选 + 六维形状',
+    'name+formula': '同名候选 + 等级/星级公式',
     trait: '特性',
     'trait+stats': '特性 + 六维形状',
+    'trait+formula': '特性 + 等级/星级公式',
     ambiguous: '同名候选仍无法区分',
     unresolved: '昵称/名称无法关联资料库',
   }
@@ -474,6 +479,18 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         ))
       }
       const rawTrait = bestVariantText(traitVariants, availableTraits)
+      const levelCrop = cropImageSource(image, ROCK_SCANNER_IDENTITY_CROP_PROFILE.level)
+      const rawLevel = await recognizeStructuredImageText(
+        levelCrop,
+        undefined,
+        { pageSegmentationMode: '7', characterWhitelist: '0123456789/' },
+      )
+      const level = parseScannerLevel(rawLevel)
+      const starsCrop = cropImageSource(image, ROCK_SCANNER_IDENTITY_CROP_PROFILE.stars, 1)
+      const stars = recognizeScannerStarCount(
+        starsCrop.getContext('2d', { willReadFrequently: true })
+          .getImageData(0, 0, starsCrop.width, starsCrop.height),
+      )
       const panelStats = {}
       for (const statKey of ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']) {
         const statCrop = cropImageSource(image, ROCK_SCANNER_IDENTITY_CROP_PROFILE[statKey])
@@ -483,13 +500,27 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           { pageSegmentationMode: '7', characterWhitelist: '0123456789' },
         ))
       }
+      const natureOption = fieldByKey(fields, 'nature')?.options
+        ?.find((option) => option.value === matched.patch.nature)
+      const nature = parseNatureOption(natureOption || {})
       identity = resolveScannerReference({
         rawName: matched.raw.ref,
         rawTrait,
         panelStats,
+        level,
+        stars,
+        nature,
         candidates: nameCandidates,
       })
-      identity = { ...identity, rawTrait, panelStats }
+      identity = {
+        ...identity,
+        rawTrait,
+        rawLevel,
+        level,
+        stars,
+        nature,
+        panelStats,
+      }
     }
     if (identity.value) {
       matched.patch.ref = identity.value
@@ -559,6 +590,44 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     } finally {
       setBusy('')
     }
+  }
+
+  function recheckSelectedWithFormula() {
+    if (!selected?.identity?.level || selected.identity.stars == null) return
+    const natureOption = fieldByKey(fields, 'nature')?.options
+      ?.find((option) => option.value === selected.values.nature)
+    const nature = parseNatureOption(natureOption || {})
+    const identity = resolveScannerReference({
+      rawName: selected.raw?.ref,
+      rawTrait: selected.identity.rawTrait,
+      panelStats: selected.identity.panelStats,
+      level: selected.identity.level,
+      stars: selected.identity.stars,
+      nature,
+      candidates: nameCandidates,
+    })
+    patchFrame(selected.id, {
+      values: identity.value
+        ? { ...selected.values, ref: identity.value }
+        : selected.values,
+      confidence: identity.value
+        ? { ...selected.confidence, ref: identity.score }
+        : selected.confidence,
+      identity: {
+        ...identity,
+        rawTrait: selected.identity.rawTrait,
+        rawLevel: selected.identity.rawLevel,
+        level: selected.identity.level,
+        stars: selected.identity.stars,
+        nature,
+        panelStats: selected.identity.panelStats,
+      },
+      reviewed: false,
+      status: identity.value ? '公式已重判，待复核' : '公式仍无法区分',
+    })
+    setProgress(identity.value
+      ? '已按当前性格、等级、星级、六维和三项天分范围重新判断形态。'
+      : '当前公式证据仍不足以拉开候选，请手动选择形态。')
   }
 
   function correctionFields(frame) {
@@ -843,6 +912,15 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                   <button type="button" className="btn btn-primary" onClick={recognizeSelected} disabled={Boolean(busy)}>
                     <ScanLine size={15} /> 识别当前画面
                   </button>
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={recheckSelectedWithFormula}
+                    disabled={Boolean(busy) || !selected.identity?.level || selected.identity?.stars == null}
+                    title="修改性格后，用已识别的等级、星级和六维重新判断同名形态"
+                  >
+                    按公式重判形态
+                  </button>
                   <button type="button" className="btn" onClick={recognizeAll} disabled={Boolean(busy) || frames.length === 0}>
                     识别全部
                   </button>
@@ -894,6 +972,12 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                             ? ` · 候选 ${selected.identity.candidates.slice(0, 4).map((candidate) => candidate.label).join('、')}`
                             : ''}
                           {selected.identity.rawTrait ? ` · 特性 OCR：${selected.identity.rawTrait}` : ''}
+                          {selected.identity.level
+                            ? ` · ${selected.identity.level} 级 / ${selected.identity.stars ?? '?'} 星`
+                            : ''}
+                          {selected.identity.candidates?.[0]?.cultivationFit
+                            ? ` · 公式误差 ${selected.identity.candidates[0].cultivationFit.rmse.toFixed(1)}`
+                            : ''}
                         </small>
                       )}
                       {field.key === 'appearance' && (

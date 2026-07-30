@@ -4,6 +4,19 @@
 import { STATS_DIMENSIONS } from '../constants.js'
 import { OWNED_NATURE_OPTIONS } from './owned.js'
 import { deriveSkillEffectTags } from './rockKingdomTags.js'
+import {
+  MAX_CULTIVATION_LEVEL,
+  MAX_CULTIVATION_STARS,
+  calculateCultivatedStat,
+  cultivationNatureModifier,
+} from './rockKingdomStats.js'
+
+export {
+  MAX_CULTIVATION_LEVEL,
+  MAX_CULTIVATION_STARS,
+  calculateCultivatedStat,
+  cultivationNatureModifier,
+}
 
 const STAT_KEY_BY_CN = {
   生命: 'hp',
@@ -56,7 +69,6 @@ export const NATURE_STAT_MULTIPLIERS = {
 
 export const MAX_INDIVIDUAL_DISPLAY_VALUE = 10
 export const MAX_INDIVIDUAL_STAT_COUNT = 3
-const INDIVIDUAL_INTERNAL_MULTIPLIER = 6
 
 // 预置资料的速度并非连续分布，而是集中在一批固定/半固定速度点上。
 // 速度线展示时使用这些锚点，避免只按连续百分位误判“刚好跨线”的价值。
@@ -160,21 +172,13 @@ function percentileLabel(key, value) {
   return ['极低', '偏低', '中低', '中高', '较高', '顶级'][score]
 }
 
-function normalizedIndividualDisplayValue(value) {
-  return Math.max(0, Math.min(MAX_INDIVIDUAL_DISPLAY_VALUE, Number(value) || 0))
-}
-
 export function calculateStandardStat(baseValue, statKey, individualDisplayValue = 0, natureModifier = 1) {
-  const base = Number(baseValue) || 0
-  if (base <= 0 || !MODIFIABLE_STAT_KEYS.includes(statKey)) return 0
-  const individual = normalizedIndividualDisplayValue(individualDisplayValue) * INDIVIDUAL_INTERNAL_MULTIPLIER
-  const isHp = statKey === 'hp'
-  const scaled = Math.round(
-    base * (isHp ? 1.7 : 1.1) +
-    individual * (isHp ? 0.85 : 0.55) +
-    (isHp ? 70 : 10),
-  )
-  return Math.round(scaled * Number(natureModifier || 1) + (isHp ? 100 : 50))
+  return calculateCultivatedStat(baseValue, statKey, {
+    level: MAX_CULTIVATION_LEVEL,
+    stars: MAX_CULTIVATION_STARS,
+    individualDisplayValue,
+    natureModifier,
+  })
 }
 
 export function calculateStandardStats(baseStats = {}, nature = null, individualStats = {}) {

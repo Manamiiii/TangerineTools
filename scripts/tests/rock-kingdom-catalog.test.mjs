@@ -4,8 +4,10 @@ import test from 'node:test'
 import {
   analyzeSpeedProfile,
   applyNatureModifier,
+  calculateCultivatedStat,
   calculateStandardStat,
   calculateStandardStats,
+  cultivationNatureModifier,
   equivalentNeutralSpeedBase,
   evaluateAllNatures,
   evaluateNatureProfiles,
@@ -120,6 +122,37 @@ test('standard stat formula reproduces the verified max-speed Kakabird panel', (
   assert.equal(calculateStandardStat(120, 'spd', 10, 1.2), 260)
   assert.equal(calculateStandardStat(130, 'spd', 10, 1.2), 273)
   assert.equal(calculateStandardStat(120, 'spd', 0, 1), 192)
+})
+
+test('cultivation formula reproduces the level-one Board Shell scanner panel', () => {
+  const timid = { raise: 'spd', lower: 'patk' }
+  const calculate = (base, key, individualDisplayValue = 0) => calculateCultivatedStat(
+    base,
+    key,
+    {
+      level: 1,
+      stars: 0,
+      individualDisplayValue,
+      natureModifier: cultivationNatureModifier(key, timid, 0),
+    },
+  )
+  assert.deepEqual({
+    hp: calculate(67, 'hp', 7),
+    patk: calculate(28, 'patk'),
+    matk: calculate(72, 'matk', 7),
+    pdef: calculate(64, 'pdef'),
+    mdef: calculate(81, 'mdef'),
+    spd: calculate(45, 'spd', 7),
+  }, {
+    hp: 48,
+    patk: 22,
+    matk: 49,
+    pdef: 43,
+    mdef: 51,
+    spd: 39,
+  })
+  assert.equal(cultivationNatureModifier('pdef', { raise: 'pdef', lower: 'spd' }, 0), 1.1)
+  assert.equal(cultivationNatureModifier('pdef', { raise: 'pdef', lower: 'spd' }, 5), 1.2)
 })
 
 test('standard stat formula applies three editable individual bonuses and nature multipliers', () => {

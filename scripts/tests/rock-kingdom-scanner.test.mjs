@@ -14,12 +14,15 @@ import {
   isScannerFrameReady,
   normalizeScanText,
   normalizedPartnerMarkMask,
+  parseScannerLevel,
   partnerMarkMaskSimilarity,
   recognizeGenderColor,
+  recognizeScannerStarCount,
   resolveScannerReference,
   scannerAnchorQuality,
   scannerCharacterWhitelist,
   scannerSignatureDifference,
+  scannerCultivationFit,
   scannerStatShapeSimilarity,
   selectStableScannerSamples,
   valuesWithAppearance,
@@ -308,6 +311,84 @@ test('stat shape resolves parenthesized forms without depending on level scale',
     panelStats,
     candidates,
   }).value, 'dry')
+})
+
+test('star recognition counts separated gold cultivation icons and ignores gray icons', () => {
+  const width = 200
+  const height = 40
+  const pixels = new Uint8ClampedArray(width * height * 4)
+  for (let offset = 0; offset < pixels.length; offset += 4) {
+    pixels.set([92, 96, 90, 255], offset)
+  }
+  for (let star = 0; star < 3; star += 1) {
+    for (let y = 8; y < 32; y += 1) {
+      for (let x = 8 + star * 38; x < 28 + star * 38; x += 1) {
+        const offset = (y * width + x) * 4
+        pixels.set([240, 178, 62, 255], offset)
+      }
+    }
+  }
+  assert.equal(recognizeScannerStarCount({ pixels, width, height }), 3)
+  assert.equal(recognizeScannerStarCount(syntheticPixels(20, 20, [100, 105, 100])), 0)
+})
+
+test('level recognition keeps only the current one-to-sixty panel level', () => {
+  assert.equal(parseScannerLevel('1/60'), 1)
+  assert.equal(parseScannerLevel(' 44 / 60 '), 44)
+  assert.equal(parseScannerLevel('60/60'), 60)
+  assert.equal(parseScannerLevel('0/18770'), 0)
+})
+
+test('level and star formula exactly separates the two Board Shell forms', () => {
+  const panelStats = { hp: 48, patk: 22, matk: 49, pdef: 43, mdef: 51, spd: 39 }
+  const nature = { raise: 'spd', lower: 'patk' }
+  const ordinaryStats = { hp: 67, patk: 28, matk: 72, pdef: 64, mdef: 81, spd: 45 }
+  const sheddingStats = { hp: 88, patk: 24, matk: 72, pdef: 56, mdef: 59, spd: 48 }
+  assert.equal(scannerCultivationFit(panelStats, ordinaryStats, {
+    level: 1,
+    stars: 0,
+    nature,
+  }).rmse, 0)
+  assert.ok(scannerCultivationFit(panelStats, sheddingStats, {
+    level: 1,
+    stars: 0,
+    nature,
+  }).rmse > 5)
+  const resolved = resolveScannerReference({
+    rawName: '板板壳',
+    rawTrait: '缩壳',
+    panelStats,
+    level: 1,
+    stars: 0,
+    nature,
+    candidates: [
+      { value: 'ordinary', label: '板板壳', traitName: '缩壳', stats: ordinaryStats },
+      { value: 'shedding', label: '板板壳（蜕皮时的样子）', traitName: '缩壳', stats: sheddingStats },
+    ],
+  })
+  assert.equal(resolved.value, 'ordinary')
+  assert.equal(resolved.source, 'name+formula')
+})
+
+test('cultivation fit reproduces a middle-level Duck form from the scanner video', () => {
+  const fit = scannerCultivationFit(
+    { hp: 108, patk: 62, matk: 36, pdef: 57, mdef: 46, spd: 82 },
+    { hp: 108, patk: 89, matk: 41, pdef: 74, mdef: 48, spd: 115 },
+    {
+      level: 13,
+      stars: 0,
+      nature: { raise: 'mdef', lower: 'patk' },
+    },
+  )
+  assert.equal(fit.rmse, 0)
+  assert.deepEqual(fit.individualStats, {
+    hp: 7,
+    patk: 8,
+    matk: 0,
+    pdef: 0,
+    mdef: 7,
+    spd: 0,
+  })
 })
 
 test('trait and stat shape can resolve a custom nickname conservatively', () => {

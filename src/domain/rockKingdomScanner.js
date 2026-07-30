@@ -1,3 +1,10 @@
+import {
+  MAX_CULTIVATION_LEVEL,
+  MAX_CULTIVATION_STARS,
+  calculateCultivatedStat,
+  cultivationNatureModifier,
+} from './rockKingdomStats.js'
+
 export const ROCK_APPEARANCE_OPTIONS = [
   { value: 'none', label: '无', color: '#94a3b8' },
   { value: 'shiny', label: '异色', color: '#db2777' },
@@ -50,6 +57,8 @@ export const ROCK_SCANNER_CROP_PROFILE = {
 }
 
 export const ROCK_SCANNER_IDENTITY_CROP_PROFILE = {
+  level: { label: '等级', x: 0.665, y: 0.275, width: 0.085, height: 0.07 },
+  stars: { label: '星级', x: 0.67, y: 0.17, width: 0.14, height: 0.08 },
   trait: { label: '特性', x: 0.68, y: 0.815, width: 0.13, height: 0.055 },
   hp: { label: '生命', x: 0.785, y: 0.35, width: 0.055, height: 0.055 },
   patk: { label: '物攻', x: 0.715, y: 0.43, width: 0.055, height: 0.055 },
@@ -317,6 +326,56 @@ export function recognizeGenderColor(imageData) {
   }
 }
 
+export function recognizeScannerStarCount(imageData) {
+  const pixels = imageData?.data || imageData?.pixels
+  const width = Number(imageData?.width)
+  const height = Number(imageData?.height)
+  if (!pixels?.length || !width || !height) return null
+  const columnEvidence = new Uint32Array(width)
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4
+      const red = pixels[offset]
+      const green = pixels[offset + 1]
+      const blue = pixels[offset + 2]
+      if (
+        red > 150
+        && green > 100
+        && blue < 135
+        && red - blue > 50
+        && green - blue > 20
+      ) {
+        columnEvidence[x] += 1
+      }
+    }
+  }
+  const minimumColumnEvidence = Math.max(2, Math.round(height * 0.035))
+  const maximumGap = Math.max(3, Math.round(width * 0.018))
+  const minimumRunEvidence = Math.max(18, Math.round(height * width * 0.0015))
+  const runs = []
+  for (let x = 0; x < width; x += 1) {
+    if (columnEvidence[x] < minimumColumnEvidence) continue
+    const previous = runs.at(-1)
+    if (!previous || x - previous.right > maximumGap) {
+      runs.push({ left: x, right: x, evidence: columnEvidence[x] })
+    } else {
+      previous.right = x
+      previous.evidence += columnEvidence[x]
+    }
+  }
+  return Math.min(
+    MAX_CULTIVATION_STARS,
+    runs.filter((run) => run.evidence >= minimumRunEvidence).length,
+  )
+}
+
+export function parseScannerLevel(value) {
+  const source = String(value || '').trim()
+  const match = source.match(/(?:^|\D)([1-5]?\d|60)\s*\/\s*60(?:\D|$)/)
+    || source.match(/^([1-5]?\d|60)$/)
+  return match ? Number(match[1]) : 0
+}
+
 function pixelAt(pixels, width, height, x, y) {
   if (x < 0 || y < 0 || x >= width || y >= height) return [39, 43, 45]
   const offset = (y * width + x) * 4
@@ -510,6 +569,8 @@ export function scannerOptionCandidates(field) {
 }
 
 const SCANNER_SHAPE_STAT_KEYS = ['patk', 'matk', 'pdef', 'mdef', 'spd']
+const SCANNER_FORMULA_STAT_KEYS = ['hp', ...SCANNER_SHAPE_STAT_KEYS]
+const SCANNER_INDIVIDUAL_VALUES = [7, 8, 9, 10]
 
 export function scannerStatShapeSimilarity(panelStats = {}, baseStats = {}) {
   // 等级和升星主要改变整体尺度；去均值后的相关性只比较五维轮廓。
@@ -535,6 +596,86 @@ export function scannerStatShapeSimilarity(panelStats = {}, baseStats = {}) {
     Number.EPSILON,
   )
   return Math.max(0, Math.min(1, (correlation + 1) / 2))
+}
+
+function scannerIndividualAllocations() {
+  const allocations = []
+  const visit = (index, selected, values) => {
+    if (index === SCANNER_FORMULA_STAT_KEYS.length) {
+      if (selected === 3) allocations.push({ ...values })
+      return
+    }
+    const remaining = SCANNER_FORMULA_STAT_KEYS.length - index
+    if (selected + remaining < 3 || selected > 3) return
+    const key = SCANNER_FORMULA_STAT_KEYS[index]
+    values[key] = 0
+    visit(index + 1, selected, values)
+    if (selected < 3) {
+      for (const individualValue of SCANNER_INDIVIDUAL_VALUES) {
+        values[key] = individualValue
+        visit(index + 1, selected + 1, values)
+      }
+    }
+    delete values[key]
+  }
+  visit(0, 0, {})
+  return allocations
+}
+
+const SCANNER_INDIVIDUAL_ALLOCATIONS = scannerIndividualAllocations()
+
+export function scannerCultivationFit(
+  panelStats = {},
+  baseStats = {},
+  {
+    level = 0,
+    stars = null,
+    nature = null,
+  } = {},
+) {
+  const normalizedLevel = Number(level)
+  const normalizedStars = Number(stars)
+  const comparableKeys = SCANNER_FORMULA_STAT_KEYS.filter((key) => (
+    Number(panelStats[key]) > 0 && Number(baseStats[key]) > 0
+  ))
+  if (
+    comparableKeys.length < 5
+    || normalizedLevel < 1
+    || normalizedLevel > MAX_CULTIVATION_LEVEL
+    || !Number.isInteger(normalizedStars)
+    || normalizedStars < 0
+    || normalizedStars > MAX_CULTIVATION_STARS
+    || !nature?.raise
+    || !nature?.lower
+  ) return null
+  let best = null
+  for (const individualStats of SCANNER_INDIVIDUAL_ALLOCATIONS) {
+    let squaredError = 0
+    let absoluteError = 0
+    const predictedStats = {}
+    for (const key of comparableKeys) {
+      const predicted = calculateCultivatedStat(baseStats[key], key, {
+        level: normalizedLevel,
+        stars: normalizedStars,
+        individualDisplayValue: individualStats[key],
+        natureModifier: cultivationNatureModifier(key, nature, normalizedStars),
+      })
+      predictedStats[key] = predicted
+      const difference = predicted - Number(panelStats[key])
+      squaredError += difference ** 2
+      absoluteError += Math.abs(difference)
+    }
+    const rmse = Math.sqrt(squaredError / comparableKeys.length)
+    if (best && rmse >= best.rmse) continue
+    best = {
+      rmse,
+      mae: absoluteError / comparableKeys.length,
+      score: Math.exp(-rmse / 6),
+      predictedStats,
+      individualStats: { ...individualStats },
+    }
+  }
+  return best
 }
 
 function distinctCandidateRunnerUp(ranked, best) {
@@ -573,9 +714,14 @@ export function resolveScannerReference({
   rawName = '',
   rawTrait = '',
   panelStats = {},
+  level = 0,
+  stars = null,
+  nature = null,
   candidates = [],
   minimumShapeScore = 0.82,
   minimumShapeGap = 0.06,
+  maximumFormulaRmse = 2.5,
+  minimumFormulaRmseGap = 1.5,
 } = {}) {
   const nameMatch = nameCandidatePool(rawName, candidates)
   let pool = nameMatch.pool
@@ -602,10 +748,39 @@ export function resolveScannerReference({
     .map((candidate) => ({
       ...candidate,
       shapeScore: scannerStatShapeSimilarity(panelStats, candidate.stats),
+      cultivationFit: scannerCultivationFit(panelStats, candidate.stats, {
+        level,
+        stars,
+        nature,
+      }),
     }))
-    .sort((left, right) => right.shapeScore - left.shapeScore)
+    .sort((left, right) => {
+      if (left.cultivationFit && right.cultivationFit) {
+        return left.cultivationFit.rmse - right.cultivationFit.rmse
+      }
+      if (left.cultivationFit) return -1
+      if (right.cultivationFit) return 1
+      return right.shapeScore - left.shapeScore
+    })
   const best = ranked[0]
   const runnerUp = ranked[1]
+  if (
+    best?.cultivationFit
+    && best.cultivationFit.rmse <= maximumFormulaRmse
+    && (
+      !runnerUp?.cultivationFit
+      || runnerUp.cultivationFit.rmse - best.cultivationFit.rmse >= minimumFormulaRmseGap
+    )
+  ) {
+    return {
+      value: best.value,
+      score: best.cultivationFit.score,
+      source: source === 'name' ? 'name+formula' : 'trait+formula',
+      candidates: ranked,
+      level: Number(level),
+      stars: Number(stars),
+    }
+  }
   if (
     !best
     || best.shapeScore < minimumShapeScore
