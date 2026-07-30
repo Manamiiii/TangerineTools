@@ -602,11 +602,11 @@ function scannerIndividualAllocations() {
   const allocations = []
   const visit = (index, selected, values) => {
     if (index === SCANNER_FORMULA_STAT_KEYS.length) {
-      if (selected === 3) allocations.push({ ...values })
+      if (selected >= 1 && selected <= 3) allocations.push({ ...values })
       return
     }
     const remaining = SCANNER_FORMULA_STAT_KEYS.length - index
-    if (selected + remaining < 3 || selected > 3) return
+    if (selected + remaining < 1 || selected > 3) return
     const key = SCANNER_FORMULA_STAT_KEYS[index]
     values[key] = 0
     visit(index + 1, selected, values)

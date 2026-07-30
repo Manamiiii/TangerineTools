@@ -391,6 +391,27 @@ test('cultivation fit reproduces a middle-level Duck form from the scanner video
   })
 })
 
+test('cultivation fit accepts a lower talent tier with one boosted stat', () => {
+  const fit = scannerCultivationFit(
+    { hp: 40, patk: 41, matk: 33, pdef: 51, mdef: 32, spd: 38 },
+    { hp: 51, patk: 53, matk: 53, pdef: 80, mdef: 44, spd: 54 },
+    {
+      level: 1,
+      stars: 0,
+      nature: { raise: 'patk', lower: 'matk' },
+    },
+  )
+  assert.equal(fit.rmse, 0)
+  assert.deepEqual(fit.individualStats, {
+    hp: 8,
+    patk: 0,
+    matk: 0,
+    pdef: 0,
+    mdef: 0,
+    spd: 0,
+  })
+})
+
 test('trait and stat shape can resolve a custom nickname conservatively', () => {
   const candidates = [
     {
