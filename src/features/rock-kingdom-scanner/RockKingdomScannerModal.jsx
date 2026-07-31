@@ -18,10 +18,12 @@ import {
 import {
   ROCK_SCANNER_CROP_PROFILE,
   ROCK_SCANNER_CHANGE_REGIONS,
+  ROCK_SCANNER_DETAIL_REGIONS,
   ROCK_SCANNER_DEVICE_PROFILE,
   ROCK_SCANNER_IDENTITY_CROP_PROFILE,
   ROCK_SCANNER_STABILITY_REGION,
   bestScanMatch,
+  bestScannerReferenceText,
   catalogNameCandidates,
   constrainScannerFormulaInputs,
   findScannerDuplicateCandidates,
@@ -115,20 +117,6 @@ function bestVariantText(rawTexts, candidates) {
     .sort((left, right) => right.score - left.score)[0]?.rawText
     || rawTexts.find(Boolean)
     || ''
-}
-
-function bestReferenceText(rawTexts, candidates) {
-  const firstText = rawTexts.find(Boolean) || ''
-  const firstScore = rankScanCandidates(firstText, candidates)[0]?.score || 0
-  if (firstScore >= 0.62 || firstScore < 0.42) return firstText
-  const retry = rawTexts.slice(1)
-    .map((rawText) => ({
-      rawText,
-      match: bestScanMatch(rawText, candidates, { minimumScore: 0.82, minimumGap: 0.08 }),
-    }))
-    .filter((result) => result.match)
-    .sort((left, right) => right.match.score - left.match.score)[0]
-  return retry?.rawText || firstText
 }
 
 function bestVariantMatch(rawTexts, candidates, options) {
@@ -493,6 +481,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           time,
           signature,
           changeSignature: captureVideoChangeSignature(video, ROCK_SCANNER_CHANGE_REGIONS),
+          detailSignature: captureVideoChangeSignature(video, ROCK_SCANNER_DETAIL_REGIONS),
           anchorQuality: scannerAnchorQuality(signature),
           selectionKey: portraitSelection?.key || '',
           selectionScore: portraitSelection?.score || 0,
@@ -654,7 +643,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     }
     const portraitResult = recognizeRockPortrait(image, nameCandidates)
     const templateMatches = Object.fromEntries(
-      (await Promise.all(['nature', 'specialty'].map(async (key) => [
+      (await Promise.all(['nature', 'bloodline', 'specialty'].map(async (key) => [
         key,
         await recognizeRockTextLabel(image, key),
       ]))).filter(([, match]) => match),
@@ -666,7 +655,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       setProgress(`正在识别 ${frame.sourceName}${frame.time == null ? '' : ` ${formatTime(frame.time)}`} · ${ROCK_SCANNER_CROP_PROFILE[key].label}`)
       const crop = cropImageSource(image, ROCK_SCANNER_CROP_PROFILE[key])
       const baseOptions = {
-        pageSegmentationMode: key === 'name' || key === 'bloodline' ? '8' : '7',
+        pageSegmentationMode: key === 'bloodline' ? '10' : key === 'name' ? '8' : '7',
       }
       const firstText = await recognizeStructuredImageText(
         crop,
@@ -711,7 +700,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       matched.patch[key] = templateMatch.value
       matched.confidence[key] = templateMatch.score
     }
-    matched.raw.ref = bestReferenceText(rawVariants.ref, nameCandidates)
+    matched.raw.ref = bestScannerReferenceText(rawVariants.ref, nameCandidates)
     let identity = resolveScannerReference({
       rawName: matched.raw.ref,
       candidates: nameCandidates,

@@ -48,10 +48,46 @@ export const ROCK_PARTNER_MARK_TEMPLATES = [
 export const ROCK_SCANNER_TEXT_LABEL_TEMPLATES = {
   nature: [
     { value: 'practical', label: '踏实', fileName: 'practical.png' },
+    { value: 'rash', label: '莽撞', fileName: 'fixed-rash.png' },
+    { value: 'lazy', label: '懒散', fileName: 'fixed-lazy.png' },
+    { value: 'timid', label: '胆小', fileName: 'fixed-timid.png' },
+    { value: 'brave', label: '勇敢', fileName: 'fixed-brave.png' },
+    { value: 'adamant', label: '固执', fileName: 'fixed-adamant.png' },
+    { value: 'silent', label: '沉默', fileName: 'fixed-silent.png' },
+    { value: 'relaxed', label: '悠闲', fileName: 'fixed-relaxed.png' },
+    { value: 'clever', label: '聪明', fileName: 'fixed-clever.png' },
+    { value: 'shy', label: '害羞', fileName: 'fixed-shy.png' },
+    { value: 'paranoid', label: '偏执', fileName: 'fixed-paranoid.png' },
+    { value: 'naive', label: '天真', fileName: 'fixed-naive.png' },
+    { value: 'careful', label: '慎重', fileName: 'fixed-careful.png' },
+    { value: 'peaceful', label: '平和', fileName: 'fixed-peaceful.png' },
+    { value: 'calm', label: '冷静', fileName: 'fixed-calm.png' },
+    { value: 'cheerful', label: '开朗', fileName: 'fixed-cheerful.png' },
+    { value: 'vigilant', label: '警惕', fileName: 'fixed-vigilant.png' },
+    { value: 'naughty', label: '调皮', fileName: 'fixed-naughty.png' },
+    { value: 'rational', label: '理性', fileName: 'fixed-rational.png' },
+  ],
+  bloodline: [
+    { value: 'leader', label: '首领', fileName: 'fixed-leader.png' },
+    { value: 'element-mech', label: '机械系', fileName: 'fixed-element-mech.png' },
+    { value: 'element-water', label: '水系', fileName: 'fixed-element-water.png' },
+    { value: 'element-earth', label: '地系', fileName: 'fixed-element-earth.png' },
+    { value: 'element-ghost', label: '幽系', fileName: 'fixed-element-ghost.png' },
+    { value: 'element-fighting', label: '武系', fileName: 'fixed-element-fighting.png' },
+    { value: 'element-poison', label: '毒系', fileName: 'fixed-element-poison.png' },
+    { value: 'element-light', label: '光系', fileName: 'fixed-element-light.png' },
+    { value: 'element-normal', label: '普通系', fileName: 'fixed-element-normal.png' },
+    { value: 'element-flying', label: '翼系', fileName: 'fixed-element-flying.png' },
+    { value: 'element-dark', label: '恶系', fileName: 'fixed-element-dark.png' },
+    { value: 'element-grass', label: '草系', fileName: 'fixed-element-grass.png' },
+    { value: 'strange', label: '奇异', fileName: 'fixed-strange.png' },
+    { value: 'polluted', label: '污染', fileName: 'fixed-polluted.png' },
+    { value: 'element-fire', label: '火系', fileName: 'fixed-element-fire.png' },
   ],
   specialty: [
     { value: 'brave', label: '无畏', fileName: 'brave.png' },
     { value: 'raid', label: '奇袭', fileName: 'raid.png' },
+    { value: 'raid', label: '奇袭', fileName: 'fixed-raid.png' },
   ],
 }
 
@@ -103,6 +139,8 @@ export const ROCK_SCANNER_CHANGE_REGIONS = [
   ROCK_SCANNER_IDENTITY_CROP_PROFILE.mdef,
   ROCK_SCANNER_IDENTITY_CROP_PROFILE.spd,
 ]
+
+export const ROCK_SCANNER_DETAIL_REGIONS = ROCK_SCANNER_CHANGE_REGIONS.slice(1)
 
 export const ROCK_SCANNER_DEVICE_PROFILE = {
   width: 3200,
@@ -256,6 +294,7 @@ export function selectStableScannerSamples(
     windowSize = 3,
     stableThreshold = 7,
     duplicateThreshold = 8,
+    exactPanelDuplicateThreshold = 1.25,
     minimumAnchorQuality = 0.4,
   } = {},
 ) {
@@ -271,6 +310,15 @@ export function selectStableScannerSamples(
       stableRun = []
       if (candidate.anchorQuality != null && candidate.anchorQuality < minimumAnchorQuality) return
       const previous = selected.at(-1)
+      if (
+        previous
+        && previous.detailSignature
+        && candidate.detailSignature
+        && scannerSignatureDifference(
+          previous.detailSignature,
+          candidate.detailSignature,
+        ) <= exactPanelDuplicateThreshold
+      ) return
       if (
         previous
         && (!previous.selectionKey || !candidate.selectionKey || previous.selectionKey === candidate.selectionKey)
@@ -862,11 +910,15 @@ export function rankScanCandidates(rawText, candidates = []) {
     let bestScore = 0
     let bestTerm = ''
     for (const term of candidateSearchTerms(candidate)) {
-      const contains = source.includes(term) || term.includes(source)
+      const sourceContainsTerm = source.includes(term)
+      const termContainsSource = term.includes(source)
       const distance = editDistance(source, term)
-      const score = contains
-        ? Math.min(1, 0.82 + Math.min(source.length, term.length) / Math.max(source.length, term.length) * 0.18)
-        : 1 - distance / Math.max(source.length, term.length)
+      const coverage = Math.min(source.length, term.length) / Math.max(source.length, term.length)
+      const score = sourceContainsTerm
+        ? Math.min(1, 0.82 + coverage * 0.18)
+        : termContainsSource
+          ? 0.45 + coverage * 0.45
+          : 1 - distance / Math.max(source.length, term.length)
       if (score > bestScore) {
         bestScore = score
         bestTerm = term
@@ -901,6 +953,21 @@ export function scannerCharacterWhitelist(candidates = []) {
     }
   }
   return [...characters].join('')
+}
+
+export function bestScannerReferenceText(rawTexts = [], candidates = []) {
+  const texts = [...new Set(rawTexts.filter(Boolean))]
+  const firstText = texts[0] || ''
+  const firstScore = rankScanCandidates(firstText, candidates)[0]?.score || 0
+  if (firstScore >= 0.62) return firstText
+  const retry = texts.slice(1)
+    .map((rawText) => ({
+      rawText,
+      match: bestScanMatch(rawText, candidates, { minimumScore: 0.82, minimumGap: 0.08 }),
+    }))
+    .filter((result) => result.match)
+    .sort((left, right) => right.match.score - left.match.score)[0]
+  return retry?.rawText || firstText
 }
 
 export function catalogNameCandidates(rows = [], fields = []) {

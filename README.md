@@ -182,6 +182,7 @@ git diff --check
 
 - `npm test` 覆盖领域规则、PVE 判定、预置三方迁移、导入校验、仓储级联、IndexedDB 播种/失败重试、BWiki staging 结构和文档当前态约束。
 - 涉及性格规则时额外运行 `npm run check:nature`，并检查已确认样例是否出现非预期漂移。
+- 涉及固定设备扫描文字模板时运行 `npm run check:scanner:templates`；更新版本化截图来源后，显式运行 `npm run apply:scanner:templates` 生成对应 PNG，再执行完整测试。
 - 涉及 BWiki 预置时先运行 `npm run check:bwiki:preset`；该命令只生成 `artifacts/` 审计报告，不会写入正式预置。
 - 涉及工具入口、懒加载或 Hook 时，启动 `npm run dev` 后依次切换资料库、收集记录、统计视图、性格推荐、孵蛋推荐和阅读伴侣，确认均完成渲染且没有进入错误恢复页。
 - 涉及阅读资料包时运行 `npm run check:reader:packages`，确认目录、版本、章节和事实引用全部有效；使用 `npm run audit:reader:quality` 查看资料覆盖与候选阻塞项。
