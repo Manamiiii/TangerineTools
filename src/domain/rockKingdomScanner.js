@@ -60,7 +60,7 @@ export const ROCK_SCANNER_CROP_PROFILE = {
   name: { label: '名称', x: 0.688, y: 0.125, width: 0.105, height: 0.06 },
   gender: { label: '性别', x: 0.688, y: 0.12, width: 0.112, height: 0.075 },
   partnerMark: { label: '伙伴标记', x: 0.861875, y: 0.188889, width: 0.0225, height: 0.05 },
-  bloodline: { label: '血脉', x: 0.9, y: 0.185, width: 0.055, height: 0.06 },
+  bloodline: { label: '血脉', x: 0.918, y: 0.185, width: 0.072, height: 0.06 },
   nature: { label: '性格', x: 0.735, y: 0.755, width: 0.095, height: 0.07 },
   specialty: { label: '特长', x: 0.855, y: 0.755, width: 0.095, height: 0.07 },
   appearance: { label: '外观', x: 0.903125, y: 0.645833, width: 0.04375, height: 0.097222 },

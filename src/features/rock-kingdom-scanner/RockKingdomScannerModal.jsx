@@ -643,6 +643,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   }
 
   async function recognizeFrame(frame) {
+    const recognitionStartedAt = performance.now()
     patchFrame(frame.id, { status: '识别中' })
     const image = await loadImageSource(frame.url)
     const rawVariants = {}
@@ -650,12 +651,21 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       ref: nameCandidates,
       ...scannerCandidateSets(fields),
     }
-    for (const key of ['name', 'bloodline', 'nature', 'specialty']) {
+    const portraitResult = recognizeRockPortrait(image, nameCandidates)
+    const templateMatches = Object.fromEntries(
+      (await Promise.all(['nature', 'specialty'].map(async (key) => [
+        key,
+        await recognizeRockTextLabel(image, key),
+      ]))).filter(([, match]) => match),
+    )
+    const textKeys = ['name', 'bloodline', 'nature', 'specialty']
+      .filter((key) => !templateMatches[key])
+    for (const key of textKeys) {
       const fieldKey = key === 'name' ? 'ref' : key
       setProgress(`正在识别 ${frame.sourceName}${frame.time == null ? '' : ` ${formatTime(frame.time)}`} · ${ROCK_SCANNER_CROP_PROFILE[key].label}`)
       const crop = cropImageSource(image, ROCK_SCANNER_CROP_PROFILE[key])
       const baseOptions = {
-        pageSegmentationMode: key === 'name' ? '8' : '7',
+        pageSegmentationMode: key === 'name' || key === 'bloodline' ? '8' : '7',
       }
       const firstText = await recognizeStructuredImageText(
         crop,
@@ -668,7 +678,12 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         candidateSets[fieldKey],
         SCANNER_MATCH_OPTIONS[fieldKey] || { minimumScore: 0.62, minimumGap: 0.08 },
       )
-      if (!firstMatch || firstMatch.score < 0.78) {
+      const portraitAlreadyResolvesName = key === 'name' && resolveScannerReference({
+        rawName: firstText,
+        candidates: nameCandidates,
+        visualCandidates: portraitResult.ranked,
+      }).value
+      if ((!firstMatch || firstMatch.score < 0.78) && !portraitAlreadyResolvesName) {
         const preparedCrop = prepareScannerTextCrop(crop)
         rawVariants[fieldKey].push(await recognizeStructuredImageText(
           preparedCrop,
@@ -691,9 +706,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       }
     }
     const matched = recognizedPatch(rawVariants, fields)
-    for (const key of ['nature', 'specialty']) {
-      const templateMatch = await recognizeRockTextLabel(image, key)
-      if (!templateMatch) continue
+    for (const [key, templateMatch] of Object.entries(templateMatches)) {
       matched.patch[key] = templateMatch.value
       matched.confidence[key] = templateMatch.score
     }
@@ -702,7 +715,6 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       rawName: matched.raw.ref,
       candidates: nameCandidates,
     })
-    const portraitResult = recognizeRockPortrait(image, nameCandidates)
     if (!identity.value) {
       setProgress(`正在识别 ${frame.sourceName}${frame.time == null ? '' : ` ${formatTime(frame.time)}`} · 左侧选中头像`)
       identity = resolveScannerReference({
@@ -901,6 +913,12 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       matched.patch.appearance = appearanceMatch.value
       matched.confidence.appearance = appearanceMatch.score
     }
+    const recognitionSeconds = (performance.now() - recognitionStartedAt) / 1000
+    const recognitionStatus = matched.patch.ref
+      ? '待复核'
+      : identity.source === 'ambiguous'
+        ? '同名形态待选择'
+        : '未匹配精灵'
     patchFrame(frame.id, {
       raw: matched.raw,
       confidence: matched.confidence,
@@ -911,12 +929,10 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       partnerMarkCandidates: partnerMarkResult.ranked,
       duplicateDecision: '',
       reviewed: false,
-      status: matched.patch.ref
-        ? '待复核'
-        : identity.source === 'ambiguous'
-          ? '同名形态待选择'
-          : '未匹配精灵',
+      recognitionSeconds,
+      status: `${recognitionStatus} · ${recognitionSeconds.toFixed(1)} 秒`,
     })
+    return recognitionSeconds
   }
 
   async function recognizeSelected() {
@@ -924,8 +940,8 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     setBusy('ocr')
     setError('')
     try {
-      await recognizeFrame(selected)
-      setProgress('识别完成。请核对所有字段；未识别的外观或性别需要手动选择。')
+      const recognitionSeconds = await recognizeFrame(selected)
+      setProgress(`识别完成，用时 ${recognitionSeconds.toFixed(1)} 秒。请核对所有字段；未识别的外观或性别需要手动选择。`)
     } catch (recognizeError) {
       patchFrame(selected.id, { status: '识别失败' })
       setError(recognizeError.message)
