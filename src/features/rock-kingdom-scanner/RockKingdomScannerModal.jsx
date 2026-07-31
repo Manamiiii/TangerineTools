@@ -470,10 +470,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     const items = []
     const startedAt = performance.now()
     try {
-      const collectSample = (time, index, total) => {
-        if (index === 0 || index % 10 === 0) {
-          setProgress(`正在顺序检测稳定画面 ${Math.min(index + 1, total)} / ${total}`)
-        }
+      const collectSample = (time) => {
         const signature = captureVideoSignature(video, ROCK_SCANNER_STABILITY_REGION)
         samples.push({
           time,
@@ -486,23 +483,35 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       try {
         sequentialResult = await sampleVideoFramesSequentially(video, {
           stepSeconds,
-          playbackRate: 8,
-          onSample: collectSample,
+          playbackRate: 4,
+          onSample: (time, index, total) => {
+            if (index === 0 || index % 10 === 0) {
+              setProgress(`正在顺序检测稳定画面 ${Math.min(index + 1, total)} / ${total}`)
+            }
+            collectSample(time)
+          },
         })
       } catch {
         samples.length = 0
       }
-      if (!sequentialResult) {
+      let stableSamples = selectStableScannerSamples(samples)
+      const sequentialCoverage = samples.length / sampleCount
+      const needsReliableRetry = !sequentialResult
+        || sequentialCoverage < 0.65
+        || stableSamples.length === 0
+      if (needsReliableRetry) {
+        samples.length = 0
+        setProgress('快进采样不足，正在使用可靠模式重新检测…')
         for (let index = 0; index < sampleCount; index += 1) {
           const time = Math.min(video.duration - 0.05, index * stepSeconds)
           if (index === 0 || index % 10 === 0) {
-            setProgress(`正在兼容检测稳定画面 ${index + 1} / ${sampleCount}`)
+            setProgress(`正在可靠模式检测稳定画面 ${index + 1} / ${sampleCount}`)
           }
           await waitForVideoSeek(video, time)
-          collectSample(time, index, sampleCount)
+          collectSample(time)
         }
+        stableSamples = selectStableScannerSamples(samples)
       }
-      const stableSamples = selectStableScannerSamples(samples)
       for (let index = 0; index < stableSamples.length; index += 1) {
         const sample = stableSamples[index]
         setProgress(`正在保存稳定画面 ${index + 1} / ${stableSamples.length}`)
@@ -528,9 +537,13 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         kept: items.length,
         stepSeconds,
         elapsedSeconds: (performance.now() - startedAt) / 1000,
-        mode: sequentialResult ? '顺序快进' : '兼容跳转',
+        mode: needsReliableRetry ? '可靠重试' : '顺序快进',
       })
-      setProgress(`智能提取完成：检测 ${samples.length} 个时间点，保留 ${items.length} 张稳定且不重复的画面。`)
+      if (items.length === 0) {
+        setError('没有找到连续稳定终态。请确认每只精灵在切换完成后稳定停留约 1 秒；也可以先用备用入口按固定间隔抽帧。')
+      } else {
+        setProgress(`智能提取完成：检测 ${samples.length} 个时间点，保留 ${items.length} 张稳定且不重复的画面。`)
+      }
     } catch (extractError) {
       items.forEach((item) => releaseLocalUrl(item.url))
       setError(extractError.message)
