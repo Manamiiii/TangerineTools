@@ -6,6 +6,7 @@ import {
   ROCK_APPEARANCE_TEMPLATES,
   ROCK_PARTNER_MARK_TEMPLATES,
   ROCK_SCANNER_DEVICE_PROFILE,
+  ROCK_SCANNER_TEXT_LABEL_TEMPLATES,
   appearanceTemplateSimilarity,
   appearanceFlags,
   bestAppearanceTemplateMatch,
@@ -16,6 +17,7 @@ import {
   isScannerFrameReady,
   normalizeScanText,
   normalizedPartnerMarkMask,
+  normalizedScannerTextLabelMask,
   parseScannerPanelStat,
   parseScannerLevel,
   partnerMarkMaskSimilarity,
@@ -31,6 +33,7 @@ import {
   scannerLegalPanelStatValues,
   scannerOptionCandidates,
   scannerStatShapeSimilarity,
+  bestScannerTextLabelTemplateMatch,
   selectScannerPanelStat,
   selectScannerLevel,
   selectStableScannerSamples,
@@ -449,6 +452,65 @@ test('nature OCR candidates exclude explanatory stat suffixes', () => {
       { value: 'clever', label: '聪明', aliases: undefined },
       { value: 'calm', label: '平和', aliases: undefined },
     ],
+  )
+})
+
+test('fixed nature and specialty text templates cover the labeled scanner failures', async () => {
+  assert.deepEqual(
+    ROCK_SCANNER_TEXT_LABEL_TEMPLATES.nature.map((item) => item.label),
+    ['踏实'],
+  )
+  assert.deepEqual(
+    ROCK_SCANNER_TEXT_LABEL_TEMPLATES.specialty.map((item) => item.label),
+    ['无畏', '奇袭'],
+  )
+  for (const [kind, templates] of Object.entries(ROCK_SCANNER_TEXT_LABEL_TEMPLATES)) {
+    for (const template of templates) {
+      await access(new URL(
+        `../../public/icons/rock-kingdom-text-labels/${kind}/${template.fileName}`,
+        import.meta.url,
+      ))
+    }
+  }
+})
+
+test('text label masks ignore the trailing help icon and match a distinct glyph shape', () => {
+  const imageData = (points) => {
+    const width = 40
+    const height = 18
+    const data = new Uint8ClampedArray(width * height * 4)
+    for (let offset = 0; offset < data.length; offset += 4) {
+      data[offset] = 38
+      data[offset + 1] = 43
+      data[offset + 2] = 45
+      data[offset + 3] = 255
+    }
+    for (const [x, y] of [...points, [34, 2], [34, 3], [34, 4], [34, 8]]) {
+      const offset = (y * width + x) * 4
+      data[offset] = 238
+      data[offset + 1] = 235
+      data[offset + 2] = 218
+    }
+    return { data, width, height }
+  }
+  const practicalShape = [
+    [3, 3], [4, 3], [5, 3], [3, 4], [5, 4], [3, 5], [4, 5], [5, 5],
+    [10, 3], [10, 4], [10, 5], [11, 5], [12, 5],
+  ]
+  const raidShape = [
+    [3, 3], [4, 3], [5, 3], [3, 4], [4, 4], [4, 5], [5, 5],
+    [10, 3], [11, 3], [12, 3], [11, 4], [10, 5], [11, 5], [12, 5],
+  ]
+  const practical = normalizedScannerTextLabelMask(imageData(practicalShape))
+  const raid = normalizedScannerTextLabelMask(imageData(raidShape))
+  assert.ok(practical)
+  assert.ok(raid)
+  assert.equal(
+    bestScannerTextLabelTemplateMatch(practical, [
+      { value: 'practical', label: '踏实', ...practical },
+      { value: 'raid', label: '奇袭', ...raid },
+    ])?.value,
+    'practical',
   )
 })
 

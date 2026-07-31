@@ -45,6 +45,16 @@ export const ROCK_PARTNER_MARK_TEMPLATES = [
   { value: 'spd', label: '速度', fileName: 'spd.png' },
 ]
 
+export const ROCK_SCANNER_TEXT_LABEL_TEMPLATES = {
+  nature: [
+    { value: 'practical', label: '踏实', fileName: 'practical.png' },
+  ],
+  specialty: [
+    { value: 'brave', label: '无畏', fileName: 'brave.png' },
+    { value: 'raid', label: '奇袭', fileName: 'raid.png' },
+  ],
+}
+
 export const ROCK_SCANNER_CROP_PROFILE = {
   // 根据用户提供的 1280 × 576 总览图标定。坐标使用比例，允许等比例缩放。
   name: { label: '名称', x: 0.688, y: 0.125, width: 0.105, height: 0.06 },
@@ -383,6 +393,94 @@ export function rankPartnerMarkTemplateMatches(sample, templates = []) {
   return templates
     .map((template) => ({ ...template, score: partnerMarkMaskSimilarity(sample, template) }))
     .sort((left, right) => right.score - left.score)
+}
+
+export function normalizedScannerTextLabelMask(
+  imageData,
+  {
+    targetWidth = 96,
+    targetHeight = 32,
+    contentFraction = 0.62,
+  } = {},
+) {
+  const pixels = imageData?.data || imageData?.pixels
+  const width = Number(imageData?.width)
+  const height = Number(imageData?.height)
+  if (!pixels?.length || !width || !height) return null
+  const contentWidth = Math.max(1, Math.round(width * contentFraction))
+  const weights = new Float32Array(contentWidth * height)
+  let left = contentWidth
+  let top = height
+  let right = -1
+  let bottom = -1
+  let evidence = 0
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < contentWidth; x += 1) {
+      const offset = (y * width + x) * 4
+      const luminance = (
+        pixels[offset] * 0.2126
+        + pixels[offset + 1] * 0.7152
+        + pixels[offset + 2] * 0.0722
+      )
+      const weight = Math.max(0, Math.min(1, (luminance - 120) / 105))
+      weights[y * contentWidth + x] = weight
+      evidence += weight
+      if (weight < 0.2) continue
+      left = Math.min(left, x)
+      top = Math.min(top, y)
+      right = Math.max(right, x)
+      bottom = Math.max(bottom, y)
+    }
+  }
+  if (right < left || evidence < 12) return null
+  const sourceWidth = Math.max(1, right - left + 1)
+  const sourceHeight = Math.max(1, bottom - top + 1)
+  const scale = Math.min(
+    (targetWidth - 4) / sourceWidth,
+    (targetHeight - 4) / sourceHeight,
+  )
+  const outputWidth = Math.max(1, Math.round(sourceWidth * scale))
+  const outputHeight = Math.max(1, Math.round(sourceHeight * scale))
+  const offsetX = Math.floor((targetWidth - outputWidth) / 2)
+  const offsetY = Math.floor((targetHeight - outputHeight) / 2)
+  const mask = new Float32Array(targetWidth * targetHeight)
+  for (let y = 0; y < outputHeight; y += 1) {
+    for (let x = 0; x < outputWidth; x += 1) {
+      const sourceX = Math.min(
+        right,
+        left + Math.round(x / Math.max(outputWidth - 1, 1) * (sourceWidth - 1)),
+      )
+      const sourceY = Math.min(
+        bottom,
+        top + Math.round(y / Math.max(outputHeight - 1, 1) * (sourceHeight - 1)),
+      )
+      mask[(offsetY + y) * targetWidth + offsetX + x] = weights[sourceY * contentWidth + sourceX]
+    }
+  }
+  return { pixels: mask, width: targetWidth, height: targetHeight, evidence }
+}
+
+export function rankScannerTextLabelTemplateMatches(sample, templates = []) {
+  if (!sample) return []
+  return templates
+    .map((template) => ({
+      ...template,
+      score: partnerMarkMaskSimilarity(sample, template),
+    }))
+    .sort((left, right) => right.score - left.score)
+}
+
+export function bestScannerTextLabelTemplateMatch(
+  sample,
+  templates = [],
+  { minimumScore = 0.88, minimumGap = 0.05 } = {},
+) {
+  const ranked = rankScannerTextLabelTemplateMatches(sample, templates)
+  const best = ranked[0]
+  if (!best || best.score < minimumScore) return null
+  const runnerUp = ranked.find((candidate) => candidate.value !== best.value)
+  if (runnerUp && best.score - runnerUp.score < minimumGap) return null
+  return best
 }
 
 export function recognizeGenderColor(imageData) {

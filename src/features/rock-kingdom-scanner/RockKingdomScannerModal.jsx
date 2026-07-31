@@ -46,6 +46,7 @@ import { useModelConfig } from '../model/useModelConfig.js'
 import { correctRockScannerFields } from '../rock-kingdom-model/rockKingdomModel.js'
 import { recognizeRockAppearance } from './appearanceRecognition.js'
 import { recognizeRockPartnerMark } from './partnerMarkRecognition.js'
+import { recognizeRockTextLabel } from './textLabelRecognition.js'
 
 function frameId() {
   return `scan-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
@@ -678,6 +679,12 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       }
     }
     const matched = recognizedPatch(rawVariants, fields)
+    for (const key of ['nature', 'specialty']) {
+      const templateMatch = await recognizeRockTextLabel(image, key)
+      if (!templateMatch) continue
+      matched.patch[key] = templateMatch.value
+      matched.confidence[key] = templateMatch.score
+    }
     matched.raw.ref = bestReferenceText(rawVariants.ref, nameCandidates)
     let identity = resolveScannerReference({
       rawName: matched.raw.ref,
