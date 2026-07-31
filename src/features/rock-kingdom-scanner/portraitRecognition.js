@@ -28,8 +28,19 @@ function pixelLuminance(data, offset) {
 }
 
 export function selectedPortraitRingScore(imageData) {
-  const { data, width, height } = imageData
-  if (!data?.length || !width || !height) return 0
+  return selectedPortraitRingScoreRegion(imageData, {
+    x: 0,
+    y: 0,
+    width: imageData?.width || 0,
+    height: imageData?.height || 0,
+  })
+}
+
+function selectedPortraitRingScoreRegion(imageData, rect) {
+  const { data, width: imageWidth, height: imageHeight } = imageData
+  const width = Math.max(0, Math.min(rect.width, imageWidth - rect.x))
+  const height = Math.max(0, Math.min(rect.height, imageHeight - rect.y))
+  if (!data?.length || width < 3 || height < 3) return 0
   let ringTotal = 0
   let ringEdges = 0
   let ringPixels = 0
@@ -40,14 +51,17 @@ export function selectedPortraitRingScore(imageData) {
       const normalizedX = (x + 0.5) / width * 2 - 1
       const normalizedY = (y + 0.5) / height * 2 - 1
       const radius = Math.sqrt(normalizedX ** 2 + normalizedY ** 2)
-      const offset = (y * width + x) * 4
+      const sourceX = rect.x + x
+      const sourceY = rect.y + y
+      const offset = (sourceY * imageWidth + sourceX) * 4
       const luminance = pixelLuminance(data, offset)
       if (radius >= 0.72 && radius <= 0.98 && !(normalizedX < -0.25 && normalizedY < -0.2)) {
         const horizontal = Math.abs(
           pixelLuminance(data, offset - 4) - pixelLuminance(data, offset + 4),
         )
         const vertical = Math.abs(
-          pixelLuminance(data, offset - width * 4) - pixelLuminance(data, offset + width * 4),
+          pixelLuminance(data, offset - imageWidth * 4)
+          - pixelLuminance(data, offset + imageWidth * 4),
         )
         ringTotal += Math.max(0, luminance - 130) / 125
         ringEdges += Math.min(1, Math.max(horizontal, vertical) / 70)
@@ -68,20 +82,24 @@ export function selectedPortraitRingScore(imageData) {
 export function detectSelectedPortraitCell(source, { minimumScore = 0.2, minimumGap = 0.015 } = {}) {
   const { width, height } = sourceDimensions(source)
   if (!width || !height) return null
+  const scale = Math.min(1, 640 / width)
+  const detectionWidth = Math.max(1, Math.round(width * scale))
+  const detectionHeight = Math.max(1, Math.round(height * scale))
   const canvas = document.createElement('canvas')
+  canvas.width = detectionWidth
+  canvas.height = detectionHeight
   const context = canvas.getContext('2d', { willReadFrequently: true })
+  context.drawImage(source, 0, 0, width, height, 0, 0, detectionWidth, detectionHeight)
+  const imageData = context.getImageData(0, 0, detectionWidth, detectionHeight)
   const ranked = []
   for (let row = 0; row < ROCK_SCANNER_PORTRAIT_GRID.rows.length; row += 1) {
     for (let column = 0; column < ROCK_SCANNER_PORTRAIT_GRID.columns.length; column += 1) {
-      const rect = cellRect(width, height, column, row)
-      canvas.width = Math.max(1, rect.width)
-      canvas.height = Math.max(1, rect.height)
-      context.drawImage(source, rect.x, rect.y, rect.width, rect.height, 0, 0, canvas.width, canvas.height)
+      const detectionRect = cellRect(detectionWidth, detectionHeight, column, row)
       ranked.push({
         row,
         column,
-        rect,
-        score: selectedPortraitRingScore(context.getImageData(0, 0, canvas.width, canvas.height)),
+        rect: cellRect(width, height, column, row),
+        score: selectedPortraitRingScoreRegion(imageData, detectionRect),
       })
     }
   }
@@ -95,13 +113,7 @@ export function detectSelectedPortraitCell(source, { minimumScore = 0.2, minimum
 }
 
 export function captureRockPortraitSelection(source) {
-  const { width, height } = sourceDimensions(source)
-  if (!width || !height) return null
-  const canvas = document.createElement('canvas')
-  canvas.width = 640
-  canvas.height = 288
-  canvas.getContext('2d').drawImage(source, 0, 0, width, height, 0, 0, canvas.width, canvas.height)
-  const selected = detectSelectedPortraitCell(canvas)
+  const selected = detectSelectedPortraitCell(source)
   return selected
     ? {
         key: `${selected.row}:${selected.column}`,
