@@ -13,6 +13,8 @@ import {
   cropImageSource,
   loadImageSource,
   prepareScannerTextCrop,
+  sampleVideoFramesSequentially,
+  waitForVideoSeek,
 } from './frameCapture.js'
 import {
   ROCK_SCANNER_CROP_PROFILE,
@@ -57,31 +59,6 @@ function formatTime(seconds) {
   const minutes = Math.floor(safe / 60)
   const remainder = Math.floor(safe % 60)
   return `${minutes}:${String(remainder).padStart(2, '0')}`
-}
-
-function waitForSeek(video, time) {
-  return new Promise((resolve, reject) => {
-    const targetTime = Math.min(Math.max(0, time), Math.max(0, video.duration - 0.05))
-    if (video.readyState >= 2 && Math.abs(video.currentTime - targetTime) < 0.01) {
-      resolve()
-      return
-    }
-    const cleanup = () => {
-      video.removeEventListener('seeked', onSeeked)
-      video.removeEventListener('error', onError)
-    }
-    const onSeeked = () => {
-      cleanup()
-      resolve()
-    }
-    const onError = () => {
-      cleanup()
-      reject(new Error('读取视频画面失败。'))
-    }
-    video.addEventListener('seeked', onSeeked, { once: true })
-    video.addEventListener('error', onError, { once: true })
-    video.currentTime = targetTime
-  })
 }
 
 function initialDraft(fields) {
@@ -441,7 +418,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       for (let index = 0; index < count; index += 1) {
         const time = Math.min(video.duration - 0.05, index * intervalSeconds)
         setProgress(`正在提取 ${index + 1} / ${count}`)
-        await waitForSeek(video, time)
+        await waitForVideoSeek(video, time)
         const captured = await captureVideoFrame(video)
         items.push({
           id: frameId(),
@@ -491,11 +468,12 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     setExtractionSummary(null)
     const samples = []
     const items = []
+    const startedAt = performance.now()
     try {
-      for (let index = 0; index < sampleCount; index += 1) {
-        const time = Math.min(video.duration - 0.05, index * stepSeconds)
-        setProgress(`正在检测稳定画面 ${index + 1} / ${sampleCount}`)
-        await waitForSeek(video, time)
+      const collectSample = (time, index, total) => {
+        if (index === 0 || index % 10 === 0) {
+          setProgress(`正在顺序检测稳定画面 ${Math.min(index + 1, total)} / ${total}`)
+        }
         const signature = captureVideoSignature(video, ROCK_SCANNER_STABILITY_REGION)
         samples.push({
           time,
@@ -504,11 +482,31 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           anchorQuality: scannerAnchorQuality(signature),
         })
       }
+      let sequentialResult = null
+      try {
+        sequentialResult = await sampleVideoFramesSequentially(video, {
+          stepSeconds,
+          playbackRate: 8,
+          onSample: collectSample,
+        })
+      } catch {
+        samples.length = 0
+      }
+      if (!sequentialResult) {
+        for (let index = 0; index < sampleCount; index += 1) {
+          const time = Math.min(video.duration - 0.05, index * stepSeconds)
+          if (index === 0 || index % 10 === 0) {
+            setProgress(`正在兼容检测稳定画面 ${index + 1} / ${sampleCount}`)
+          }
+          await waitForVideoSeek(video, time)
+          collectSample(time, index, sampleCount)
+        }
+      }
       const stableSamples = selectStableScannerSamples(samples)
       for (let index = 0; index < stableSamples.length; index += 1) {
         const sample = stableSamples[index]
         setProgress(`正在保存稳定画面 ${index + 1} / ${stableSamples.length}`)
-        await waitForSeek(video, sample.time)
+        await waitForVideoSeek(video, sample.time)
         const captured = await captureVideoFrame(video)
         items.push({
           id: frameId(),
@@ -526,11 +524,13 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       }
       addFrames(items)
       setExtractionSummary({
-        checked: sampleCount,
+        checked: samples.length,
         kept: items.length,
         stepSeconds,
+        elapsedSeconds: (performance.now() - startedAt) / 1000,
+        mode: sequentialResult ? '顺序快进' : '兼容跳转',
       })
-      setProgress(`智能提取完成：检测 ${sampleCount} 个时间点，保留 ${items.length} 张稳定且不重复的画面。`)
+      setProgress(`智能提取完成：检测 ${samples.length} 个时间点，保留 ${items.length} 张稳定且不重复的画面。`)
     } catch (extractError) {
       items.forEach((item) => releaseLocalUrl(item.url))
       setError(extractError.message)
@@ -1065,6 +1065,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
             <span className="scanner-device-status">
               智能提取：检查 {extractionSummary.checked} 个时间点 · 保留 {extractionSummary.kept} 张
               · 步长约 {extractionSummary.stepSeconds.toFixed(2)} 秒
+              · {extractionSummary.mode}耗时约 {extractionSummary.elapsedSeconds.toFixed(1)} 秒
             </span>
           )}
         </div>

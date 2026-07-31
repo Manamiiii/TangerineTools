@@ -3,6 +3,7 @@ import test from 'node:test'
 import {
   BREEDING_PRIORITY_RULES,
   recommendBreedingPairs,
+  summarizeMissingEggGroups,
 } from '../../src/domain/breeding.js'
 
 function creature(id, gender, {
@@ -72,4 +73,38 @@ test('breeding fills missing shiny species before female-only shiny species', ()
   assert.equal(pairs[1].mother.id, 'female-only-mother')
   assert.equal(pairs[1].priorityReason, '仅有异色母优先')
   assert.ok(pairs.every((pair) => pair.father.id !== 'ordinary-male'))
+})
+
+test('breeding missing egg group summary lists distinct creatures and owned record counts', () => {
+  const complete = creature('complete', 'male')
+  const missingFirst = creature('missing-1', 'female')
+  const missingSecond = creature('missing-2', 'male')
+  const missingOther = creature('other', 'female')
+  missingFirst.catalog = {
+    ...missingFirst.catalog,
+    row: { id: 'catalog-missing' },
+    eggGroups: [],
+  }
+  missingSecond.catalog = {
+    ...missingSecond.catalog,
+    row: { id: 'catalog-missing' },
+    eggGroups: [],
+  }
+  missingOther.catalog = {
+    ...missingOther.catalog,
+    row: { id: 'catalog-other' },
+    eggGroups: [],
+  }
+  missingFirst.name = '缺失精灵'
+  missingSecond.name = '缺失精灵'
+  missingOther.name = '另一只'
+
+  const summary = summarizeMissingEggGroups([complete, missingFirst, missingSecond, missingOther])
+
+  assert.equal(summary.recordCount, 3)
+  assert.equal(summary.creatureCount, 2)
+  assert.deepEqual(summary.creatures, [
+    { catalogRowId: 'catalog-missing', name: '缺失精灵', recordCount: 2 },
+    { catalogRowId: 'catalog-other', name: '另一只', recordCount: 1 },
+  ])
 })
