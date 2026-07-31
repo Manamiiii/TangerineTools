@@ -34,6 +34,7 @@ import {
   resolveScannerReference,
   scannerAnchorQuality,
   scannerCharacterWhitelist,
+  scannerFrameSelectionAfterAction,
   scannerOptionCandidates,
   selectScannerPanelStat,
   selectScannerLevel,
@@ -954,9 +955,25 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   }
 
   function removeFrame(frame) {
+    const nextSelectedId = scannerFrameSelectionAfterAction(
+      frames,
+      frame.id,
+      { removing: true },
+    )
     releaseLocalUrl(frame.url)
     setFrames((current) => current.filter((item) => item.id !== frame.id))
-    if (selectedId === frame.id) setSelectedId('')
+    if (selectedId === frame.id) setSelectedId(nextSelectedId)
+  }
+
+  function toggleFrameReviewed(frame) {
+    const confirming = !frame.reviewed
+    patchFrame(frame.id, {
+      reviewed: confirming,
+      status: confirming ? '已确认' : '待确认',
+    })
+    if (confirming) {
+      setSelectedId(scannerFrameSelectionAfterAction(frames, frame.id))
+    }
   }
 
   function frameHasBlockingDuplicate(frame) {
@@ -1304,10 +1321,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                         ? '请先查看已有记录，并选择仍然新增或跳过本帧'
                         : ''
                     }
-                    onClick={() => patchFrame(selected.id, {
-                      reviewed: !selected.reviewed,
-                      status: selected.reviewed ? '待确认' : '已确认',
-                    })}
+                    onClick={() => toggleFrameReviewed(selected)}
                   >
                     <Check size={15} /> {selected.reviewed ? '取消确认' : '确认当前记录'}
                   </button>

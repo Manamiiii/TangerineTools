@@ -28,6 +28,7 @@ import {
   resolveScannerReference,
   scannerAnchorQuality,
   scannerCharacterWhitelist,
+  scannerFrameSelectionAfterAction,
   scannerSignatureDifference,
   scannerCultivationFit,
   scannerLegalPanelStatValues,
@@ -386,6 +387,24 @@ test('stable frame selection prefers the sharpest anchored terminal frame', () =
     { time: 1.35, signature: base, anchorQuality: 0.63 },
   ])
   assert.deepEqual(selected.map((sample) => sample.time), [0.9])
+})
+
+test('scanner review actions advance to the next frame and deletion falls back to the previous frame', () => {
+  const frames = [{ id: 'first' }, { id: 'second' }, { id: 'third' }]
+  assert.equal(scannerFrameSelectionAfterAction(frames, 'first'), 'second')
+  assert.equal(scannerFrameSelectionAfterAction(frames, 'third'), 'third')
+  assert.equal(
+    scannerFrameSelectionAfterAction(frames, 'second', { removing: true }),
+    'third',
+  )
+  assert.equal(
+    scannerFrameSelectionAfterAction(frames, 'third', { removing: true }),
+    'second',
+  )
+  assert.equal(
+    scannerFrameSelectionAfterAction([{ id: 'only' }], 'only', { removing: true }),
+    '',
+  )
 })
 
 test('change-region signatures keep consecutive similar creatures with different details', () => {

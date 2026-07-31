@@ -236,6 +236,13 @@ export function scannerSignatureDifference(left, right, topFraction = 0.15) {
   return total / count
 }
 
+export function scannerFrameSelectionAfterAction(frames = [], currentId = '', { removing = false } = {}) {
+  const index = frames.findIndex((frame) => frame.id === currentId)
+  if (index < 0) return frames[0]?.id || ''
+  if (!removing) return frames[index + 1]?.id || currentId
+  return frames[index + 1]?.id || frames[index - 1]?.id || ''
+}
+
 export function selectStableScannerSamples(
   samples = [],
   {
