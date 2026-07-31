@@ -22,12 +22,44 @@ export async function captureVideoFrame(video) {
   }
 }
 
-export function waitForVideoSeek(video, time) {
+export function waitForVideoFramePresentation(video, targetTime, { timeoutMs = 600 } = {}) {
+  if (typeof video?.requestVideoFrameCallback !== 'function') return Promise.resolve()
+
+  return new Promise((resolve) => {
+    let callbackId = 0
+    let timeoutId = 0
+    let settled = false
+    const finish = () => {
+      if (settled) return
+      settled = true
+      clearTimeout(timeoutId)
+      if (callbackId && typeof video.cancelVideoFrameCallback === 'function') {
+        video.cancelVideoFrameCallback(callbackId)
+      }
+      resolve()
+    }
+    const requestPresentedFrame = () => {
+      callbackId = video.requestVideoFrameCallback((_now, metadata = {}) => {
+        const mediaTime = Number(metadata.mediaTime)
+        if (!Number.isFinite(mediaTime) || Math.abs(mediaTime - targetTime) <= 0.25) {
+          finish()
+          return
+        }
+        requestPresentedFrame()
+      })
+    }
+    timeoutId = setTimeout(finish, timeoutMs)
+    requestPresentedFrame()
+  })
+}
+
+export async function waitForVideoSeek(video, time) {
   const target = Math.min(Math.max(0, time), Math.max(0, video.duration - 0.05))
   if (!video.seeking && Math.abs(video.currentTime - target) < 0.01 && video.readyState >= 2) {
-    return Promise.resolve()
+    return
   }
-  return new Promise((resolve, reject) => {
+  const presentationPromise = waitForVideoFramePresentation(video, target)
+  await new Promise((resolve, reject) => {
     const cleanup = () => {
       video.removeEventListener('seeked', onSeeked)
       video.removeEventListener('error', onError)
@@ -44,6 +76,7 @@ export function waitForVideoSeek(video, time) {
     video.addEventListener('error', onError, { once: true })
     video.currentTime = target
   })
+  await presentationPromise
 }
 
 export function captureVideoSignature(video, region, width = 120, height = 80) {

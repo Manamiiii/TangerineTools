@@ -49,5 +49,8 @@ export async function recognizeRockTextLabel(image, kind) {
   const sampleImage = cropImageSource(image, crop, 1)
   const sample = normalizedScannerTextLabelMask(canvasImageData(sampleImage))
   const templates = await loadTextLabelTemplates(kind)
-  return bestScannerTextLabelTemplateMatch(sample, templates)
+  return bestScannerTextLabelTemplateMatch(sample, templates, {
+    minimumScore: kind === 'bloodline' ? 0.72 : 0.76,
+    minimumGap: kind === 'bloodline' ? 0.02 : 0.03,
+  })
 }

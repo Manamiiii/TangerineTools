@@ -1,17 +1,21 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { access, readFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
+import sharp from 'sharp'
 
 import {
   ROCK_APPEARANCE_TEMPLATES,
   ROCK_PARTNER_MARK_TEMPLATES,
   ROCK_SCANNER_DEVICE_PROFILE,
+  ROCK_SCANNER_CROP_PROFILE,
   ROCK_SCANNER_TEXT_LABEL_TEMPLATES,
   appearanceTemplateSimilarity,
   appearanceFlags,
   bestAppearanceTemplateMatch,
   bestPartnerMarkTemplateMatch,
   bestScanMatch,
+  bestScannerReferenceText,
   constrainScannerFormulaInputs,
   findScannerDuplicateCandidates,
   isScannerFrameReady,
@@ -25,6 +29,7 @@ import {
   recognizeScannerStatTone,
   recognizeScannerStarCount,
   reconcileScannerPanelStat,
+  rankScannerTextLabelTemplateMatches,
   resolveScannerReference,
   scannerAnchorQuality,
   scannerCharacterWhitelist,
@@ -43,6 +48,46 @@ import {
   valuesWithAppearance,
 } from '../../src/domain/rockKingdomScanner.js'
 import { selectedPortraitRingScore } from '../../src/features/rock-kingdom-scanner/portraitRecognition.js'
+import {
+  waitForVideoFramePresentation,
+  waitForVideoSeek,
+} from '../../src/features/rock-kingdom-scanner/frameCapture.js'
+
+test('video seeking waits until the requested decoded frame is presented', async () => {
+  const listeners = new Map()
+  const presentedTimes = [2.1, 4]
+  const video = {
+    duration: 10,
+    readyState: 4,
+    seeking: false,
+    _currentTime: 0,
+    addEventListener(type, callback) {
+      listeners.set(type, callback)
+    },
+    removeEventListener(type) {
+      listeners.delete(type)
+    },
+    requestVideoFrameCallback(callback) {
+      queueMicrotask(() => callback(0, { mediaTime: presentedTimes.shift() }))
+      return 1
+    },
+    cancelVideoFrameCallback() {},
+    get currentTime() {
+      return this._currentTime
+    },
+    set currentTime(value) {
+      this._currentTime = value
+      queueMicrotask(() => listeners.get('seeked')?.())
+    },
+  }
+
+  await waitForVideoSeek(video, 4)
+  assert.equal(presentedTimes.length, 0)
+})
+
+test('presented-frame waiting is a no-op when the browser lacks the video callback API', async () => {
+  await waitForVideoFramePresentation({}, 3)
+})
 
 test('scanner accepts the fixed 3200 by 1440 recording profile', () => {
   assert.deepEqual(ROCK_SCANNER_DEVICE_PROFILE, {
@@ -476,7 +521,7 @@ test('stable frame selection keeps adjacent creatures when the left selection ch
     })),
     ...[0.9, 1.2, 1.5].map((time) => ({
       time,
-      signature: signature(20),
+      signature: signature(23),
       changeSignature: signature(20),
       anchorQuality: 0.8,
       selectionKey: '0:1',
@@ -485,6 +530,33 @@ test('stable frame selection keeps adjacent creatures when the left selection ch
   assert.deepEqual(
     selectStableScannerSamples(samples, { windowSize: 2 }).map((sample) => sample.selectionKey),
     ['0:0', '0:1'],
+  )
+})
+
+test('stable frame selection rejects a failed switch with an unchanged detail panel', () => {
+  const panel = new Uint8Array(64).fill(20)
+  const changeSignature = (value) => new Uint8Array(64).fill(value)
+  const samples = [
+    ...[0, 0.3, 0.6].map((time) => ({
+      time,
+      signature: panel,
+      changeSignature: changeSignature(20),
+      detailSignature: panel,
+      anchorQuality: 0.8,
+      selectionKey: '0:0',
+    })),
+    ...[0.9, 1.2, 1.5].map((time) => ({
+      time,
+      signature: panel,
+      changeSignature: changeSignature(80),
+      detailSignature: panel,
+      anchorQuality: 0.8,
+      selectionKey: '0:1',
+    })),
+  ]
+  assert.deepEqual(
+    selectStableScannerSamples(samples, { windowSize: 2 }).map((sample) => sample.selectionKey),
+    ['0:0'],
   )
 })
 
@@ -555,6 +627,28 @@ test('scan matching can require a distinct best finite-vocabulary candidate', ()
   assert.equal(bestScanMatch('板壳', candidates, { minimumScore: 0.62, minimumGap: 0.08 }), null)
 })
 
+test('scan matching treats a one-character prefix as weak evidence for a longer fixed label', () => {
+  const candidates = [
+    { value: 'shy', label: '害羞' },
+    { value: 'frank', label: '坦率' },
+  ]
+
+  assert.equal(bestScanMatch('坦', candidates, { minimumScore: 0.7, minimumGap: 0.12 }), null)
+  assert.equal(bestScanMatch('坦率', candidates, { minimumScore: 0.7, minimumGap: 0.12 })?.value, 'frank')
+  assert.equal(bestScanMatch('会害羞。', candidates, { minimumScore: 0.7, minimumGap: 0.12 })?.value, 'shy')
+})
+
+test('name recognition can recover from a weak first OCR pass with a distinct bounded retry', () => {
+  const candidates = [
+    { value: 'luoyin', label: '罗隐' },
+    { value: 'water-spirit', label: '水灵' },
+  ]
+
+  assert.equal(bestScannerReferenceText(['g', '罗隐'], candidates), '罗隐')
+  assert.equal(bestScannerReferenceText(['水灵 w', '罗隐'], candidates), '水灵 w')
+  assert.equal(bestScannerReferenceText(['完全无关', '仍然无关'], candidates), '完全无关')
+})
+
 test('nature OCR candidates exclude explanatory stat suffixes', () => {
   assert.deepEqual(
     scannerOptionCandidates({
@@ -570,22 +664,79 @@ test('nature OCR candidates exclude explanatory stat suffixes', () => {
   )
 })
 
-test('fixed nature and specialty text templates cover the labeled scanner failures', async () => {
-  assert.deepEqual(
-    ROCK_SCANNER_TEXT_LABEL_TEMPLATES.nature.map((item) => item.label),
-    ['踏实'],
-  )
-  assert.deepEqual(
-    ROCK_SCANNER_TEXT_LABEL_TEMPLATES.specialty.map((item) => item.label),
-    ['无畏', '奇袭'],
-  )
+test('fixed-device text templates cover confirmed labels without creature-specific rules', async () => {
+  assert.ok(ROCK_SCANNER_TEXT_LABEL_TEMPLATES.nature.some((item) => item.label === '踏实'))
+  assert.ok(ROCK_SCANNER_TEXT_LABEL_TEMPLATES.nature.some((item) => item.label === '害羞'))
+  assert.ok(ROCK_SCANNER_TEXT_LABEL_TEMPLATES.bloodline.some((item) => item.label === '水系'))
+  assert.ok(ROCK_SCANNER_TEXT_LABEL_TEMPLATES.bloodline.some((item) => item.label === '污染'))
+  assert.ok(ROCK_SCANNER_TEXT_LABEL_TEMPLATES.specialty.some((item) => item.label === '奇袭'))
   for (const [kind, templates] of Object.entries(ROCK_SCANNER_TEXT_LABEL_TEMPLATES)) {
     for (const template of templates) {
+      if (template.sourceFrame) {
+        assert.match(template.sourceFrame, /^frame-\d{2}$/)
+        continue
+      }
       await access(new URL(
         `../../public/icons/rock-kingdom-text-labels/${kind}/${template.fileName}`,
         import.meta.url,
       ))
     }
+  }
+})
+
+test('confirmed fixed-device text crops resolve through field templates', async () => {
+  const manifest = JSON.parse(await readFile(new URL(
+    '../data/rockKingdomScannerTextTemplates.json',
+    import.meta.url,
+  ), 'utf8'))
+  const templateCache = new Map()
+  const imageData = async (file, crop = null) => {
+    let pipeline = sharp(file instanceof URL ? fileURLToPath(file) : file)
+    if (crop) {
+      const metadata = await pipeline.metadata()
+      pipeline = pipeline.extract({
+        left: Math.round(metadata.width * crop.x),
+        top: Math.round(metadata.height * crop.y),
+        width: Math.max(1, Math.round(metadata.width * crop.width)),
+        height: Math.max(1, Math.round(metadata.height * crop.height)),
+      })
+    }
+    const result = await pipeline.ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+    return { data: result.data, width: result.info.width, height: result.info.height }
+  }
+  for (const kind of ['nature', 'bloodline', 'specialty']) {
+    const templates = []
+    for (const template of ROCK_SCANNER_TEXT_LABEL_TEMPLATES[kind].filter((item) => item.fileName.startsWith('fixed-'))) {
+      const file = new URL(
+        `../../public/icons/rock-kingdom-text-labels/${kind}/${template.fileName}`,
+        import.meta.url,
+      )
+      templates.push({
+        ...template,
+        ...normalizedScannerTextLabelMask(await imageData(file)),
+      })
+    }
+    templateCache.set(kind, templates)
+  }
+  for (const entry of manifest) {
+    const source = new URL(
+      `../../docs/assets/rock-kingdom-scanner/baseline-3200x1440/${entry.source}`,
+      import.meta.url,
+    )
+    const sample = normalizedScannerTextLabelMask(await imageData(
+      source,
+      ROCK_SCANNER_CROP_PROFILE[entry.kind],
+    ))
+    const match = bestScannerTextLabelTemplateMatch(sample, templateCache.get(entry.kind), {
+      minimumScore: entry.kind === 'bloodline' ? 0.72 : 0.76,
+      minimumGap: entry.kind === 'bloodline' ? 0.02 : 0.03,
+    })
+    const ranked = rankScannerTextLabelTemplateMatches(sample, templateCache.get(entry.kind))
+    assert.equal(
+      match?.value,
+      entry.value,
+      `${entry.kind}/${entry.value} 应匹配固定设备字形模板；当前 ${ranked.slice(0, 3).map((item) => `${item.value}:${item.score.toFixed(3)}`).join('、')}`,
+    )
   }
 })
 
