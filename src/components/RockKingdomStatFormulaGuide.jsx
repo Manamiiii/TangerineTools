@@ -1,7 +1,12 @@
-export function RockKingdomStatFormulaGuide({ scanner = false }) {
+export function RockKingdomStatFormulaGuide({
+  scanner = false,
+  className = '',
+  summary = '查看六维与培养公式',
+}) {
+  const classes = ['rock-stat-formula-guide', className].filter(Boolean).join(' ')
   return (
-    <details className="rock-stat-formula-guide">
-      <summary>查看六维与培养公式</summary>
+    <details className={classes}>
+      <summary>{summary}</summary>
       <div className="rock-stat-formula-guide-body">
         <p>
           <strong>资料库六维</strong>是当前形态固定的基础资质；

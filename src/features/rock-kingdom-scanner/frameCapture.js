@@ -55,6 +55,40 @@ export function captureVideoSignature(video, region, width = 120, height = 80) {
   return signature
 }
 
+export function captureVideoChangeSignature(video, regions, width = 64, rowHeight = 16) {
+  if (!video?.videoWidth || !video?.videoHeight) throw new Error('视频画面尚未加载完成。')
+  const heights = regions.map((region) => region.signatureHeight || rowHeight)
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = heights.reduce((sum, height) => sum + height, 0)
+  const context = canvas.getContext('2d', { willReadFrequently: true })
+  context.imageSmoothingEnabled = true
+  context.imageSmoothingQuality = 'high'
+  let targetY = 0
+  regions.forEach((region, index) => {
+    context.drawImage(
+      video,
+      Math.round(video.videoWidth * region.x),
+      Math.round(video.videoHeight * region.y),
+      Math.round(video.videoWidth * region.width),
+      Math.round(video.videoHeight * region.height),
+      0,
+      targetY,
+      width,
+      heights[index],
+    )
+    targetY += heights[index]
+  })
+  const rgba = context.getImageData(0, 0, canvas.width, canvas.height).data
+  const signature = new Uint8Array(canvas.width * canvas.height)
+  for (let source = 0, target = 0; source < rgba.length; source += 4, target += 1) {
+    signature[target] = Math.round(
+      rgba[source] * 0.2126 + rgba[source + 1] * 0.7152 + rgba[source + 2] * 0.0722,
+    )
+  }
+  return signature
+}
+
 export async function loadImageSource(source) {
   const image = new Image()
   image.decoding = 'async'

@@ -29,6 +29,7 @@ import {
   scannerSignatureDifference,
   scannerCultivationFit,
   scannerLegalPanelStatValues,
+  scannerOptionCandidates,
   scannerStatShapeSimilarity,
   selectScannerPanelStat,
   selectScannerLevel,
@@ -384,6 +385,24 @@ test('stable frame selection prefers the sharpest anchored terminal frame', () =
   assert.deepEqual(selected.map((sample) => sample.time), [0.9])
 })
 
+test('change-region signatures keep consecutive similar creatures with different details', () => {
+  const broad = new Uint8Array(40).fill(30)
+  const changeSignature = (value) => new Uint8Array(80).fill(value)
+  const samples = [
+    { time: 0, signature: broad, changeSignature: changeSignature(20), anchorQuality: 0.4 },
+    { time: 0.3, signature: broad, changeSignature: changeSignature(20), anchorQuality: 0.6 },
+    { time: 0.6, signature: broad, changeSignature: changeSignature(20), anchorQuality: 0.8 },
+    { time: 0.9, signature: broad, changeSignature: changeSignature(60), anchorQuality: 0.2 },
+    { time: 1.2, signature: broad, changeSignature: changeSignature(90), anchorQuality: 0.5 },
+    { time: 1.5, signature: broad, changeSignature: changeSignature(90), anchorQuality: 0.7 },
+    { time: 1.8, signature: broad, changeSignature: changeSignature(90), anchorQuality: 0.9 },
+  ]
+  assert.deepEqual(
+    selectStableScannerSamples(samples).map((sample) => sample.time),
+    [0.6, 1.8],
+  )
+})
+
 test('anchor quality rewards crisp content in the fixed information regions', () => {
   const width = 120
   const height = 80
@@ -416,6 +435,21 @@ test('scan matching can require a distinct best finite-vocabulary candidate', ()
   ]
   assert.equal(bestScanMatch('板板壳', candidates, { minimumScore: 0.62, minimumGap: 0.08 })?.value, 'one')
   assert.equal(bestScanMatch('板壳', candidates, { minimumScore: 0.62, minimumGap: 0.08 }), null)
+})
+
+test('nature OCR candidates exclude explanatory stat suffixes', () => {
+  assert.deepEqual(
+    scannerOptionCandidates({
+      options: [
+        { value: 'clever', label: '聪明（+魔攻 -物攻）' },
+        { value: 'calm', label: '平和（+生命 -速度）' },
+      ],
+    }),
+    [
+      { value: 'clever', label: '聪明', aliases: undefined },
+      { value: 'calm', label: '平和', aliases: undefined },
+    ],
+  )
 })
 
 test('an exact short game name wins over a longer evolution name containing it', () => {
@@ -663,13 +697,43 @@ test('real Duck OCR candidates recover level 13 and resolve Burning Duck from fo
     patk: 62,
     matk: 36,
     pdef: 57,
-    mdef: 0,
-    spd: 0,
+    mdef: 53,
+    spd: 82,
   })
   assert.equal(constrained.identity.value, 'burning')
   assert.equal(constrained.identity.source, 'name+formula')
-  assert.equal(constrained.identity.diagnostics.mode, 'mixed-evidence')
+  assert.equal(constrained.identity.diagnostics.mode, 'white-first')
   assert.equal(constrained.identity.candidates[0].cultivationFit.rmse, 0)
+})
+
+test('joint formula constraints can override a plausible but wrong OCR level', () => {
+  const candidates = [
+    { value: 'fluffy', label: '鸭吉吉（蓬松的样子）', traitName: '挺起胸脯', stats: { hp: 136, patk: 95, matk: 35, pdef: 55, mdef: 45, spd: 105 } },
+    { value: 'solid', label: '鸭吉吉（紧实的样子）', traitName: '挺起胸脯', stats: { hp: 136, patk: 35, matk: 95, pdef: 45, mdef: 55, spd: 105 } },
+    { value: 'burning', label: '鸭吉吉（燃了鸭）', traitName: '挺起胸脯', stats: { hp: 108, patk: 89, matk: 41, pdef: 74, mdef: 48, spd: 115 } },
+  ]
+  const values = { hp: 108, patk: 62, matk: 36, pdef: 57, mdef: 46, spd: 82 }
+  const constrained = constrainScannerFormulaInputs({
+    rawName: '鸭吉吉',
+    rawTrait: '挺起胸脯',
+    panelStatOcr: Object.fromEntries(
+      Object.entries(values).map(([key, value]) => [
+        key,
+        { value, candidates: [value], ambiguous: false },
+      ]),
+    ),
+    levelOcr: { value: 18, candidates: [18], ambiguous: false, rawVariants: ['18/60'] },
+    stars: 0,
+    nature: { raise: 'mdef', lower: 'patk' },
+    statTones: Object.fromEntries(
+      Object.keys(values).map((key) => [key, { tone: 'unknown' }]),
+    ),
+    candidates,
+  })
+  assert.equal(constrained.applied, true)
+  assert.equal(constrained.level, 13)
+  assert.equal(constrained.levelInferred, true)
+  assert.equal(constrained.identity.value, 'burning')
 })
 
 test('joint formula constraints do not force an indistinguishable form or level', () => {

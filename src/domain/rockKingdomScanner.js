@@ -75,6 +75,25 @@ export const ROCK_SCANNER_STABILITY_REGION = {
   height: 0.78,
 }
 
+export const ROCK_SCANNER_CHANGE_REGIONS = [
+  { x: 0.1, y: 0.06, width: 0.53, height: 0.73, signatureHeight: 48 },
+  ROCK_SCANNER_CROP_PROFILE.name,
+  ROCK_SCANNER_CROP_PROFILE.gender,
+  ROCK_SCANNER_CROP_PROFILE.partnerMark,
+  ROCK_SCANNER_CROP_PROFILE.bloodline,
+  ROCK_SCANNER_CROP_PROFILE.nature,
+  ROCK_SCANNER_CROP_PROFILE.specialty,
+  ROCK_SCANNER_CROP_PROFILE.appearance,
+  ROCK_SCANNER_IDENTITY_CROP_PROFILE.level,
+  ROCK_SCANNER_IDENTITY_CROP_PROFILE.trait,
+  ROCK_SCANNER_IDENTITY_CROP_PROFILE.hp,
+  ROCK_SCANNER_IDENTITY_CROP_PROFILE.patk,
+  ROCK_SCANNER_IDENTITY_CROP_PROFILE.matk,
+  ROCK_SCANNER_IDENTITY_CROP_PROFILE.pdef,
+  ROCK_SCANNER_IDENTITY_CROP_PROFILE.mdef,
+  ROCK_SCANNER_IDENTITY_CROP_PROFILE.spd,
+]
+
 export const ROCK_SCANNER_DEVICE_PROFILE = {
   width: 3200,
   height: 1440,
@@ -216,6 +235,7 @@ export function selectStableScannerSamples(
     minimumAnchorQuality = 0.4,
   } = {},
 ) {
+  const changeSignature = (sample) => sample.changeSignature || sample.signature
   const selected = []
   let stableRun = []
   const finishStableRun = () => {
@@ -228,15 +248,24 @@ export function selectStableScannerSamples(
     const previous = selected.at(-1)
     if (
       previous
-      && scannerSignatureDifference(previous.signature, candidate.signature) <= duplicateThreshold
+      && scannerSignatureDifference(
+        changeSignature(previous),
+        changeSignature(candidate),
+      ) <= duplicateThreshold
     ) return
     selected.push(candidate)
   }
   for (let index = windowSize - 1; index < samples.length; index += 1) {
     const window = samples.slice(index - windowSize + 1, index + 1)
     const stable = window.slice(1).every((sample, offset) => (
-      scannerSignatureDifference(window[offset].signature, sample.signature) <= stableThreshold
-    )) && scannerSignatureDifference(window[0].signature, window.at(-1).signature) <= stableThreshold
+      scannerSignatureDifference(
+        changeSignature(window[offset]),
+        changeSignature(sample),
+      ) <= stableThreshold
+    )) && scannerSignatureDifference(
+      changeSignature(window[0]),
+      changeSignature(window.at(-1)),
+    ) <= stableThreshold
     if (!stable) {
       finishStableRun()
       continue
@@ -759,7 +788,7 @@ export function catalogNameCandidates(rows = [], fields = []) {
 export function scannerOptionCandidates(field) {
   return (field?.options || []).map((option) => ({
     value: option.value,
-    label: option.label,
+    label: String(option.label || '').split(/[（(]/)[0].trim(),
     aliases: option.aliases,
   }))
 }
@@ -888,11 +917,22 @@ function scannerConstrainedStatChoices(result = {}, legalValues = []) {
           recognizedValue,
         )
       }
+      if (
+        expected.length > recognized.length
+        && expected.length - recognized.length <= 1
+        && (expected.startsWith(recognized) || expected.endsWith(recognized))
+      ) {
+        addChoice(
+          legalValue,
+          0.8 + (expected.length - recognized.length) * 0.2,
+          recognizedValue,
+        )
+      }
     }
   }
   return [...choices.values()]
     .sort((left, right) => left.repairCost - right.repairCost || left.value - right.value)
-    .slice(0, 4)
+    .slice(0, 8)
 }
 
 function scannerConstrainedPanelCombinations(
@@ -1277,11 +1317,15 @@ export function constrainScannerFormulaInputs({
   const candidateLevels = [...new Set((levelOcr.candidates || [])
     .map(Number)
     .filter((value) => value >= 1 && value <= MAX_CULTIVATION_LEVEL))]
-  const levels = recognizedLevel
-    ? [recognizedLevel]
-    : candidateLevels.length > 0
-      ? candidateLevels
-      : Array.from({ length: MAX_CULTIVATION_LEVEL }, (_, index) => index + 1)
+  const levels = Array.from({ length: MAX_CULTIVATION_LEVEL }, (_, index) => index + 1)
+  const levelEvidenceCost = (level) => {
+    if (recognizedLevel === level) return 0
+    if (candidateLevels.includes(level)) return recognizedLevel ? 0.35 : 0
+    if (!recognizedLevel && candidateLevels.length === 0) return 0
+    const anchors = recognizedLevel ? [recognizedLevel, ...candidateLevels] : candidateLevels
+    const distance = Math.min(...anchors.map((anchor) => Math.abs(anchor - level)))
+    return 1.25 + Math.min(1.5, distance * 0.05)
+  }
   const attempts = []
   for (const level of levels) {
     const combinations = scannerConstrainedPanelCombinations(panelStatOcr, candidates, {
@@ -1314,8 +1358,9 @@ export function constrainScannerFormulaInputs({
         panelStatOcr: combination.panelStatOcr,
         evidenceCount: combination.evidenceCount,
         repairCost: combination.repairCost,
+        levelEvidenceCost: levelEvidenceCost(level),
         rmse,
-        totalCost: rmse + combination.repairCost,
+        totalCost: rmse + combination.repairCost + levelEvidenceCost(level),
       })
     }
   }
@@ -1349,6 +1394,7 @@ export function constrainScannerFormulaInputs({
     ))?.label || attempt.identity.value,
     evidenceCount: attempt.evidenceCount,
     repairCost: attempt.repairCost,
+    levelEvidenceCost: attempt.levelEvidenceCost,
     rmse: attempt.rmse,
     totalCost: attempt.totalCost,
   }))

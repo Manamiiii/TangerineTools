@@ -8,6 +8,7 @@ import { RockKingdomStatFormulaGuide } from '../../components/RockKingdomStatFor
 import { recognizeNumericImageText, recognizeStructuredImageText } from '../ocr/localOcr.js'
 import {
   captureVideoFrame,
+  captureVideoChangeSignature,
   captureVideoSignature,
   cropImageSource,
   loadImageSource,
@@ -15,6 +16,7 @@ import {
 } from './frameCapture.js'
 import {
   ROCK_SCANNER_CROP_PROFILE,
+  ROCK_SCANNER_CHANGE_REGIONS,
   ROCK_SCANNER_DEVICE_PROFILE,
   ROCK_SCANNER_IDENTITY_CROP_PROFILE,
   ROCK_SCANNER_STABILITY_REGION,
@@ -101,7 +103,7 @@ function scannerCandidateSets(fields) {
 }
 
 const SCANNER_MATCH_OPTIONS = {
-  nature: { minimumScore: 0.56, minimumGap: 0.06 },
+  nature: { minimumScore: 0.7, minimumGap: 0.12 },
   bloodline: { minimumScore: 0.56, minimumGap: 0.06 },
   specialty: { minimumScore: 0.56, minimumGap: 0.06 },
 }
@@ -211,7 +213,7 @@ function formulaFailureLabel(identity) {
   const labels = {
     'missing-level': '等级未识别，公式未启动。',
     'missing-stars': '星级未识别，公式未启动。',
-    'missing-nature': '性格未识别；请先手动选择性格，再点击“按公式重判形态”。',
+    'missing-nature': '性格未识别；手动选择性格后会自动重新判断形态。',
     'insufficient-stats': '可用六维不足：需要至少 5 项数字、至少 3 项可靠白色数值，或 4 项数字且其中至少 2 项为可靠白色。',
     'formula-unavailable': '当前输入无法生成合法培养面板。',
     'best-error-too-high': `最佳候选误差超过 ${diagnostics?.maximumFormulaRmse ?? 2.5}。`,
@@ -251,61 +253,62 @@ function ScannerFormulaDiagnostics({ identity }) {
   })
   const candidates = (identity.candidates || []).slice(0, 4)
   return (
-    <div
+    <details
       className="scanner-formula-diagnostics"
-      onClick={(event) => {
-        event.preventDefault()
-        event.stopPropagation()
-      }}
+      onClick={(event) => event.stopPropagation()}
     >
-      <strong>形态公式诊断</strong>
-      <span>
-        输入：{identity.level ? `${identity.level}级` : '等级未识别'}
-        {' / '}{identity.stars == null ? '星级未识别' : `${identity.stars}星`}
-        {' / '}{identity.nature?.name || '性格未识别'}
-      </span>
-      <span>OCR 六维：{statsText}</span>
-      {uncertainOcr.length > 0 && <span>数字重试：{uncertainOcr.join(' / ')}</span>}
-      <span>
-        口径：{diagnostics.mode === 'white-first'
-          ? `优先使用白色未加成项（${diagnostics.whiteStatKeys.map((key) => SCANNER_STAT_LABELS[key]).join('、')}）`
-          : diagnostics.mode === 'mixed-evidence'
-            ? `使用四项以上数值；白色项固定未加成（${diagnostics.whiteStatKeys.map((key) => SCANNER_STAT_LABELS[key]).join('、')}），其余枚举天分`
-            : '使用全部已识别数值并枚举天分'}
-      </span>
-      {identity.levelOcr?.rawVariants?.length > 0 && (
+      <summary>
+        形态识别诊断 · {identity.value ? '已得到候选' : formulaFailureLabel(identity)}
+      </summary>
+      <div className="scanner-formula-diagnostics-body">
         <span>
-          等级重试：{identity.levelOcr.rawVariants.filter(Boolean).join(' / ') || '均为空'}
-          {identity.levelOcr.ambiguous ? '（结果冲突）' : ''}
-          {identity.levelOcr.formulaInferred ? `（联合公式推断为 ${identity.level} 级）` : ''}
+          输入：{identity.level ? `${identity.level}级` : '等级未识别'}
+          {' / '}{identity.stars == null ? '星级未识别' : `${identity.stars}星`}
+          {' / '}{identity.nature?.name || '性格未识别'}
         </span>
-      )}
-      {diagnostics.constraintAttempts?.length > 0 && (
+        <span>OCR 六维：{statsText}</span>
+        {uncertainOcr.length > 0 && <span>数字重试：{uncertainOcr.join(' / ')}</span>}
         <span>
-          联合约束：{diagnostics.constraintAttempts.map((attempt) => (
-            `${attempt.level}级·${attempt.label}，${attempt.evidenceCount}项证据，误差 ${attempt.rmse.toFixed(2)}`
-          )).join(' / ')}
-          {diagnostics.constraintAttemptGap != null
-            ? `；前两组差距 ${diagnostics.constraintAttemptGap.toFixed(2)}`
-            : ''}
+          口径：{diagnostics.mode === 'white-first'
+            ? `优先使用白色未加成项（${diagnostics.whiteStatKeys.map((key) => SCANNER_STAT_LABELS[key]).join('、')}）`
+            : diagnostics.mode === 'mixed-evidence'
+              ? `使用四项以上数值；白色项固定未加成（${diagnostics.whiteStatKeys.map((key) => SCANNER_STAT_LABELS[key]).join('、')}），其余枚举天分`
+              : '使用全部已识别数值并枚举天分'}
         </span>
-      )}
-      {candidates.length > 0 && (
+        {identity.levelOcr?.rawVariants?.length > 0 && (
+          <span>
+            等级重试：{identity.levelOcr.rawVariants.filter(Boolean).join(' / ') || '均为空'}
+            {identity.levelOcr.ambiguous ? '（结果冲突）' : ''}
+            {identity.levelOcr.formulaInferred ? `（联合公式推断为 ${identity.level} 级）` : ''}
+          </span>
+        )}
+        {diagnostics.constraintAttempts?.length > 0 && (
+          <span>
+            联合约束：{diagnostics.constraintAttempts.map((attempt) => (
+              `${attempt.level}级·${attempt.label}，${attempt.evidenceCount}项证据，误差 ${attempt.rmse.toFixed(2)}`
+            )).join(' / ')}
+            {diagnostics.constraintAttemptGap != null
+              ? `；前两组差距 ${diagnostics.constraintAttemptGap.toFixed(2)}`
+              : ''}
+          </span>
+        )}
+        {candidates.length > 0 && (
+          <span>
+            候选误差：{candidates.map((candidate) => (
+              `${candidate.label} ${candidate.cultivationFit
+                ? candidate.cultivationFit.rmse.toFixed(2)
+                : '未计算'}`
+            )).join(' / ')}
+          </span>
+        )}
+        {diagnostics.rmseGap != null && <span>前两名差距：{diagnostics.rmseGap.toFixed(2)}</span>}
         <span>
-          候选误差：{candidates.map((candidate) => (
-            `${candidate.label} ${candidate.cultivationFit
-              ? candidate.cultivationFit.rmse.toFixed(2)
-              : '未计算'}`
-          )).join(' / ')}
+          自动门槛：最佳误差不超过 {diagnostics.maximumFormulaRmse}
+          {' / '}前两名差距至少 {diagnostics.minimumFormulaRmseGap}
         </span>
-      )}
-      {diagnostics.rmseGap != null && <span>前两名差距：{diagnostics.rmseGap.toFixed(2)}</span>}
-      <span>
-        自动门槛：最佳误差不超过 {diagnostics.maximumFormulaRmse}
-        {' / '}前两名差距至少 {diagnostics.minimumFormulaRmseGap}
-      </span>
-      <em>{formulaFailureLabel(identity)}</em>
-    </div>
+        <em>{formulaFailureLabel(identity)}</em>
+      </div>
+    </details>
   )
 }
 
@@ -480,7 +483,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       setError(`当前仅支持${ROCK_SCANNER_DEVICE_PROFILE.label}录屏；这个视频是 ${video.videoWidth}×${video.videoHeight}。`)
       return
     }
-    const stepSeconds = Math.max(0.45, video.duration / 2600)
+    const stepSeconds = Math.max(0.3, video.duration / 3600)
     const sampleCount = Math.max(1, Math.ceil(video.duration / stepSeconds))
     setBusy('extract-smart')
     setError('')
@@ -496,6 +499,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         samples.push({
           time,
           signature,
+          changeSignature: captureVideoChangeSignature(video, ROCK_SCANNER_CHANGE_REGIONS),
           anchorQuality: scannerAnchorQuality(signature),
         })
       }
@@ -538,9 +542,80 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     setFrames((current) => current.map((frame) => frame.id === id ? { ...frame, ...patch } : frame))
   }
 
-  function patchFrameValue(id, key, value) {
-    setFrames((current) => current.map((frame) => frame.id === id
+  function recheckFrameWithFormula(frame, natureValue) {
+    if (!frame.identity || frame.identity.stars == null || !natureValue) return frame
+    const natureOption = fieldByKey(fields, 'nature')?.options
+      ?.find((option) => option.value === natureValue)
+    const nature = parseNatureOption(natureOption || {})
+    const constraintCandidates = frame.identity.candidates?.length > 1
+      ? frame.identity.candidates
+      : nameCandidates
+    const constrained = constrainScannerFormulaInputs({
+      rawName: frame.raw?.ref,
+      rawTrait: frame.identity.rawTrait,
+      panelStatOcr: frame.identity.panelStatOcr,
+      levelOcr: frame.identity.levelOcr,
+      stars: frame.identity.stars,
+      nature,
+      statTones: frame.identity.statTones,
+      candidates: constraintCandidates,
+    })
+    const level = constrained.applied ? constrained.level : frame.identity.level
+    const panelStats = constrained.applied
+      ? constrained.panelStats
+      : frame.identity.panelStats
+    const panelStatOcr = constrained.applied
+      ? constrained.panelStatOcr
+      : frame.identity.panelStatOcr
+    const levelOcr = constrained.applied
       ? {
+          ...frame.identity.levelOcr,
+          value: level,
+          formulaInferred: constrained.levelInferred,
+        }
+      : frame.identity.levelOcr
+    const identity = constrained.applied
+      ? constrained.identity
+      : resolveScannerReference({
+          rawName: frame.raw?.ref,
+          rawTrait: frame.identity.rawTrait,
+          panelStats,
+          level,
+          stars: frame.identity.stars,
+          nature,
+          statTones: frame.identity.statTones,
+          candidates: nameCandidates,
+        })
+    return {
+      ...frame,
+      values: identity.value
+        ? { ...frame.values, nature: natureValue, ref: identity.value }
+        : { ...frame.values, nature: natureValue },
+      confidence: identity.value
+        ? { ...frame.confidence, nature: 1, ref: identity.score }
+        : { ...frame.confidence, nature: 1 },
+      identity: {
+        ...identity,
+        rawTrait: frame.identity.rawTrait,
+        rawLevel: frame.identity.rawLevel,
+        levelOcr,
+        level,
+        stars: frame.identity.stars,
+        nature,
+        panelStats,
+        panelStatOcr,
+        statTones: frame.identity.statTones,
+      },
+      duplicateDecision: '',
+      reviewed: false,
+      status: identity.value ? '性格已修正并自动重判形态，待复核' : '性格已修正，公式仍无法区分形态',
+    }
+  }
+
+  function patchFrameValue(id, key, value) {
+    setFrames((current) => current.map((frame) => {
+      if (frame.id !== id) return frame
+      const nextFrame = {
           ...frame,
           values: { ...frame.values, [key]: value },
           confidence: { ...frame.confidence, [key]: 1 },
@@ -548,7 +623,10 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           reviewed: false,
           status: '待确认',
         }
-      : frame))
+      return key === 'nature'
+        ? recheckFrameWithFormula(nextFrame, value)
+        : nextFrame
+    }))
   }
 
   async function recognizeFrame(frame) {
@@ -578,14 +656,25 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         SCANNER_MATCH_OPTIONS[fieldKey] || { minimumScore: 0.62, minimumGap: 0.08 },
       )
       if (!firstMatch || firstMatch.score < 0.78) {
+        const preparedCrop = prepareScannerTextCrop(crop)
         rawVariants[fieldKey].push(await recognizeStructuredImageText(
-          prepareScannerTextCrop(crop),
+          preparedCrop,
           undefined,
           {
             ...baseOptions,
             characterWhitelist: scannerCharacterWhitelist(candidateSets[fieldKey]),
           },
         ))
+        if (key === 'nature') {
+          rawVariants[fieldKey].push(await recognizeStructuredImageText(
+            preparedCrop,
+            undefined,
+            {
+              pageSegmentationMode: '8',
+              characterWhitelist: scannerCharacterWhitelist(candidateSets[fieldKey]),
+            },
+          ))
+        }
       }
     }
     const matched = recognizedPatch(rawVariants, fields)
@@ -820,78 +909,6 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     }
   }
 
-  function recheckSelectedWithFormula() {
-    if (!selected?.identity || selected.identity.stars == null) return
-    const natureOption = fieldByKey(fields, 'nature')?.options
-      ?.find((option) => option.value === selected.values.nature)
-    const nature = parseNatureOption(natureOption || {})
-    const constraintCandidates = selected.identity.candidates?.length > 1
-      ? selected.identity.candidates
-      : nameCandidates
-    const constrained = constrainScannerFormulaInputs({
-      rawName: selected.raw?.ref,
-      rawTrait: selected.identity.rawTrait,
-      panelStatOcr: selected.identity.panelStatOcr,
-      levelOcr: selected.identity.levelOcr,
-      stars: selected.identity.stars,
-      nature,
-      statTones: selected.identity.statTones,
-      candidates: constraintCandidates,
-    })
-    const level = constrained.applied ? constrained.level : selected.identity.level
-    const panelStats = constrained.applied
-      ? constrained.panelStats
-      : selected.identity.panelStats
-    const panelStatOcr = constrained.applied
-      ? constrained.panelStatOcr
-      : selected.identity.panelStatOcr
-    const levelOcr = constrained.applied
-      ? {
-          ...selected.identity.levelOcr,
-          value: level,
-          formulaInferred: constrained.levelInferred,
-        }
-      : selected.identity.levelOcr
-    const identity = constrained.applied
-      ? constrained.identity
-      : resolveScannerReference({
-          rawName: selected.raw?.ref,
-          rawTrait: selected.identity.rawTrait,
-          panelStats,
-          level,
-          stars: selected.identity.stars,
-          nature,
-          statTones: selected.identity.statTones,
-          candidates: nameCandidates,
-        })
-    patchFrame(selected.id, {
-      values: identity.value
-        ? { ...selected.values, ref: identity.value }
-        : selected.values,
-      confidence: identity.value
-        ? { ...selected.confidence, ref: identity.score }
-        : selected.confidence,
-      identity: {
-        ...identity,
-        rawTrait: selected.identity.rawTrait,
-        rawLevel: selected.identity.rawLevel,
-        levelOcr,
-        level,
-        stars: selected.identity.stars,
-        nature,
-        panelStats,
-        panelStatOcr,
-        statTones: selected.identity.statTones,
-      },
-      duplicateDecision: '',
-      reviewed: false,
-      status: identity.value ? '公式已重判，待复核' : '公式仍无法区分',
-    })
-    setProgress(identity.value
-      ? '已按当前性格、等级、星级、六维和三项天分范围重新判断形态。'
-      : '当前公式证据仍不足以拉开候选，请手动选择形态。')
-  }
-
   function correctionFields(frame) {
     const candidateSets = scannerCandidateSets(fields)
     return Object.entries(candidateSets).flatMap(([key, candidates]) => {
@@ -1008,20 +1025,6 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       }
     >
       <div className="scanner-shell">
-        <details className="scanner-guide">
-          <summary>固定手机录屏方式</summary>
-          <ol>
-            <li>固定使用当前手机横屏录制：3200×1440、16 Mbps、24 fps、无声音。</li>
-            <li>关闭“显示屏幕触摸”和“显示导航键点击”，避免触点覆盖识别区域。</li>
-            <li>在精灵总览页开始录制，每只精灵停留约 1.5～2 秒，只手动切换精灵。</li>
-            <li>导入原始 HEVC MP4，使用“智能提取”；不要先经过聊天软件压缩或视频剪辑转码。</li>
-            <li>工具会同时检查信息面板稳定度和名称、血脉、雷达数值、性格、特长锚点，只保留终态且不重复的画面。</li>
-          </ol>
-          <p>视频、截图和 OCR 默认只在当前浏览器本地处理，原媒体不会写入 IndexedDB。只有点击“AI 纠错”时，当前帧的低置信 OCR 文字和有限候选会发送给已配置模型，图片不会发送。</p>
-        </details>
-
-        <RockKingdomStatFormulaGuide scanner />
-
         <div className="scanner-import-row">
           <label className="btn">
             <Video size={15} />
@@ -1059,41 +1062,61 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           )}
         </div>
 
-        <details className="scanner-guide">
-          <summary>备用导入与排错</summary>
-          <div className="scanner-import-row">
-            <label className="btn">
-              <FileImage size={15} />
-              选择截图
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                hidden
-                onChange={(event) => {
-                  addImageFiles(event.target.files || [])
-                  event.target.value = ''
-                }}
-              />
-            </label>
-            <label className="scanner-interval">
-              <span>固定间隔</span>
-              <input
-                className="input"
-                type="number"
-                min="0.5"
-                max="30"
-                step="0.5"
-                value={intervalSeconds}
-                onChange={(event) => setIntervalSeconds(Math.max(0.5, Number(event.target.value) || 2))}
-              />
-              <span>秒</span>
-            </label>
-            <button type="button" className="btn" disabled={!videoUrl || Boolean(busy)} onClick={extractAtInterval}>
-              按间隔提取
-            </button>
-          </div>
-        </details>
+        <div className="scanner-help-grid">
+          <details className="scanner-help-section">
+            <summary>录屏方式</summary>
+            <ol>
+              <li>固定使用当前手机横屏录制：3200×1440、16 Mbps、24 fps、无声音。</li>
+              <li>关闭“显示屏幕触摸”和“显示导航键点击”，避免触点覆盖识别区域。</li>
+              <li>在精灵总览页开始录制；切换动画结束后，让信息面板终态稳定约 1 秒。</li>
+              <li>导入原始 HEVC MP4，使用“智能提取”；不要先经过聊天软件压缩或视频剪辑转码。</li>
+              <li>工具会联合选择列表和信息面板关键区域，只保留终态且不重复的画面。</li>
+            </ol>
+            <p>视频、截图和 OCR 默认只在当前浏览器本地处理，原媒体不会写入 IndexedDB。只有点击“AI 纠错”时，当前帧的低置信 OCR 文字和有限候选会发送给已配置模型，图片不会发送。</p>
+          </details>
+
+          <RockKingdomStatFormulaGuide
+            scanner
+            className="scanner-help-section"
+            summary="六维与培养公式"
+          />
+
+          <details className="scanner-help-section">
+            <summary>备用导入与排错</summary>
+            <div className="scanner-import-row">
+              <label className="btn">
+                <FileImage size={15} />
+                选择截图
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  hidden
+                  onChange={(event) => {
+                    addImageFiles(event.target.files || [])
+                    event.target.value = ''
+                  }}
+                />
+              </label>
+              <label className="scanner-interval">
+                <span>固定间隔</span>
+                <input
+                  className="input"
+                  type="number"
+                  min="0.5"
+                  max="30"
+                  step="0.5"
+                  value={intervalSeconds}
+                  onChange={(event) => setIntervalSeconds(Math.max(0.5, Number(event.target.value) || 2))}
+                />
+                <span>秒</span>
+              </label>
+              <button type="button" className="btn" disabled={!videoUrl || Boolean(busy)} onClick={extractAtInterval}>
+                按间隔提取
+              </button>
+            </div>
+          </details>
+        </div>
 
         {videoUrl && (
           <div className="scanner-video">
@@ -1258,21 +1281,6 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                 <div className="scanner-review-actions">
                   <button type="button" className="btn btn-primary" onClick={recognizeSelected} disabled={Boolean(busy)}>
                     <ScanLine size={15} /> 识别当前画面
-                  </button>
-                  <button
-                    type="button"
-                    className="btn"
-                    onClick={recheckSelectedWithFormula}
-                    disabled={
-                      Boolean(busy)
-                      || selected.identity?.stars == null
-                      || !selected.values.nature
-                    }
-                    title={selected.values.nature
-                      ? '修改性格后，用等级候选、星级和六维联合重新判断同名形态'
-                      : '请先选择性格，再按公式重判形态'}
-                  >
-                    按公式重判形态
                   </button>
                   <button type="button" className="btn" onClick={recognizeAll} disabled={Boolean(busy) || frames.length === 0}>
                     识别全部
