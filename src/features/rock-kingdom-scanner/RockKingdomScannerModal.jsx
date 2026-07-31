@@ -35,6 +35,7 @@ import {
   scannerAnchorQuality,
   scannerCharacterWhitelist,
   scannerFrameSelectionAfterAction,
+  scannerNicknameValue,
   scannerOptionCandidates,
   selectScannerPanelStat,
   selectScannerLevel,
@@ -590,7 +591,12 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     return {
       ...frame,
       values: identity.value
-        ? { ...frame.values, nature: natureValue, ref: identity.value }
+        ? {
+            ...frame.values,
+            nature: natureValue,
+            ref: identity.value,
+            nickname: scannerNicknameValue(frame.raw?.ref, identity.value, nameCandidates),
+          }
         : { ...frame.values, nature: natureValue },
       confidence: identity.value
         ? { ...frame.confidence, nature: 1, ref: identity.score }
@@ -618,7 +624,13 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       if (frame.id !== id) return frame
       const nextFrame = {
           ...frame,
-          values: { ...frame.values, [key]: value },
+          values: {
+            ...frame.values,
+            [key]: value,
+            ...(key === 'ref'
+              ? { nickname: scannerNicknameValue(frame.raw?.ref, value, nameCandidates) }
+              : null),
+          },
           confidence: { ...frame.confidence, [key]: 1 },
           duplicateDecision: '',
           reviewed: false,
@@ -863,6 +875,12 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     if (identity.value) {
       matched.patch.ref = identity.value
       matched.confidence.ref = identity.score
+      matched.patch.nickname = scannerNicknameValue(
+        matched.raw.ref,
+        identity.value,
+        nameCandidates,
+      )
+      matched.confidence.nickname = matched.patch.nickname ? 0.72 : 1
     }
     const genderCrop = cropImageSource(image, ROCK_SCANNER_CROP_PROFILE.gender, 1)
     const genderMatch = recognizeGenderColor(
@@ -1013,7 +1031,11 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         ) return item
         return {
           ...item,
-          values: { ...item.values, ref: frame.values.ref },
+          values: {
+            ...item.values,
+            ref: frame.values.ref,
+            nickname: scannerNicknameValue(item.raw?.ref, frame.values.ref, nameCandidates),
+          },
           confidence: { ...item.confidence, ref: 0.91 },
           identity: {
             ...item.identity,

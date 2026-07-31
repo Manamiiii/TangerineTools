@@ -29,6 +29,7 @@ import {
   scannerAnchorQuality,
   scannerCharacterWhitelist,
   scannerFrameSelectionAfterAction,
+  scannerNicknameValue,
   scannerSignatureDifference,
   scannerCultivationFit,
   scannerLegalPanelStatValues,
@@ -428,6 +429,16 @@ test('visual candidate pool accepts a learned portrait only with a clear lead', 
     scannerVisualCandidatePool([{ value: 'a', visualScore: 0.68 }]).pool.length,
     0,
   )
+})
+
+test('scanner stores only an in-game name that differs from the catalog name', () => {
+  const candidates = [
+    { value: 'board-shell', label: '板板壳（蜕皮时的样子）' },
+    { value: 'dream', label: '梦游' },
+  ]
+  assert.equal(scannerNicknameValue('板板壳', 'board-shell', candidates), '')
+  assert.equal(scannerNicknameValue('梦梦♀', 'dream', candidates), '梦梦')
+  assert.equal(scannerNicknameValue(' “梦梦” ', 'dream', candidates), '梦梦')
 })
 
 test('selected portrait scoring prefers a bright circular selection outline', () => {

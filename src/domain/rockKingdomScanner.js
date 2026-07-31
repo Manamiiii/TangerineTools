@@ -922,6 +922,19 @@ export function catalogNameCandidates(rows = [], fields = []) {
     .filter((candidate) => candidate.label)
 }
 
+export function scannerNicknameValue(rawName, referenceId, candidates = []) {
+  const visibleName = String(rawName || '')
+    .normalize('NFKC')
+    .replace(/[♂♀]/g, '')
+    .replace(/\s+/g, '')
+    .replace(/^[^\p{Script=Han}\p{Letter}\p{Number}·]+|[^\p{Script=Han}\p{Letter}\p{Number}·]+$/gu, '')
+  if (!visibleName || visibleName.length > 12) return ''
+  const reference = candidates.find((candidate) => candidate.value === referenceId)
+  if (!reference) return visibleName
+  const officialMatch = rankScanCandidates(visibleName, [reference])[0]
+  return officialMatch?.score >= 0.82 ? '' : visibleName
+}
+
 export function scannerVisualCandidatePool(
   visualCandidates = [],
   {
