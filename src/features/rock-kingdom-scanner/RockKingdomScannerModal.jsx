@@ -64,8 +64,8 @@ function frameId() {
 function formatTime(seconds) {
   const safe = Number.isFinite(seconds) ? seconds : 0
   const minutes = Math.floor(safe / 60)
-  const remainder = Math.floor(safe % 60)
-  return `${minutes}:${String(remainder).padStart(2, '0')}`
+  const remainder = safe % 60
+  return `${minutes}:${remainder.toFixed(1).padStart(4, '0')}`
 }
 
 function initialDraft(fields) {
@@ -329,6 +329,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   const [videoName, setVideoName] = useState('')
   const [videoDimensions, setVideoDimensions] = useState(null)
   const [extractionSummary, setExtractionSummary] = useState(null)
+  const [recognitionSummary, setRecognitionSummary] = useState(null)
   const [frames, setFrames] = useState([])
   const [selectedId, setSelectedId] = useState('')
   const [intervalSeconds, setIntervalSeconds] = useState(2)
@@ -939,8 +940,17 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     if (!selected) return
     setBusy('ocr')
     setError('')
+    setRecognitionSummary(null)
     try {
       const recognitionSeconds = await recognizeFrame(selected)
+      setRecognitionSummary({
+        mode: '单张识别',
+        count: 1,
+        elapsedSeconds: recognitionSeconds,
+        accumulatedSeconds: recognitionSeconds,
+        averageSeconds: recognitionSeconds,
+        medianSeconds: recognitionSeconds,
+      })
       setProgress(`识别完成，用时 ${recognitionSeconds.toFixed(1)} 秒。请核对所有字段；未识别的外观或性别需要手动选择。`)
     } catch (recognizeError) {
       patchFrame(selected.id, { status: '识别失败' })
@@ -954,12 +964,29 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     if (frames.length === 0) return
     setBusy('ocr-all')
     setError('')
+    setRecognitionSummary(null)
+    const startedAt = performance.now()
+    const frameSeconds = []
     try {
       for (let index = 0; index < frames.length; index += 1) {
         setProgress(`批量识别 ${index + 1} / ${frames.length}`)
-        await recognizeFrame(frames[index])
+        frameSeconds.push(await recognizeFrame(frames[index]))
       }
-      setProgress('批量识别完成。保存前请逐条复核。')
+      const sortedSeconds = [...frameSeconds].sort((left, right) => left - right)
+      const accumulatedSeconds = frameSeconds.reduce((total, value) => total + value, 0)
+      const elapsedSeconds = (performance.now() - startedAt) / 1000
+      const medianSeconds = sortedSeconds.length % 2 === 0
+        ? (sortedSeconds[sortedSeconds.length / 2 - 1] + sortedSeconds[sortedSeconds.length / 2]) / 2
+        : sortedSeconds[Math.floor(sortedSeconds.length / 2)]
+      setRecognitionSummary({
+        mode: '批量识别',
+        count: frameSeconds.length,
+        elapsedSeconds,
+        accumulatedSeconds,
+        averageSeconds: accumulatedSeconds / Math.max(1, frameSeconds.length),
+        medianSeconds,
+      })
+      setProgress(`批量识别完成：${frameSeconds.length} 张，总耗时 ${elapsedSeconds.toFixed(1)} 秒。保存前请逐条复核。`)
     } catch (recognizeError) {
       setError(recognizeError.message)
     } finally {
@@ -1145,6 +1172,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                 setVideoName(file.name)
                 setVideoDimensions(null)
                 setExtractionSummary(null)
+                setRecognitionSummary(null)
                 event.target.value = ''
               }}
             />
@@ -1163,6 +1191,15 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
               智能提取：检查 {extractionSummary.checked} 个时间点 · 保留 {extractionSummary.kept} 张
               · 步长约 {extractionSummary.stepSeconds.toFixed(2)} 秒
               · {extractionSummary.mode}耗时约 {extractionSummary.elapsedSeconds.toFixed(1)} 秒
+            </span>
+          )}
+          {recognitionSummary && (
+            <span className="scanner-device-status">
+              {recognitionSummary.mode}：{recognitionSummary.count} 张
+              · 总耗时 {recognitionSummary.elapsedSeconds.toFixed(1)} 秒
+              · 单帧累计 {recognitionSummary.accumulatedSeconds.toFixed(1)} 秒
+              · 平均 {recognitionSummary.averageSeconds.toFixed(1)} 秒
+              · 中位 {recognitionSummary.medianSeconds.toFixed(1)} 秒
             </span>
           )}
         </div>
