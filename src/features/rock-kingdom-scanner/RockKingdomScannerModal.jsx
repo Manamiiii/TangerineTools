@@ -49,6 +49,12 @@ import { correctRockScannerFields } from '../rock-kingdom-model/rockKingdomModel
 import { recognizeRockAppearance } from './appearanceRecognition.js'
 import { recognizeRockPartnerMark } from './partnerMarkRecognition.js'
 import { recognizeRockTextLabel } from './textLabelRecognition.js'
+import {
+  captureRockPortraitSelection,
+  portraitDescriptorSimilarity,
+  recognizeRockPortrait,
+  rememberRockPortrait,
+} from './portraitRecognition.js'
 
 function frameId() {
   return `scan-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
@@ -165,6 +171,9 @@ function identityEvidenceLabel(identity) {
     trait: '特性',
     'trait+stats': '特性 + 六维形状',
     'trait+formula': '特性 + 等级/星级公式',
+    portrait: '左侧选中头像',
+    'portrait+stats': '左侧选中头像 + 六维形状',
+    'portrait+formula': '左侧选中头像 + 等级/星级公式',
     ambiguous: '同名候选仍无法区分',
     unresolved: '昵称/名称无法关联资料库',
   }
@@ -477,11 +486,14 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         }
         await waitForVideoSeek(video, time)
         const signature = captureVideoSignature(video, ROCK_SCANNER_STABILITY_REGION)
+        const portraitSelection = captureRockPortraitSelection(video)
         samples.push({
           time,
           signature,
           changeSignature: captureVideoChangeSignature(video, ROCK_SCANNER_CHANGE_REGIONS),
           anchorQuality: scannerAnchorQuality(signature),
+          selectionKey: portraitSelection?.key || '',
+          selectionScore: portraitSelection?.score || 0,
         })
       }
       const stableSamples = selectStableScannerSamples(samples)
@@ -546,6 +558,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       nature,
       statTones: frame.identity.statTones,
       candidates: constraintCandidates,
+      visualCandidates: frame.identity.visualCandidates,
     })
     const level = constrained.applied ? constrained.level : frame.identity.level
     const panelStats = constrained.applied
@@ -572,6 +585,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
           nature,
           statTones: frame.identity.statTones,
           candidates: nameCandidates,
+          visualCandidates: frame.identity.visualCandidates,
         })
     return {
       ...frame,
@@ -676,6 +690,15 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       rawName: matched.raw.ref,
       candidates: nameCandidates,
     })
+    const portraitResult = recognizeRockPortrait(image, nameCandidates)
+    if (!identity.value) {
+      setProgress(`正在识别 ${frame.sourceName}${frame.time == null ? '' : ` ${formatTime(frame.time)}`} · 左侧选中头像`)
+      identity = resolveScannerReference({
+        rawName: matched.raw.ref,
+        candidates: nameCandidates,
+        visualCandidates: portraitResult.ranked,
+      })
+    }
     if (!identity.value) {
       const availableTraits = traitCandidates(nameCandidates)
       setProgress(`正在识别 ${frame.sourceName}${frame.time == null ? '' : ` ${formatTime(frame.time)}`} · 特性和六维形态`)
@@ -784,6 +807,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         nature,
         statTones,
         candidates: nameCandidates,
+        visualCandidates: portraitResult.ranked,
       })
       if (identity.candidates?.length > 1) {
         const constrained = constrainScannerFormulaInputs({
@@ -820,6 +844,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       }
       identity = {
         ...identity,
+        visualCandidates: portraitResult.ranked,
         rawTrait,
         rawLevel,
         levelOcr,
@@ -830,6 +855,10 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         panelStatOcr,
         statTones,
       }
+    }
+    identity = {
+      ...identity,
+      visualCandidates: portraitResult.ranked,
     }
     if (identity.value) {
       matched.patch.ref = identity.value
@@ -859,6 +888,8 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       confidence: matched.confidence,
       values: { ...frame.values, ...matched.patch },
       identity,
+      portraitDescriptor: portraitResult.descriptor,
+      selectedPortraitCell: portraitResult.selectedCell,
       partnerMarkCandidates: partnerMarkResult.ranked,
       duplicateDecision: '',
       reviewed: false,
@@ -967,12 +998,38 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
 
   function toggleFrameReviewed(frame) {
     const confirming = !frame.reviewed
-    patchFrame(frame.id, {
-      reviewed: confirming,
-      status: confirming ? '已确认' : '待确认',
-    })
     if (confirming) {
+      rememberRockPortrait(frame.values.ref, frame.portraitDescriptor)
+      setFrames((current) => current.map((item) => {
+        if (item.id === frame.id) {
+          return { ...item, reviewed: true, status: '已确认' }
+        }
+        if (
+          item.values.ref
+          || !frame.values.ref
+          || !frame.portraitDescriptor?.length
+          || !item.portraitDescriptor?.length
+          || portraitDescriptorSimilarity(frame.portraitDescriptor, item.portraitDescriptor) < 0.93
+        ) return item
+        return {
+          ...item,
+          values: { ...item.values, ref: frame.values.ref },
+          confidence: { ...item.confidence, ref: 0.91 },
+          identity: {
+            ...item.identity,
+            value: frame.values.ref,
+            score: 0.91,
+            source: 'portrait',
+          },
+          status: '同批头像样本已关联，待复核',
+        }
+      }))
       setSelectedId(scannerFrameSelectionAfterAction(frames, frame.id))
+    } else {
+      patchFrame(frame.id, {
+        reviewed: false,
+        status: '待确认',
+      })
     }
   }
 

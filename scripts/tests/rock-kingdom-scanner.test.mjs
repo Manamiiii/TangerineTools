@@ -34,12 +34,14 @@ import {
   scannerLegalPanelStatValues,
   scannerOptionCandidates,
   scannerStatShapeSimilarity,
+  scannerVisualCandidatePool,
   bestScannerTextLabelTemplateMatch,
   selectScannerPanelStat,
   selectScannerLevel,
   selectStableScannerSamples,
   valuesWithAppearance,
 } from '../../src/domain/rockKingdomScanner.js'
+import { selectedPortraitRingScore } from '../../src/features/rock-kingdom-scanner/portraitRecognition.js'
 
 test('scanner accepts the fixed 3200 by 1440 recording profile', () => {
   assert.deepEqual(ROCK_SCANNER_DEVICE_PROFILE, {
@@ -404,6 +406,74 @@ test('scanner review actions advance to the next frame and deletion falls back t
   assert.equal(
     scannerFrameSelectionAfterAction([{ id: 'only' }], 'only', { removing: true }),
     '',
+  )
+})
+
+test('visual candidate pool accepts a learned portrait only with a clear lead', () => {
+  assert.deepEqual(
+    scannerVisualCandidatePool([
+      { value: 'a', visualScore: 0.94 },
+      { value: 'b', visualScore: 0.83 },
+    ]).pool.map((candidate) => candidate.value),
+    ['a'],
+  )
+  assert.deepEqual(
+    scannerVisualCandidatePool([
+      { value: 'a', visualScore: 0.91 },
+      { value: 'b', visualScore: 0.89 },
+    ]).pool.map((candidate) => candidate.value),
+    ['a', 'b'],
+  )
+  assert.equal(
+    scannerVisualCandidatePool([{ value: 'a', visualScore: 0.68 }]).pool.length,
+    0,
+  )
+})
+
+test('selected portrait scoring prefers a bright circular selection outline', () => {
+  const imageData = (withRing) => {
+    const width = 48
+    const height = 48
+    const data = new Uint8ClampedArray(width * height * 4)
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const normalizedX = (x + 0.5) / width * 2 - 1
+        const normalizedY = (y + 0.5) / height * 2 - 1
+        const radius = Math.sqrt(normalizedX ** 2 + normalizedY ** 2)
+        const value = withRing && radius >= 0.76 && radius <= 0.9 ? 245 : 65
+        const offset = (y * width + x) * 4
+        data[offset] = value
+        data[offset + 1] = value
+        data[offset + 2] = value
+        data[offset + 3] = 255
+      }
+    }
+    return { data, width, height }
+  }
+  assert.ok(selectedPortraitRingScore(imageData(true)) > selectedPortraitRingScore(imageData(false)) + 0.25)
+})
+
+test('stable frame selection keeps adjacent creatures when the left selection changes', () => {
+  const signature = (value) => Uint8Array.from({ length: 64 }, () => value)
+  const samples = [
+    ...[0, 0.3, 0.6].map((time) => ({
+      time,
+      signature: signature(20),
+      changeSignature: signature(20),
+      anchorQuality: 0.8,
+      selectionKey: '0:0',
+    })),
+    ...[0.9, 1.2, 1.5].map((time) => ({
+      time,
+      signature: signature(20),
+      changeSignature: signature(20),
+      anchorQuality: 0.8,
+      selectionKey: '0:1',
+    })),
+  ]
+  assert.deepEqual(
+    selectStableScannerSamples(samples, { windowSize: 2 }).map((sample) => sample.selectionKey),
+    ['0:0', '0:1'],
   )
 })
 

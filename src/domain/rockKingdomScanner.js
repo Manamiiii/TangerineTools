@@ -110,6 +110,13 @@ export const ROCK_SCANNER_DEVICE_PROFILE = {
   label: '固定手机 · 3200×1440 横屏',
 }
 
+export const ROCK_SCANNER_PORTRAIT_GRID = {
+  columns: [0.176, 0.242, 0.309, 0.375, 0.442, 0.509],
+  rows: [0.165, 0.318, 0.474, 0.63, 0.785],
+  width: 0.064,
+  height: 0.142,
+}
+
 export function parseScannerPanelStat(value) {
   const digits = String(value || '')
     .normalize('NFKC')
@@ -266,6 +273,7 @@ export function selectStableScannerSamples(
       const previous = selected.at(-1)
       if (
         previous
+        && (!previous.selectionKey || !candidate.selectionKey || previous.selectionKey === candidate.selectionKey)
         && scannerSignatureDifference(
           signatureFor(previous),
           signatureFor(candidate),
@@ -275,7 +283,12 @@ export function selectStableScannerSamples(
     }
     for (let index = windowSize - 1; index < samples.length; index += 1) {
       const window = samples.slice(index - windowSize + 1, index + 1)
-      const stable = window.slice(1).every((sample, offset) => (
+      const selectionStable = window.slice(1).every((sample) => (
+        !window[0].selectionKey
+        || !sample.selectionKey
+        || sample.selectionKey === window[0].selectionKey
+      ))
+      const stable = selectionStable && window.slice(1).every((sample, offset) => (
         scannerSignatureDifference(
           signatureFor(window[offset]),
           signatureFor(sample),
@@ -899,12 +912,40 @@ export function catalogNameCandidates(rows = [], fields = []) {
       value: row.id,
       label: String(row.values?.[nameField.key] || '').trim(),
       traitName: String(row.values?.traitName || '').trim(),
+      image: String(row.values?.image || '').trim(),
+      shinyImage: String(row.values?.shinyImage || '').trim(),
       stats: Object.fromEntries(
         ['hp', 'patk', 'matk', 'pdef', 'mdef', 'spd']
           .map((key) => [key, Number(row.values?.[key]) || 0]),
       ),
     }))
     .filter((candidate) => candidate.label)
+}
+
+export function scannerVisualCandidatePool(
+  visualCandidates = [],
+  {
+    minimumScore = 0.72,
+    minimumGap = 0.045,
+    nearBestGap = 0.025,
+  } = {},
+) {
+  const ranked = visualCandidates
+    .filter((candidate) => candidate?.value && Number.isFinite(candidate.visualScore))
+    .sort((left, right) => right.visualScore - left.visualScore)
+  const best = ranked[0]
+  if (!best || best.visualScore < minimumScore) return { pool: [], score: best?.visualScore || 0 }
+  const runnerUp = ranked.find((candidate) => candidate.value !== best.value)
+  if (runnerUp && best.visualScore - runnerUp.visualScore < minimumGap) {
+    return {
+      pool: ranked.filter((candidate) => best.visualScore - candidate.visualScore <= nearBestGap),
+      score: best.visualScore,
+    }
+  }
+  return {
+    pool: ranked.filter((candidate) => candidate.value === best.value),
+    score: best.visualScore,
+  }
 }
 
 export function scannerOptionCandidates(field) {
@@ -1294,6 +1335,7 @@ export function resolveScannerReference({
   nature = null,
   statTones = {},
   candidates = [],
+  visualCandidates = [],
   minimumShapeScore = 0.82,
   minimumShapeGap = 0.06,
   maximumFormulaRmse = 2.5,
@@ -1302,8 +1344,22 @@ export function resolveScannerReference({
   const nameMatch = nameCandidatePool(rawName, candidates)
   let pool = nameMatch.pool
   let source = 'name'
+  const visualMatch = scannerVisualCandidatePool(visualCandidates)
+  if (pool.length > 0 && visualMatch.pool.length > 0) {
+    const visualIds = new Set(visualMatch.pool.map((candidate) => candidate.value))
+    const intersection = pool.filter((candidate) => visualIds.has(candidate.value))
+    if (intersection.length > 0) pool = intersection
+  } else if (pool.length === 0 && visualMatch.pool.length > 0) {
+    pool = visualMatch.pool
+    source = 'portrait'
+  }
   if (pool.length === 1) {
-    return { value: pool[0].value, score: nameMatch.score, source, candidates: pool }
+    return {
+      value: pool[0].value,
+      score: Math.max(nameMatch.score, visualMatch.score),
+      source,
+      candidates: pool,
+    }
   }
   const traitPool = traitCandidatePool(rawTrait, candidates)
   if (pool.length > 1 && traitPool.length > 0) {
@@ -1315,7 +1371,12 @@ export function resolveScannerReference({
     source = 'trait'
   }
   if (pool.length === 1) {
-    return { value: pool[0].value, score: Math.max(nameMatch.score, 0.82), source, candidates: pool }
+    return {
+      value: pool[0].value,
+      score: Math.max(nameMatch.score, visualMatch.score, 0.82),
+      source,
+      candidates: pool,
+    }
   }
   if (pool.length === 0) {
     return { value: '', score: 0, source: 'unresolved', candidates: [] }
@@ -1377,7 +1438,7 @@ export function resolveScannerReference({
     return {
       value: best.value,
       score: best.cultivationFit.score,
-      source: source === 'name' ? 'name+formula' : 'trait+formula',
+      source: `${source}+formula`,
       candidates: ranked,
       level: Number(level),
       stars: Number(stars),
@@ -1409,7 +1470,7 @@ export function resolveScannerReference({
   return {
     value: best.value,
     score: best.shapeScore,
-    source: source === 'name' ? 'name+stats' : 'trait+stats',
+    source: `${source}+stats`,
     candidates: ranked,
     diagnostics,
   }
