@@ -425,6 +425,21 @@ test('change-region signatures keep consecutive similar creatures with different
   )
 })
 
+test('stable panel fallback keeps a creature when animated detail regions never settle', () => {
+  const panel = new Uint8Array(40).fill(35)
+  const animated = (value) => new Uint8Array(80).fill(value)
+  const samples = [
+    { time: 0, signature: panel, changeSignature: animated(10), anchorQuality: 0.45 },
+    { time: 0.3, signature: panel, changeSignature: animated(35), anchorQuality: 0.55 },
+    { time: 0.6, signature: panel, changeSignature: animated(60), anchorQuality: 0.7 },
+    { time: 0.9, signature: panel, changeSignature: animated(85), anchorQuality: 0.9 },
+  ]
+  assert.deepEqual(
+    selectStableScannerSamples(samples).map((sample) => sample.time),
+    [0.9],
+  )
+})
+
 test('anchor quality rewards crisp content in the fixed information regions', () => {
   const width = 120
   const height = 80

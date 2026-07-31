@@ -253,44 +253,61 @@ export function selectStableScannerSamples(
   } = {},
 ) {
   const changeSignature = (sample) => sample.changeSignature || sample.signature
-  const selected = []
-  let stableRun = []
-  const finishStableRun = () => {
-    if (stableRun.length === 0) return
-    const candidate = stableRun.reduce((best, sample) => (
-      (sample.anchorQuality ?? 1) > (best.anchorQuality ?? 1) ? sample : best
-    ))
-    stableRun = []
-    if (candidate.anchorQuality != null && candidate.anchorQuality < minimumAnchorQuality) return
-    const previous = selected.at(-1)
-    if (
-      previous
-      && scannerSignatureDifference(
-        changeSignature(previous),
-        changeSignature(candidate),
-      ) <= duplicateThreshold
-    ) return
-    selected.push(candidate)
-  }
-  for (let index = windowSize - 1; index < samples.length; index += 1) {
-    const window = samples.slice(index - windowSize + 1, index + 1)
-    const stable = window.slice(1).every((sample, offset) => (
-      scannerSignatureDifference(
-        changeSignature(window[offset]),
-        changeSignature(sample),
-      ) <= stableThreshold
-    )) && scannerSignatureDifference(
-      changeSignature(window[0]),
-      changeSignature(window.at(-1)),
-    ) <= stableThreshold
-    if (!stable) {
-      finishStableRun()
-      continue
+  const selectWithSignature = (signatureFor) => {
+    const selected = []
+    let stableRun = []
+    const finishStableRun = () => {
+      if (stableRun.length === 0) return
+      const candidate = stableRun.reduce((best, sample) => (
+        (sample.anchorQuality ?? 1) > (best.anchorQuality ?? 1) ? sample : best
+      ))
+      stableRun = []
+      if (candidate.anchorQuality != null && candidate.anchorQuality < minimumAnchorQuality) return
+      const previous = selected.at(-1)
+      if (
+        previous
+        && scannerSignatureDifference(
+          signatureFor(previous),
+          signatureFor(candidate),
+        ) <= duplicateThreshold
+      ) return
+      selected.push(candidate)
     }
-    stableRun.push(window.at(-1))
+    for (let index = windowSize - 1; index < samples.length; index += 1) {
+      const window = samples.slice(index - windowSize + 1, index + 1)
+      const stable = window.slice(1).every((sample, offset) => (
+        scannerSignatureDifference(
+          signatureFor(window[offset]),
+          signatureFor(sample),
+        ) <= stableThreshold
+      )) && scannerSignatureDifference(
+        signatureFor(window[0]),
+        signatureFor(window.at(-1)),
+      ) <= stableThreshold
+      if (!stable) {
+        finishStableRun()
+        continue
+      }
+      stableRun.push(window.at(-1))
+    }
+    finishStableRun()
+    return selected
   }
-  finishStableRun()
-  return selected
+
+  const primary = selectWithSignature(changeSignature)
+  const panelFallback = selectWithSignature((sample) => sample.signature)
+  const sampleIntervals = samples
+    .slice(1)
+    .map((sample, index) => sample.time - samples[index].time)
+    .filter((interval) => Number.isFinite(interval) && interval > 0)
+    .sort((left, right) => left - right)
+  const medianInterval = sampleIntervals[Math.floor(sampleIntervals.length / 2)] || 0.3
+  const fallbackTimeGap = medianInterval * (windowSize + 1)
+  for (const candidate of panelFallback) {
+    if (primary.some((sample) => Math.abs(sample.time - candidate.time) <= fallbackTimeGap)) continue
+    primary.push(candidate)
+  }
+  return primary.sort((left, right) => left.time - right.time)
 }
 
 function partnerMarkForeground(red, green, blue) {
