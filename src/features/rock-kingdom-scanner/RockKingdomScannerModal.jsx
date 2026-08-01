@@ -39,6 +39,7 @@ import {
   scannerFrameSelectionAfterAction,
   scannerNicknameValue,
   scannerOptionCandidates,
+  scannerReferenceLabelForVisibleName,
   selectScannerPanelStat,
   selectScannerLevel,
   selectStableScannerSamples,
@@ -643,13 +644,14 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     }
     const portraitResult = recognizeRockPortrait(image, nameCandidates)
     const templateMatches = Object.fromEntries(
-      (await Promise.all(['nature', 'bloodline', 'specialty'].map(async (key) => [
+      (await Promise.all(['name', 'nature', 'bloodline', 'specialty'].map(async (key) => [
         key,
         await recognizeRockTextLabel(image, key),
       ]))).filter(([, match]) => match),
     )
     const textKeys = ['name', 'bloodline', 'nature', 'specialty']
       .filter((key) => !templateMatches[key])
+    if (templateMatches.name) rawVariants.ref = [templateMatches.name.label]
     for (const key of textKeys) {
       const fieldKey = key === 'name' ? 'ref' : key
       setProgress(`正在识别 ${frame.sourceName}${frame.time == null ? '' : ` ${formatTime(frame.time)}`} · ${ROCK_SCANNER_CROP_PROFILE[key].label}`)
@@ -697,18 +699,22 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     }
     const matched = recognizedPatch(rawVariants, fields)
     for (const [key, templateMatch] of Object.entries(templateMatches)) {
+      if (key === 'name') continue
       matched.patch[key] = templateMatch.value
       matched.confidence[key] = templateMatch.score
     }
     matched.raw.ref = bestScannerReferenceText(rawVariants.ref, nameCandidates)
+    const identityName = templateMatches.name?.referenceLabel
+      || scannerReferenceLabelForVisibleName(matched.raw.ref)
+      || matched.raw.ref
     let identity = resolveScannerReference({
-      rawName: matched.raw.ref,
+      rawName: identityName,
       candidates: nameCandidates,
     })
     if (!identity.value) {
       setProgress(`正在识别 ${frame.sourceName}${frame.time == null ? '' : ` ${formatTime(frame.time)}`} · 左侧选中头像`)
       identity = resolveScannerReference({
-        rawName: matched.raw.ref,
+        rawName: identityName,
         candidates: nameCandidates,
         visualCandidates: portraitResult.ranked,
       })
@@ -912,7 +918,12 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     patchFrame(frame.id, {
       raw: matched.raw,
       confidence: matched.confidence,
-      values: { ...frame.values, ...matched.patch },
+      values: {
+        ...frame.values,
+        ...matched.patch,
+        ref: matched.patch.ref || '',
+        nickname: matched.patch.nickname || '',
+      },
       identity,
       portraitDescriptor: portraitResult.descriptor,
       selectedPortraitCell: portraitResult.selectedCell,

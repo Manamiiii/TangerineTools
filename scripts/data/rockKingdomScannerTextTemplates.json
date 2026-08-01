@@ -1,4 +1,5 @@
 [
+  { "kind": "name", "value": "ranxinchong", "label": "燃薪虫", "referenceLabel": "燃薪虫", "fileName": "fixed-ranxinchong.png", "source": "frame-23-038400ms.webp" },
   { "kind": "nature", "value": "rash", "source": "frame-01-000900ms.webp" },
   { "kind": "nature", "value": "lazy", "source": "frame-02-003000ms.webp" },
   { "kind": "nature", "value": "timid", "source": "frame-03-005100ms.webp" },

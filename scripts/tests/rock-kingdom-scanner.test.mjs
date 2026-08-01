@@ -39,6 +39,7 @@ import {
   scannerCultivationFit,
   scannerLegalPanelStatValues,
   scannerOptionCandidates,
+  scannerReferenceLabelForVisibleName,
   scannerStatShapeSimilarity,
   scannerVisualCandidatePool,
   bestScannerTextLabelTemplateMatch,
@@ -52,6 +53,7 @@ import {
   waitForVideoFramePresentation,
   waitForVideoSeek,
 } from '../../src/features/rock-kingdom-scanner/frameCapture.js'
+import fixedPortraitSamples from '../../src/features/rock-kingdom-scanner/fixedPortraitSamples.json' with { type: 'json' }
 
 test('video seeking waits until the requested decoded frame is presented', async () => {
   const listeners = new Map()
@@ -486,6 +488,11 @@ test('scanner stores only an in-game name that differs from the catalog name', (
   assert.equal(scannerNicknameValue(' “梦梦” ', 'dream', candidates), '梦梦')
 })
 
+test('a confirmed visible nickname resolves to its catalog label without a frame-specific rule', () => {
+  assert.equal(scannerReferenceLabelForVisibleName(' “梦梦” '), '梦悠悠（穿旧睡衣的样子）')
+  assert.equal(scannerReferenceLabelForVisibleName('未知昵称'), '')
+})
+
 test('selected portrait scoring prefers a bright circular selection outline', () => {
   const imageData = (withRing) => {
     const width = 48
@@ -507,6 +514,28 @@ test('selected portrait scoring prefers a bright circular selection outline', ()
     return { data, width, height }
   }
   assert.ok(selectedPortraitRingScore(imageData(true)) > selectedPortraitRingScore(imageData(false)) + 0.25)
+})
+
+test('fixed-device selection anchors follow consecutive grid cells instead of rarity outlines', () => {
+  const expected = new Map([
+    [42, '2:3'], [43, '2:4'], [44, '2:5'],
+    [45, '3:0'], [46, '3:1'], [47, '3:2'], [48, '3:3'], [49, '3:4'], [50, '3:5'],
+    [51, '4:0'], [52, '4:1'], [53, '4:2'], [54, '4:3'], [55, '4:4'], [56, '4:5'],
+  ])
+  for (const [frame, selectedCell] of expected) {
+    const sourcePrefix = `frame-${String(frame).padStart(2, '0')}-`
+    assert.equal(
+      fixedPortraitSamples.find((sample) => sample.source.startsWith(sourcePrefix))?.selectedCell,
+      selectedCell,
+    )
+  }
+  for (const frame of [21, 22, 23, 24, 25]) {
+    const sourcePrefix = `frame-${String(frame).padStart(2, '0')}-`
+    assert.equal(
+      fixedPortraitSamples.some((sample) => sample.source.startsWith(sourcePrefix)),
+      false,
+    )
+  }
 })
 
 test('stable frame selection keeps adjacent creatures when the left selection changes', () => {
@@ -558,6 +587,33 @@ test('stable frame selection rejects a failed switch with an unchanged detail pa
     selectStableScannerSamples(samples, { windowSize: 2 }).map((sample) => sample.selectionKey),
     ['0:0'],
   )
+})
+
+test('stable frame selection removes a near-identical terminal panel despite subtle animation', () => {
+  const panel = (accent = 0) => {
+    const result = new Uint8Array(200).fill(40)
+    for (let index = 0; index < 30; index += 1) result[index] += accent
+    return result
+  }
+  const samples = [
+    ...[0, 0.3, 0.6].map((time) => ({
+      time,
+      signature: panel(),
+      changeSignature: panel(),
+      detailSignature: panel(),
+      anchorQuality: 0.8,
+      selectionKey: '1:1',
+    })),
+    ...[0.9, 1.2, 1.5].map((time) => ({
+      time,
+      signature: panel(2),
+      changeSignature: panel(2),
+      detailSignature: panel(2),
+      anchorQuality: 0.82,
+      selectionKey: '1:2',
+    })),
+  ]
+  assert.equal(selectStableScannerSamples(samples, { windowSize: 2 }).length, 1)
 })
 
 test('change-region signatures keep consecutive similar creatures with different details', () => {
@@ -704,7 +760,7 @@ test('confirmed fixed-device text crops resolve through field templates', async 
     const result = await pipeline.ensureAlpha().raw().toBuffer({ resolveWithObject: true })
     return { data: result.data, width: result.info.width, height: result.info.height }
   }
-  for (const kind of ['nature', 'bloodline', 'specialty']) {
+  for (const kind of ['name', 'nature', 'bloodline', 'specialty']) {
     const templates = []
     for (const template of ROCK_SCANNER_TEXT_LABEL_TEMPLATES[kind].filter((item) => item.fileName.startsWith('fixed-'))) {
       const file = new URL(
@@ -713,7 +769,12 @@ test('confirmed fixed-device text crops resolve through field templates', async 
       )
       templates.push({
         ...template,
-        ...normalizedScannerTextLabelMask(await imageData(file)),
+        ...normalizedScannerTextLabelMask(
+          await imageData(file),
+          kind === 'name'
+            ? { targetWidth: 160, targetHeight: 32, contentFraction: 0.88 }
+            : undefined,
+        ),
       })
     }
     templateCache.set(kind, templates)
@@ -723,13 +784,15 @@ test('confirmed fixed-device text crops resolve through field templates', async 
       `../../docs/assets/rock-kingdom-scanner/baseline-3200x1440/${entry.source}`,
       import.meta.url,
     )
-    const sample = normalizedScannerTextLabelMask(await imageData(
-      source,
-      ROCK_SCANNER_CROP_PROFILE[entry.kind],
-    ))
+    const sample = normalizedScannerTextLabelMask(
+      await imageData(source, ROCK_SCANNER_CROP_PROFILE[entry.kind]),
+      entry.kind === 'name'
+        ? { targetWidth: 160, targetHeight: 32, contentFraction: 0.88 }
+        : undefined,
+    )
     const match = bestScannerTextLabelTemplateMatch(sample, templateCache.get(entry.kind), {
       minimumScore: entry.kind === 'bloodline' ? 0.72 : 0.76,
-      minimumGap: entry.kind === 'bloodline' ? 0.02 : 0.03,
+      minimumGap: entry.kind === 'name' ? 0.001 : entry.kind === 'bloodline' ? 0.02 : 0.03,
     })
     const ranked = rankScannerTextLabelTemplateMatches(sample, templateCache.get(entry.kind))
     assert.equal(
