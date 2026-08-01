@@ -46,6 +46,9 @@ export const ROCK_PARTNER_MARK_TEMPLATES = [
 ]
 
 export const ROCK_SCANNER_TEXT_LABEL_TEMPLATES = {
+  name: [
+    { value: 'ranxinchong', label: '燃薪虫', referenceLabel: '燃薪虫', fileName: 'fixed-ranxinchong.png' },
+  ],
   nature: [
     { value: 'practical', label: '踏实', fileName: 'practical.png' },
     { value: 'rash', label: '莽撞', fileName: 'fixed-rash.png' },
@@ -149,8 +152,8 @@ export const ROCK_SCANNER_DEVICE_PROFILE = {
 }
 
 export const ROCK_SCANNER_PORTRAIT_GRID = {
-  columns: [0.176, 0.242, 0.309, 0.375, 0.442, 0.509],
-  rows: [0.165, 0.318, 0.474, 0.63, 0.785],
+  columns: [0.181, 0.247, 0.313, 0.379, 0.445, 0.511],
+  rows: [0.15, 0.294, 0.44, 0.588, 0.735],
   width: 0.064,
   height: 0.142,
 }
@@ -294,7 +297,7 @@ export function selectStableScannerSamples(
     windowSize = 3,
     stableThreshold = 7,
     duplicateThreshold = 8,
-    exactPanelDuplicateThreshold = 1.25,
+    exactPanelDuplicateThreshold = 3.25,
     minimumAnchorQuality = 0.4,
   } = {},
 ) {
@@ -872,6 +875,18 @@ export function normalizeScanText(value) {
     .normalize('NFKC')
     .toLowerCase()
     .replace(/[^\p{Letter}\p{Number}]/gu, '')
+}
+
+export const ROCK_SCANNER_VISIBLE_NAME_ALIASES = [
+  { label: '梦梦', referenceLabel: '梦悠悠（穿旧睡衣的样子）' },
+]
+
+export function scannerReferenceLabelForVisibleName(value) {
+  const normalized = normalizeScanText(value)
+  if (!normalized) return ''
+  return ROCK_SCANNER_VISIBLE_NAME_ALIASES
+    .find((alias) => normalizeScanText(alias.label) === normalized)
+    ?.referenceLabel || ''
 }
 
 function editDistance(left, right) {

@@ -22,7 +22,11 @@ export async function captureVideoFrame(video) {
   }
 }
 
-export function waitForVideoFramePresentation(video, targetTime, { timeoutMs = 600 } = {}) {
+export function waitForVideoFramePresentation(
+  video,
+  targetTime,
+  { timeoutMs = 300, presentationReady = null } = {},
+) {
   if (typeof video?.requestVideoFrameCallback !== 'function') return Promise.resolve()
 
   return new Promise((resolve) => {
@@ -40,8 +44,16 @@ export function waitForVideoFramePresentation(video, targetTime, { timeoutMs = 6
     }
     const requestPresentedFrame = () => {
       callbackId = video.requestVideoFrameCallback((_now, metadata = {}) => {
+        if (presentationReady && !presentationReady()) {
+          requestPresentedFrame()
+          return
+        }
         const mediaTime = Number(metadata.mediaTime)
-        if (!Number.isFinite(mediaTime) || Math.abs(mediaTime - targetTime) <= 0.25) {
+        if (
+          presentationReady
+          || !Number.isFinite(mediaTime)
+          || Math.abs(mediaTime - targetTime) <= 0.25
+        ) {
           finish()
           return
         }
@@ -58,13 +70,17 @@ export async function waitForVideoSeek(video, time) {
   if (!video.seeking && Math.abs(video.currentTime - target) < 0.01 && video.readyState >= 2) {
     return
   }
-  const presentationPromise = waitForVideoFramePresentation(video, target)
+  let seekCompleted = false
+  const presentationPromise = waitForVideoFramePresentation(video, target, {
+    presentationReady: () => seekCompleted,
+  })
   await new Promise((resolve, reject) => {
     const cleanup = () => {
       video.removeEventListener('seeked', onSeeked)
       video.removeEventListener('error', onError)
     }
     const onSeeked = () => {
+      seekCompleted = true
       cleanup()
       resolve()
     }

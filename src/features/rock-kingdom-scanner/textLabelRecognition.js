@@ -17,6 +17,12 @@ function canvasImageData(source) {
   return context.getImageData(0, 0, canvas.width, canvas.height)
 }
 
+function textMaskOptions(kind) {
+  return kind === 'name'
+    ? { targetWidth: 160, targetHeight: 32, contentFraction: 0.88 }
+    : undefined
+}
+
 function textLabelTemplateUrl(kind, fileName) {
   return new URL(
     `icons/rock-kingdom-text-labels/${kind}/${fileName}`,
@@ -31,7 +37,7 @@ async function loadTextLabelTemplates(kind) {
         const image = await loadImageSource(textLabelTemplateUrl(kind, template.fileName))
         return {
           ...template,
-          ...normalizedScannerTextLabelMask(canvasImageData(image)),
+          ...normalizedScannerTextLabelMask(canvasImageData(image), textMaskOptions(kind)),
         }
       }),
     ).catch((error) => {
@@ -47,10 +53,10 @@ export async function recognizeRockTextLabel(image, kind) {
   const crop = ROCK_SCANNER_CROP_PROFILE[kind]
   if (!crop) return null
   const sampleImage = cropImageSource(image, crop, 1)
-  const sample = normalizedScannerTextLabelMask(canvasImageData(sampleImage))
+  const sample = normalizedScannerTextLabelMask(canvasImageData(sampleImage), textMaskOptions(kind))
   const templates = await loadTextLabelTemplates(kind)
   return bestScannerTextLabelTemplateMatch(sample, templates, {
-    minimumScore: kind === 'bloodline' ? 0.72 : 0.76,
-    minimumGap: kind === 'bloodline' ? 0.02 : 0.03,
+    minimumScore: kind === 'name' ? 0.72 : kind === 'bloodline' ? 0.72 : 0.76,
+    minimumGap: kind === 'name' ? 0 : kind === 'bloodline' ? 0.02 : 0.03,
   })
 }
