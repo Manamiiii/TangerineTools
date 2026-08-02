@@ -24,6 +24,21 @@ const portraitTemplates = JSON.parse(await readFile(path.join(
   'data',
   'rockKingdomScannerPortraitTemplates.json',
 ), 'utf8'))
+const catalogRows = JSON.parse(await readFile(path.join(
+  root,
+  'public',
+  'presets',
+  'rockKingdomRows.json',
+), 'utf8'))
+const catalogCreatureNames = new Set(catalogRows
+  .map((row) => row?.values?.name)
+  .filter(Boolean))
+const unknownPortraitLabels = [...new Set(portraitTemplates
+  .map((template) => template.label)
+  .filter((label) => !catalogCreatureNames.has(label)))]
+if (unknownPortraitLabels.length) {
+  throw new Error(`头像模板使用了资料库中不存在的图鉴名：${unknownPortraitLabels.join('、')}`)
+}
 const portraitOutputPath = path.join(
   root,
   'src',

@@ -1044,6 +1044,27 @@ test('cultivation fit reproduces a middle-level Duck form from the scanner video
   })
 })
 
+test('cultivation formula maps the sandglass and bow-tie Duck appearances to catalog forms', () => {
+  const forms = {
+    wait: { hp: 137, patk: 35, matk: 94, pdef: 46, mdef: 57, spd: 100 },
+    urgent: { hp: 130, patk: 95, matk: 35, pdef: 55, mdef: 45, spd: 110 },
+  }
+
+  const sandglass = scannerCultivationFit(
+    { hp: 134, patk: 39, matk: 70, pdef: 39, mdef: 41, spd: 77 },
+    forms.wait,
+    { level: 14, stars: 0, nature: { raise: 'patk', lower: 'mdef' } },
+  )
+  const bowTie = scannerCultivationFit(
+    { hp: 121, patk: 71, matk: 29, pdef: 51, mdef: 38, spd: 78 },
+    forms.urgent,
+    { level: 12, stars: 0, nature: { raise: 'pdef', lower: 'matk' } },
+  )
+
+  assert.equal(sandglass.rmse, 0)
+  assert.equal(bowTie.rmse, 0)
+})
+
 test('real Duck OCR candidates recover level 13 and resolve Burning Duck from four stats', () => {
   const candidates = [
     { value: 'fluffy', label: '鸭吉吉（蓬松的样子）', traitName: '挺起胸脯', stats: { hp: 136, patk: 95, matk: 35, pdef: 55, mdef: 45, spd: 105 } },
