@@ -4,8 +4,10 @@ import test from 'node:test'
 import {
   analyzeSpeedProfile,
   applyNatureModifier,
+  calculateCultivatedStat,
   calculateStandardStat,
   calculateStandardStats,
+  cultivationNatureModifier,
   equivalentNeutralSpeedBase,
   evaluateAllNatures,
   evaluateNatureProfiles,
@@ -122,6 +124,82 @@ test('standard stat formula reproduces the verified max-speed Kakabird panel', (
   assert.equal(calculateStandardStat(120, 'spd', 0, 1), 192)
 })
 
+test('cultivation formula reproduces the level-one Board Shell scanner panel', () => {
+  const timid = { raise: 'spd', lower: 'patk' }
+  const calculate = (base, key, individualDisplayValue = 0) => calculateCultivatedStat(
+    base,
+    key,
+    {
+      level: 1,
+      stars: 0,
+      individualDisplayValue,
+      natureModifier: cultivationNatureModifier(key, timid, 0),
+    },
+  )
+  assert.deepEqual({
+    hp: calculate(67, 'hp', 7),
+    patk: calculate(28, 'patk'),
+    matk: calculate(72, 'matk', 7),
+    pdef: calculate(64, 'pdef'),
+    mdef: calculate(81, 'mdef'),
+    spd: calculate(45, 'spd', 7),
+  }, {
+    hp: 48,
+    patk: 22,
+    matk: 49,
+    pdef: 43,
+    mdef: 51,
+    spd: 39,
+  })
+  assert.equal(cultivationNatureModifier('pdef', { raise: 'pdef', lower: 'spd' }, 0), 1.1)
+  assert.equal(cultivationNatureModifier('pdef', { raise: 'pdef', lower: 'spd' }, 5), 1.2)
+})
+
+test('cultivation formula reproduces user-verified qualification and radar panels', () => {
+  const panel = (baseStats, individualStats, nature, level, stars) => Object.fromEntries(
+    Object.entries(baseStats).map(([key, baseValue]) => [
+      key,
+      calculateCultivatedStat(baseValue, key, {
+        level,
+        stars,
+        individualDisplayValue: individualStats[key] || 0,
+        natureModifier: cultivationNatureModifier(key, nature, stars),
+      }),
+    ]),
+  )
+
+  assert.deepEqual(
+    panel(
+      { hp: 120, patk: 80, matk: 80, pdef: 105, mdef: 105, spd: 92 },
+      { patk: 10, matk: 10, spd: 10 },
+      { raise: 'spd', lower: 'mdef' },
+      60,
+      5,
+    ),
+    { hp: 374, patk: 181, matk: 181, pdef: 175, mdef: 163, spd: 223 },
+  )
+  assert.deepEqual(
+    panel(
+      { hp: 149, patk: 53, matk: 124, pdef: 90, mdef: 129, spd: 70 },
+      { hp: 8, matk: 8, spd: 8 },
+      { raise: 'matk', lower: 'patk' },
+      60,
+      0,
+    ),
+    { hp: 330, patk: 61, matk: 166, pdef: 109, mdef: 152, spd: 91 },
+  )
+  assert.deepEqual(
+    panel(
+      { hp: 51, patk: 53, matk: 53, pdef: 80, mdef: 44, spd: 54 },
+      { hp: 8, patk: 8, mdef: 8 },
+      { raise: 'patk', lower: 'matk' },
+      1,
+      0,
+    ),
+    { hp: 40, patk: 43, matk: 33, pdef: 51, mdef: 34, spd: 38 },
+  )
+})
+
 test('standard stat formula applies three editable individual bonuses and nature multipliers', () => {
   const baseStats = { hp: 97, patk: 114, matk: 110, pdef: 101, mdef: 89, spd: 120 }
   const individualStats = { hp: 10, patk: 10, matk: 0, pdef: 0, mdef: 0, spd: 10 }
@@ -147,7 +225,7 @@ test('speed anchors compare final panels with the same max individual value', ()
     { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 65 },
     [],
     null,
-    { speedRequired: true },
+    { speedRequired: true, coreSpeedRequired: true },
   )
   assert.equal(profile.standard.maxIndividual, 165)
   assert.equal(profile.standard.raised, 188)
@@ -157,26 +235,39 @@ test('speed anchors compare final panels with the same max individual value', ()
   assert.equal(profile.concern.level, 'medium')
 })
 
-test('formula crossing only rescues the 65 to 83 speed band with explicit speed demand', () => {
-  const speedSkill = {
+test('formula crossing only rescues the 65 to 83 speed band with core speed demand', () => {
+  const incidentalSpeedSkill = {
     skills: [
       { category: 'physical', power: 80, effectTags: ['speed'], effect: '行动后提升速度。' },
     ],
   }
+  const coreSpeedSkills = {
+    skills: [
+      { category: 'physical', power: 80, effectTags: ['speed'], effect: '行动后提升速度。' },
+      { category: 'status', effectTags: ['priority'], effect: '下一次行动获得先手。' },
+      { category: 'status', effectTags: ['speed'], effect: '提升自己的速度。' },
+    ],
+  }
+  const incidental = evaluateAllNatures(
+    { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 65 },
+    [],
+    incidentalSpeedSkill,
+  )
   const crossing = evaluateAllNatures(
     { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 65 },
     [],
-    speedSkill,
+    coreSpeedSkills,
   )
   const belowBand = evaluateAllNatures(
     { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 64 },
     [],
-    speedSkill,
+    coreSpeedSkills,
   )
   const belowBandWithSpeedTrait = evaluateAllNatures(
     { hp: 90, patk: 110, matk: 45, pdef: 80, mdef: 80, spd: 64 },
     ['spdLean'],
   )
+  assert.equal(incidental.find((candidate) => candidate.name === '开朗')?.decision, 'notRecommended')
   assert.notEqual(crossing.find((candidate) => candidate.name === '开朗')?.decision, 'notRecommended')
   assert.equal(belowBand.find((candidate) => candidate.name === '开朗')?.decision, 'notRecommended')
   assert.equal(
@@ -442,8 +533,11 @@ test('balanced mixed attackers keep both routes when skill counts remain close',
     return evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
       .find((candidate) => candidate.name === nature)?.decision
   }
-  assert.equal(decisionFor('NO.023', '开朗'), 'keepable')
-  assert.equal(decisionFor('NO.023', '胆小'), 'keepable')
+  assert.equal(decisionFor('NO.023', '开朗'), 'notRecommended')
+  assert.equal(decisionFor('NO.023', '胆小'), 'notRecommended')
+  assert.equal(decisionFor('NO.023', '踏实'), 'notRecommended')
+  assert.equal(decisionFor('NO.023', '勇敢'), 'notRecommended')
+  assert.equal(decisionFor('NO.023', '冷静'), 'notRecommended')
   assert.equal(decisionFor('NO.038', '开朗'), 'keepable')
   assert.equal(decisionFor('NO.038', '胆小'), 'keepable')
   assert.equal(decisionFor('NO.038', '天真'), 'notRecommended')
@@ -479,6 +573,9 @@ test('a confirmed speed-dependent mixed attacker can use formula-crossing speed 
   const candidates = evaluateNatureProfiles(input.stats, input.traitTags, input.skillInfo, input.analysisProfiles)
   assert.equal(candidates.find((candidate) => candidate.name === '开朗')?.decision, 'keepable')
   assert.equal(candidates.find((candidate) => candidate.name === '胆小')?.decision, 'keepable')
+  assert.equal(candidates.find((candidate) => candidate.name === '踏实')?.decision, 'keepable')
+  assert.equal(candidates.find((candidate) => candidate.name === '勇敢')?.decision, 'keepable')
+  assert.equal(candidates.find((candidate) => candidate.name === '冷静')?.decision, 'keepable')
 })
 
 test('functional forms do not sacrifice their standout defense', () => {

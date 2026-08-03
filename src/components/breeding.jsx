@@ -6,6 +6,7 @@ import {
   BREEDING_PRIORITY_RULES,
   buildOwnedCreatures,
   recommendBreedingPairs,
+  summarizeMissingEggGroups,
 } from '../domain/breeding.js'
 import { OWNED_COLORFUL_OPTIONS, OWNED_NATURE_OPTIONS } from '../domain/owned.js'
 import { EmptyState, OptionTag } from './common.jsx'
@@ -29,7 +30,7 @@ export function BreedingTool({ scene }) {
 
   const creatures = useMemo(() => buildOwnedCreatures({ ownedRows, catalogRows, catalogFields, skillRows }), [ownedRows, catalogRows, catalogFields, skillRows])
   const pairs = useMemo(() => recommendBreedingPairs(creatures), [creatures])
-  const missingEggGroups = creatures.filter((item) => item.catalog.eggGroups.length === 0).length
+  const missingEggGroups = useMemo(() => summarizeMissingEggGroups(creatures), [creatures])
 
   if (!ownedTable || !ownedRows || !ownedFields || !catalogRows || !catalogFields || !skillRows) return null
 
@@ -55,7 +56,21 @@ export function BreedingTool({ scene }) {
           {BREEDING_PRIORITY_RULES.map((rule) => <li key={rule}>{rule}</li>)}
         </ol>
       </div>
-      {missingEggGroups > 0 && <p className="breeding-warning">有 {missingEggGroups} 条拥有记录对应精灵缺少蛋组字段，暂不参与配对。</p>}
+      {missingEggGroups.recordCount > 0 && (
+        <details className="breeding-warning">
+          <summary>
+            当前本地资料有 {missingEggGroups.recordCount} 条拥有记录（{missingEggGroups.creatureCount} 种精灵）缺少蛋组，暂不参与配对
+          </summary>
+          <p>正式内置资料的蛋组字段完整；这里通常是浏览器中的旧资料或自定义资料。缺失项：</p>
+          <ul>
+            {missingEggGroups.creatures.map((item) => (
+              <li key={item.catalogRowId}>
+                {item.name}{item.recordCount > 1 ? `（${item.recordCount} 条记录）` : ''}
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
     </section>
 
     {pairs.length === 0 ? (

@@ -87,6 +87,26 @@ export function buildOwnedCreatures({ ownedRows = [], catalogRows = [], catalogF
   }).filter(Boolean)
 }
 
+export function summarizeMissingEggGroups(creatures = []) {
+  const missing = creatures.filter((item) => item.catalog.eggGroups.length === 0)
+  const grouped = new Map()
+  for (const item of missing) {
+    const key = item.catalog.row.id
+    const current = grouped.get(key) || {
+      catalogRowId: key,
+      name: item.name,
+      recordCount: 0,
+    }
+    current.recordCount += 1
+    grouped.set(key, current)
+  }
+  return {
+    recordCount: missing.length,
+    creatureCount: grouped.size,
+    creatures: [...grouped.values()],
+  }
+}
+
 function summarizeShinyOwnership(creatures) {
   const result = new Map()
   for (const item of creatures) {

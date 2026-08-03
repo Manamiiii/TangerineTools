@@ -96,8 +96,10 @@ npm run lint
 │   │   ├── product-and-architecture.md    # 经典文学阅读伴侣规划与剧透安全契约
 │   │   ├── model-prompts.md               # 个人初始化与正式预制提示词契约
 │   │   └── trial-guide.md                 # 当前试用范围、步骤和反馈重点
+│   ├── rock-kingdom/
+│   │   ├── scanner.md                     # 精灵扫描录入、固定手机采集与复核约束
+│   │   └── scanner-baseline.md            # 固定视频识别结果与性能回归基线
 │   ├── model-provider-setup.md             # 各工具独立的模型配置与共享连接说明
-│   ├── rock-kingdom-scanner.md            # 精灵扫描录入、Windows 采集与复核约束
 │   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
 │   └── system-capabilities.md            # 已实现能力和明确非目标
 ├── public/presets/
@@ -120,9 +122,13 @@ npm run lint
 │   │   ├── build-preview.mjs             # staging 到发布候选
 │   │   ├── apply-preview.mjs             # dry-run 检查与显式发布
 │   │   └── validate-packages.mjs          # 正式阅读资料包结构校验
-│   ├── data/natureCalibrationSamples.json # 性格校准样例
+│   ├── nature/
+│   │   ├── check-recommendations.mjs     # 本地性格校准报告生成器
+│   │   └── data/                         # 性格校准样例
+│   ├── rock-kingdom-scanner/
+│   │   ├── build-templates.mjs           # 扫描器文字与头像模板生成、校验
+│   │   └── data/                         # 模板来源清单
 │   ├── tests/                            # node:test 纯逻辑与 fake-indexeddb 集成测试
-│   └── check-nature-recommendations.mjs  # 本地性格校准报告生成器
 ├── src/
 │   ├── components/
 │   │   ├── dataTables.jsx                # 资料库工具编排
@@ -139,7 +145,7 @@ npm run lint
 │   ├── domain/
 │   │   ├── nature.js / naturePve.js      # 性格规则引擎 / PVE 展示判定
 │   │   ├── natureRowAdapter.js            # 资料行到推荐输入的适配
-│   │   ├── rockKingdom*.js               # 形态、展示和共享标签规则
+│   │   ├── rockKingdom*.js               # 外观、扫描、形态、展示和共享标签规则
 │   │   └── owned.js / stock.js / breeding*.js # 其他工具纯领域逻辑
 │   ├── features/model/                    # 共享模型连接、配置和受限 JSON 请求
 │   ├── features/ocr/                      # 阅读与游戏扫描共用的本机 OCR
@@ -181,6 +187,7 @@ git diff --check
 
 - `npm test` 覆盖领域规则、PVE 判定、预置三方迁移、导入校验、仓储级联、IndexedDB 播种/失败重试、BWiki staging 结构和文档当前态约束。
 - 涉及性格规则时额外运行 `npm run check:nature`，并检查已确认样例是否出现非预期漂移。
+- 涉及固定设备扫描文字模板时运行 `npm run check:scanner:templates`；更新版本化截图来源后，显式运行 `npm run apply:scanner:templates` 生成对应 PNG，再执行完整测试。
 - 涉及 BWiki 预置时先运行 `npm run check:bwiki:preset`；该命令只生成 `artifacts/` 审计报告，不会写入正式预置。
 - 涉及工具入口、懒加载或 Hook 时，启动 `npm run dev` 后依次切换资料库、收集记录、统计视图、性格推荐、孵蛋推荐和阅读伴侣，确认均完成渲染且没有进入错误恢复页。
 - 涉及阅读资料包时运行 `npm run check:reader:packages`，确认目录、版本、章节和事实引用全部有效；使用 `npm run audit:reader:quality` 查看资料覆盖与候选阻塞项。
@@ -233,7 +240,8 @@ git diff --check
 - [`AGENTS.md`](AGENTS.md)：长期有效的 Codex/agent 开发边界、必读文件与测试命令。
 - [`docs/system-capabilities.md`](docs/system-capabilities.md)：当前已实现能力与明确排除范围。
 - [`docs/data-sync.md`](docs/data-sync.md)：数据模型、导入/导出、预置资料同步与迁移语义。
-- [`docs/rock-kingdom-scanner.md`](docs/rock-kingdom-scanner.md)：洛克王国精灵扫描录入、Windows 采集路径和人工复核约束。
+- [`docs/rock-kingdom/scanner.md`](docs/rock-kingdom/scanner.md)：洛克王国精灵扫描录入、固定手机采集方式和人工复核约束。
+- [`docs/rock-kingdom/scanner-baseline.md`](docs/rock-kingdom/scanner-baseline.md)：固定视频识别结果和性能回归基线。
 - [`docs/data-sources/bwiki-pipeline.md`](docs/data-sources/bwiki-pipeline.md)：BWiki 页面、版本化快照、刷新顺序和发布边界。
 - [`docs/data-sources/bwiki-field-mapping.md`](docs/data-sources/bwiki-field-mapping.md)：staging 到正式预置的字段血缘、稳定 id 和验收门槛。
 - [`docs/data-sources/research-sources.md`](docs/data-sources/research-sources.md)：B站、小红书等玩家资料的用途、证据记录方式和采用边界。

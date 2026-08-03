@@ -136,7 +136,8 @@ async function reconcileRockKingdomOwnedFields(tableId, sceneId, fixedFields, ca
   const fields = await db.catalogFields.where('tableId').equals(tableId).toArray()
   const rows = await db.catalogRows.where('tableId').equals(tableId).toArray()
   const fixedByKey = new Map(fixedFields.map((field) => [field.key, field]))
-  const deprecatedKeys = new Set(['nickname', 'level', 'natureDirection', 'status', 'shiny', 'acquiredAt'])
+  const deprecatedKeys = new Set(['level', 'natureDirection', 'status', 'shiny', 'acquiredAt'])
+  const referenceOrder = fields.find((field) => field.key === 'ref')?.order ?? 0
 
   await db.transaction('rw', db.catalogFields, async () => {
     for (const field of fields) {
@@ -148,6 +149,7 @@ async function reconcileRockKingdomOwnedFields(tableId, sceneId, fixedFields, ca
           options: fixed.options || [],
           display: fixed.display || {},
           hidden: Boolean(fixed.hidden),
+          order: field.key === 'nickname' ? referenceOrder + 0.5 : field.order,
           referenceTableId: fixed.type === 'reference' ? catalogTableId || null : field.referenceTableId || null,
           updatedAt: now,
         })

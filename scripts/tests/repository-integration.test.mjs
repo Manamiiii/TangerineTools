@@ -70,6 +70,14 @@ test('owned table creation is idempotent and only presets Rock Kingdom fields', 
   assert.equal(rockOwned.collectionMode, 'multiple')
   assert.deepEqual(rockFields.map((field) => field.key), ROCK_KINGDOM_COLLECTION_FIELDS.map((field) => field.key))
   assert.equal(rockFields.find((field) => field.key === 'ref')?.referenceTableId, ROCK_KINGDOM_PRESET.tables[0].id)
+  assert.equal(rockFields.find((field) => field.key === 'ref')?.name, '图鉴名')
+  assert.equal(rockFields.find((field) => field.key === 'nickname')?.name, '精灵名')
+  assert.ok(
+    rockFields.find((field) => field.key === 'ref').order
+    < rockFields.find((field) => field.key === 'nickname').order
+    && rockFields.find((field) => field.key === 'nickname').order
+    < rockFields.find((field) => field.key === 'nature').order,
+  )
   assert.equal(rockFields.find((field) => field.key === 'ref')?.display?.plainReference, true)
   assert.equal(rockFields.find((field) => field.key === 'gender')?.options?.[0]?.symbol, '♂')
   assert.equal(rockFields.find((field) => field.key === 'shiny')?.display?.mode, 'icon')
@@ -82,9 +90,18 @@ test('owned table creation is idempotent and only presets Rock Kingdom fields', 
     rockFields.find((field) => field.key === 'shiny').id,
     { hidden: false },
   )
+  await db.catalogFields.update(
+    rockFields.find((field) => field.key === 'nickname').id,
+    { hidden: true, name: '旧昵称' },
+  )
   await ensureOwnedTable(ROCK_KINGDOM_PRESET.scene.id)
   assert.equal(await db.catalogFields.where('tableId').equals(rockOwned.id).count(), rockFields.length)
   assert.equal((await db.catalogFields.get(rockFields.find((field) => field.key === 'shiny').id)).hidden, true)
+  assert.deepEqual(
+    await db.catalogFields.get(rockFields.find((field) => field.key === 'nickname').id)
+      .then((field) => ({ name: field.name, hidden: field.hidden })),
+    { name: '精灵名', hidden: false },
+  )
 })
 
 test('batch row updates change only the supplied rows and values in one repository operation', async () => {

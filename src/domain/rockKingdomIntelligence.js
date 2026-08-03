@@ -10,7 +10,7 @@ import {
   getSameNumberRows,
   visibleRockKingdomCreatureRows,
 } from './rockKingdom.js'
-import { appearanceFlags } from './rockKingdomScanner.js'
+import { appearanceFlags } from './rockKingdomAppearance.js'
 
 function fieldByKey(fields, key) {
   return fields.find((field) => field.key === key)
