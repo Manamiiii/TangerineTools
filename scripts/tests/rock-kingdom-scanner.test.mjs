@@ -275,23 +275,43 @@ test('appearance flags preserve the existing shiny/colorful fields', () => {
   })
 })
 
-test('confirmed appearance templates stay explicit while missing variants remain manual', async () => {
+test('confirmed appearance templates cover all eleven rare variants', async () => {
   assert.deepEqual(ROCK_APPEARANCE_TEMPLATES.map((template) => template.value), [
     'shiny',
     'colorful',
     'shiny-colorful',
     'bw-colorful',
+    'bw-shiny-colorful',
     's1-colorful',
     's1-shiny-colorful',
     's2-colorful',
     's2-shiny-colorful',
     's3-colorful',
+    's3-shiny-colorful',
   ])
-  assert.equal(ROCK_APPEARANCE_TEMPLATES.some((template) => template.value === 'bw-shiny-colorful'), false)
-  assert.equal(ROCK_APPEARANCE_TEMPLATES.some((template) => template.value === 's3-shiny-colorful'), false)
   await Promise.all(ROCK_APPEARANCE_TEMPLATES.map((template) => access(
     new URL(`../../public/icons/rock-kingdom-appearance/${template.fileName}`, import.meta.url),
   )))
+})
+
+test('new black-white and S3 shiny-colorful icon samples are distinct', async () => {
+  const templates = await Promise.all(ROCK_APPEARANCE_TEMPLATES.map(async (template) => {
+    const result = await sharp(fileURLToPath(new URL(
+      `../../public/icons/rock-kingdom-appearance/${template.fileName}`,
+      import.meta.url,
+    ))).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+    return {
+      ...template,
+      pixels: result.data,
+      width: result.info.width,
+      height: result.info.height,
+    }
+  }))
+
+  for (const value of ['bw-shiny-colorful', 's3-shiny-colorful']) {
+    const sample = templates.find((template) => template.value === value)
+    assert.equal(bestAppearanceTemplateMatch(sample, templates)?.value, value)
+  }
 })
 
 test('appearance matching accepts a distinct template and rejects an ambiguous pair', () => {
