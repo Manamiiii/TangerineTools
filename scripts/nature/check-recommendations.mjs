@@ -12,15 +12,15 @@ import {
   inferRoles,
   TRAIT_TAG_STAT_WEIGHTS,
   groupRejectedNatures,
-} from '../src/domain/nature.js'
-import { relatedRockKingdomBossRows } from '../src/domain/rockKingdom.js'
-import { TRAIT_TAG_OPTIONS, SKILL_EFFECT_TAG_OPTIONS } from '../src/presets/rockKingdom.js'
+} from '../../src/domain/nature.js'
+import { relatedRockKingdomBossRows } from '../../src/domain/rockKingdom.js'
+import { TRAIT_TAG_OPTIONS, SKILL_EFFECT_TAG_OPTIONS } from '../../src/presets/rockKingdom.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const repoRoot = path.resolve(__dirname, '..')
+const repoRoot = path.resolve(__dirname, '../..')
 const rowsPath = path.join(repoRoot, 'public/presets/rockKingdomRows.json')
 const skillRowsPath = path.join(repoRoot, 'public/presets/rockKingdomSkillRows.json')
-const samplesPath = path.join(repoRoot, 'scripts/data/natureCalibrationSamples.json')
+const samplesPath = path.join(repoRoot, 'scripts/nature/data/calibration-samples.json')
 const reportPath = path.join(repoRoot, 'artifacts/nature/calibration-report.md')
 
 const TRAIT_LABELS = Object.fromEntries(TRAIT_TAG_OPTIONS.map((option) => [option.value, option.label]))

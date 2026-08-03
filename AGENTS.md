@@ -35,6 +35,8 @@ Before making code changes, read the docs that match the task scope:
 - Read `docs/nature/single-creature-template.md` before writing single-creature nature audit results.
 - Read `docs/nature/open-issues.md` before deciding whether a single-creature finding should become a rule change.
 - Read `docs/nature/confirmed-results.md` before changing nature rules, so confirmed single-creature conclusions can be regression checked.
+- Read `docs/rock-kingdom/scanner.md` before changing scanner capture profiles, OCR, templates, formula-based identity matching, or review flow.
+- Read `docs/rock-kingdom/scanner-baseline.md` before changing scanner behavior or its regression assets.
 - Read `docs/reading-companion/product-and-architecture.md` before changing the reading companion, book packages, reading progress, maps, OCR, or spoiler controls.
 - Read `docs/reading-companion/model-prompts.md` before changing reading model prompts or using a model to prepare personal-book or formal built-in-book data.
 - Run `npm run check:nature` and inspect `artifacts/nature/calibration-report.md` before calibrating or discussing current nature recommendation samples.
@@ -65,6 +67,8 @@ Also check the latest commit, PR description, and review comments when continuin
   - `npm test`
   - `npm run build`
   - `git diff --check`
+- Scanner maintenance:
+  - `npm run check:scanner:templates`
 - Preset data work:
   - `npm run check:bwiki:preset` / `npm run apply:bwiki:preset`
 - Nature recommendation work:

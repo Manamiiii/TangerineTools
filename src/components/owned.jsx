@@ -16,7 +16,7 @@ import {
   OWNED_PARTNER_MARK_OPTIONS,
 } from '../domain/owned.js'
 import { buildRockPartnerMarkRecommendations } from '../domain/rockKingdomPartnerMarks.js'
-import { appearanceFlags, valuesWithAppearance } from '../domain/rockKingdomScanner.js'
+import { appearanceFlags, valuesWithAppearance } from '../domain/rockKingdomAppearance.js'
 import { buildStockSummary, defaultStockGroupField } from '../domain/stock.js'
 import { RockKingdomScannerModal } from '../features/rock-kingdom-scanner/RockKingdomScannerModal.jsx'
 import { OwnedIntelligenceModal } from '../features/rock-kingdom-model/OwnedIntelligenceModal.jsx'

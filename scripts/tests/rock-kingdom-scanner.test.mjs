@@ -6,13 +6,16 @@ import sharp from 'sharp'
 
 import {
   ROCK_APPEARANCE_TEMPLATES,
+  appearanceTemplateSimilarity,
+  appearanceFlags,
+  bestAppearanceTemplateMatch,
+  valuesWithAppearance,
+} from '../../src/domain/rockKingdomAppearance.js'
+import {
   ROCK_PARTNER_MARK_TEMPLATES,
   ROCK_SCANNER_DEVICE_PROFILE,
   ROCK_SCANNER_CROP_PROFILE,
   ROCK_SCANNER_TEXT_LABEL_TEMPLATES,
-  appearanceTemplateSimilarity,
-  appearanceFlags,
-  bestAppearanceTemplateMatch,
   bestPartnerMarkTemplateMatch,
   bestScanMatch,
   bestScannerReferenceText,
@@ -46,7 +49,6 @@ import {
   selectScannerPanelStat,
   selectScannerLevel,
   selectStableScannerSamples,
-  valuesWithAppearance,
 } from '../../src/domain/rockKingdomScanner.js'
 import { selectedPortraitRingScore } from '../../src/features/rock-kingdom-scanner/portraitRecognition.js'
 import {
@@ -786,7 +788,7 @@ test('fixed-device text templates cover confirmed labels without creature-specif
 
 test('confirmed fixed-device text crops resolve through field templates', async () => {
   const manifest = JSON.parse(await readFile(new URL(
-    '../data/rockKingdomScannerTextTemplates.json',
+    '../rock-kingdom-scanner/data/text-templates.json',
     import.meta.url,
   ), 'utf8'))
   const templateCache = new Map()
