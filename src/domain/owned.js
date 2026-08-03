@@ -2,7 +2,7 @@
 // 与「统计视图」的思路互补：统计视图回答"我拥有多少能达到条件的个体"，
 // 收集记录回答"我具体拥有哪一只、它有哪些个体属性"。
 
-import { ROCK_APPEARANCE_OPTIONS } from './rockKingdomScanner.js'
+import { ROCK_APPEARANCE_OPTIONS } from './rockKingdomAppearance.js'
 //
 // 存储上和资料库、统计视图共用 catalogTables/catalogFields/catalogRows，
 // 通过 kind: 'owned' 区分，字段类型仍是标准的 reference/text/number/select/date/longtext，

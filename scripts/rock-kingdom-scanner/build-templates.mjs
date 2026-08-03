@@ -6,23 +6,25 @@ import {
   detectSelectedPortraitCellFromImageData,
   portraitEdgeDescriptorFromImageData,
   ROCK_SCANNER_PORTRAIT_DESCRIPTOR_SIZE,
-} from '../src/features/rock-kingdom-scanner/portraitRecognition.js'
+} from '../../src/features/rock-kingdom-scanner/portraitRecognition.js'
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const sourceDir = path.join(root, 'docs', 'assets', 'rock-kingdom-scanner', 'baseline-3200x1440')
 const outputDir = path.join(root, 'public', 'icons', 'rock-kingdom-text-labels')
 const write = process.argv.includes('--write')
 const textTemplates = JSON.parse(await readFile(path.join(
   root,
   'scripts',
+  'rock-kingdom-scanner',
   'data',
-  'rockKingdomScannerTextTemplates.json',
+  'text-templates.json',
 ), 'utf8'))
 const portraitTemplates = JSON.parse(await readFile(path.join(
   root,
   'scripts',
+  'rock-kingdom-scanner',
   'data',
-  'rockKingdomScannerPortraitTemplates.json',
+  'portrait-templates.json',
 ), 'utf8'))
 const catalogRows = JSON.parse(await readFile(path.join(
   root,

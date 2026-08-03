@@ -5,6 +5,7 @@ import { createRow, db } from '../../db.js'
 import { FieldInput } from '../../components/catalog.jsx'
 import { FormRow, Modal } from '../../components/common.jsx'
 import { RockKingdomStatFormulaGuide } from '../../components/RockKingdomStatFormulaGuide.jsx'
+import { valuesWithAppearance } from '../../domain/rockKingdomAppearance.js'
 import { recognizeNumericImageText, recognizeStructuredImageText } from '../ocr/localOcr.js'
 import {
   captureVideoFrame,
@@ -43,7 +44,6 @@ import {
   selectScannerPanelStat,
   selectScannerLevel,
   selectStableScannerSamples,
-  valuesWithAppearance,
 } from '../../domain/rockKingdomScanner.js'
 import { parseNatureOption } from '../../domain/nature.js'
 import { ModelSettingsModal } from '../model/ModelSettingsModal.jsx'

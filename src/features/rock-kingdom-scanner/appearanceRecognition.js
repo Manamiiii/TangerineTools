@@ -1,8 +1,8 @@
 import {
   ROCK_APPEARANCE_TEMPLATES,
-  ROCK_SCANNER_CROP_PROFILE,
   bestAppearanceTemplateMatch,
-} from '../../domain/rockKingdomScanner.js'
+} from '../../domain/rockKingdomAppearance.js'
+import { ROCK_SCANNER_CROP_PROFILE } from '../../domain/rockKingdomScanner.js'
 import { cropImageSource, loadImageSource } from './frameCapture.js'
 
 const TEMPLATE_SIZE = 56
