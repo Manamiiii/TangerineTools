@@ -25,11 +25,13 @@ export const ROCK_APPEARANCE_TEMPLATES = [
   { value: 'colorful', label: '炫彩', fileName: 'colorful.png' },
   { value: 'shiny-colorful', label: '异色炫彩', fileName: 'shiny-colorful.png' },
   { value: 'bw-colorful', label: '黑白炫彩', fileName: 'bw-colorful.png' },
+  { value: 'bw-shiny-colorful', label: '黑白异色炫彩', fileName: 'bw-shiny-colorful.png' },
   { value: 's1-colorful', label: 'S1 炫彩', fileName: 's1-colorful.png' },
   { value: 's1-shiny-colorful', label: 'S1 异色炫彩', fileName: 's1-shiny-colorful.png' },
   { value: 's2-colorful', label: 'S2 炫彩', fileName: 's2-colorful.png' },
   { value: 's2-shiny-colorful', label: 'S2 异色炫彩', fileName: 's2-shiny-colorful.png' },
   { value: 's3-colorful', label: 'S3 炫彩', fileName: 's3-colorful.png' },
+  { value: 's3-shiny-colorful', label: 'S3 异色炫彩', fileName: 's3-shiny-colorful.png' },
 ]
 
 export const ROCK_PARTNER_MARK_TEMPLATES = [
