@@ -1,5 +1,6 @@
 let workerPromise = null
 let metadataWorkerPromise = null
+let numericWorkerPromise = null
 let progressListener = null
 
 function cleanOcrLine(value) {
@@ -54,6 +55,15 @@ async function createStructuredOcrWorker() {
   return worker
 }
 
+async function createNumericOcrWorker() {
+  const worker = await createOcrWorker(['eng'])
+  await worker.setParameters({
+    tessedit_pageseg_mode: '7',
+    tessedit_char_whitelist: '0123456789',
+  })
+  return worker
+}
+
 export async function recognizeImageText(image, onProgress, options) {
   if (!image) throw new Error('请先选择一张截图')
   progressListener = onProgress
@@ -72,7 +82,11 @@ export async function recognizeImageText(image, onProgress, options) {
   }
 }
 
-export async function recognizeStructuredImageText(image, onProgress) {
+export async function recognizeStructuredImageText(
+  image,
+  onProgress,
+  { pageSegmentationMode = '6', characterWhitelist = '' } = {},
+) {
   if (!image) throw new Error('请先选择一张截图')
   progressListener = onProgress
   if (!metadataWorkerPromise) {
@@ -83,6 +97,36 @@ export async function recognizeStructuredImageText(image, onProgress) {
   }
   try {
     const worker = await metadataWorkerPromise
+    await worker.setParameters({
+      tessedit_pageseg_mode: pageSegmentationMode,
+      tessedit_char_whitelist: characterWhitelist,
+    })
+    const result = await worker.recognize(image)
+    return normalizeOcrText(result?.data?.text, { preserveLines: true })
+  } finally {
+    progressListener = null
+  }
+}
+
+export async function recognizeNumericImageText(
+  image,
+  onProgress,
+  { pageSegmentationMode = '7' } = {},
+) {
+  if (!image) throw new Error('请先选择一张截图')
+  progressListener = onProgress
+  if (!numericWorkerPromise) {
+    numericWorkerPromise = createNumericOcrWorker().catch((error) => {
+      numericWorkerPromise = null
+      throw error
+    })
+  }
+  try {
+    const worker = await numericWorkerPromise
+    await worker.setParameters({
+      tessedit_pageseg_mode: pageSegmentationMode,
+      tessedit_char_whitelist: '0123456789',
+    })
     const result = await worker.recognize(image)
     return normalizeOcrText(result?.data?.text, { preserveLines: true })
   } finally {

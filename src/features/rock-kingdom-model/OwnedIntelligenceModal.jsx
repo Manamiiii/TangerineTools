@@ -6,7 +6,7 @@ import {
   buildRockOwnedDiagnostics,
   summarizeRockOwnedDiagnostics,
 } from '../../domain/rockKingdomIntelligence.js'
-import { ROCK_APPEARANCE_OPTIONS } from '../../domain/rockKingdomScanner.js'
+import { ROCK_APPEARANCE_OPTIONS } from '../../domain/rockKingdomAppearance.js'
 import { ROCK_KINGDOM_PRESET } from '../../presets/rockKingdom.js'
 import { ModelSettingsModal } from '../model/ModelSettingsModal.jsx'
 import { MODEL_CONFIG_SCOPE, modelConfigIsComplete } from '../model/modelConfig.js'

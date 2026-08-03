@@ -17,7 +17,9 @@
     "preview:reader": "node scripts/reading-companion/build-preview.mjs",
     "check:reader:preset": "node scripts/reading-companion/apply-preview.mjs",
     "apply:reader:preset": "node scripts/reading-companion/apply-preview.mjs --write",
-    "check:nature": "node scripts/check-nature-recommendations.mjs",
+    "check:nature": "node scripts/nature/check-recommendations.mjs",
+    "check:scanner:templates": "node scripts/rock-kingdom-scanner/build-templates.mjs",
+    "apply:scanner:templates": "node scripts/rock-kingdom-scanner/build-templates.mjs --write",
     "sync:breeding": "node scripts/bwiki/sync-breeding.mjs",
     "sync:bwiki:staging": "node scripts/bwiki/sync-staging.mjs",
     "sync:bwiki:details": "node scripts/bwiki/sync-details.mjs",
@@ -41,6 +43,7 @@
     "@vitejs/plugin-react": "^6.0.3",
     "fake-indexeddb": "^6.2.4",
     "oxlint": "^1.74.0",
+    "sharp": "^0.35.3",
     "vite": "^8.1.5"
   }
 }

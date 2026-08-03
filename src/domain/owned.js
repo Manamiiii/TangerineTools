@@ -2,7 +2,7 @@
 // 与「统计视图」的思路互补：统计视图回答"我拥有多少能达到条件的个体"，
 // 收集记录回答"我具体拥有哪一只、它有哪些个体属性"。
 
-import { ROCK_APPEARANCE_OPTIONS } from './rockKingdomScanner.js'
+import { ROCK_APPEARANCE_OPTIONS } from './rockKingdomAppearance.js'
 //
 // 存储上和资料库、统计视图共用 catalogTables/catalogFields/catalogRows，
 // 通过 kind: 'owned' 区分，字段类型仍是标准的 reference/text/number/select/date/longtext，
@@ -73,8 +73,9 @@ export const OWNED_PARTNER_MARK_OPTIONS = [
 ]
 
 export const OWNED_SPECIALTY_OPTIONS = [
+  { value: 'none', label: '无', color: '#94a3b8' },
   { value: 'mercy', label: '慈悲为怀', color: '#059669' },
-  { value: 'brave', label: '勇敢', color: '#dc2626' },
+  { value: 'brave', label: '无畏', aliases: ['勇敢'], color: '#dc2626' },
   { value: 'homebody', label: '家里蹲', color: '#64748b' },
   { value: 'dexterous', label: '灵巧', color: '#0891b2' },
   { value: 'rideTogether', label: '同乘', color: '#2563eb' },
@@ -136,7 +137,8 @@ export const OWNED_NATURE_OPTIONS = [
 // ref 字段的 refTableKind/refTableName 由 ensureOwnedTable 在运行时补齐，
 // 因为它需要绑定到当前场景里的普通资料表（例如洛克王国的"精灵图鉴"）。
 export const ROCK_KINGDOM_COLLECTION_FIELDS = [
-  { key: 'ref', name: '精灵', type: 'reference', display: { referenceImageField: 'image', referenceImageVariantField: 'shinyImage', referenceImageVariantSourceField: 'shiny', referenceImageVariantSourceValue: 'yes', referenceLabelFields: ['name'], searchableReference: true, plainReference: true, breakParentheses: true, compact: true, tableWidth: 154 } },
+  { key: 'ref', name: '图鉴名', type: 'reference', display: { referenceImageField: 'image', referenceImageVariantField: 'shinyImage', referenceImageVariantSourceField: 'shiny', referenceImageVariantSourceValue: 'yes', referenceLabelFields: ['name'], searchableReference: true, plainReference: true, breakParentheses: true, compact: true, tableWidth: 154 } },
+  { key: 'nickname', name: '精灵名', type: 'text', display: { compact: true, tableWidth: 116 } },
   { key: 'nature', name: '性格', type: 'select', options: OWNED_NATURE_OPTIONS, display: { compact: true, tableWidth: 136 } },
   { key: 'bloodline', name: '血脉', type: 'select', options: OWNED_BLOODLINE_OPTIONS, display: { compact: true, tableWidth: 104 } },
   { key: 'shiny', name: '个体异色', type: 'select', options: OWNED_SHINY_OPTIONS, hidden: true, display: { mode: 'icon', hiddenOptionValues: ['no'], compact: true, tableWidth: 68 } },
