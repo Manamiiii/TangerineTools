@@ -343,6 +343,30 @@ test('gender color recognition accepts clear symbols and rejects weak or mixed e
   )), null)
 })
 
+test('gender recognition keeps the real Luo Yin symbol during its fade-in', async () => {
+  const source = new URL(
+    '../../docs/assets/rock-kingdom-scanner/baseline-3200x1440/frame-18-030600ms.webp',
+    import.meta.url,
+  )
+  const metadata = await sharp(fileURLToPath(source)).metadata()
+  const crop = ROCK_SCANNER_CROP_PROFILE.gender
+  const result = await sharp(fileURLToPath(source)).extract({
+    left: Math.round(metadata.width * crop.x),
+    top: Math.round(metadata.height * crop.y),
+    width: Math.round(metadata.width * crop.width),
+    height: Math.round(metadata.height * crop.height),
+  }).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+  const faded = new Uint8ClampedArray(result.data)
+  for (let offset = 0; offset < faded.length; offset += 4) {
+    faded[offset] = 45 + (faded[offset] - 45) * 0.3
+    faded[offset + 1] = 47 + (faded[offset + 1] - 47) * 0.3
+    faded[offset + 2] = 46 + (faded[offset + 2] - 46) * 0.3
+  }
+
+  assert.equal(recognizeGenderColor({ data: result.data })?.value, 'male')
+  assert.equal(recognizeGenderColor({ data: faded })?.value, 'male')
+})
+
 test('stat tone recognition separates white base values from yellow talent values', () => {
   const white = syntheticPixels(20, 20, [224, 224, 220])
   const yellow = syntheticPixels(20, 20, [232, 185, 106])

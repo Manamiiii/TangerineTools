@@ -582,17 +582,18 @@ export function recognizeGenderColor(imageData) {
     const red = pixels[offset]
     const green = pixels[offset + 1]
     const blue = pixels[offset + 2]
-    if (blue >= 105) {
-      maleEvidence += Math.max(0, blue - red - 20) * Math.min(1, (blue - 90) / 100)
+    if (blue >= 78) {
+      maleEvidence += Math.max(0, blue - red - 16, blue - green - 22)
+        * Math.min(1, (blue - 65) / 95)
     }
-    if (red >= 120) {
-      femaleEvidence += Math.max(0, red - green - 25, red - blue - 15)
-        * Math.min(1, (red - 105) / 100)
+    if (red >= 92) {
+      femaleEvidence += Math.max(0, red - green - 20, red - blue - 12)
+        * Math.min(1, (red - 78) / 100)
     }
   }
   const strongest = Math.max(maleEvidence, femaleEvidence)
   const weakest = Math.min(maleEvidence, femaleEvidence)
-  if (strongest < 320 || strongest < weakest * 1.45) return null
+  if (strongest < 240 || strongest < weakest * 1.5) return null
   const dominance = strongest / Math.max(strongest + weakest, 1)
   return {
     value: maleEvidence > femaleEvidence ? 'male' : 'female',
