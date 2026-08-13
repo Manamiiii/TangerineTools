@@ -111,6 +111,7 @@ function buildOwnedFromProfiles(ownedRows, profiles) {
       order: index,
       name: displayName(catalog.row),
       owned,
+      source: 'owned',
       gender: owned.values?.gender,
       nature: owned.values?.nature,
       shiny: yes(owned.values?.shiny),
@@ -196,7 +197,7 @@ export function buildBreedingDataset(input = {}) {
   const creatures = buildOwnedFromProfiles(input.ownedRows || [], profiles)
   hydrateNatureRanks(
     profiles,
-    new Set(creatures.map((item) => item.catalog.speciesKey)),
+    new Set([...profiles.values()].filter((profile) => profile.eggGroups.length > 0).map((profile) => profile.speciesKey)),
     input.catalogFields || [],
     input.skillRows || [],
   )
@@ -260,45 +261,83 @@ function ruleValue(ruleId, context) {
   }
 }
 
+function preferredNature(target) {
+  let fallback = ''
+  for (const [nature, rank] of target.natureRanks) {
+    if (!fallback && rank > 0) fallback = nature
+    if (rank === 2) return nature
+  }
+  return fallback
+}
+
+function catchCreature(target, gender) {
+  const row = target.catalogRows[0]
+  return {
+    id: `catch:${target.id}:${gender}`,
+    order: Number.MAX_SAFE_INTEGER,
+    name: displayName(row),
+    owned: null,
+    source: 'catch',
+    gender,
+    nature: preferredNature(target),
+    shiny: false,
+    colorful: false,
+    catalog: {
+      row,
+      speciesKey: target.id,
+      eggGroups: target.eggGroups,
+      natureRanks: target.natureRanks,
+    },
+  }
+}
+
 export function recommendBreedingPairs(
   creatures,
-  { pairCount = 5, rules = DEFAULT_BREEDING_RULES, species = [] } = {},
+  { pairCount = 5, rules = DEFAULT_BREEDING_RULES, species = [], targetSpeciesId = '' } = {},
 ) {
   const activeRules = normalizeBreedingRules(rules).filter((rule) => rule.enabled)
   const activeGoalRules = activeRules.filter((rule) => rule.goal)
-  const speciesByKey = new Map(species.map((item) => [item.id, item]))
-  const males = creatures.filter((item) => item.gender === MALE && item.catalog.eggGroups.length)
-  const females = creatures.filter((item) => item.gender === FEMALE && item.catalog.eggGroups.length)
+  const targets = targetSpeciesId ? species.filter((item) => item.id === targetSpeciesId) : species
+  const rareCreatures = creatures.filter((item) => (
+    (item.shiny || item.colorful) && item.catalog.eggGroups.length
+  ))
+  const rareMales = rareCreatures.filter((item) => item.gender === MALE)
+  const rareFemales = rareCreatures.filter((item) => item.gender === FEMALE)
   const pairs = []
 
-  for (const mother of females) {
-    const target = speciesByKey.get(mother.catalog.speciesKey)
-    if (!target) continue
-    for (const father of males) {
-      const eggGroup = commonGroup(mother, father)
-      if (!eggGroup) continue
-      const shinyParents = Number(father.shiny) + Number(mother.shiny)
-      const colorfulParents = Number(father.colorful) + Number(mother.colorful)
-      const goodNatureRank = Math.max(
-        target.natureRanks.get(father.nature) || 0,
-        target.natureRanks.get(mother.nature) || 0,
-      )
-      const context = { target, shinyParents, colorfulParents, goodNatureRank, mother, father }
-      const values = Object.fromEntries(activeRules.map((rule) => [rule.id, ruleValue(rule.id, context)]))
-      if (activeGoalRules.length > 0 && !activeGoalRules.some((rule) => values[rule.id] > 0)) continue
-      const matchedRules = activeRules.filter((rule) => values[rule.id] > 0)
-      pairs.push({
-        mother,
-        father,
-        eggGroup,
-        targetSpecies: target.id,
-        target,
-        goodNatureRank,
-        canRecommendedNature: goodNatureRank === 2,
-        ruleValues: values,
-        matchedRules,
-        priorityReason: matchedRules[0]?.label || '同蛋组配对',
-      })
+  for (const target of targets) {
+    const caughtMother = catchCreature(target, FEMALE)
+    const caughtFather = catchCreature(target, MALE)
+    const mothers = [caughtMother, ...rareFemales.filter((item) => item.catalog.speciesKey === target.id)]
+    const fathers = [caughtFather, ...rareMales]
+    for (const mother of mothers) {
+      for (const father of fathers) {
+        if (mother.source === 'catch' && father.source === 'catch' && !target.missing.goodNature) continue
+        const eggGroup = commonGroup(mother, father)
+        if (!eggGroup) continue
+        const shinyParents = Number(father.shiny) + Number(mother.shiny)
+        const colorfulParents = Number(father.colorful) + Number(mother.colorful)
+        const goodNatureRank = Math.max(
+          target.natureRanks.get(father.nature) || 0,
+          target.natureRanks.get(mother.nature) || 0,
+        )
+        const context = { target, shinyParents, colorfulParents, goodNatureRank, mother, father }
+        const values = Object.fromEntries(activeRules.map((rule) => [rule.id, ruleValue(rule.id, context)]))
+        if (activeGoalRules.length > 0 && !activeGoalRules.some((rule) => values[rule.id] > 0)) continue
+        const matchedRules = activeRules.filter((rule) => values[rule.id] > 0)
+        pairs.push({
+          mother,
+          father,
+          eggGroup,
+          targetSpecies: target.id,
+          target,
+          goodNatureRank,
+          canRecommendedNature: goodNatureRank === 2,
+          ruleValues: values,
+          matchedRules,
+          priorityReason: matchedRules[0]?.label || '同蛋组配对',
+        })
+      }
     }
   }
 
@@ -313,10 +352,12 @@ export function recommendBreedingPairs(
   const selected = []
   const used = new Set()
   for (const pair of pairs) {
-    if (used.has(pair.father.id) || used.has(pair.mother.id)) continue
+    const ownedIds = [pair.father, pair.mother]
+      .filter((item) => item.source === 'owned')
+      .map((item) => item.id)
+    if (ownedIds.some((id) => used.has(id))) continue
     selected.push(pair)
-    used.add(pair.father.id)
-    used.add(pair.mother.id)
+    ownedIds.forEach((id) => used.add(id))
     if (selected.length >= pairCount) break
   }
   return selected
