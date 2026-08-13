@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { ArrowDown, ArrowUp, RotateCcw } from 'lucide-react'
+import { RotateCcw } from 'lucide-react'
 import { db, ensureOwnedTable } from '../db.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
 import {
@@ -12,7 +12,7 @@ import {
   summarizeMissingEggGroups,
 } from '../domain/breeding.js'
 import { OWNED_COLORFUL_OPTIONS, OWNED_NATURE_OPTIONS } from '../domain/owned.js'
-import { EmptyState, OptionTag } from './common.jsx'
+import { DragHandle, EmptyState, OptionTag, useDragReorder } from './common.jsx'
 import { RowDetailModal } from './rowDetail.jsx'
 
 function loadBreedingRules() {
@@ -39,7 +39,7 @@ export function BreedingTool({ scene }) {
   const [selectedOwnedCreature, setSelectedOwnedCreature] = useState(null)
   const [referenceDetail, setReferenceDetail] = useState(null)
   const [rules, setRules] = useState(loadBreedingRules)
-  const [coverageFilter, setCoverageFilter] = useState('gaps')
+  const [coverageFilter, setCoverageFilter] = useState('all')
   const [coverageQuery, setCoverageQuery] = useState('')
 
   const dataset = useMemo(
@@ -65,15 +65,7 @@ export function BreedingTool({ scene }) {
     )))
   }
 
-  function moveRule(index, offset) {
-    setRules((current) => {
-      const target = index + offset
-      if (target < 0 || target >= current.length) return current
-      const next = [...current]
-      ;[next[index], next[target]] = [next[target], next[index]]
-      return next
-    })
-  }
+  const { onDragStart, onDragOver, onDrop } = useDragReorder(rules, setRules)
 
   if (!ownedTable || !ownedRows || !ownedFields || !catalogRows || !catalogFields || !skillRows) return null
 
@@ -86,18 +78,21 @@ export function BreedingTool({ scene }) {
       <span className="breeding-selection-count">{pairs.length * 2} / 10 只</span>
     </div>
 
-    <section className="breeding-rules" aria-labelledby="breeding-rules-title">
-      <div className="breeding-rules-main">
-        <strong id="breeding-rules-title">孵蛋规则</strong>
-        <span>后代种类跟随母亲</span>
-        <span>性格：父 30% / 母 30% / 随机 40%</span>
-        <span>异色/炫彩：单亲 0.36% / 双亲 0.72%</span>
-      </div>
-      <div className="breeding-priority">
+    <details className="breeding-rules">
+      <summary>
+        <span><strong id="breeding-rules-title">孵蛋规则</strong><small>{rules.filter((rule) => rule.enabled).length} 项已启用 · 拖动可调整优先级</small></span>
+      </summary>
+      <div className="breeding-rules-content">
+        <div className="breeding-rules-main">
+          <span>后代种类跟随母亲</span>
+          <span>性格：父 30% / 母 30% / 随机 40%</span>
+          <span>异色/炫彩：单亲 0.36% / 双亲 0.72%</span>
+        </div>
+        <div className="breeding-priority">
         <div className="breeding-priority-heading">
           <div>
             <strong>推荐规则</strong>
-            <small>启用的规则从上到下逐级比较；排在前面的规则优先。</small>
+            <small>按编号逐级比较；拖动卡片调整顺序。</small>
           </div>
           <button
             type="button"
@@ -109,20 +104,24 @@ export function BreedingTool({ scene }) {
         </div>
         <ol className="breeding-rule-list">
           {rules.map((rule, index) => (
-            <li key={rule.id} className={rule.enabled ? '' : 'disabled'}>
+            <li
+              key={rule.id}
+              className={rule.enabled ? '' : 'disabled'}
+              draggable
+              onDragStart={() => onDragStart(index)}
+              onDragOver={onDragOver}
+              onDrop={() => onDrop(index)}
+            >
+              <DragHandle />
               <label>
                 <input type="checkbox" checked={rule.enabled} onChange={() => toggleRule(rule.id)} />
-                <span><strong>{rule.label}</strong><small>{rule.description}</small></span>
+                <span><strong>{rule.label}</strong><small title={rule.description}>{rule.description}</small></span>
               </label>
-              <span className="breeding-rule-actions">
-                <button type="button" title="上移" disabled={index === 0} onClick={() => moveRule(index, -1)}><ArrowUp size={14} /></button>
-                <button type="button" title="下移" disabled={index === rules.length - 1} onClick={() => moveRule(index, 1)}><ArrowDown size={14} /></button>
-              </span>
             </li>
           ))}
         </ol>
-      </div>
-      {missingEggGroups.recordCount > 0 && (
+        </div>
+        {missingEggGroups.recordCount > 0 && (
         <details className="breeding-warning">
           <summary>
             当前本地资料有 {missingEggGroups.recordCount} 条拥有记录（{missingEggGroups.creatureCount} 种精灵）缺少蛋组，暂不参与配对
@@ -136,8 +135,9 @@ export function BreedingTool({ scene }) {
             ))}
           </ul>
         </details>
-      )}
-    </section>
+        )}
+      </div>
+    </details>
 
     {pairs.length === 0 ? (
       <EmptyState title="暂无可推荐组合" description="请确认收集记录已填写性别和外观，资料库已有蛋组，且至少一对父母能推进当前启用的缺口目标。" />
@@ -313,9 +313,9 @@ function BreedingCoverageDashboard({ species, filter, query, onFilterChange, onQ
   ))
   const collectedSpecies = species.filter((item) => item.ownedCount > 0)
   const collected = collectedSpecies.length
-  const missingShiny = collectedSpecies.filter((item) => item.missing.shiny).length
-  const missingColorful = collectedSpecies.filter((item) => item.missing.colorful).length
-  const complete = collectedSpecies.filter((item) => !item.hasGap).length
+  const missingShiny = species.filter((item) => item.missing.shiny).length
+  const missingColorful = species.filter((item) => item.missing.colorful).length
+  const complete = species.filter((item) => !item.hasGap).length
   const scopeTotal = filter === 'all' ? species.length : collected
 
   return (
@@ -323,7 +323,7 @@ function BreedingCoverageDashboard({ species, filter, query, onFilterChange, onQ
       <div className="breeding-coverage-heading">
         <div>
           <strong id="breeding-coverage-title">当前场景 · 稀有外观收集概览</strong>
-          <small>按繁育谱系合并，默认只看已有收集的孵蛋缺口；具体个体仍在图鉴和收集记录中管理。</small>
+          <small>按繁育谱系合并，默认展示全部可繁育精灵；具体个体仍在图鉴和收集记录中管理。</small>
         </div>
       </div>
       <div className="breeding-coverage-summary">
