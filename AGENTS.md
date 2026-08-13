@@ -2,7 +2,7 @@
 
 ## Project overview
 
-TangerineTools is a local-first personal data management web app built with Vite, React 19, and Dexie.js. It is a static frontend app with no backend service. User data lives in browser IndexedDB and is moved through manual JSON export/import.
+TangerineTools is a local-first personal game management web app built with Vite, React 19, and Dexie.js. It is a static frontend app with no backend service. User data lives in browser IndexedDB and is moved through manual JSON export/import.
 
 The default built-in scenario is 洛克王国世界. The currently implemented workspace tools are:
 
@@ -11,7 +11,6 @@ The default built-in scenario is 洛克王国世界. The currently implemented w
 - 统计视图 `stock`
 - 性格推荐 `nature`
 - 孵蛋推荐 `breeding`
-- 阅读伴侣 `reader`
 
 ## Development posture
 
@@ -37,8 +36,6 @@ Before making code changes, read the docs that match the task scope:
 - Read `docs/nature/confirmed-results.md` before changing nature rules, so confirmed single-creature conclusions can be regression checked.
 - Read `docs/rock-kingdom/scanner.md` before changing scanner capture profiles, OCR, templates, formula-based identity matching, or review flow.
 - Read `docs/rock-kingdom/scanner-baseline.md` before changing scanner behavior or its regression assets.
-- Read `docs/reading-companion/product-and-architecture.md` before changing the reading companion, book packages, reading progress, maps, OCR, or spoiler controls.
-- Read `docs/reading-companion/model-prompts.md` before changing reading model prompts or using a model to prepare personal-book or formal built-in-book data.
 - Run `npm run check:nature` and inspect `artifacts/nature/calibration-report.md` before calibrating or discussing current nature recommendation samples.
 
 Also check the latest commit, PR description, and review comments when continuing an existing branch.
@@ -56,8 +53,6 @@ Also check the latest commit, PR description, and review comments when continuin
 - External sources are used to understand positioning, mechanics, and player evaluation. Do not directly copy external recommended natures as this tool's final recommendation logic.
 - Treat B站、小红书 and other player platforms as external research sources, not formal preset inputs. Record links, authors, dates, relevant video timestamps or image pages, and separate observable facts from creator opinions. Do not bypass authentication, CAPTCHA, access controls, or anti-automation measures.
 - Prefer rule-level improvements over one-off per-creature special cases. Pause and confirm with the user when a finding would change broad thresholds or role rules.
-- Reading companion formal packages must use the versioned staging / preview / explicit apply workflow. Do not guess chapter reveal boundaries, publish unaudited plot facts, or assign precise coordinates to fictional or ambiguous places.
-- Reading companion model work must use the prompt route and current prompt id defined in `docs/reading-companion/model-prompts.md`. Personal-book initialization may automatically save only the bounded hidden dictionary; formal built-in-book preparation may write only staging candidates until sources and reveal boundaries satisfy the publishing contract.
 
 ## Environment and commands
 

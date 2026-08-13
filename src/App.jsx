@@ -4,8 +4,14 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { ArrowLeft, Download, Upload } from 'lucide-react'
-import { db, ensureSeeded, exportAllData, importAllData } from './db.js'
-import { SCENE_TOOLS } from './constants.js'
+import {
+  db,
+  ensureSeeded,
+  exportAllData,
+  exportReadingCompanionData,
+  importAllData,
+} from './db.js'
+import { sceneToolsFor } from './constants.js'
 import { SceneList } from './components/scenes.jsx'
 import { ConfirmDialog, IconButton } from './components/common.jsx'
 import { ErrorBoundary } from './components/ErrorBoundary.jsx'
@@ -16,7 +22,6 @@ const NatureTool = lazyTool(() => import('./components/nature.jsx'), 'NatureTool
 const StockTool = lazyTool(() => import('./components/stock.jsx'), 'StockTool')
 const OwnedTool = lazyTool(() => import('./components/owned.jsx'), 'OwnedTool')
 const BreedingTool = lazyTool(() => import('./components/breeding.jsx'), 'BreedingTool')
-const ReaderTool = lazyTool(() => import('./features/reading-companion/index.js'), 'ReaderTool')
 
 // 工具 value -> 对应的工具组件。只有 constants.js 中标记 ready:true 的工具
 // 才会被场景工作台实际渲染、并出现在多工具切换器中。
@@ -26,7 +31,6 @@ const TOOL_COMPONENTS = {
   nature: NatureTool,
   stock: StockTool,
   breeding: BreedingTool,
-  reader: ReaderTool,
 }
 
 function useHashRoute() {
@@ -67,7 +71,10 @@ export default function App() {
   const hash = useHashRoute()
   const sceneId = hash.startsWith('scene/') ? hash.slice('scene/'.length) : null
   const scenes = useLiveQuery(() => db.scenes.orderBy('order').toArray(), [])
-  const activeScene = (sceneId && scenes?.find((s) => s.id === sceneId)) || null
+  const visibleScenes = scenes?.filter((scene) => (
+    scene.type !== 'reading' && !scene.tools?.includes('reader')
+  ))
+  const activeScene = (sceneId && visibleScenes?.find((s) => s.id === sceneId)) || null
 
   if (bootError) {
     return (
@@ -104,7 +111,7 @@ export default function App() {
         {activeScene ? (
           <SceneWorkbench scene={activeScene} />
         ) : (
-          <SceneList scenes={scenes} onOpen={goToScene} />
+          <SceneList scenes={visibleScenes} onOpen={goToScene} />
         )}
       </main>
     </div>
@@ -112,7 +119,7 @@ export default function App() {
 }
 
 function SceneWorkbench({ scene }) {
-  const readyTools = SCENE_TOOLS.filter(
+  const readyTools = sceneToolsFor(scene).filter(
     (tool) => tool.ready && scene.tools?.includes(tool.value),
   )
   const [activeTool, setActiveTool] = useState(null)
@@ -156,16 +163,32 @@ function SceneWorkbench({ scene }) {
 function GlobalDataActions() {
   const [pendingFile, setPendingFile] = useState(null)
   const [error, setError] = useState('')
+  const readingRecordCount = useLiveQuery(() => db.meta.filter((record) => (
+    typeof record?.key === 'string'
+    && (record.key.startsWith('readerState:') || record.key.startsWith('readerPersonalPackage:'))
+  )).count(), [])
 
-  async function handleExport() {
-    const payload = await exportAllData()
+  function downloadPayload(payload, filename) {
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `tangerine-tools-${payload.exportedAt.slice(0, 10)}.json`
+    a.download = filename
     a.click()
     URL.revokeObjectURL(url)
+  }
+
+  async function handleExport() {
+    const payload = await exportAllData()
+    downloadPayload(payload, `tangerine-tools-${payload.exportedAt.slice(0, 10)}.json`)
+  }
+
+  async function handleReadingMigrationExport() {
+    const payload = await exportReadingCompanionData()
+    downloadPayload(
+      payload,
+      `tangerine-reading-companion-${payload.exportedAt.slice(0, 10)}.json`,
+    )
   }
 
   function handleFileChosen(e) {
@@ -195,6 +218,17 @@ function GlobalDataActions() {
         <Download size={14} />
         导出数据
       </button>
+      {readingRecordCount > 0 && (
+        <button
+          type="button"
+          className="btn global-data-btn"
+          onClick={handleReadingMigrationExport}
+          title="导出旧阅读进度和个人书籍，供 Tangerine Reading Companion 导入"
+        >
+          <Download size={14} />
+          迁移阅读数据
+        </button>
+      )}
       <label className="btn btn-file global-data-btn">
         <Upload size={14} />
         导入数据

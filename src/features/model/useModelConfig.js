@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import {
-  hasStoredModelConfig,
   loadStoredModelConfig,
   MODEL_CONFIG_SCOPE,
   MODEL_CONFIG_CHANGED_EVENT,
@@ -8,9 +7,6 @@ import {
 } from './modelConfig.js'
 
 export function useModelConfig(scope = MODEL_CONFIG_SCOPE.READING) {
-  const otherScope = scope === MODEL_CONFIG_SCOPE.ROCK_KINGDOM
-    ? MODEL_CONFIG_SCOPE.READING
-    : MODEL_CONFIG_SCOPE.ROCK_KINGDOM
   const [modelConfig, setModelConfig] = useState(
     () => loadStoredModelConfig('', true, scope),
   )
@@ -30,8 +26,6 @@ export function useModelConfig(scope = MODEL_CONFIG_SCOPE.READING) {
   return {
     modelConfig,
     loadProvider: (providerId) => loadStoredModelConfig(providerId, false, scope),
-    canCopyOtherConfig: hasStoredModelConfig(otherScope),
-    loadOtherConfig: () => loadStoredModelConfig('', true, otherScope),
     saveModelConfig: (nextConfig) => {
       const saved = saveStoredModelConfig(nextConfig, scope)
       setModelConfig(saved)

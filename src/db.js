@@ -1,12 +1,14 @@
 // 数据层兼容入口。组件继续从这里导入，具体实现按职责拆在 src/db/ 下。
 
 export { db } from './db/core.js'
-export { EXPORT_SCHEMA_VERSION, exportAllData, importAllData, validateImportPayload } from './db/importExport.js'
-export { ensureSeeded } from './db/seed.js'
 export {
-  getReadingState,
-  saveReadingState,
-} from './features/reading-companion/db/readingState.js'
+  EXPORT_SCHEMA_VERSION,
+  exportAllData,
+  exportReadingCompanionData,
+  importAllData,
+  validateImportPayload,
+} from './db/importExport.js'
+export { ensureSeeded } from './db/seed.js'
 export {
   createCatalogTable,
   createField,
