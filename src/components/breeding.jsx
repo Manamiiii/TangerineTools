@@ -7,6 +7,7 @@ import {
   BREEDING_RULE_STORAGE_KEY,
   buildBreedingDataset,
   DEFAULT_BREEDING_RULES,
+  matchesBreedingCoverageFilter,
   normalizeBreedingRules,
   recommendBreedingPairs,
   summarizeMissingEggGroups,
@@ -277,16 +278,6 @@ const COVERAGE_FILTERS = [
   { value: 'all', label: '全部谱系' },
 ]
 
-function matchesCoverageFilter(item, filter) {
-  if (filter === 'all') return true
-  if (item.ownedCount === 0) return false
-  if (filter === 'complete') return !item.hasGap
-  if (filter === 'gaps') return item.hasGap
-  const key = filter.replace(/^missing/, '')
-  const missingKey = key.charAt(0).toLowerCase() + key.slice(1)
-  return Boolean(item.missing[missingKey])
-}
-
 function SexCoverage({ summary }) {
   return (
     <span className="breeding-sex-coverage">
@@ -296,7 +287,8 @@ function SexCoverage({ summary }) {
   )
 }
 
-function RareCoverage({ label, summary }) {
+function RareCoverage({ available = true, label, summary }) {
+  if (!available) return <span className="breeding-rare-unavailable">无此形态</span>
   return (
     <div className="breeding-rare-coverage">
       <span><strong>{summary.total}</strong><small>{label}</small></span>
@@ -307,16 +299,15 @@ function RareCoverage({ label, summary }) {
 
 function BreedingCoverageDashboard({ species, filter, query, onFilterChange, onQueryChange }) {
   const normalizedQuery = query.trim().toLocaleLowerCase('zh-CN')
-  const visible = species.filter((item) => (
-    matchesCoverageFilter(item, filter)
-    && (!normalizedQuery || item.name.toLocaleLowerCase('zh-CN').includes(normalizedQuery))
+  const inScope = species.filter((item) => matchesBreedingCoverageFilter(item, filter))
+  const visible = inScope.filter((item) => (
+    !normalizedQuery || item.name.toLocaleLowerCase('zh-CN').includes(normalizedQuery)
   ))
   const collectedSpecies = species.filter((item) => item.ownedCount > 0)
   const collected = collectedSpecies.length
   const missingShiny = species.filter((item) => item.missing.shiny).length
   const missingColorful = species.filter((item) => item.missing.colorful).length
   const complete = species.filter((item) => !item.hasGap).length
-  const scopeTotal = filter === 'all' ? species.length : collected
 
   return (
     <section className="breeding-coverage" aria-labelledby="breeding-coverage-title">
@@ -343,7 +334,7 @@ function BreedingCoverageDashboard({ species, filter, query, onFilterChange, onQ
         <select className="select" value={filter} onChange={(event) => onFilterChange(event.target.value)}>
           {COVERAGE_FILTERS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
         </select>
-        <span>{visible.length} / {scopeTotal}</span>
+        <span>{visible.length} / {inScope.length}</span>
       </div>
       {visible.length === 0 ? (
         <p className="breeding-coverage-empty">没有符合当前条件的繁育谱系。</p>
@@ -380,7 +371,7 @@ function BreedingCoverageDashboard({ species, filter, query, onFilterChange, onQ
                       </span>
                     </td>
                     <td><strong>{item.ownedCount}</strong></td>
-                    <td><RareCoverage label="异色" summary={item.shiny} /></td>
+                    <td><RareCoverage available={item.shinyAvailable} label="异色" summary={item.shiny} /></td>
                     <td><RareCoverage label="炫彩" summary={item.colorful} /></td>
                     <td>
                       <span className="breeding-good-nature">

@@ -3862,6 +3862,7 @@ img {
 .breeding-rare-coverage { display: flex; align-items: center; gap: 8px; }
 .breeding-rare-coverage > span { display: grid; min-width: 34px; }
 .breeding-rare-coverage small { color: var(--text-muted); font-size: 10px; }
+.breeding-rare-unavailable { color: #94a3b8; font-size: 11px; }
 .breeding-sex-coverage { display: inline-flex; gap: 3px; }
 .breeding-sex-coverage b { padding: 2px 5px; border-radius: 999px; font-size: 10px; }
 .breeding-sex-coverage .covered { background: #dcfce7; color: #15803d; }
