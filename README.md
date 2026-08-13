@@ -1,261 +1,83 @@
 # TangerineTools
 
-TangerineTools 是一个本地优先（local-first）的个人资料管理 Web App，用来按“场景”组织资料库、收集记录和辅助分析工具。当前默认场景为「洛克王国世界」，也可以新建通用、游戏或资料类场景并按需启用工具。
+TangerineTools 是一个本地优先的个人游戏管理工具。应用使用 Vite、React 19 与 Dexie.js 构建，不依赖后端；资料保存在浏览器 IndexedDB，通过 JSON 手动备份和迁移。
 
-## 特性概览
+内置的「洛克王国世界」场景提供资料库、收集记录、统计视图、性格推荐、孵蛋推荐和精灵扫描。用户也可以创建其他游戏场景，使用通用的资料库、收集记录与统计视图。照片和设备管理由独立的 TangerinePhotoAssistant 负责，阅读功能由独立的 [TangerineReadingCompanion](https://github.com/Manamiiii/TangerineReadingCompanion) 负责。
 
-- **本地优先，无后端依赖**：数据保存在浏览器 IndexedDB 中，通过 Dexie.js 读写；应用可作为静态站点部署。
-- **场景化工具箱**：首页管理多个场景，每个场景可单独启用资料库、收集记录、统计视图、性格推荐、孵蛋推荐和阅读伴侣六种工具。
-- **可配置资料库**：支持多资料表、字段管理、搜索、排序、筛选、分页、详情弹窗，以及由字段配置控制的紧凑列宽、多行标签、摘要单元格、引用头像和图标化选项。
-- **引用与多引用字段**：支持单条资料引用和一对多资料引用；洛克王国精灵通过 `skillRefs` 关联技能资料，技能通过 `learnerRefs` 反向关联可学精灵。
-- **收集记录**：记录“我具体拥有哪一只 / 哪一份”，支持一对一和一对多模式；可搜索引用字段在同一个组合框中完成输入筛选和选择。洛克王国记录可扫描并复核游戏伙伴标记，并按性格、PVE价值、稀有外观、特长和同形态组重复关系即时提示建议标记。
-- **统计视图**：从资料库或收集记录选择数据源，按字段分组并叠加数值阈值条件统计。
-- **性格推荐**：每个编号从普通形态进入，展示统一绝对刻度的六维、动态分位、完整特性和同编号全部形态差异；候选按强化维度与推荐档位展示，按进化链匹配已获得性格，并为推荐/可保留性格提供预填快速新增收集记录。
-- **孵蛋推荐**：结合收集记录、性别、异色/炫彩、性格、蛋组和繁育谱系，对可用父母组合进行排序。
-- **阅读伴侣**：Windows 首版可安装为 PWA，从书架选择不可删除的内置资料包，或凭版本信息、目录与自选封面建立可删除的个人书籍；书籍详情截图可以经本机 OCR 和可选模型整理后填入表单，`字段名：字段值` 格式会优先解析。书内固定提供阅读输入、分类分页的已遇到记录、地图和设置；已遇到卡片保持紧凑，资料与地图信息在详情中展开。章节在书籍页右上角选择；粘贴或 OCR 后自动清理排版并在本机精确匹配资料包与已遇到名称，也可选中文字快速记录。智谱、DeepSeek、MiniMax、OpenAI 与自定义兼容接口提供陌生名称候选识别、已有资料配对和带书籍语境的国际地图检索词建议；真实地点可经国内/国际公网地图搜索，精确对象未被地图收录时可以明确降级为相关参考区域，虚构或模糊地点也可设置宽泛参考区域。地图支持点、彩色路径、范围与全屏。设置页集中管理模型和地图 Key、数据边界与接入教程，并可导出当前书版本、进度、阅读记忆、资料配对、地图确认和最近关键操作脱敏诊断；反馈包不包含 API Key、原文、搜索词、截图、模型内容、错误原文或其他场景数据。
-- **全量导入/导出**：在首页通过 JSON 文件手动备份或迁移全部本地数据。
-- **洛克王国预置资料**：首次启动会自动创建“洛克王国”场景，包含精灵基础资料和技能资料；当前正式预置只由版本化 BWiki staging / preview 审计产物显式发布。
+## 开发
 
-## 技术栈
-
-- [Vite](https://vite.dev/) + React 19
-- Dexie.js / dexie-react-hooks（IndexedDB 本地存储与响应式读取）
-- lucide-react 图标
-- oxlint 静态检查
-- 纯 CSS（无 CSS 框架、无 CSS Modules）
-- 基于 `window.location.hash` 的轻量路由（无路由库）
-
-## 快速开始
-
-### 环境要求
-
-- Node.js `>=20.19.0`
-- npm
-
-### 安装依赖
+需要 Node.js `>=20.19.0`。
 
 ```bash
 npm install
-```
-
-### 启动开发服务器
-
-```bash
 npm run dev
 ```
 
-拉取包含新依赖的代码后如果出现模块缺失或无法启动，请先重新执行 `npm install`，再运行 `npm run dev`。
+常用检查：
 
-### 生产构建 / 预览 / 静态检查
-
-```bash
-npm run build
-npm run preview
-npm run lint
-```
-
-## 可用脚本
-
-| 命令 | 说明 |
+| 命令 | 用途 |
 |---|---|
-| `npm run dev` | 启动 Vite 开发服务器 |
-| `npm run build` | 生成生产构建 |
-| `npm run preview` | 本地预览生产构建产物 |
-| `npm run lint` | 使用 oxlint 做静态检查 |
-| `npm run check:reader:packages` | 校验阅读资料目录、版本信息、稳定章节和事实引用 |
-| `npm run audit:reader:quality` | 在 `artifacts/reading-companion/` 生成资料覆盖、来源和候选阻塞质量报告 |
-| `npm run audit:reader:links` | 生成阅读资料质量报告，并对已批准来源执行可用性探测 |
-| `npm run preview:reader` | 从阅读资料 staging 生成版本化发布预览 |
-| `npm run check:reader:preset` | dry-run 检查阅读资料 preview 与正式资料包差异并生成本地报告 |
-| `npm run apply:reader:preset` | 显式发布阅读资料 preview；还必须提供确认环境变量 |
-| `npm run check:nature` | 在 `artifacts/nature/` 生成本地性格推荐校准报告 |
-| `npm run sync:bwiki:staging` | 刷新 BWiki 精灵、技能、蛋和果实 staging |
-| `npm run sync:bwiki:details` | 刷新 BWiki 精灵详情 staging |
-| `npm run sync:breeding` | 刷新蛋组和繁育谱系 staging |
-| `npm run preview:bwiki` | 从 staging 构建版本化发布候选 |
-| `npm run check:bwiki:preset` | dry-run 校验 BWiki preview 的正式发布范围并在 `artifacts/` 生成报告，不修改正式预置 |
-| `npm run apply:bwiki:preset` | 显式发布 BWiki preview；还必须提供报告约定的确认环境变量 |
-| `npm test` | 验证领域规则、数据兼容、BWiki 管线和文档当前态约束 |
+| `npm run lint` | 静态检查 |
+| `npm test` | 领域与回归测试 |
+| `npm run build` | 生产构建 |
+| `npm run check:nature` | 生成并检查性格推荐校准报告 |
+| `npm run check:scanner:templates` | 检查扫描模板 |
+| `npm run apply:scanner:templates` | 显式写入扫描模板 |
+| `npm run sync:breeding` | 同步繁育资料 staging |
+| `npm run sync:bwiki:staging` | 同步 BWiki 基础 staging |
+| `npm run sync:bwiki:details` | 同步 BWiki 详情 staging |
+| `npm run preview:bwiki` | 构建 BWiki 发布预览 |
+| `npm run check:bwiki:preset` | dry-run 检查正式预置差异 |
+| `npm run apply:bwiki:preset` | 显式应用正式预置 |
 
-## 项目结构
+## 数据边界
+
+- 数据库名为 `tangerine-tools`，Dexie schema 保持 v1。
+- 全量导入按稳定 id 合并：同 id 覆盖，文件未包含的本地记录保留。
+- 洛克王国正式资料只通过版本化 BWiki staging、preview、apply 流程发布。
+- 首页仅在检测到阅读数据时显示「迁移阅读数据」，生成可由 Tangerine Reading Companion 直接导入的专用 JSON。迁移导出不会清理 TangerineTools 中的任何记录。
+- 模型连接地址与模型 ID 保存在 `localStorage`，API Key 仅保存在 `sessionStorage`，不进入 Dexie 或备份文件。
+
+完整存储、导入和兼容语义见 [`docs/data-sync.md`](docs/data-sync.md)。
+
+## 目录
 
 ```text
-.
-├── .github/workflows/pages.yml           # GitHub Pages 构建与部署
-├── docs/
-│   ├── data-sources/
-│   │   ├── bwiki-pipeline.md             # BWiki 来源、快照与显式发布流程
-│   │   ├── bwiki-field-mapping.md        # 字段血缘、稳定 id 与验收门槛
-│   │   └── research-sources.md            # B站、小红书等外部研究证据口径
-│   ├── nature/
-│   │   ├── rules.md                      # 性格推荐当前规则
-│   │   ├── single-creature-template.md   # 单只精灵核对模板
-│   │   ├── confirmed-results.md          # 用户确认的回归基线
-│   │   └── open-issues.md                # 尚待确认的通用规则问题
-│   ├── reading-companion/
-│   │   ├── product-and-architecture.md    # 经典文学阅读伴侣规划与剧透安全契约
-│   │   ├── model-prompts.md               # 个人初始化与正式预制提示词契约
-│   │   └── trial-guide.md                 # 当前试用范围、步骤和反馈重点
-│   ├── rock-kingdom/
-│   │   ├── scanner.md                     # 精灵扫描录入、固定手机采集与复核约束
-│   │   └── scanner-baseline.md            # 固定视频识别结果与性能回归基线
-│   ├── model-provider-setup.md             # 各工具独立的模型配置与共享连接说明
-│   ├── data-sync.md                      # IndexedDB、导入和预置迁移语义
-│   └── system-capabilities.md            # 已实现能力和明确非目标
-├── public/presets/
-│   ├── reading-companion/                # 版本化书籍资料目录与运行时资料包
-│   ├── rockKingdomRows.json              # 运行时精灵 / 形态预置
-│   ├── rockKingdomSkillRows.json         # 运行时技能预置
-│   └── rockKingdomPresetMigration.json   # 已有浏览器安全升级所需的官方值指纹
-├── scripts/
-│   ├── bwiki/
-│   │   ├── sync-*.mjs                    # BWiki 页面到 staging 快照
-│   │   ├── build-preview.mjs             # staging 到发布候选
-│   │   ├── apply-preset.mjs              # dry-run 校验与显式发布
-│   │   ├── lib/                          # 路径和标签规则共享模块
-│   │   └── data/                         # 版本化 staging 与 preview
-│   ├── reading-companion/
-│   │   ├── audit-quality.mjs             # 阅读资料覆盖、来源与阻塞项质量报告
-│   │   ├── data/                         # 阅读资料 staging 与 preview
-│   │   ├── lib/                          # 阅读资料发布共享逻辑
-│   │   ├── tests/                        # 阅读资料包与门禁领域测试
-│   │   ├── build-preview.mjs             # staging 到发布候选
-│   │   ├── apply-preview.mjs             # dry-run 检查与显式发布
-│   │   └── validate-packages.mjs          # 正式阅读资料包结构校验
-│   ├── nature/
-│   │   ├── check-recommendations.mjs     # 本地性格校准报告生成器
-│   │   └── data/                         # 性格校准样例
-│   ├── rock-kingdom-scanner/
-│   │   ├── build-templates.mjs           # 扫描器文字与头像模板生成、校验
-│   │   └── data/                         # 模板来源清单
-│   ├── tests/                            # node:test 纯逻辑与 fake-indexeddb 集成测试
-├── src/
-│   ├── components/
-│   │   ├── dataTables.jsx                # 资料库工具编排
-│   │   ├── catalog.jsx                   # 通用表格、字段、批量引用解析
-│   │   ├── owned.jsx / stock.jsx         # 收集记录 / 统计视图
-│   │   ├── nature.jsx / breeding.jsx     # 性格推荐 / 孵蛋推荐 UI
-│   │   └── common.jsx / ErrorBoundary.jsx # 通用控件与工具级错误恢复
-│   ├── db/
-│   │   ├── core.js                       # Dexie v1 schema 与数据库实例
-│   │   ├── importExport.js               # JSON 校验、导出与 merge-by-id 导入
-│   │   ├── repository.js                 # 场景、表、字段和行的 CRUD
-│   │   ├── seed.js                       # 应用预置初始化编排
-│   │   └── rockKingdomSeed.js            # 预置播种与三方迁移
-│   ├── domain/
-│   │   ├── nature.js / naturePve.js      # 性格规则引擎 / PVE 展示判定
-│   │   ├── natureRowAdapter.js            # 资料行到推荐输入的适配
-│   │   ├── rockKingdom*.js               # 外观、扫描、形态、展示和共享标签规则
-│   │   └── owned.js / stock.js / breeding*.js # 其他工具纯领域逻辑
-│   ├── features/model/                    # 共享模型连接、配置和受限 JSON 请求
-│   ├── features/ocr/                      # 阅读与游戏扫描共用的本机 OCR
-│   ├── features/reading-companion/
-│   │   ├── components/                   # 阅读伴侣专用界面
-│   │   ├── data/                         # 运行时资料包读取
-│   │   ├── db/                           # 阅读进度与场景播种
-│   │   ├── domain/                       # 资料包校验、章节过滤与剧透门禁
-│   │   ├── map/                          # 互动底图供应商与默认视野配置
-│   │   ├── preset.js                     # 经典文学阅读场景定义
-│   │   └── index.js                      # 功能公开入口
-│   ├── features/rock-kingdom-scanner/    # 本地视频抽帧、截图复核与扫描界面
-│   ├── features/rock-kingdom-model/      # 扫描纠错、记录检查说明与性格解释
-│   ├── presets/
-│   │   └── rockKingdom.js                # 洛克王国场景、字段和选项
-│   ├── App.jsx                            # hash 路由、工具懒加载、全局导入导出
-│   ├── db.js                              # 稳定的数据访问兼容门面
-│   ├── constants.js / utils.js            # 全局约定与通用工具
-│   ├── main.jsx                           # React 挂载入口
-│   └── styles.css                         # 全局样式唯一入口
-├── AGENTS.md                              # 长期开发边界和必读约束
-├── index.html
-├── package.json
-└── vite.config.js
+docs/                         当前能力、数据源与专项规则
+public/presets/               洛克王国运行时正式预置
+scripts/bwiki/                BWiki staging / preview / apply
+scripts/nature/               性格推荐校准
+scripts/rock-kingdom-scanner/ 扫描模板维护
+scripts/tests/                自动化回归测试
+src/components/               场景和通用工具界面
+src/features/                 OCR、模型与洛克王国专项能力
+src/db/                       Dexie、播种、导入导出与迁移
+src/presets/                  场景结构定义
 ```
-
-核心依赖方向保持为 `components → domain / db → Dexie`：组件负责交互和展示，`domain/` 保持可直接测试的纯逻辑，`db/` 统一承担持久化。同步脚本只产出版本化预置，不作为浏览器运行时依赖。
-
-## 验证清单
-
-日常代码修改建议按下面顺序验证：
-
-```bash
-npm run lint
-npm test
-npm run build
-git diff --check
-```
-
-- `npm test` 覆盖领域规则、PVE 判定、预置三方迁移、导入校验、仓储级联、IndexedDB 播种/失败重试、BWiki staging 结构和文档当前态约束。
-- 涉及性格规则时额外运行 `npm run check:nature`，并检查已确认样例是否出现非预期漂移。
-- 涉及固定设备扫描文字模板时运行 `npm run check:scanner:templates`；更新版本化截图来源后，显式运行 `npm run apply:scanner:templates` 生成对应 PNG，再执行完整测试。
-- 涉及 BWiki 预置时先运行 `npm run check:bwiki:preset`；该命令只生成 `artifacts/` 审计报告，不会写入正式预置。
-- 涉及工具入口、懒加载或 Hook 时，启动 `npm run dev` 后依次切换资料库、收集记录、统计视图、性格推荐、孵蛋推荐和阅读伴侣，确认均完成渲染且没有进入错误恢复页。
-- 涉及阅读资料包时运行 `npm run check:reader:packages`，确认目录、版本、章节和事实引用全部有效；使用 `npm run audit:reader:quality` 查看资料覆盖与候选阻塞项。
-- 涉及阅读资料发布时依次运行 `npm run preview:reader` 和 `npm run check:reader:preset`；正式写入必须显式设置 `READING_PACKAGE_OVERWRITE=CONFIRM_READING_PACKAGE` 后运行 `npm run apply:reader:preset`。
-- 上述验证不会清空浏览器中的收集记录或统计配置；导入仍按 id 合并。
-
-## 经典文学阅读预置
-
-应用首次初始化会创建「经典文学阅读」场景，只启用阅读伴侣。用户删除该场景后不会自动重建；用户修改名称或工具组合时，初始化流程不会覆盖这些设置。
-
-运行时资料目录位于 `public/presets/reading-companion/`。《飘》资料包对应长江文艺出版社 2018 年 5 月版、ISBN `9787570202188`，章节稳定标识覆盖 1–63 章。正式实体、事实和来源只通过 `scripts/reading-companion/data/` 下的 staging / preview / apply 流程发布；候选来源不会进入运行时资料包。
-
-阅读伴侣按当前章节过滤正式资料包中的实体和事实。书架可手动填写书目和目录，也可从书籍详情截图提取元数据，创建只保存在当前设备的个人空资料包。已审计或读者确认的真实地点可显示在 Leaflet 互动地图中，地图服务返回的 GeoJSON 允许河流、山脉和区域按彩色路径或范围显示；底图不可用时仍保留地点坐标与详情。地图支持列表联动、自动适配视野、整栏大画布和全屏显示，并以代表坐标计算已读地点之间的方向和直线距离。安全事实直接显示，潜在剧透需要确认，高风险内容需要二次确认；授权不会持久化。正式地点和事实必须引用已批准来源与指定版本的章节边界；开发时研究候选与测试夹具不属于运行时正式资料。
-
-新增书籍只需要增加一份 staging JSON。新书 staging 携带完整 `package`，已有书更新可以通过 `basePackagePath` 复用正式包；管线自动发现全部 staging、生成逐书 preview 和统一 catalog，不需要修改发布脚本。
-
-## 洛克王国预置资料
-
-首次启动时会自动创建洛克王国场景：
-
-- 默认启用资料库、收集记录、统计视图、性格推荐、孵蛋推荐五个工具。
-- 包含「精灵基础资料」和「技能资料」普通资料表。
-- `rockKingdomRows.json` 包含 592 条精灵 / 形态资料。
-- `rockKingdomSkillRows.json` 包含 553 条技能资料。
-- 精灵通过 `skillRefs` 多引用关联技能；技能通过 `learnerRefs` 多引用反向关联可学精灵。
-- 精灵与技能图片使用经审计的 BWiki / patchwiki URL，UI 图标使用可信静态资源。
-- B站和小红书作为玩法、定位、机制演示与养成经验的外部研究源；研究结论必须保留链接和版本信息，不直接覆盖正式预置字段。
-
-预置资料通过版本化基线正式值指纹做三方合并：仅更新空值、无效值或匹配基线正式值的字段，保留用户自定义非空值、用户新增资料、收集记录和统计视图记录。
-
-## 数据存储、备份与导入
-
-项目使用 IndexedDB 作为唯一数据源，数据库名为 `tangerine-tools`。核心表包括：
-
-- `scenes`：场景
-- `catalogTables`：资料表
-- `catalogFields`：字段
-- `catalogRows`：行数据
-- `meta`：内部标记（例如预置资料是否已播种）
-
-首页提供全量 JSON 导出/导入：
-
-- **导出**：导出全部 Dexie 表数据，文件名形如 `tangerine-tools-YYYY-MM-DD.json`。
-- **导入**：采用“同 id 覆盖，文件中未包含的本地数据保留”的合并策略，不会清空本地已有但导入文件中缺失的数据。
-
-更详细的数据结构与同步说明见 [`docs/data-sync.md`](docs/data-sync.md)。
 
 ## 维护文档
 
-- [`AGENTS.md`](AGENTS.md)：长期有效的 Codex/agent 开发边界、必读文件与测试命令。
-- [`docs/system-capabilities.md`](docs/system-capabilities.md)：当前已实现能力与明确排除范围。
-- [`docs/data-sync.md`](docs/data-sync.md)：数据模型、导入/导出、预置资料同步与迁移语义。
-- [`docs/rock-kingdom/scanner.md`](docs/rock-kingdom/scanner.md)：洛克王国精灵扫描录入、固定手机采集方式和人工复核约束。
-- [`docs/rock-kingdom/scanner-baseline.md`](docs/rock-kingdom/scanner-baseline.md)：固定视频识别结果和性能回归基线。
-- [`docs/data-sources/bwiki-pipeline.md`](docs/data-sources/bwiki-pipeline.md)：BWiki 页面、版本化快照、刷新顺序和发布边界。
-- [`docs/data-sources/bwiki-field-mapping.md`](docs/data-sources/bwiki-field-mapping.md)：staging 到正式预置的字段血缘、稳定 id 和验收门槛。
-- [`docs/data-sources/research-sources.md`](docs/data-sources/research-sources.md)：B站、小红书等玩家资料的用途、证据记录方式和采用边界。
-- [`docs/nature/rules.md`](docs/nature/rules.md)：性格推荐规则、输入输出和校准约束。
-- [`docs/nature/single-creature-template.md`](docs/nature/single-creature-template.md)：单只精灵定位与性格核对格式。
-- [`docs/nature/confirmed-results.md`](docs/nature/confirmed-results.md)：用户确认过的单只结果，用作规则回归基线。
-- [`docs/nature/open-issues.md`](docs/nature/open-issues.md)：尚未形成稳定规则的通用问题。
-- [`docs/reading-companion/product-and-architecture.md`](docs/reading-companion/product-and-architecture.md)：经典文学阅读伴侣的已实现范围、按书建库、跨端入口和剧透安全契约。
-- [`docs/reading-companion/model-prompts.md`](docs/reading-companion/model-prompts.md)：个人书籍自动初始化和内置书正式预制使用的版本化提示词与输出权限。
-- [`docs/model-provider-setup.md`](docs/model-provider-setup.md)：阅读伴侣与洛克王国各自独立的智谱、DeepSeek、MiniMax、OpenAI 和自定义模型连接配置，以及双向复制方法。
-- [`docs/reading-companion/trial-guide.md`](docs/reading-companion/trial-guide.md)：阅读伴侣当前可试用范围、启动步骤和反馈重点。
+- [`docs/system-capabilities.md`](docs/system-capabilities.md)：产品范围和已实现能力。
+- [`docs/data-sync.md`](docs/data-sync.md)：Dexie、备份、导入与阅读迁移兼容。
+- [`docs/data-sources/bwiki-pipeline.md`](docs/data-sources/bwiki-pipeline.md)：正式资料发布流程。
+- [`docs/data-sources/bwiki-field-mapping.md`](docs/data-sources/bwiki-field-mapping.md)：字段转换、稳定 id 与校验门槛。
+- [`docs/data-sources/research-sources.md`](docs/data-sources/research-sources.md)：玩家资料研究边界。
+- [`docs/nature/rules.md`](docs/nature/rules.md)：性格推荐规则。
+- [`docs/nature/single-creature-template.md`](docs/nature/single-creature-template.md)：单精灵审计模板。
+- [`docs/nature/open-issues.md`](docs/nature/open-issues.md)：待确认规则问题。
+- [`docs/nature/confirmed-results.md`](docs/nature/confirmed-results.md)：确认结论与回归基线。
+- [`docs/rock-kingdom/scanner.md`](docs/rock-kingdom/scanner.md)：扫描器契约。
+- [`docs/rock-kingdom/scanner-baseline.md`](docs/rock-kingdom/scanner-baseline.md)：扫描回归基线。
+- [`docs/model-provider-setup.md`](docs/model-provider-setup.md)：洛克王国模型服务配置。
 
-根 README 是项目结构、命令和维护文档的统一入口；专题文档只保存各自领域内不可由代码结构直接表达的规则与约束。
+## 发布预置
 
-## 部署
+正式资料写入需要显式确认：
 
-本项目不依赖后端服务，执行 `npm run build` 后可将 `dist/` 部署到任意静态托管平台。仓库已提供 `.github/workflows/pages.yml` 用于 GitHub Pages 部署。
+```bash
+# PowerShell
+$env:BWIKI_PRESET_OVERWRITE='CONFIRM_BWIKI_PRESET'
+npm run apply:bwiki:preset
+```
+
+不提供云同步、账号体系、战斗模拟、PVP 自动化或属性克制系统。

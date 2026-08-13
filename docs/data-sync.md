@@ -1,10 +1,10 @@
-# TangerineTools · 数据模型与同步说明
+# TangerineTools · 数据模型与迁移
 
-本文档描述数据存储、导出、导入和预置资料加载的当前语义。
+本文定义 Dexie 存储、JSON 备份、导入合并、正式预置与阅读数据迁移的当前语义。
 
-## 存储引擎
+## Dexie schema
 
-使用 [Dexie.js](https://dexie.org/)（IndexedDB 的封装）作为唯一的数据存储，数据库名为 `tangerine-tools`。Schema 定义在 `src/db/core.js`，`src/db.js` 只保留稳定的兼容导出：
+数据库名为 `tangerine-tools`，`src/db/core.js` 保持 schema v1：
 
 ```js
 db.version(1).stores({
@@ -16,124 +16,75 @@ db.version(1).stores({
 })
 ```
 
+| 表 | 主键 | 用途 |
+|---|---|---|
+| `scenes` | `id` | 游戏场景、启用工具和顺序 |
+| `catalogTables` | `id` | 资料表；`kind === 'owned'` 表示收集记录 |
+| `catalogFields` | `id` | 字段定义；行值使用字段 `key`，不使用字段记录 id |
+| `catalogRows` | `id` | 资料行和收集行 |
+| `meta` | `key` | 播种、运行时迁移和兼容数据 |
 
-### 字段类型补充
+`catalogTables.kind`、`collectionMode`、字段显示配置和引用配置均为非索引属性，不需要 schema 升级。`reference` 保存一个行 id，`references` 保存行 id 数组，`stats` 是不可直接编辑的派生视图。
 
-- `reference`：单条资料引用，值为目标行 id。
-- `references`：多条资料引用，值为目标行 id 数组；当前用于精灵 `skillRefs` 与技能 `learnerRefs`。该字段类型仍存储在 `catalogRows.values` 中，不需要新增 IndexedDB 表或索引。
-- `summary`：图文摘要，当前字段值仍是主文字；图片和描述通过 `display.imageField` / `display.descriptionField` 关联同一行的其他字段，不引入新的存储结构。
+## 场景与正式预置
 
-### 表结构
+`ensureSeeded()` 初始化稳定 id 为 `scene-rock-kingdom` 的洛克王国世界场景。场景骨架只播种一次；正式精灵与技能资料从 `public/presets/` 加载，并通过版本标记执行字段级三方合并。
 
-| 表 | 主键 | 索引 | 说明 |
-|---|---|---|---|
-| `scenes` | `id` | `order` | 场景：`name` / `type` / `tools[]` / `order` / `createdAt` / `updatedAt` |
-| `catalogTables` | `id` | `sceneId`, `order` | 资料表：`sceneId` / `name` / `order` / 时间戳 / 可选的 `kind`（非索引属性；`'owned'` 表示收集记录表，缺省表示普通资料库表；导入兼容 `kind: 'stock'` 记录，但统计视图不读取该类固定表） |
-| `catalogFields` | `id` | `tableId`, `order` | 字段：`tableId` / `key` / `name` / `type` / `order` / `hidden` / 类型相关配置（`options` / `statsMap` / `statsDimensions` / `statsStyle` / `referenceTableId` / `display` 等） |
-| `catalogRows` | `id` | `tableId` | 行：`tableId` / `values`（以字段 `key` 为键的对象） / 时间戳 |
-| `meta` | `key` | — | 内部标记和无需索引的本地状态，如播种标记 `seededRockKingdom` 与阅读进度 |
+预置迁移可以补充空值、修正仍匹配正式基线指纹的字段，并保留用户自定义的非空值。用户新增资料以及 owned / stock 记录不属于正式资料迁移目标。正式资料只通过 BWiki staging → preview → 显式 apply 流程维护。
 
-字段的 `key` 由 `deriveFieldKey`（`src/utils.js`）从字段名派生，并保证在同一资料表内唯一；行数据 `values` 用字段 `key`（而非字段 `id`）作为属性名存取。普通新建场景不会预置业务字段；资料库字段和收集记录字段都由用户在字段管理里创建。洛克王国作为应用自带预置场景，会在自己的资料库表与收集记录表里补齐官方/场景专属字段。
+## 全量导出
 
-`display` 是非索引展示配置，不改变字段值结构或 Dexie schema。通用表格按该配置处理列宽、括号换行、多行标签与溢出数量、摘要字段组合、引用行的标签/图片，以及单选项的图标模式。预置场景只声明展示元数据；`CellView` 不按场景字段名选择渲染分支。
-
-### 阅读伴侣状态
-
-- 阅读资料包位于 `public/presets/reading-companion/`，属于版本化静态内容，不写入 IndexedDB。
-- 当前章节使用 `readerState:{sceneId}:{editionId}` 作为 `meta.key`；值包含 `packageId`、`bookId`、`sceneId`、`editionId`、`currentChapterId` 和更新时间。
-- 读者确认名称保存在同一记录的 `observedEntities`。每个名称使用 `firstSeenChapterId` 保存最早确认章节，使用 `encounterChapterIds` 保存读者明确记录过的章节集合，并可保存最多 500 字的个人 `note`；旧记录缺少章节集合时继续以最早确认章节作为唯一记录。资料包外地点经过使用者选择公网地图候选后，可以附带 `mapLocation`，其中仅保存供应商、候选 id、显示地址和经纬度；它是个人确认的现代位置，不会写回正式阅读资料包。
-- 同一书籍版本在不同场景中相互隔离。记录随全量 JSON 导出/导入传输，并遵循相同 key 覆盖、本地其他 key 保留的合并语义。
-- 用户粘贴的段落和选择的截图不写入 IndexedDB。剧透授权属于单次界面状态，不写入 `meta`。
-- 阅读伴侣与洛克王国分别保存模型供应商、接口地址和模型 ID 到浏览器 `localStorage`，API Key 只保存在各自的 `sessionStorage` 项中；两套配置可以显式复制为一次性快照，复制后互不联动。模型配置不进入 Dexie、导出文件或预置资料；请求结果只存在当前页面内存缓存，洛克王国扫描纠错、收集检查说明和性格解释均不自动落库。
-- 阅读设置中的“导出当前书反馈”使用独立白名单格式，当前格式版本为 `2`。它包含应用版本与部署提交标识、当前书及版本信息、当前章节、`observedEntities`、资料实体配对、个人备注、已确认地图位置，以及当前浏览器会话最近 30 次关键操作的脱敏诊断。诊断事件只保留固定功能名、供应商类型、成功/失败和归类后的错误代码；运行环境只保留浏览器名称与主版本、系统类别、语言和联网状态。反馈包不包含其他场景、资料表、模型或地图 Key、当前段落、搜索词、截图、OCR 文字、模型内容、错误原文或完整 User-Agent，也不提供导入恢复语义；完整备份与恢复继续使用首页全局导出。
-
-### `catalogTables.kind` 与收集记录 / 统计视图
-
-- 收集记录工具（`owned`）复用 `catalogTables` / `catalogFields` / `catalogRows` 三张表存储数据，通过 `catalogTables.kind === 'owned'` 与普通资料库表区分。
-- 收集记录表还可以带非索引配置 `collectionMode: 'single' | 'multiple'`：`single` 表示同一 reference 只保留一条收集记录，`multiple` 表示同一 reference 可记录多条。
-- 普通新建场景首次打开收集记录工具时，只创建空的收集记录表，不写入默认字段；洛克王国场景会补齐精灵收集字段，这是该预置场景自身的数据模板，不是全局模板。
-- 洛克王国收集记录表只补齐场景专属字段，不预置收集行。`ref` 作为图鉴名引用，`nickname` 保存游戏中实际显示的精灵名；普通未改名精灵的 `nickname` 留空，自定义名称与图鉴名分别展示和搜索，已有非空 `nickname` 值继续保留。`appearance` 保存无、异色及 10 种炫彩细分，默认明确写入 `none`；界面不直接编辑 `shiny` / `colorful`，扫描和表单按外观细分同步写入这两个隐藏的粗粒度兼容值。`partnerMark` 保存扫描并复核的实际游戏伙伴标记，默认明确写入 `none`；推荐标记和是否需要调整从全部收集记录即时派生，不写入 IndexedDB。启动流程按固定测试 id 排除孵蛋调试记录；用户自行新增或扫描确认的记录即使引用相同也会保留。扫描器在写入前以同一精灵形态的外观、性格、性别和特长即时提示疑似重复，高度相似项要求用户明确选择仍然新增或跳过；该提示不更新、合并或删除已有行，也不新增等级、星级或雷达六维字段。
-- 收集记录的筛选、分页、勾选和统计摘要都是运行时派生状态，不写入数据库。批量修改在一个 Dexie 写事务中按行 id 更新被选择记录的一个字段，不创建新表或索引；外观细分更新同时维护兼容的 `shiny` / `colorful` 值。
-- 收集记录智能检查从已勾选行和正式精灵/技能资料即时派生分档、残缺魔镜目标与字段问题；模型只接收受限摘要并生成临时说明，不调用 `updateRow` / `updateRows`。
-- 统计视图工具的内部工具值为 `stock`；它从当前场景的普通资料表和收集记录表中选择数据源，按字段分组并叠加数值阈值条件做即时统计，不创建固定字段表。
-- `kind` 和 `collectionMode` 都是非索引属性（不在 `.stores()` 的索引串里），只在按 `sceneId` 查询后用 JS 过滤/读取，因此**没有引入 Dexie schema 版本变更**。
-- 资料库工具（`CatalogTool`）的普通资料表选择器使用 `.filter((t) => !t.kind)` 排除收集记录表。性格推荐工具固定绑定洛克王国 `精灵基础资料` 表，并通过 `skillRefs` 读取技能资料。
-- 导出/导入对整张 Dexie 表操作且不区分 `kind`，因此 `kind` 与 `collectionMode` 随 `catalogTables` 记录一起传输。
-
-## 预置资料加载（播种）
-
-- 应用启动时 `App.jsx` 调用 `ensureSeeded()`。
-- `ensureSeeded()` 依次初始化洛克王国预置和经典文学阅读预置。阅读场景使用稳定 id `scene-reading-companion` 与标记 `meta.seededReadingCompanionScene`；首次创建时排在现有场景之后。
-- 阅读场景已存在时只写播种标记，不覆盖名称、类型、启用工具或排序。用户删除场景后播种标记仍保留，因此后续启动不会重建。
-- 该函数检查 `meta.seededRockKingdom`；未播种时写入 `src/presets/rockKingdom.js` 定义的洛克王国场景、默认资料表和字段结构。场景骨架只播种一次，不覆盖用户修改。
-- 精灵行通过 `fetch(`${BASE_URL}presets/rockKingdomRows.json`)` 加载，技能行通过 `fetch(`${BASE_URL}presets/rockKingdomSkillRows.json`)` 加载；文件位于 `public/` 且不参与 JS 打包。繁育字段包含在正式精灵行中。加载失败时保留场景、表和字段骨架，不写完成标记，并在启动流程提供重试入口。
-- 正式预置只通过 BWiki staging → preview → 显式 apply 链路维护。
-- 完整运行时迁移按 `ROCK_KINGDOM_ROWS_VERSION` 写入 `meta.rockKingdomRuntimeMigrationVersion`；同一版本只扫描一次。导入备份会清除此标记，使三方安全合并在启动时重新执行。
-- 精灵与技能图片使用经审计的 BWiki / patchwiki URL，UI 图标使用可信静态资源。精灵图不得使用本地 SVG 或 `data:image/svg+xml`。异色图片保存为精灵资料值 `shinyImage`，来源必须是 BWiki 精灵图鉴实际图片层；炫彩没有逐精灵固定图片来源，不生成模拟图。
-- 系别字段使用 `multiselect` 类型，覆盖官方 18 个系别：普通/草/火/水/光/地/冰/龙/电/毒/虫/武/翼/萌/幽/恶/机械/幻，对应内部值为 `normal`/`grass`/`fire`/`water`/`light`/`earth`/`ice`/`dragon`/`electric`/`poison`/`bug`/`fighting`/`flying`/`cute`/`ghost`/`dark`/`mech`/`illusion`。精灵行使用 `skillRefs` 多引用指向技能行；技能行使用 `learnerRefs` 多引用反向指向可学习该技能的精灵行。技能行还包含派生的 `effectTags` 多选效果标签（先手、速度、回复、减伤、能量、强化、控制、应对、轮转、印记、驱散、直接伤害等），这些标签由官方技能效果文本生成；没有命中细分类别的技能使用“特殊机制”兜底，确保资料表不存在空效果标签。标签用于资料查看与性格推荐解释，不是战斗模拟结果。
-- 资料库保存对象种类、图鉴和静态资料；收集记录保存用户与资料项的一对一或一对多关系；统计视图从两类数据中即时汇总，不创建固定字段统计表。
-- BWiki 是版本化页面快照，不是运行时查询接口。维护者先运行 `npm run check:bwiki:preset` 做 dry-run；正式发布必须显式运行 `BWIKI_PRESET_OVERWRITE=CONFIRM_BWIKI_PRESET npm run apply:bwiki:preset`。正式基线包含 592 条精灵、553 条技能和迁移清单。发布脚本只把 preview 的 `id` / `values` 写入预置，不把 `previewMeta` 带入运行时。精灵蛋和果实以 `eggImage` / `fruitImage` 字段存入精灵资料。应用启动迁移只读取仓库内预置 JSON。
-- 预置资料迁移策略：
-  1. 新安装 / 干净 IndexedDB 只会插入官方图鉴行，不应出现旧 `row-rock-*` 占位行。
-  2. 老用户若已播种旧占位资料，`migrateRockKingdomRows()` 会在默认洛克王国资料表中删除可明确识别的旧占位行（`id` 以 `row-rock-` 开头，或 `values.image` 以 `data:image/svg+xml` 开头），再按新稳定 id 插入官方行，避免重复。
-  3. `rockKingdomPresetMigration.json` 保存发生变化字段的基线正式值 SHA-256，不含用户数据。稳定 id 行的字段为空、系别无效，或当前值指纹匹配基线正式值时，才写入目标预置值；不匹配时视为用户自定义并保留。精灵和技能使用相同的字段级三方合并规则。
-  4. 用户自己新增的非占位资料行不会被删除；无法安全判断为占位的数据不会被覆盖。
-  5. owned / stock 表及其用户记录不属于默认资料表 `tableId`，迁移不会触碰。
-  6. 迁移通过清单 `version` 更新 `meta.rockKingdomRowsVersion` / `rockKingdomSkillRowsVersion`；缺少清单时使用兼容版本常量。该流程不改变 Dexie schema 版本。
-
-## 导出格式
-
-`exportAllData()`（`src/db/importExport.js`）产出的 JSON 结构：
+`exportAllData()` 产生：
 
 ```json
 {
   "schemaVersion": 1,
-  "exportedAt": "2026-07-02T00:00:00.000Z",
+  "exportedAt": "2026-08-13T00:00:00.000Z",
   "data": {
-    "scenes": [...],
-    "catalogTables": [...],
-    "catalogFields": [...],
-    "catalogRows": [...],
-    "meta": [...]
+    "scenes": [],
+    "catalogTables": [],
+    "catalogFields": [],
+    "catalogRows": [],
+    "meta": []
   }
 }
 ```
 
-- `schemaVersion`（`EXPORT_SCHEMA_VERSION`，当前为 `1`）用于兼容判断；导入流程不执行基于该字段的自动 schema 迁移。
-- 导出通过首页的「导出数据」按钮触发，文件名形如 `tangerine-tools-2026-07-02.json`。
-- 导出范围是**全部** Dexie 表的**全部**数据，不支持按场景/按表部分导出。
+首页「导出数据」始终导出五张表的完整内容。模型连接地址、模型 ID 与 API Key 不在 Dexie 中，因此不进入文件。
 
-## 导入与合并策略
+## 全量导入
 
-`importAllData(payload)`（`src/db/importExport.js`）：
+`importAllData(payload)` 先校验 `data` 下的可导入数组，再在一个 Dexie 写事务中执行 `bulkPut`。
 
-1. 先调用 `validateImportPayload(payload)` 做基础结构校验：
-   - `payload` 必须是对象，且含 `data` 对象字段。
-   - `data` 下每个可导入的键（`scenes` / `catalogTables` / `catalogFields` / `catalogRows` / `meta`）若存在，必须是数组。
-   - 至少要有一个可导入的键存在，否则视为无效文件。
-   - 校验失败会抛出中文错误信息，由 UI 层展示给用户。
-2. 校验通过后，在一个 Dexie 事务内对每张表执行 `bulkPut`。
+合并规则：
 
-**合并语义（重要）**：导入采用的是 **"同 id 覆盖，文件中未包含的本地数据保留"**，即：
+- 相同 id 或 key 的记录由文件内容整条覆盖。
+- 文件中新增的记录写入本地。
+- 文件没有包含的本地记录保持不变。
+- 导入不提供清空或整库替换入口。
 
-- 若导入文件中的某条记录 `id` 在本地已存在 → 本地记录被整条覆盖（不是字段级合并）。
-- 若导入文件中的某条记录 `id` 本地不存在 → 新增。
-- 若本地存在但导入文件中**没有**该 `id` 的记录 → **不会被删除**，原样保留。
+导入后清除洛克王国运行时迁移标记，使正式预置在下次启动时重新执行安全三方合并。该过程不得清理 owned / stock 数据，不改变稳定 id，也兼容早期随机 id。
 
-洛克王国正式资料行在较早备份导入后会额外执行版本化三方合并：导入流程清除运行时迁移标记，应用随即重新读取仓库内当前预置；仍匹配历史官方指纹的字段升级为当前官方值，用户自定义的非空字段保留。因此较早导出的资料行不会长期压回当前资料库，而备份中的 owned / stock 用户记录仍按稳定 id 合并保留。
+## 阅读数据迁移
 
-导入属于**增量合并**，不提供“用文件完全替换本地数据”或“清空全部数据”的入口。
+游戏界面不渲染类型为 `reading` 或启用 `reader` 工具的场景，但相关 IndexedDB 记录保持不变。首页检测下列 `meta.key` 前缀：
 
-UI 层（`App.jsx` 的 `GlobalDataActions`）在实际执行导入前会用 `ConfirmDialog` 向用户明确提示这一合并语义（"相同 id 的数据会被覆盖，文件中未包含的数据将保留在本地，此操作不可撤销"）。
+- `readerState:`：阅读进度和阅读记忆。
+- `readerPersonalPackage:`：个人书籍资料包。
 
-## 关于"数据同步"的范围说明
+检测到至少一条时显示「迁移阅读数据」。`exportReadingCompanionData()` 只导出这两个命名空间，格式为：
 
-当前的"同步"仅指**手动的、单机内的 JSON 导出/导入**，用于在同一用户的不同浏览器/设备间手动搬运数据，具体流程为：设备 A 导出 JSON → 通过用户自行选择的方式（网盘/传输文件等）转移文件 → 设备 B 导入 JSON。
+```json
+{
+  "format": "tangerine-reading-companion-backup",
+  "schemaVersion": 1,
+  "exportedAt": "2026-08-13T00:00:00.000Z",
+  "data": { "meta": [] }
+}
+```
 
-以下能力**不**属于当前范围，如需实现请作为独立任务规划：
+该文件可直接导入 Tangerine Reading Companion。导出是只读操作，不删除源记录；全量 TangerineTools 备份也继续包含这些兼容记录。阅读伴侣导入时把状态归一到自己的稳定场景 id，并对同一书籍版本保留 `updatedAt` 较新的状态。
 
-- 自动化/云端同步（无后端，无云账号体系）
-- 增量导出（只导出变更部分）
-- 导入时的字段级合并或冲突提示（当前是整条记录覆盖，无冲突检测）
-- 基于 `schemaVersion` 的自动迁移
-- 洛克王国完整对战模拟、进化链、属性克制、PVP 规则等对局向深度功能（当前技能资料仅作为可查看资料与性格推荐输入，不做技能组合求解或配队模拟）
+## 手动迁移范围
+
+“同步”仅指用户主动导出 JSON、转移文件并在另一浏览器导入。不包含自动云同步、增量日志、冲突界面或账号体系。
