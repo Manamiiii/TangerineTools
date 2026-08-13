@@ -241,10 +241,12 @@ function BreedingCreature({ gender, item, onOpen }) {
         <strong>{values.name || item.name}</strong>
         <small>{natureLabel(item.nature)} · {trait}</small>
       </span>
-      <span className={`breeding-parent-source ${item.source}`}>{item.source === 'catch' ? '可现抓' : '已收藏'}</span>
-      <span className={`breeding-sex-symbol ${gender}`} title={gender === 'male' ? '公' : '母'}>{gender === 'male' ? '♂' : '♀'}</span>
+      <span className="breeding-parent-meta">
+        <span className={`breeding-parent-source ${item.source}`}>{item.source === 'catch' ? '可现抓' : '已收藏'}</span>
+        <span className={`breeding-sex-symbol ${gender}`} title={gender === 'male' ? '公' : '母'}>{gender === 'male' ? '♂' : '♀'}</span>
+        {item.colorful && <OptionTag option={OWNED_COLORFUL_OPTIONS.find((option) => option.value === 'yes')} iconOnly size="sm" />}
+      </span>
       {item.shiny && <img className="breeding-status-image" src={SHINY_ICON} alt="异色" title="异色" />}
-      {item.colorful && <OptionTag option={OWNED_COLORFUL_OPTIONS.find((option) => option.value === 'yes')} iconOnly size="sm" />}
     </button>
   )
 }
