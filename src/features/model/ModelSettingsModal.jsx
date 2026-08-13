@@ -9,10 +9,7 @@ import { Modal } from '../../components/common.jsx'
 export function ModelSettingsModal({
   config,
   domainLabel,
-  copySourceLabel,
-  canCopySource = false,
   onLoadProvider,
-  onLoadCopySource,
   onSave,
   onClose,
 }) {
@@ -32,33 +29,13 @@ export function ModelSettingsModal({
       : '接口地址和模型已保存，API Key 已清除。')
   }
 
-  function copySourceConfig() {
-    setDraft(onLoadCopySource())
-    setMessage(`已载入${copySourceLabel}配置；保存后将成为独立的${domainLabel}配置。`)
-  }
-
   return (
     <Modal title={`${domainLabel}模型服务`} onClose={onClose} size="md">
       <form className="shared-model-settings" onSubmit={submit}>
         <p>
-          这组配置只供{domainLabel}使用，与{copySourceLabel}互不联动。
+          这组配置只供{domainLabel}使用。
           只有点击模型功能时才会发送当前所需的少量内容。
         </p>
-        <div className="shared-model-copy">
-          <button
-            type="button"
-            className="btn btn-sm"
-            onClick={copySourceConfig}
-            disabled={!canCopySource}
-          >
-            复制{copySourceLabel}配置
-          </button>
-          <small>
-            {canCopySource
-              ? '复制会载入当前表单，保存后仍可独立修改。'
-              : `${copySourceLabel}还没有已保存的配置。`}
-          </small>
-        </div>
         <label>
           <span>模型供应商</span>
           <select

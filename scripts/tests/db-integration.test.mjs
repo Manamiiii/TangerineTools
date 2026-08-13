@@ -12,19 +12,8 @@ const [creatures, skills, migration] = await Promise.all([
 const {
   db,
   ensureSeeded,
-  exportAllData,
-  getReadingState,
   importAllData,
-  saveReadingState,
 } = await import('../../src/db.js')
-const {
-  deletePersonalReadingPackage,
-  loadPersonalReadingPackage,
-  savePersonalReadingPackage,
-} = await import('../../src/features/reading-companion/db/personalBooks.js')
-const {
-  createPersonalReadingPackage,
-} = await import('../../src/features/reading-companion/domain/personalBooks.js')
 
 function presetResponse(url, failCreatureRows = false) {
   const value = String(url)
@@ -54,113 +43,6 @@ test('official shiny creature rows have audited BWiki images', () => {
   for (const row of shinyRows) {
     assert.match(row.values.shinyImage, /^https:\/\/patchwiki\.biligame\.com\//)
   }
-})
-
-test('reading progress uses namespaced meta records and merges updates', async () => {
-  await resetDatabase()
-  const sceneId = 'scene-reader-test'
-  const editionId = 'gone-with-the-wind-zh-9787570202188'
-  await saveReadingState(sceneId, editionId, {
-    packageId: 'reader-package-gone-with-the-wind-zh-9787570202188',
-    currentChapterId: 'chapter-01',
-    observedEntities: [{
-      id: 'observed-place',
-      name: '读者确认的地点',
-      kind: 'place',
-      firstSeenChapterId: 'chapter-01',
-    }],
-  })
-  await saveReadingState(sceneId, editionId, { currentChapterId: 'chapter-12' })
-  const state = await getReadingState(sceneId, editionId)
-  assert.equal(state.packageId, 'reader-package-gone-with-the-wind-zh-9787570202188')
-  assert.equal(state.currentChapterId, 'chapter-12')
-  assert.deepEqual(state.observedEntities, [{
-    id: 'observed-place',
-    name: '读者确认的地点',
-    kind: 'place',
-    firstSeenChapterId: 'chapter-01',
-  }])
-  assert.equal(state.sceneId, sceneId)
-  assert.equal(state.editionId, editionId)
-})
-
-test('full backup restores reading notes and confirmed map locations', async () => {
-  await resetDatabase()
-  const sceneId = 'scene-reader-backup'
-  const editionId = 'edition-reader-backup'
-  await saveReadingState(sceneId, editionId, {
-    packageId: 'reader-package-backup',
-    bookId: 'reader-book-backup',
-    currentChapterId: 'chapter-08',
-    observedEntities: [{
-      id: 'observed-place-backup',
-      name: '测试地点',
-      kind: 'place',
-      placeKind: 'real',
-      firstSeenChapterId: 'chapter-03',
-      encounterChapterIds: ['chapter-03', 'chapter-08'],
-      note: '测试备注',
-      mapLocation: {
-        mode: 'exact',
-        resultId: 'map-result-backup',
-        label: 'Test Place',
-        providerId: 'international',
-        latitude: 33.75,
-        longitude: -84.39,
-      },
-    }],
-  })
-  const backup = await exportAllData()
-
-  await resetDatabase()
-  await importAllData(backup)
-
-  const restored = await getReadingState(sceneId, editionId)
-  assert.equal(restored.currentChapterId, 'chapter-08')
-  assert.deepEqual(restored.observedEntities, [{
-    id: 'observed-place-backup',
-    name: '测试地点',
-    kind: 'place',
-    placeKind: 'real',
-    firstSeenChapterId: 'chapter-03',
-    encounterChapterIds: ['chapter-03', 'chapter-08'],
-    note: '测试备注',
-    mapLocation: {
-      mode: 'exact',
-      resultId: 'map-result-backup',
-      label: 'Test Place',
-      providerId: 'international',
-      latitude: 33.75,
-      longitude: -84.39,
-    },
-  }])
-})
-
-test('deleting a personal reading package also removes its namespaced reading state', async () => {
-  await resetDatabase()
-  const pkg = createPersonalReadingPackage({
-    packageId: 'reader-package-personal-delete-test',
-    bookId: 'reader-book-personal-delete-test',
-    editionId: 'reader-edition-personal-delete-test',
-    title: '待删除个人书',
-    author: '测试作者',
-    chapterCount: 2,
-  })
-  await savePersonalReadingPackage(pkg)
-  await saveReadingState('scene-reader-a', pkg.edition.id, {
-    packageId: pkg.id,
-    currentChapterId: 'chapter-01',
-  })
-  await saveReadingState('scene-reader-b', pkg.edition.id, {
-    packageId: pkg.id,
-    currentChapterId: 'chapter-02',
-  })
-
-  await deletePersonalReadingPackage(pkg.id)
-
-  await assert.rejects(() => loadPersonalReadingPackage(pkg.id), /个人书籍/)
-  assert.equal(await getReadingState('scene-reader-a', pkg.edition.id), null)
-  assert.equal(await getReadingState('scene-reader-b', pkg.edition.id), null)
 })
 
 test('seed migration is versioned and preserves imported custom preset values', async () => {
@@ -194,30 +76,6 @@ test('seed migration is versioned and preserves imported custom preset values', 
     (await db.scenes.get('scene-rock-kingdom')).tools,
     ['catalog', 'nature', 'owned', 'breeding'],
   )
-})
-
-test('startup seeds one reader scene and never overwrites user customization', async () => {
-  await resetDatabase()
-  globalThis.fetch = async (url) => presetResponse(url)
-  await ensureSeeded()
-
-  const sceneId = 'scene-reading-companion'
-  const seededScene = await db.scenes.get(sceneId)
-  assert.equal(seededScene.name, '经典文学阅读')
-  assert.equal(seededScene.type, 'reading')
-  assert.deepEqual(seededScene.tools, ['reader'])
-  assert.equal((await db.meta.get('seededReadingCompanionScene'))?.value, true)
-
-  await db.scenes.update(sceneId, { name: '我的文学阅读', tools: ['reader', 'catalog'] })
-  await db.meta.delete('seededReadingCompanionScene')
-  await ensureSeeded()
-  const customizedScene = await db.scenes.get(sceneId)
-  assert.equal(customizedScene.name, '我的文学阅读')
-  assert.deepEqual(customizedScene.tools, ['reader', 'catalog'])
-
-  await db.scenes.delete(sceneId)
-  await ensureSeeded()
-  assert.equal(await db.scenes.get(sceneId), undefined)
 })
 
 test('an offline preset failure remains retryable', async () => {

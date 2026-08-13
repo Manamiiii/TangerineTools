@@ -24,8 +24,6 @@ export function OwnedIntelligenceModal({ rows, fields, onClose }) {
   const {
     modelConfig,
     loadProvider,
-    canCopyOtherConfig,
-    loadOtherConfig,
     saveModelConfig,
   } = useModelConfig(MODEL_CONFIG_SCOPE.ROCK_KINGDOM)
 
@@ -143,10 +141,7 @@ export function OwnedIntelligenceModal({ rows, fields, onClose }) {
         <ModelSettingsModal
           config={modelConfig}
           domainLabel="洛克王国"
-          copySourceLabel="阅读伴侣"
-          canCopySource={canCopyOtherConfig}
           onLoadProvider={loadProvider}
-          onLoadCopySource={loadOtherConfig}
           onSave={saveModelConfig}
           onClose={() => setModelSettingsOpen(false)}
         />

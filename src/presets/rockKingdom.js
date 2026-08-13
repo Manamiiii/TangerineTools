@@ -7,7 +7,8 @@ import { BILI_EGG_GROUP_NAMES } from '../domain/breedingData.js'
 
 const SEED_TIME = '2026-01-01T00:00:00.000Z'
 
-const SCENE_ID = 'scene-rock-kingdom'
+export const ROCK_KINGDOM_SCENE_ID = 'scene-rock-kingdom'
+const SCENE_ID = ROCK_KINGDOM_SCENE_ID
 export const ROCK_KINGDOM_CREATURE_TABLE_ID = 'table-rock-kingdom-elf-basic'
 const TABLE_ID = ROCK_KINGDOM_CREATURE_TABLE_ID
 const SKILL_TABLE_ID = 'table-rock-kingdom-skills'
