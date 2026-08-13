@@ -144,6 +144,7 @@ function buildSpeciesSummary(profiles, creatures) {
       catalogRows: [],
       natureRanks: new Map(),
       ownedCount: 0,
+      shinyAvailable: false,
       shiny: emptyRareSummary(),
       colorful: emptyRareSummary(),
       goodNature: { total: 0, recommended: 0, keepable: 0 },
@@ -151,6 +152,7 @@ function buildSpeciesSummary(profiles, creatures) {
     current.catalogRows.push(profile.row)
     current.image ||= profile.row.values?.image || ''
     current.eggGroups = [...new Set([...current.eggGroups, ...profile.eggGroups])]
+    current.shinyAvailable ||= yes(profile.row.values?.shiny) || Boolean(profile.row.values?.shinyImage)
     mergeNatureRanks(current.natureRanks, profile.natureRanks)
     groups.set(key, current)
   }
@@ -159,6 +161,7 @@ function buildSpeciesSummary(profiles, creatures) {
     const summary = groups.get(creature.catalog.speciesKey)
     if (!summary) continue
     summary.ownedCount += 1
+    summary.shinyAvailable ||= creature.shiny
     for (const [rareKey, hasRare] of [['shiny', creature.shiny], ['colorful', creature.colorful]]) {
       if (!hasRare) continue
       summary[rareKey].total += 1
@@ -175,10 +178,10 @@ function buildSpeciesSummary(profiles, creatures) {
 
   for (const summary of groups.values()) {
     summary.missing = {
-      shiny: summary.shiny.total === 0,
+      shiny: summary.shinyAvailable && summary.shiny.total === 0,
       colorful: summary.colorful.total === 0,
-      shinyMale: summary.shiny.total > 0 && summary.shiny.male === 0,
-      shinyFemale: summary.shiny.total > 0 && summary.shiny.female === 0,
+      shinyMale: summary.shinyAvailable && summary.shiny.total > 0 && summary.shiny.male === 0,
+      shinyFemale: summary.shinyAvailable && summary.shiny.total > 0 && summary.shiny.female === 0,
       colorfulMale: summary.colorful.total > 0 && summary.colorful.male === 0,
       colorfulFemale: summary.colorful.total > 0 && summary.colorful.female === 0,
       goodNature: summary.goodNature.total === 0,
@@ -213,6 +216,15 @@ export function summarizeMissingEggGroups(creatures = []) {
     grouped.set(key, current)
   }
   return { recordCount: missing.length, creatureCount: grouped.size, creatures: [...grouped.values()] }
+}
+
+export function matchesBreedingCoverageFilter(item, filter) {
+  if (filter === 'all') return true
+  if (filter === 'complete') return item.ownedCount > 0 && !item.hasGap
+  if (filter === 'gaps') return item.ownedCount > 0 && item.hasGap
+  const key = filter.replace(/^missing/, '')
+  const missingKey = key.charAt(0).toLowerCase() + key.slice(1)
+  return Boolean(item.missing[missingKey])
 }
 
 export function normalizeBreedingRules(rules) {

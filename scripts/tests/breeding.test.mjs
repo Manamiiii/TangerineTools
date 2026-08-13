@@ -4,6 +4,7 @@ import {
   BREEDING_PRIORITY_RULES,
   buildBreedingDataset,
   DEFAULT_BREEDING_RULES,
+  matchesBreedingCoverageFilter,
   normalizeBreedingRules,
   recommendBreedingPairs,
   summarizeMissingEggGroups,
@@ -139,7 +140,7 @@ test('good nature is evaluated for the child target and includes keepable nature
 
 test('breeding dataset summarizes rare appearances and sexes by species group', () => {
   const catalogRows = [
-    { id: 'catalog-a1', values: { name: '幼体', speciesGroup: '测试谱系', eggGroups: ['动物组'], image: 'a.png' } },
+    { id: 'catalog-a1', values: { name: '幼体', speciesGroup: '测试谱系', eggGroups: ['动物组'], image: 'a.png', shiny: 'yes', shinyImage: 'shiny-a.png' } },
     { id: 'catalog-a2', values: { name: '成体', speciesGroup: '测试谱系', eggGroups: ['动物组'] } },
     { id: 'catalog-no-egg', values: { name: '不可孵化', speciesGroup: '不可孵化', eggGroups: ['无法孵蛋'] } },
   ]
@@ -152,9 +153,28 @@ test('breeding dataset summarizes rare appearances and sexes by species group', 
   assert.equal(dataset.species.length, 1)
   assert.equal(dataset.species[0].name, '测试谱系')
   assert.equal(dataset.species[0].ownedCount, 2)
+  assert.equal(dataset.species[0].shinyAvailable, true)
   assert.deepEqual(dataset.species[0].shiny, { total: 2, male: 1, female: 1 })
   assert.deepEqual(dataset.species[0].colorful, { total: 1, male: 0, female: 1 })
   assert.equal(dataset.species[0].missing.colorfulMale, true)
+})
+
+test('missing shiny includes only species with a confirmed shiny form', () => {
+  const catalogRows = [
+    { id: 'catalog-shiny', values: { name: '有异色', speciesGroup: '有异色', eggGroups: ['动物组'], shiny: 'yes', shinyImage: 'shiny.png' } },
+    { id: 'catalog-ordinary', values: { name: '无异色', speciesGroup: '无异色', eggGroups: ['动物组'], shiny: 'no', shinyImage: '' } },
+  ]
+  const dataset = buildBreedingDataset({ catalogRows })
+  const shinySpecies = dataset.species.find((item) => item.id === '有异色')
+  const ordinarySpecies = dataset.species.find((item) => item.id === '无异色')
+
+  assert.equal(shinySpecies.shinyAvailable, true)
+  assert.equal(shinySpecies.missing.shiny, true)
+  assert.equal(matchesBreedingCoverageFilter(shinySpecies, 'missingShiny'), true)
+  assert.equal(ordinarySpecies.shinyAvailable, false)
+  assert.equal(ordinarySpecies.missing.shiny, false)
+  assert.equal(matchesBreedingCoverageFilter(ordinarySpecies, 'missingShiny'), false)
+  assert.equal(matchesBreedingCoverageFilter(shinySpecies, 'gaps'), false)
 })
 
 test('breeding missing egg group summary lists distinct creatures and owned record counts', () => {
