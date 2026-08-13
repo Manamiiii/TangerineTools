@@ -23,6 +23,7 @@ function creature(id, gender, {
     shiny,
     colorful,
     nature,
+    source: 'owned',
     owned: { values: { nature } },
     catalog: {
       row: { id: `catalog-${id}` },
@@ -46,6 +47,8 @@ function target(id, {
     shiny,
     colorful,
     goodNature,
+    eggGroups: ['测试组'],
+    catalogRows: [{ id: `catalog-${id}`, values: { name: id } }],
     missing: {
       shiny: shiny.total === 0,
       colorful: colorful.total === 0,
@@ -108,10 +111,11 @@ test('enabled rule order changes which collection gap is selected first', () => 
     { pairCount: 2, rules: onlyTwoGoals, species },
   )
 
-  assert.equal(pairs[0].mother.id, 'f2')
+  assert.equal(pairs[0].targetSpecies, 'missing-colorful')
+  assert.equal(pairs[0].mother.source, 'catch')
   assert.equal(pairs[0].father.id, 'm2')
   assert.equal(pairs[0].priorityReason, '缺炫彩')
-  assert.equal(pairs[1].mother.id, 'f1')
+  assert.equal(pairs[1].targetSpecies, 'missing-shiny')
   assert.equal(pairs[1].father.id, 'm1')
 })
 
@@ -134,8 +138,34 @@ test('good nature is evaluated for the child target and includes keepable nature
     { pairCount: 1, rules, species },
   )
 
-  assert.equal(pairs[0].father.id, 'm1')
+  assert.equal(pairs[0].mother.source, 'catch')
+  assert.equal(pairs[0].father.source, 'catch')
+  assert.equal(pairs[0].mother.nature, 'child-best')
+  assert.equal(pairs[0].father.nature, 'child-best')
   assert.equal(pairs[0].goodNatureRank, 2)
+})
+
+test('target selection limits recommendations and ordinary owned records are not rare donors', () => {
+  const ordinaryOwned = creature('ordinary', 'male')
+  const rareFather = creature('rare', 'male', { shiny: true })
+  const species = [
+    target('alpha', { goodNature: { total: 1, recommended: 1, keepable: 0 } }),
+    target('beta', { goodNature: { total: 1, recommended: 1, keepable: 0 } }),
+  ]
+  const rules = normalizeBreedingRules(DEFAULT_BREEDING_RULES.map((rule) => ({
+    id: rule.id,
+    enabled: rule.id === 'missingShiny',
+  })))
+
+  const pairs = recommendBreedingPairs(
+    [ordinaryOwned, rareFather],
+    { pairCount: 5, rules, species, targetSpeciesId: 'beta' },
+  )
+
+  assert.ok(pairs.length > 0)
+  assert.ok(pairs.every((pair) => pair.targetSpecies === 'beta'))
+  assert.ok(pairs.every((pair) => pair.mother.id !== ordinaryOwned.id && pair.father.id !== ordinaryOwned.id))
+  assert.ok(pairs.some((pair) => pair.father.id === rareFather.id))
 })
 
 test('breeding dataset summarizes rare appearances and sexes by species group', () => {

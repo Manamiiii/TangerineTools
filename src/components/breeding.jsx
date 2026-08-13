@@ -42,15 +42,17 @@ export function BreedingTool({ scene }) {
   const [rules, setRules] = useState(loadBreedingRules)
   const [coverageFilter, setCoverageFilter] = useState('all')
   const [coverageQuery, setCoverageQuery] = useState('')
+  const [targetSpeciesId, setTargetSpeciesId] = useState('')
 
   const dataset = useMemo(
     () => buildBreedingDataset({ ownedRows, catalogRows, catalogFields, skillRows }),
     [ownedRows, catalogRows, catalogFields, skillRows],
   )
   const pairs = useMemo(
-    () => recommendBreedingPairs(dataset.creatures, { rules, species: dataset.species }),
-    [dataset, rules],
+    () => recommendBreedingPairs(dataset.creatures, { rules, species: dataset.species, targetSpeciesId }),
+    [dataset, rules, targetSpeciesId],
   )
+  const targetSpecies = dataset.species.find((item) => item.id === targetSpeciesId) || null
   const missingEggGroups = useMemo(() => summarizeMissingEggGroups(dataset.creatures), [dataset.creatures])
 
   useEffect(() => {
@@ -74,9 +76,9 @@ export function BreedingTool({ scene }) {
     <div className="breeding-hero">
       <div>
         <h2>孵蛋推荐</h2>
-        <p>按你启用和排列的目标，从收集记录中组成最多 5 对不重复的同蛋组父母。</p>
+        <p>稀有父母读取收集记录，普通父母按可现抓处理，组成最多 5 对同蛋组父母。</p>
       </div>
-      <span className="breeding-selection-count">{pairs.length * 2} / 10 只</span>
+      <span className="breeding-selection-count">{pairs.length} / 5 对</span>
     </div>
 
     <details className="breeding-rules">
@@ -140,13 +142,20 @@ export function BreedingTool({ scene }) {
       </div>
     </details>
 
+    {targetSpecies && (
+      <div className="breeding-target-bar">
+        <span>正在为 <strong>{targetSpecies.name}</strong> 推荐</span>
+        <button type="button" className="btn btn-sm" onClick={() => setTargetSpeciesId('')}>返回全局推荐</button>
+      </div>
+    )}
+
     {pairs.length === 0 ? (
-      <EmptyState title="暂无可推荐组合" description="请确认收集记录已填写性别和外观，资料库已有蛋组，且至少一对父母能推进当前启用的缺口目标。" />
+      <EmptyState title="暂无可推荐组合" description="当前没有能推进已启用目标的组合；异色或炫彩目标需要收集记录中存在可用的稀有亲本。" />
     ) : (
       <section className="breeding-recommendation">
         <div className="breeding-section-title">
           <strong>推荐配对</strong>
-          <span>每条收集记录只使用一次 · 点击父母查看收集详情</span>
+          <span>稀有收藏每条只使用一次 · 普通精灵可按推荐条件现抓</span>
         </div>
         <div className="breeding-pairs">
           {pairs.map((pair, index) => (
@@ -156,9 +165,9 @@ export function BreedingTool({ scene }) {
                 <span>{pair.eggGroup} · {pair.priorityReason}</span>
               </div>
               <div className="breeding-lineup">
-                <BreedingCreature gender="male" item={pair.father} onOpen={() => setSelectedOwnedCreature(pair.father)} />
+                <BreedingCreature gender="male" item={pair.father} onOpen={() => pair.father.owned && setSelectedOwnedCreature(pair.father)} />
                 <span className="breeding-pair-mark" aria-label="配对">×</span>
-                <BreedingCreature gender="female" item={pair.mother} onOpen={() => setSelectedOwnedCreature(pair.mother)} />
+                <BreedingCreature gender="female" item={pair.mother} onOpen={() => pair.mother.owned && setSelectedOwnedCreature(pair.mother)} />
               </div>
               <div className="breeding-offspring-row">
                 <BreedingOffspring pair={pair} />
@@ -176,6 +185,11 @@ export function BreedingTool({ scene }) {
       query={coverageQuery}
       onFilterChange={setCoverageFilter}
       onQueryChange={setCoverageQuery}
+      onRecommend={(id) => {
+        setTargetSpeciesId(id)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }}
+      targetSpeciesId={targetSpeciesId}
     />
 
     {selectedOwnedCreature && (
@@ -218,15 +232,16 @@ function BreedingCreature({ gender, item, onOpen }) {
   return (
     <button
       type="button"
-      className="breeding-creature-row"
+      className={`breeding-creature-row ${item.source === 'catch' ? 'catch' : ''}`}
       onClick={onOpen}
-      title={`查看 ${values.name || item.name} 的收集记录`}
+      title={item.source === 'catch' ? '普通精灵可按此条件现抓' : `查看 ${values.name || item.name} 的收集记录`}
     >
       <img className="breeding-creature-avatar" src={creatureImage(values, item.shiny)} alt="" />
       <span className="breeding-creature-text">
         <strong>{values.name || item.name}</strong>
         <small>{natureLabel(item.nature)} · {trait}</small>
       </span>
+      <span className={`breeding-parent-source ${item.source}`}>{item.source === 'catch' ? '可现抓' : '已收藏'}</span>
       <span className={`breeding-sex-symbol ${gender}`} title={gender === 'male' ? '公' : '母'}>{gender === 'male' ? '♂' : '♀'}</span>
       {item.shiny && <img className="breeding-status-image" src={SHINY_ICON} alt="异色" title="异色" />}
       {item.colorful && <OptionTag option={OWNED_COLORFUL_OPTIONS.find((option) => option.value === 'yes')} iconOnly size="sm" />}
@@ -297,7 +312,7 @@ function RareCoverage({ available = true, label, summary }) {
   )
 }
 
-function BreedingCoverageDashboard({ species, filter, query, onFilterChange, onQueryChange }) {
+function BreedingCoverageDashboard({ species, filter, query, onFilterChange, onQueryChange, onRecommend, targetSpeciesId }) {
   const normalizedQuery = query.trim().toLocaleLowerCase('zh-CN')
   const inScope = species.filter((item) => matchesBreedingCoverageFilter(item, filter))
   const visible = inScope.filter((item) => (
@@ -349,6 +364,7 @@ function BreedingCoverageDashboard({ species, filter, query, onFilterChange, onQ
                 <th>炫彩</th>
                 <th>好性格</th>
                 <th>缺口</th>
+                <th>推荐</th>
               </tr>
             </thead>
             <tbody>
@@ -383,6 +399,15 @@ function BreedingCoverageDashboard({ species, filter, query, onFilterChange, onQ
                       <span className="breeding-gap-tags">
                         {gaps.length > 0 ? gaps.map((gap) => <b key={gap}>{gap}</b>) : <em>完整</em>}
                       </span>
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        className={`btn btn-sm ${targetSpeciesId === item.id ? 'btn-primary' : ''}`}
+                        onClick={() => onRecommend(item.id)}
+                      >
+                        {targetSpeciesId === item.id ? '推荐中' : '为它推荐'}
+                      </button>
                     </td>
                   </tr>
                 )
