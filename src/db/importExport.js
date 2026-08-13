@@ -2,6 +2,7 @@ import { nowIso } from '../utils.js'
 import { db } from './core.js'
 
 export const EXPORT_SCHEMA_VERSION = 1
+export const READING_BACKUP_FORMAT = 'tangerine-reading-companion-backup'
 const IMPORTABLE_KEYS = ['scenes', 'catalogTables', 'catalogFields', 'catalogRows', 'meta']
 
 export async function exportAllData() {
@@ -16,6 +17,19 @@ export async function exportAllData() {
     schemaVersion: EXPORT_SCHEMA_VERSION,
     exportedAt: nowIso(),
     data: { scenes, catalogTables, catalogFields, catalogRows, meta },
+  }
+}
+
+export async function exportReadingCompanionData() {
+  const meta = (await db.meta.toArray()).filter((record) => (
+    typeof record?.key === 'string'
+    && (record.key.startsWith('readerState:') || record.key.startsWith('readerPersonalPackage:'))
+  ))
+  return {
+    format: READING_BACKUP_FORMAT,
+    schemaVersion: 1,
+    exportedAt: nowIso(),
+    data: { meta },
   }
 }
 

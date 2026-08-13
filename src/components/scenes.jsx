@@ -2,12 +2,12 @@
 
 import { useState } from 'react'
 import { Pencil, Plus, Trash2 } from 'lucide-react'
-import { SCENE_TOOLS, SCENE_TYPES } from '../constants.js'
+import { SCENE_TOOLS, SCENE_TYPES, sceneToolsFor } from '../constants.js'
 import { createScene, deleteScene, updateScene } from '../db.js'
 import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal } from './common.jsx'
 
 function sceneTypeLabel(value) {
-  return SCENE_TYPES.find((t) => t.value === value)?.label || value
+  return SCENE_TYPES.find((t) => t.value === value)?.label || '游戏'
 }
 
 function sceneToolLabels(tools) {
@@ -90,10 +90,13 @@ export function SceneList({ scenes, onOpen }) {
 
 function SceneFormModal({ scene, onClose }) {
   const [name, setName] = useState(scene?.name || '')
-  const [type, setType] = useState(scene?.type || SCENE_TYPES[0].value)
+  const [type, setType] = useState(
+    SCENE_TYPES.some((item) => item.value === scene?.type) ? scene.type : SCENE_TYPES[0].value,
+  )
   const [tools, setTools] = useState(scene?.tools || ['catalog'])
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
+  const availableTools = scene ? sceneToolsFor(scene) : sceneToolsFor(null)
 
   function toggleTool(value) {
     setTools((prev) => (prev.includes(value) ? prev.filter((t) => t !== value) : [...prev, value]))
@@ -136,7 +139,7 @@ function SceneFormModal({ scene, onClose }) {
             className="input"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="例如：洛克王国"
+            placeholder="例如：宝可梦朱紫"
             autoFocus
           />
         </FormRow>
@@ -157,7 +160,7 @@ function SceneFormModal({ scene, onClose }) {
         </FormRow>
         <FormRow label="启用工具">
           <div className="tool-checkboxes">
-            {SCENE_TOOLS.map((tool) => (
+            {availableTools.map((tool) => (
               <label key={tool.value} className={`tool-checkbox ${tool.ready ? '' : 'disabled'}`}>
                 <input
                   type="checkbox"

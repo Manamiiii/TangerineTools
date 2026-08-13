@@ -2,11 +2,7 @@
 // 保持数据结构简单、可扩展，避免过早引入复杂配置。
 
 export const SCENE_TYPES = [
-  { value: 'general', label: '通用整理', description: '默认类型，适合还没有明确领域的资料整理。' },
-  { value: 'game', label: '游戏资料', description: '适合角色、装备、宠物、养成进度等游戏内容。' },
-  { value: 'media', label: '镜头素材', description: '适合镜头、分镜、素材、拍摄计划等影像内容。' },
-  { value: 'data', label: '资料档案', description: '适合长期沉淀的资料、清单、索引和参考库。' },
-  { value: 'reading', label: '文学阅读', description: '适合按书整理人物、地点、背景和阅读进度。' },
+  { value: 'game', label: '游戏', description: '整理一个游戏的资料、收集记录和个人进度。' },
 ]
 
 export function sceneTypeLabel(value) {
@@ -19,12 +15,15 @@ export function sceneTypeLabel(value) {
 // 「统计视图」用于从资料库/收集记录按条件汇总；「性格推荐」和「孵蛋推荐」是洛克王国定制工具。
 export const SCENE_TOOLS = [
   { value: 'catalog', label: '资料库', ready: true },
-  { value: 'nature', label: '性格推荐', ready: true },
+  { value: 'nature', label: '性格推荐', ready: true, gameId: 'scene-rock-kingdom' },
   { value: 'owned', label: '收集记录', ready: true },
-  { value: 'breeding', label: '孵蛋推荐', ready: true },
+  { value: 'breeding', label: '孵蛋推荐', ready: true, gameId: 'scene-rock-kingdom' },
   { value: 'stock', label: '统计视图', ready: true },
-  { value: 'reader', label: '阅读伴侣', ready: true },
 ]
+
+export function sceneToolsFor(scene) {
+  return SCENE_TOOLS.filter((tool) => !tool.gameId || tool.gameId === scene?.id)
+}
 
 // 字段类型：资料表列的数据类型。
 export const FIELD_TYPES = [
