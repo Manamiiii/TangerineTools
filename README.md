@@ -24,6 +24,7 @@ npm run dev
 | `npm run check:scanner:templates` | 检查扫描模板 |
 | `npm run apply:scanner:templates` | 显式写入扫描模板 |
 | `npm run sync:breeding` | 同步繁育资料 staging |
+| `npm run check:official-announcements` | 检查官方版本 / 平衡公告并生成人工复核报告 |
 | `npm run sync:bwiki:staging` | 同步 BWiki 基础 staging |
 | `npm run sync:bwiki:details` | 同步 BWiki 详情 staging |
 | `npm run preview:bwiki` | 构建 BWiki 发布预览 |
@@ -45,7 +46,7 @@ npm run dev
 ```text
 docs/                         当前能力、数据源与专项规则
 public/presets/               洛克王国运行时正式预置
-scripts/bwiki/                BWiki staging / preview / apply
+scripts/bwiki/                官方公告审计与 BWiki staging / preview / apply
 scripts/nature/               性格推荐校准
 scripts/rock-kingdom-scanner/ 扫描模板维护
 scripts/tests/                自动化回归测试

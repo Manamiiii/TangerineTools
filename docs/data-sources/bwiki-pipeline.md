@@ -47,15 +47,34 @@ public/presets/
 
 命令产生的审计报告和临时迁移清单写入 `artifacts/bwiki/`；该目录不提交 Git。
 
+## 官方公告发现
+
+`npm run check:official-announcements` 从腾讯游戏内容开放平台读取「洛克王国世界」官方公告列表（游戏 ID `467`、公告标签 `135110`），以稳定公告 ID 读取版本 / 平衡候选的正文，并生成：
+
+- `artifacts/bwiki/official-announcements.json`：结构化候选、正文信号和图片链接。
+- `artifacts/bwiki/official-announcements.md`：人工复核清单与官方详情页链接。
+
+列表源是腾讯域名下的 [GICP 公告接口](https://apps.game.qq.com/wmp/v3.1/?p0=467&p1=searchNewsKeywordsList&page=1&pagesize=50&order=sIdxTime&r0=script&r1=NewsObj&type=iTag&id=135110&source=web_pc)，报告中的可读链接指向 `rocom.qq.com` 官方详情页。脚本只为标题命中“版本更新、赛季更新、平衡 / 技能 / 精灵 / 数值调整”等规则的公告读取详情；接口失败或响应结构变化时命令以非零状态退出，并且不会覆盖已有报告。
+
+可用 `ROCOM_ANNOUNCEMENT_SINCE` 限制起始日期，用 `ROCOM_ANNOUNCEMENT_LIMIT` 调整列表条数。例如 PowerShell：
+
+```powershell
+$env:ROCOM_ANNOUNCEMENT_SINCE='2026-07-01'
+npm run check:official-announcements
+```
+
+公告发现只确定可能受影响的精灵、技能、特性和字段。正文只有图片或缺少明确文字信号时，报告会要求人工查看；流程不做 OCR 猜测。官方公告不直接写入 staging 或正式预置，确认范围后仍需回到 BWiki 核对结构化字段。
+
 ## 刷新与发布顺序
 
-1. `npm run sync:bwiki:staging`：刷新精灵、技能和精灵蛋 staging。
-2. `npm run sync:bwiki:details`：刷新精灵详情 staging；默认复用已有成功行。
-3. `npm run sync:breeding`：刷新蛋组和繁育谱系 staging。
-4. `npm run preview:bwiki`：生成精灵与技能 preview，并输出临时审计报告。
-5. `npm run check:bwiki:preset`：dry-run 校验行数、稳定 id、技能双向引用和迁移字段。
-6. 用户确认后，设置 `BWIKI_PRESET_OVERWRITE=CONFIRM_BWIKI_PRESET` 并运行 `npm run apply:bwiki:preset`。
-7. 运行 `npm test`、`npm run check:nature`、`npm run lint`、`npm run build`。
+1. `npm run check:official-announcements`：确定版本 / 平衡变更的人工复核范围。
+2. `npm run sync:bwiki:staging`：刷新精灵、技能和精灵蛋 staging。
+3. `npm run sync:bwiki:details`：刷新精灵详情 staging；默认复用已有成功行。
+4. `npm run sync:breeding`：刷新蛋组和繁育谱系 staging。
+5. `npm run preview:bwiki`：生成精灵与技能 preview，并输出临时审计报告。
+6. `npm run check:bwiki:preset`：dry-run 校验行数、稳定 id、技能双向引用和迁移字段。
+7. 用户确认后，设置 `BWIKI_PRESET_OVERWRITE=CONFIRM_BWIKI_PRESET` 并运行 `npm run apply:bwiki:preset`。
+8. 运行 `npm test`、`npm run check:nature`、`npm run lint`、`npm run build`。
 
 ## 发布边界
 
