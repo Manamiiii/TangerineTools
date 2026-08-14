@@ -3782,6 +3782,123 @@ img {
 }
 
 /* 孵蛋推荐工具 */
+.breeding-tool { display: grid; gap: 18px; }
+.breeding-hero, .breeding-section-title, .breeding-priority-heading, .breeding-coverage-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.breeding-hero { padding: 18px; border: 1px solid #fed7aa; border-radius: var(--radius-lg); background: linear-gradient(135deg, #fff7ed, #fff); }
+.breeding-hero h2, .breeding-hero p { margin: 0; }
+.breeding-hero p { margin-top: 5px; color: var(--text-muted); }
+.breeding-selection-count { flex: 0 0 auto; padding: 5px 10px; border-radius: 999px; background: #ffedd5; color: #c2410c; font-weight: 700; }
+.breeding-rules, .breeding-recommendation, .breeding-coverage { display: grid; gap: 14px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+.breeding-rules { padding: 0; }
+.breeding-rules > summary { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; cursor: pointer; list-style: none; }
+.breeding-rules > summary::-webkit-details-marker { display: none; }
+.breeding-rules > summary::after { content: '展开'; color: var(--primary); font-size: 12px; font-weight: 700; }
+.breeding-rules[open] > summary { border-bottom: 1px solid var(--border); }
+.breeding-rules[open] > summary::after { content: '收起'; }
+.breeding-rules > summary > span { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.breeding-rules > summary small { overflow: hidden; color: var(--text-muted); text-overflow: ellipsis; white-space: nowrap; }
+.breeding-rules-content { display: grid; gap: 12px; padding: 14px 16px 16px; }
+.breeding-rules-main { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.breeding-rules-main strong { margin-right: 4px; }
+.breeding-rules-main span { padding: 4px 8px; border-radius: 999px; background: #f8fafc; color: var(--text-muted); font-size: 12px; }
+.breeding-priority { display: grid; gap: 10px; padding: 12px; border: 1px solid #fed7aa; border-radius: var(--radius); background: #fffaf5; }
+.breeding-priority-heading > div, .breeding-coverage-heading > div { display: grid; gap: 3px; }
+.breeding-priority-heading small, .breeding-coverage-heading small, .breeding-section-title span { color: var(--text-muted); }
+.breeding-rule-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; counter-reset: breeding-rule; }
+.breeding-rule-list li { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 6px; min-width: 0; padding: 7px 8px; border: 1px solid #fed7aa; border-radius: 10px; background: #fff; counter-increment: breeding-rule; cursor: grab; }
+.breeding-rule-list li:active { cursor: grabbing; }
+.breeding-rule-list li.disabled { opacity: .55; background: #f8fafc; }
+.breeding-rule-list label { display: flex; align-items: center; gap: 7px; min-width: 0; cursor: pointer; }
+.breeding-rule-list label::before { content: counter(breeding-rule); display: grid; place-items: center; flex: 0 0 22px; width: 22px; height: 22px; border-radius: 7px; background: #ffedd5; color: #c2410c; font-size: 11px; font-weight: 800; }
+.breeding-rule-list input { flex: 0 0 auto; margin: 0; }
+.breeding-rule-list label span { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.breeding-rule-list label strong { flex: 0 0 auto; }
+.breeding-rule-list label small { overflow: hidden; color: var(--text-muted); line-height: 1.45; text-overflow: ellipsis; white-space: nowrap; }
+.breeding-warning { padding: 9px 11px; border: 1px solid #fde68a; border-radius: var(--radius); background: #fffbeb; color: #92400e; }
+.breeding-warning summary { cursor: pointer; font-weight: 700; }
+.breeding-warning p { margin-bottom: 5px; }
+.breeding-warning ul { margin: 0; padding-left: 20px; }
+.breeding-section-title { align-items: baseline; }
+.breeding-target-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border: 1px solid #fdba74; border-radius: var(--radius); background: #fff7ed; color: #9a3412; }
+.breeding-pairs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 620px), 1fr)); gap: 12px; }
+.breeding-pair-card { display: grid; min-width: 0; gap: 12px; padding: 13px; border: 1px solid #fed7aa; border-radius: var(--radius-lg); background: #fffaf5; }
+.breeding-pair-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.breeding-pair-head span { color: #c2410c; font-size: 12px; text-align: right; white-space: nowrap; }
+.breeding-lineup { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 7px; }
+.breeding-creature-row { position: relative; display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; align-items: center; gap: 8px; min-width: 0; padding: 8px; border: 1px solid var(--border); border-radius: 12px; background: #fff; color: var(--text); text-align: left; cursor: pointer; }
+.breeding-creature-row:hover { border-color: #fb923c; }
+.breeding-creature-row.catch { cursor: default; }
+.breeding-creature-avatar { width: 42px; height: 42px; object-fit: contain; }
+.breeding-creature-text { display: grid; min-width: 0; gap: 2px; }
+.breeding-creature-text strong, .breeding-creature-text small { overflow-wrap: anywhere; }
+.breeding-creature-text strong { line-height: 1.35; }
+.breeding-creature-text small { color: var(--text-muted); line-height: 1.4; }
+.breeding-parent-meta { display: flex; align-items: center; justify-content: flex-end; gap: 5px; min-width: 0; }
+.breeding-sex-symbol { font-size: 17px; font-weight: 800; }
+.breeding-sex-symbol.male { color: #2563eb; }
+.breeding-sex-symbol.female { color: #e11d48; }
+.breeding-parent-source { padding: 2px 6px; border-radius: 999px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.breeding-parent-source.catch { background: #e0f2fe; color: #0369a1; }
+.breeding-parent-source.owned { background: #fce7f3; color: #be185d; }
+.breeding-status-image { position: absolute; top: 3px; left: 3px; width: 17px; height: 17px; object-fit: contain; }
+.breeding-pair-mark { color: #fb923c; font-size: 20px; font-weight: 800; }
+.breeding-offspring-row { display: grid; grid-template-columns: minmax(150px, .7fr) minmax(0, 1.3fr); gap: 10px; min-width: 0; }
+.breeding-offspring { display: flex; align-items: center; min-width: 0; gap: 8px; padding: 8px; border-radius: 10px; background: #ffedd5; }
+.breeding-offspring img { width: 38px; height: 38px; object-fit: contain; }
+.breeding-offspring span, .breeding-prob-row, .breeding-good-nature { display: grid; min-width: 0; gap: 2px; }
+.breeding-offspring strong { overflow-wrap: anywhere; }
+.breeding-offspring small, .breeding-prob-row, .breeding-good-nature small { color: var(--text-muted); font-size: 11px; }
+.breeding-prob-row { align-content: center; }
+.breeding-prob-row > span { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 5px; min-width: 0; overflow-wrap: anywhere; }
+.breeding-prob-row strong { color: var(--text); }
+.breeding-coverage { margin-top: 2px; }
+.breeding-coverage-summary { display: grid; grid-template-columns: repeat(5, minmax(100px, 1fr)); gap: 8px; }
+.breeding-coverage-summary > span { display: grid; gap: 2px; padding: 10px; border-radius: 10px; background: #f8fafc; text-align: center; }
+.breeding-coverage-summary strong { color: #c2410c; font-size: 20px; }
+.breeding-coverage-summary small { color: var(--text-muted); }
+.breeding-coverage-controls { display: flex; align-items: center; gap: 8px; }
+.breeding-coverage-controls .input { flex: 1 1 260px; }
+.breeding-coverage-controls > span { color: var(--text-muted); font-size: 12px; white-space: nowrap; }
+.breeding-coverage-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+.breeding-coverage-table { width: 100%; min-width: 820px; border-collapse: collapse; }
+.breeding-coverage-table th, .breeding-coverage-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+.breeding-coverage-table th { background: #f8fafc; color: var(--text-muted); font-size: 11px; }
+.breeding-coverage-table tbody tr:last-child td { border-bottom: 0; }
+.breeding-species-name { display: flex; align-items: center; gap: 8px; min-width: 180px; }
+.breeding-species-name img { width: 38px; height: 38px; object-fit: contain; }
+.breeding-species-name > span { display: grid; gap: 2px; }
+.breeding-species-name small { color: var(--text-muted); font-size: 10px; }
+.breeding-rare-coverage { display: flex; align-items: center; gap: 8px; }
+.breeding-rare-coverage > span { display: grid; min-width: 34px; }
+.breeding-rare-coverage small { color: var(--text-muted); font-size: 10px; }
+.breeding-rare-unavailable { color: #94a3b8; font-size: 11px; }
+.breeding-sex-coverage { display: inline-flex; gap: 3px; }
+.breeding-sex-coverage b { padding: 2px 5px; border-radius: 999px; font-size: 10px; }
+.breeding-sex-coverage .covered { background: #dcfce7; color: #15803d; }
+.breeding-sex-coverage .missing { background: #f1f5f9; color: #94a3b8; }
+.breeding-gap-tags { display: flex; flex-wrap: wrap; gap: 4px; max-width: 220px; }
+.breeding-gap-tags b, .breeding-gap-tags em { padding: 2px 6px; border-radius: 999px; font-size: 10px; font-style: normal; }
+.breeding-gap-tags b { background: #fff1f2; color: #be123c; }
+.breeding-gap-tags em { background: #dcfce7; color: #15803d; }
+.breeding-coverage-empty { margin: 0; padding: 20px; color: var(--text-muted); text-align: center; }
+
+@media (max-width: 1100px) {
+  .breeding-rule-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 760px) {
+  .breeding-hero, .breeding-priority-heading, .breeding-coverage-heading, .breeding-section-title { flex-direction: column; }
+  .breeding-rules > summary > span { display: grid; gap: 2px; }
+  .breeding-target-bar { align-items: flex-start; flex-direction: column; }
+  .breeding-rule-list { grid-template-columns: 1fr; }
+  .breeding-pairs { grid-template-columns: 1fr; }
+  .breeding-lineup, .breeding-offspring-row { grid-template-columns: 1fr; }
+  .breeding-pair-mark { justify-self: center; }
+  .breeding-coverage-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .breeding-coverage-controls { align-items: stretch; flex-direction: column; }
+  .breeding-coverage-controls .input { flex-basis: auto; width: 100%; }
+}
+
 /* ---------------------------------------------------------------------------
    洛克王国统一卡片风格补充
 --------------------------------------------------------------------------- */
