@@ -15,6 +15,7 @@
     "check:scanner:templates": "node scripts/rock-kingdom-scanner/build-templates.mjs",
     "apply:scanner:templates": "node scripts/rock-kingdom-scanner/build-templates.mjs --write",
     "sync:breeding": "node scripts/bwiki/sync-breeding.mjs",
+    "check:official-announcements": "node scripts/bwiki/check-official-announcements.mjs",
     "sync:bwiki:staging": "node scripts/bwiki/sync-staging.mjs",
     "sync:bwiki:details": "node scripts/bwiki/sync-details.mjs",
     "preview:bwiki": "node scripts/bwiki/build-preview.mjs",

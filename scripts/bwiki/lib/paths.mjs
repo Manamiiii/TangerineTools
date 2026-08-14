@@ -19,6 +19,8 @@ export const BWIKI_PATHS = Object.freeze({
     migration: 'public/presets/rockKingdomPresetMigration.json',
   }),
   artifacts: Object.freeze({
+    officialAnnouncementsJson: 'artifacts/bwiki/official-announcements.json',
+    officialAnnouncementsReport: 'artifacts/bwiki/official-announcements.md',
     stagingJson: 'artifacts/bwiki/source-report.json',
     stagingReport: 'artifacts/bwiki/staging-report.md',
     detailReport: 'artifacts/bwiki/detail-staging-report.md',
