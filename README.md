@@ -65,6 +65,7 @@ src/presets/                  场景结构定义
 - [`docs/data-sources/bwiki-pipeline.md`](docs/data-sources/bwiki-pipeline.md)：正式资料发布流程。
 - [`docs/data-sources/bwiki-field-mapping.md`](docs/data-sources/bwiki-field-mapping.md)：字段转换、稳定 id 与校验门槛。
 - [`docs/data-sources/research-sources.md`](docs/data-sources/research-sources.md)：玩家资料研究边界。
+- [`docs/wuhui-huaxia/catalog.md`](docs/wuhui-huaxia/catalog.md)：无悔华夏名臣资料、个人收集模型与来源约束。
 - [`docs/nature/rules.md`](docs/nature/rules.md)：性格推荐规则。
 - [`docs/nature/single-creature-template.md`](docs/nature/single-creature-template.md)：单精灵审计模板。
 - [`docs/nature/open-issues.md`](docs/nature/open-issues.md)：待确认规则问题。
