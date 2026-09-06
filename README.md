@@ -54,6 +54,7 @@ scripts/rock-kingdom-scanner/ 扫描模板维护
 scripts/tests/                自动化回归测试
 src/components/               场景和通用工具界面
 src/features/                 OCR、模型与洛克王国专项能力
+src/hooks/                    异步操作状态与收集表初始化
 src/db/                       Dexie、播种、导入导出与迁移
 src/presets/                  场景结构定义
 ```

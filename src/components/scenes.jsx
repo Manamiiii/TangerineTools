@@ -1,6 +1,7 @@
 // 首页场景工作台：场景列表（逐行展示）+ 新建/编辑场景弹窗。
 
 import { useState } from 'react'
+import { useAsyncAction } from '../hooks/useAsyncAction.js'
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { SCENE_TOOLS, SCENE_TYPES, sceneToolsFor } from '../constants.js'
 import { createScene, deleteScene, updateScene } from '../db.js'
@@ -95,7 +96,7 @@ function SceneFormModal({ scene, onClose }) {
   )
   const [tools, setTools] = useState(scene?.tools || ['catalog'])
   const [error, setError] = useState('')
-  const [saving, setSaving] = useState(false)
+  const { pending: saving, error: saveError, run } = useAsyncAction()
   const availableTools = scene ? sceneToolsFor(scene) : sceneToolsFor(null)
 
   function toggleTool(value) {
@@ -108,73 +109,77 @@ function SceneFormModal({ scene, onClose }) {
       setError('请输入场景名称')
       return
     }
-    setSaving(true)
-    if (scene) {
-      await updateScene(scene.id, { name: name.trim(), type, tools })
-    } else {
-      await createScene({ name: name.trim(), type, tools })
-    }
-    setSaving(false)
-    onClose()
+    setError('')
+    await run(async () => {
+      if (scene) {
+        await updateScene(scene.id, { name: name.trim(), type, tools })
+      } else {
+        await createScene({ name: name.trim(), type, tools })
+      }
+      onClose()
+    })
   }
 
   return (
     <Modal
       title={scene ? '编辑场景' : '新建场景'}
+      busy={saving}
       onClose={onClose}
       footer={
         <>
-          <button type="button" className="btn" onClick={onClose}>
+          <button type="button" className="btn" onClick={onClose} disabled={saving}>
             取消
           </button>
           <button type="submit" form="scene-form" className="btn btn-primary" disabled={saving}>
-            保存
+            {saving ? '正在保存…' : '保存'}
           </button>
         </>
       }
     >
-      <form id="scene-form" onSubmit={handleSubmit} className="stack-form">
-        <FormRow label="名称">
-          <input
-            className="input"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="例如：宝可梦朱紫"
-            autoFocus
-          />
-        </FormRow>
-        <FormRow label="类型" hint={SCENE_TYPES.find((t) => t.value === type)?.description}>
-          <div className="scene-type-options">
-            {SCENE_TYPES.map((t) => (
-              <button
-                key={t.value}
-                type="button"
-                className={`scene-type-button ${type === t.value ? 'active' : ''}`}
-                title={t.description}
-                onClick={() => setType(t.value)}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-        </FormRow>
-        <FormRow label="启用工具">
-          <div className="tool-checkboxes">
-            {availableTools.map((tool) => (
-              <label key={tool.value} className={`tool-checkbox ${tool.ready ? '' : 'disabled'}`}>
-                <input
-                  type="checkbox"
-                  checked={tools.includes(tool.value)}
-                  disabled={!tool.ready}
-                  onChange={() => toggleTool(tool.value)}
-                />
-                {tool.label}
-                {!tool.ready && <span className="tool-badge-soon">即将推出</span>}
-              </label>
-            ))}
-          </div>
-        </FormRow>
-        {error && <p className="form-error">{error}</p>}
+      <form id="scene-form" onSubmit={handleSubmit}>
+        <fieldset className="stack-form form-fields" disabled={saving}>
+          <FormRow label="名称">
+            <input
+              className="input"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="例如：宝可梦朱紫"
+              autoFocus
+            />
+          </FormRow>
+          <FormRow label="类型" hint={SCENE_TYPES.find((t) => t.value === type)?.description}>
+            <div className="scene-type-options">
+              {SCENE_TYPES.map((t) => (
+                <button
+                  key={t.value}
+                  type="button"
+                  className={`scene-type-button ${type === t.value ? 'active' : ''}`}
+                  title={t.description}
+                  onClick={() => setType(t.value)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </FormRow>
+          <FormRow label="启用工具">
+            <div className="tool-checkboxes">
+              {availableTools.map((tool) => (
+                <label key={tool.value} className={`tool-checkbox ${tool.ready ? '' : 'disabled'}`}>
+                  <input
+                    type="checkbox"
+                    checked={tools.includes(tool.value)}
+                    disabled={!tool.ready}
+                    onChange={() => toggleTool(tool.value)}
+                  />
+                  {tool.label}
+                  {!tool.ready && <span className="tool-badge-soon">即将推出</span>}
+                </label>
+              ))}
+            </div>
+          </FormRow>
+          {(error || saveError) && <p className="form-error" role="alert">{error || saveError}</p>}
+        </fieldset>
       </form>
     </Modal>
   )

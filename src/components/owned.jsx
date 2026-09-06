@@ -6,9 +6,11 @@
 // （例如"精灵图鉴"），因此可以复用 catalog 的 ReferenceCellView/Input。
 
 import { useEffect, useMemo, useState } from 'react'
+import { useAsyncAction } from '../hooks/useAsyncAction.js'
+import { useOwnedTable } from '../hooks/useOwnedTable.js'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { BarChart3, FilterX, ListChecks, Pencil, Plus, ScanLine, Search, Settings2, Sparkles, Trash2 } from 'lucide-react'
-import { createRow, db, deleteRow, ensureOwnedTable, updateRow, updateRows } from '../db.js'
+import { createRow, db, deleteRow, updateRow, updateRows } from '../db.js'
 import {
   matchesOwnedFieldFilters,
   matchesOwnedSearch,
@@ -21,25 +23,12 @@ import { buildStockSummary, defaultStockGroupField } from '../domain/stock.js'
 import { RockKingdomScannerModal } from '../features/rock-kingdom-scanner/RockKingdomScannerModal.jsx'
 import { OwnedIntelligenceModal } from '../features/rock-kingdom-model/OwnedIntelligenceModal.jsx'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
-import { ConfirmDialog, EmptyState, FormRow, IconButton, Modal, OptionTag, Pagination } from './common.jsx'
+import { ConfirmDialog, EmptyState, FormRow, IconButton, LoadState, Modal, OptionTag, Pagination } from './common.jsx'
 import { CellView, FieldInput, FieldManagerModal, fieldDisplayProps } from './catalog.jsx'
 
 export function OwnedTool({ scene }) {
-  useEffect(() => {
-    ensureOwnedTable(scene.id)
-  }, [scene.id])
-
-  const table = useLiveQuery(
-    () =>
-      db.catalogTables
-        .where('sceneId')
-        .equals(scene.id)
-        .filter((t) => t.kind === 'owned')
-        .first(),
-    [scene.id],
-  )
-
-  if (!table) return null
+  const { table, error, retry } = useOwnedTable(scene.id)
+  if (!table) return <LoadState error={error} onRetry={retry} />
 
   return <OwnedTableView table={table} sceneId={scene.id} />
 }
@@ -655,15 +644,12 @@ function OwnedBatchEditModal({ fields, rows, rockKingdom, onClose, onSaved }) {
   })
   const [fieldKey, setFieldKey] = useState(editableFields[0]?.key || '')
   const [value, setValue] = useState(undefined)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const { pending: saving, error: saveError, run } = useAsyncAction()
   const field = editableFields.find((item) => item.key === fieldKey) || editableFields[0]
 
   async function applyBatch() {
     if (!field || value === undefined || rows.length === 0) return
-    setSaving(true)
-    setError('')
-    try {
+    await run(async () => {
       await updateRows(rows.map((row) => {
         const next = { ...row.values, [field.key]: value }
         return {
@@ -672,15 +658,13 @@ function OwnedBatchEditModal({ fields, rows, rockKingdom, onClose, onSaved }) {
         }
       }))
       onSaved()
-    } catch (batchError) {
-      setError(batchError.message)
-      setSaving(false)
-    }
+    })
   }
 
   return (
     <Modal
       title={`批量修改 ${rows.length} 条记录`}
+      busy={saving}
       onClose={onClose}
       width={500}
       footer={
@@ -697,11 +681,11 @@ function OwnedBatchEditModal({ fields, rows, rockKingdom, onClose, onSaved }) {
         </>
       }
     >
-      <div className="stack-form">
+      <fieldset className="stack-form form-fields" disabled={saving}>
         <p className="owned-batch-note">
           只修改下面选择的一个字段；其他字段、未勾选记录和现有精灵引用保持不变。
         </p>
-        {error && <div className="form-error">{error}</div>}
+        {saveError && <div className="form-error" role="alert">{saveError}</div>}
         {editableFields.length === 0 ? (
           <EmptyState title="没有可批量修改的字段" description="引用资料和派生字段不会参与批量修改。" />
         ) : (
@@ -730,7 +714,7 @@ function OwnedBatchEditModal({ fields, rows, rockKingdom, onClose, onSaved }) {
             </FormRow>
           </>
         )}
-      </div>
+      </fieldset>
     </Modal>
   )
 }
@@ -749,7 +733,7 @@ export function OwnedFormModal({ table, fields, row, rows, collectionMode, initi
     })
     return init
   })
-  const [saving, setSaving] = useState(false)
+  const { pending: saving, error: saveError, run } = useAsyncAction()
   const [error, setError] = useState('')
   const refField = fields.find((field) => field.type === 'reference')
   const referencedRows = useLiveQuery(
@@ -778,55 +762,58 @@ export function OwnedFormModal({ table, fields, row, rows, collectionMode, initi
       setError('资料库标记该精灵无异色形态，不能把这只拥有记录标为异色个体。')
       return
     }
-    setSaving(true)
-    const savedValues = values.appearance ? valuesWithAppearance(values) : values
-    if (row) {
-      await updateRow(row.id, { ...row.values, ...savedValues })
-    } else {
-      const refField = fields.find((field) => field.type === 'reference')
-      const duplicate = collectionMode === 'single' && refField
-        ? rows.find((item) =>
-            item.values?.[refField.key] && item.values?.[refField.key] === savedValues[refField.key],
-          )
-        : null
-      if (duplicate) await updateRow(duplicate.id, { ...duplicate.values, ...savedValues })
-      else await createRow(table.id, savedValues)
-    }
-    setSaving(false)
-    onSaved?.({ ...savedValues })
-    onClose()
+    await run(async () => {
+      const savedValues = values.appearance ? valuesWithAppearance(values) : values
+      if (row) {
+        await updateRow(row.id, { ...row.values, ...savedValues })
+      } else {
+        const refField = fields.find((field) => field.type === 'reference')
+        const duplicate = collectionMode === 'single' && refField
+          ? rows.find((item) =>
+              item.values?.[refField.key] && item.values?.[refField.key] === savedValues[refField.key],
+            )
+          : null
+        if (duplicate) await updateRow(duplicate.id, { ...duplicate.values, ...savedValues })
+        else await createRow(table.id, savedValues)
+      }
+      onSaved?.({ ...savedValues })
+      onClose()
+    })
   }
 
   return (
     <Modal
       title={row ? '编辑记录' : '新增记录'}
+      busy={saving}
       onClose={onClose}
       width={480}
       footer={
         <>
-          <button type="button" className="btn" onClick={onClose}>
+          <button type="button" className="btn" onClick={onClose} disabled={saving}>
             取消
           </button>
           <button type="submit" form="owned-form" className="btn btn-primary" disabled={saving}>
-            保存
+            {saving ? '正在保存…' : '保存'}
           </button>
         </>
       }
     >
-      <form id="owned-form" onSubmit={handleSubmit} className="stack-form">
-        {error && <div className="form-error">{error}</div>}
-        {fields.map((field) => (
-          <FormRow key={field.id} label={field.name}>
-            <FieldInput
-              field={field}
-              value={values[field.key]}
-              onChange={(v) => setFieldValue(field.key, v)}
-            />
-            {field.key === 'appearance' && shinyBlocked && (
-              <div className="form-error">资料库「异色形态」为无，不能选择异色个体。</div>
-            )}
-          </FormRow>
-        ))}
+      <form id="owned-form" onSubmit={handleSubmit}>
+        <fieldset className="stack-form form-fields" disabled={saving}>
+          {(error || saveError) && <div className="form-error" role="alert">{error || saveError}</div>}
+          {fields.map((field) => (
+            <FormRow key={field.id} label={field.name}>
+              <FieldInput
+                field={field}
+                value={values[field.key]}
+                onChange={(v) => setFieldValue(field.key, v)}
+              />
+              {field.key === 'appearance' && shinyBlocked && (
+                <div className="form-error">资料库「异色形态」为无，不能选择异色个体。</div>
+              )}
+            </FormRow>
+          ))}
+        </fieldset>
       </form>
     </Modal>
   )
