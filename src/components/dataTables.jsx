@@ -2,6 +2,7 @@
 // + 数据表格 + 分页 + 行新增/编辑弹窗 + 行详情页。
 
 import { useEffect, useState } from 'react'
+import { useAsyncAction } from '../hooks/useAsyncAction.js'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Filter, Pencil, Plus, Search, Settings2, Trash2 } from 'lucide-react'
 import { DEFAULT_PAGE_SIZE, isEditableFieldType } from '../constants.js'
@@ -103,42 +104,44 @@ export function CatalogTool({ scene }) {
 
 function TableNameModal({ title, initialName = '', onClose, onSubmit }) {
   const [name, setName] = useState(initialName)
-  const [saving, setSaving] = useState(false)
+  const { pending: saving, error, run } = useAsyncAction()
 
   async function handleSubmit(e) {
     e.preventDefault()
     if (!name.trim()) return
-    setSaving(true)
-    await onSubmit(name.trim())
-    setSaving(false)
+    await run(() => onSubmit(name.trim()))
   }
 
   return (
     <Modal
       title={title}
+      busy={saving}
       onClose={onClose}
       width={400}
       footer={
         <>
-          <button type="button" className="btn" onClick={onClose}>
+          <button type="button" className="btn" onClick={onClose} disabled={saving}>
             取消
           </button>
           <button type="submit" form="table-name-form" className="btn btn-primary" disabled={saving}>
-            保存
+            {saving ? '正在保存…' : '保存'}
           </button>
         </>
       }
     >
-      <form id="table-name-form" onSubmit={handleSubmit} className="stack-form">
-        <FormRow label="名称">
-          <input
-            className="input"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="例如：精灵基础资料"
-            autoFocus
-          />
-        </FormRow>
+      <form id="table-name-form" onSubmit={handleSubmit}>
+        <fieldset className="stack-form form-fields" disabled={saving}>
+          {error && <p className="form-error" role="alert">{error}</p>}
+          <FormRow label="名称">
+            <input
+              className="input"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="例如：精灵基础资料"
+              autoFocus
+            />
+          </FormRow>
+        </fieldset>
       </form>
     </Modal>
   )
@@ -457,7 +460,7 @@ function RowFormModal({ table, fields, row, onClose }) {
     })
     return init
   })
-  const [saving, setSaving] = useState(false)
+  const { pending: saving, error, run } = useAsyncAction()
 
   function setFieldValue(key, value) {
     setValues((prev) => ({ ...prev, [key]: value }))
@@ -465,61 +468,65 @@ function RowFormModal({ table, fields, row, onClose }) {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    setSaving(true)
-    if (row) {
-      await updateRow(row.id, { ...row.values, ...values })
-    } else {
-      await createRow(table.id, values)
-    }
-    setSaving(false)
-    onClose()
+    await run(async () => {
+      if (row) {
+        await updateRow(row.id, { ...row.values, ...values })
+      } else {
+        await createRow(table.id, values)
+      }
+      onClose()
+    })
   }
 
   return (
     <Modal
       title={row ? '编辑行' : '新增行'}
+      busy={saving}
       onClose={onClose}
       width={640}
       footer={
         <>
-          <button type="button" className="btn" onClick={onClose}>
+          <button type="button" className="btn" onClick={onClose} disabled={saving}>
             取消
           </button>
           <button type="submit" form="row-form" className="btn btn-primary" disabled={saving}>
-            保存
+            {saving ? '正在保存…' : '保存'}
           </button>
         </>
       }
     >
-      <form id="row-form" onSubmit={handleSubmit} className="stack-form row-form">
-        {editableFields.map((field) => field.type === 'summary' || field.display?.kind === 'summary' ? (
-          <FormRow key={field.id} label={field.name}>
-            <div className="trait-field-input">
+      <form id="row-form" onSubmit={handleSubmit}>
+        <fieldset className="stack-form row-form form-fields" disabled={saving}>
+          {error && <p className="form-error" role="alert">{error}</p>}
+          {editableFields.map((field) => field.type === 'summary' || field.display?.kind === 'summary' ? (
+            <FormRow key={field.id} label={field.name}>
+              <div className="trait-field-input">
+                <FieldInput
+                  field={field}
+                  value={values[field.key]}
+                  onChange={(value) => setFieldValue(field.key, value)}
+                />
+                {field.display.descriptionField && (
+                  <textarea
+                    className="input textarea"
+                    rows={4}
+                    value={values[field.display.descriptionField] || ''}
+                    onChange={(event) => setFieldValue(field.display.descriptionField, event.target.value)}
+                    placeholder={`${field.name}描述`}
+                  />
+                )}
+              </div>
+            </FormRow>
+          ) : (
+            <FormRow key={field.id} label={field.name}>
               <FieldInput
                 field={field}
                 value={values[field.key]}
-                onChange={(value) => setFieldValue(field.key, value)}
+                onChange={(v) => setFieldValue(field.key, v)}
               />
-              {field.display.descriptionField && (
-                <textarea
-                  className="input textarea"
-                  rows={4}
-                  value={values[field.display.descriptionField] || ''}
-                  onChange={(event) => setFieldValue(field.display.descriptionField, event.target.value)}
-                  placeholder={`${field.name}描述`}
-                />
-              )}
-            </div>
-          </FormRow>
-        ) : (
-          <FormRow key={field.id} label={field.name}>
-            <FieldInput
-              field={field}
-              value={values[field.key]}
-              onChange={(v) => setFieldValue(field.key, v)}
-            />
-          </FormRow>
-        ))}
+            </FormRow>
+          ))}
+        </fieldset>
       </form>
     </Modal>
   )

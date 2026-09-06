@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useOwnedTable } from '../hooks/useOwnedTable.js'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { RotateCcw } from 'lucide-react'
-import { db, ensureOwnedTable } from '../db.js'
+import { db } from '../db.js'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
 import {
   BREEDING_RULE_STORAGE_KEY,
@@ -13,7 +14,7 @@ import {
   summarizeMissingEggGroups,
 } from '../domain/breeding.js'
 import { OWNED_COLORFUL_OPTIONS, OWNED_NATURE_OPTIONS } from '../domain/owned.js'
-import { DragHandle, EmptyState, OptionTag, useDragReorder } from './common.jsx'
+import { DragHandle, EmptyState, LoadState, OptionTag, useDragReorder } from './common.jsx'
 import { RowDetailModal } from './rowDetail.jsx'
 
 function loadBreedingRules() {
@@ -25,13 +26,10 @@ function loadBreedingRules() {
 }
 
 export function BreedingTool({ scene }) {
-  useEffect(() => {
-    ensureOwnedTable(scene.id)
-  }, [scene.id])
+  const { table: ownedTable, error: ownedError, retry: retryOwned } = useOwnedTable(scene.id)
 
   const creatureTableId = ROCK_KINGDOM_PRESET.tables[0].id
   const skillTableId = ROCK_KINGDOM_PRESET.tables[1].id
-  const ownedTable = useLiveQuery(() => db.catalogTables.where('sceneId').equals(scene.id).filter((t) => t.kind === 'owned').first(), [scene.id])
   const ownedRows = useLiveQuery(() => ownedTable ? db.catalogRows.where('tableId').equals(ownedTable.id).toArray() : [], [ownedTable?.id])
   const ownedFields = useLiveQuery(() => ownedTable ? db.catalogFields.where('tableId').equals(ownedTable.id).sortBy('order') : [], [ownedTable?.id])
   const catalogRows = useLiveQuery(() => db.catalogRows.where('tableId').equals(creatureTableId).toArray(), [creatureTableId])
@@ -70,7 +68,8 @@ export function BreedingTool({ scene }) {
 
   const { onDragStart, onDragOver, onDrop } = useDragReorder(rules, setRules)
 
-  if (!ownedTable || !ownedRows || !ownedFields || !catalogRows || !catalogFields || !skillRows) return null
+  if (!ownedTable) return <LoadState error={ownedError} onRetry={retryOwned} />
+  if (!ownedRows || !ownedFields || !catalogRows || !catalogFields || !skillRows) return <LoadState message="正在加载繁育资料…" />
 
   return <div className="breeding-tool">
     <div className="breeding-hero">

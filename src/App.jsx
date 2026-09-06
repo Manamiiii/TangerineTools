@@ -264,6 +264,7 @@ function GlobalDataActions() {
       {pendingImport && (
         <Modal
           title="确认导入备份"
+          busy={Boolean(busy)}
           onClose={closeImport}
           footer={<>
             <button type="button" className="btn" disabled={Boolean(busy)} onClick={closeImport}>取消</button>

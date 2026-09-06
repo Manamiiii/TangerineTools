@@ -5,31 +5,33 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { Check, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, GripVertical, Search, X } from 'lucide-react'
 import { COLOR_PALETTE, PAGE_SIZE_OPTIONS, STATS_SCALE_MAX } from '../constants.js'
 import { clamp } from '../utils.js'
+import { useAsyncAction } from '../hooks/useAsyncAction.js'
 
 // ---------------------------------------------------------------------------
 // 弹窗
 // ---------------------------------------------------------------------------
 
-export function Modal({ title, onClose, children, width = 520, footer }) {
+export function Modal({ title, onClose, children, width = 520, footer, busy = false }) {
+  const titleId = useId()
   useEffect(() => {
     function onKey(e) {
-      if (e.key === 'Escape') onClose?.()
+      if (e.key === 'Escape' && !busy) onClose?.()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
+  }, [onClose, busy])
 
   return (
     <div
       className="modal-backdrop"
       onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose?.()
+        if (e.target === e.currentTarget && !busy) onClose?.()
       }}
     >
-      <div className="modal-panel" style={{ maxWidth: width }}>
+      <div className="modal-panel" style={{ maxWidth: width }} role="dialog" aria-modal="true" aria-labelledby={titleId} aria-busy={busy}>
         <div className="modal-header">
-          <h3>{title}</h3>
-          <button type="button" className="icon-btn" onClick={onClose} aria-label="关闭">
+          <h3 id={titleId}>{title}</h3>
+          <button type="button" className="icon-btn" onClick={onClose} aria-label="关闭" disabled={busy}>
             <X size={16} />
           </button>
         </div>
@@ -49,29 +51,43 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }) {
+  const { pending, error, run } = useAsyncAction()
   return (
     <Modal
       title={title}
       onClose={onCancel}
+      busy={pending}
       width={400}
       footer={
         <>
-          <button type="button" className="btn" onClick={onCancel}>
+          <button type="button" className="btn" onClick={onCancel} disabled={pending}>
             {cancelText}
           </button>
           <button
             type="button"
             className={`btn ${danger ? 'btn-danger' : 'btn-primary'}`}
-            onClick={onConfirm}
+            onClick={() => run(onConfirm)}
+            disabled={pending}
           >
-            {confirmText}
+            {pending ? '正在处理…' : confirmText}
           </button>
         </>
       }
     >
       <p className="confirm-message">{message}</p>
+      {error && <p className="form-error" role="alert">{error}</p>}
     </Modal>
   )
+}
+
+export function LoadState({ error, onRetry, message = '正在加载收集记录…' }) {
+  return <div className="empty-state" role={error ? 'alert' : 'status'}>
+    {error ? <>
+      <strong>收集记录初始化失败</strong>
+      <p>{error}</p>
+      <button type="button" className="btn" onClick={onRetry}>重新尝试</button>
+    </> : message}
+  </div>
 }
 
 // ---------------------------------------------------------------------------
