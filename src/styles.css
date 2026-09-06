@@ -5071,3 +5071,29 @@ img {
     flex-direction: column;
   }
 }
+.import-preview {
+  display: grid;
+  gap: 12px;
+  overflow-wrap: anywhere;
+}
+
+.import-preview p {
+  margin: 0;
+}
+
+.import-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.import-preview caption {
+  text-align: left;
+  margin-bottom: 8px;
+}
+
+.import-preview th,
+.import-preview td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+}

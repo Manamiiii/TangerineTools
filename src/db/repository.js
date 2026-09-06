@@ -127,45 +127,6 @@ async function ensureFixedFields(tableId, sceneId, idPrefix, fixedFields, now, e
 // （即 !table.kind），例如洛克王国场景的"精灵图鉴"。用户新建的场景若
 // 还没有普通资料表，则先创建收集记录表并留空引用，等资料表创建后再手动指定。
 
-function hasMeaningfulValue(value) {
-  return value != null && value !== '' && (!Array.isArray(value) || value.length > 0)
-}
-
-async function reconcileRockKingdomOwnedFields(tableId, sceneId, fixedFields, catalogTableId, now) {
-  if (sceneId !== ROCK_KINGDOM_PRESET.scene.id) return
-  const fields = await db.catalogFields.where('tableId').equals(tableId).toArray()
-  const rows = await db.catalogRows.where('tableId').equals(tableId).toArray()
-  const fixedByKey = new Map(fixedFields.map((field) => [field.key, field]))
-  const deprecatedKeys = new Set(['level', 'natureDirection', 'status', 'shiny', 'acquiredAt'])
-  const referenceOrder = fields.find((field) => field.key === 'ref')?.order ?? 0
-
-  await db.transaction('rw', db.catalogFields, async () => {
-    for (const field of fields) {
-      const fixed = fixedByKey.get(field.key)
-      if (fixed) {
-        await db.catalogFields.update(field.id, {
-          name: fixed.name,
-          type: fixed.type,
-          options: fixed.options || [],
-          display: fixed.display || {},
-          hidden: Boolean(fixed.hidden),
-          order: field.key === 'nickname' ? referenceOrder + 0.5 : field.order,
-          referenceTableId: fixed.type === 'reference' ? catalogTableId || null : field.referenceTableId || null,
-          updatedAt: now,
-        })
-        continue
-      }
-      if (!deprecatedKeys.has(field.key)) continue
-      const hasData = rows.some((row) => hasMeaningfulValue(row.values?.[field.key]))
-      if (hasData) {
-        await db.catalogFields.update(field.id, { hidden: true, updatedAt: now })
-      } else {
-        await db.catalogFields.delete(field.id)
-      }
-    }
-  })
-}
-
 function collectionFieldsForScene(sceneId) {
   return sceneId === ROCK_KINGDOM_PRESET.scene.id ? ROCK_KINGDOM_COLLECTION_FIELDS : []
 }
@@ -192,7 +153,6 @@ export async function ensureOwnedTable(sceneId) {
       await ensureFixedFields(existing.id, sceneId, 'owned', fixedFields, now, (f) =>
         f.type === 'reference' ? { referenceTableId: catalogTable?.id || null } : null,
       )
-      await reconcileRockKingdomOwnedFields(existing.id, sceneId, fixedFields, catalogTable?.id || null, now)
     }
     return existing
   }

@@ -1,7 +1,7 @@
 // 应用入口组件：基于 hash 的极简路由（首页场景列表 ↔ 场景工作台）、
 // 启动时的预置资料播种、全局 JSON 导出/导入（仅首页展示）。
 
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { ArrowLeft, Download, Upload } from 'lucide-react'
 import {
@@ -10,10 +10,11 @@ import {
   exportAllData,
   exportReadingCompanionData,
   importAllData,
+  previewImportData,
 } from './db.js'
 import { sceneToolsFor } from './constants.js'
 import { SceneList } from './components/scenes.jsx'
-import { ConfirmDialog, IconButton } from './components/common.jsx'
+import { IconButton, Modal } from './components/common.jsx'
 import { ErrorBoundary } from './components/ErrorBoundary.jsx'
 
 const lazyTool = (loader, name) => lazy(() => loader().then((module) => ({ default: module[name] })))
@@ -161,12 +162,31 @@ function SceneWorkbench({ scene }) {
 }
 
 function GlobalDataActions() {
-  const [pendingFile, setPendingFile] = useState(null)
+  const [pendingImport, setPendingImport] = useState(null)
+  const [busy, setBusy] = useState('')
+  const busyRef = useRef(false)
   const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
   const readingRecordCount = useLiveQuery(() => db.meta.filter((record) => (
     typeof record?.key === 'string'
     && (record.key.startsWith('readerState:') || record.key.startsWith('readerPersonalPackage:'))
   )).count(), [])
+
+  async function runAction(label, action) {
+    if (busyRef.current) return
+    busyRef.current = true
+    setBusy(label)
+    setError('')
+    setNotice('')
+    try {
+      await action()
+    } catch (err) {
+      setError(err.message || '操作失败，请重试')
+    } finally {
+      busyRef.current = false
+      setBusy('')
+    }
+  }
 
   function downloadPayload(payload, filename) {
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
@@ -178,70 +198,102 @@ function GlobalDataActions() {
     URL.revokeObjectURL(url)
   }
 
-  async function handleExport() {
-    const payload = await exportAllData()
-    downloadPayload(payload, `tangerine-tools-${payload.exportedAt.slice(0, 10)}.json`)
+  function handleExport() {
+    return runAction('正在导出…', async () => {
+      const payload = await exportAllData()
+      downloadPayload(payload, `tangerine-tools-${payload.exportedAt.slice(0, 10)}.json`)
+    })
   }
 
-  async function handleReadingMigrationExport() {
-    const payload = await exportReadingCompanionData()
-    downloadPayload(
-      payload,
-      `tangerine-reading-companion-${payload.exportedAt.slice(0, 10)}.json`,
-    )
+  function handleReadingMigrationExport() {
+    return runAction('正在导出…', async () => {
+      const payload = await exportReadingCompanionData()
+      downloadPayload(payload, `tangerine-reading-companion-${payload.exportedAt.slice(0, 10)}.json`)
+    })
   }
 
   function handleFileChosen(e) {
     const file = e.target.files?.[0]
     e.target.value = ''
     if (!file) return
+    return runAction('正在检查备份…', async () => {
+      const payload = JSON.parse(await file.text())
+      const summary = await previewImportData(payload)
+      setPendingImport({ name: file.name, payload, summary })
+    })
+  }
+
+  function confirmImport() {
+    return runAction('正在导入…', async () => {
+      await importAllData(pendingImport.payload)
+      setPendingImport(null)
+      setNotice('导入完成。重新加载页面后会检查正式资料。')
+    })
+  }
+
+  function closeImport() {
+    if (busyRef.current) return
+    setPendingImport(null)
     setError('')
-    setPendingFile(file)
   }
 
-  async function confirmImport() {
-    try {
-      const text = await pendingFile.text()
-      const payload = JSON.parse(text)
-      await importAllData(payload)
-      setPendingFile(null)
-    } catch (err) {
-      setPendingFile(null)
-      setError(err.message || '导入失败，请检查文件内容')
-    }
-  }
-
+  const disabled = Boolean(busy || pendingImport)
   return (
     <div className="global-data-actions">
-      {error && <span className="form-error">{error}</span>}
-      <button type="button" className="btn global-data-btn" onClick={handleExport}>
-        <Download size={14} />
-        导出数据
+      {error && !pendingImport && <span className="form-error" role="alert">{error}</span>}
+      {busy && !pendingImport && <span role="status">{busy}</span>}
+      {notice && <span role="status">{notice}</span>}
+      <button type="button" className="btn global-data-btn" disabled={disabled} onClick={handleExport}>
+        <Download size={14} /> 导出数据
       </button>
       {readingRecordCount > 0 && (
         <button
           type="button"
           className="btn global-data-btn"
+          disabled={disabled}
           onClick={handleReadingMigrationExport}
           title="导出旧阅读进度和个人书籍，供 Tangerine Reading Companion 导入"
         >
-          <Download size={14} />
-          迁移阅读数据
+          <Download size={14} /> 迁移阅读数据
         </button>
       )}
-      <label className="btn btn-file global-data-btn">
-        <Upload size={14} />
-        导入数据
-        <input type="file" accept="application/json" hidden onChange={handleFileChosen} />
+      <label className="btn btn-file global-data-btn" aria-disabled={disabled}>
+        <Upload size={14} /> 导入数据
+        <input type="file" accept="application/json" hidden disabled={disabled} onChange={handleFileChosen} />
       </label>
-      {pendingFile && (
-        <ConfirmDialog
-          title="导入数据"
-          message={`即将导入「${pendingFile.name}」。相同 id 的数据会被覆盖，文件中未包含的数据将保留在本地，此操作不可撤销。确定继续吗？`}
-          confirmText="导入"
-          onCancel={() => setPendingFile(null)}
-          onConfirm={confirmImport}
-        />
+      {pendingImport && (
+        <Modal
+          title="确认导入备份"
+          onClose={closeImport}
+          footer={<>
+            <button type="button" className="btn" disabled={Boolean(busy)} onClick={closeImport}>取消</button>
+            <button type="button" className="btn btn-primary" disabled={Boolean(busy)} onClick={confirmImport}>
+              {busy || '按 id 合并导入'}
+            </button>
+          </>}
+        >
+          <div className="import-preview" aria-busy={Boolean(busy)}>
+            <p>文件：{pendingImport.name}</p>
+            <p>同 id 的记录整条覆盖，文件未包含的本地记录保留。请确认已保存需要保留的本地备份。</p>
+            <table>
+              <caption>按当前本地数据估算的导入范围</caption>
+              <thead><tr><th>数据</th><th>新增</th><th>覆盖</th></tr></thead>
+              <tbody>{pendingImport.summary.collections.map((item) => (
+                <tr key={item.key}><td>{item.label}</td><td>{item.added}</td><td>{item.overwritten}</td></tr>
+              ))}</tbody>
+            </table>
+            {pendingImport.summary.warningCount > 0 && (
+              <div role="status">
+                <p>发现 {pendingImport.summary.warningCount} 项关联警告。导入会保留这些记录，不会自动删除或修复引用。</p>
+                <details>
+                  <summary>查看关联警告{pendingImport.summary.warningCount > 20 ? '（前 20 项）' : ''}</summary>
+                  <ul>{pendingImport.summary.warnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul>
+                </details>
+              </div>
+            )}
+            {error && <p className="form-error" role="alert">{error}</p>}
+          </div>
+        </Modal>
       )}
     </div>
   )

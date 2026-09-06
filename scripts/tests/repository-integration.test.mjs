@@ -96,11 +96,11 @@ test('owned table creation is idempotent and only presets Rock Kingdom fields', 
   )
   await ensureOwnedTable(ROCK_KINGDOM_PRESET.scene.id)
   assert.equal(await db.catalogFields.where('tableId').equals(rockOwned.id).count(), rockFields.length)
-  assert.equal((await db.catalogFields.get(rockFields.find((field) => field.key === 'shiny').id)).hidden, true)
+  assert.equal((await db.catalogFields.get(rockFields.find((field) => field.key === 'shiny').id)).hidden, false)
   assert.deepEqual(
     await db.catalogFields.get(rockFields.find((field) => field.key === 'nickname').id)
       .then((field) => ({ name: field.name, hidden: field.hidden })),
-    { name: '精灵名', hidden: false },
+    { name: '旧昵称', hidden: true },
   )
 })
 
@@ -120,6 +120,33 @@ test('batch row updates change only the supplied rows and values in one reposito
   assert.deepEqual((await db.catalogRows.get(first.id)).values, { nature: 'adamant', note: '保留一' })
   assert.deepEqual((await db.catalogRows.get(second.id)).values, { nature: 'adamant', note: '保留二' })
   assert.deepEqual((await db.catalogRows.get(untouched.id)).values, { nature: 'calm', note: '不修改' })
+})
+
+
+test('owned field configuration and random ids survive initialization without row changes', async () => {
+  await resetDatabase()
+  const sceneId = ROCK_KINGDOM_PRESET.scene.id
+  await db.scenes.put(ROCK_KINGDOM_PRESET.scene)
+  await db.catalogTables.put(ROCK_KINGDOM_PRESET.tables[0])
+  const table = { id: 'old-random-owned-id', sceneId, kind: 'owned', name: '个人收集' }
+  await db.catalogTables.put(table)
+  const field = {
+    id: 'old-random-field-id', tableId: table.id, key: 'ref', type: 'reference',
+    name: '自定义引用', order: 88, hidden: true,
+    referenceTableId: 'my-custom-table', options: [{ value: 'custom', label: '自定义' }],
+    display: { plainReference: false }, updatedAt: '2026-01-01T00:00:00Z',
+  }
+  const row = { id: 'random-owned-row', tableId: table.id, values: { ref: 'custom-row', note: '保留' } }
+  await db.catalogFields.put(field)
+  await db.catalogRows.put(row)
+  await ensureOwnedTable(sceneId)
+  await ensureOwnedTable(sceneId)
+  assert.deepEqual(await db.catalogFields.get(field.id), field)
+  assert.deepEqual(await db.catalogRows.get(row.id), row)
+  assert.equal(await db.catalogTables.where('sceneId').equals(sceneId).filter((item) => item.kind === 'owned').count(), 1)
+  const fields = await db.catalogFields.where('tableId').equals(table.id).toArray()
+  assert.equal(fields.filter((item) => item.key === 'ref').length, 1)
+  assert.equal(fields.length, ROCK_KINGDOM_COLLECTION_FIELDS.length)
 })
 
 test.after(async () => {
