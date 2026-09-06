@@ -74,7 +74,7 @@ test('seed migration is versioned and preserves imported custom preset values', 
   assert.equal(fetchCount, 0)
   assert.deepEqual(
     (await db.scenes.get('scene-rock-kingdom')).tools,
-    ['catalog', 'nature', 'owned', 'breeding'],
+    ['catalog', 'owned', 'stock', 'nature', 'breeding'],
   )
 })
 
@@ -90,7 +90,7 @@ test('an offline preset failure remains retryable', async () => {
   assert.equal(await db.catalogRows.where('tableId').equals('table-rock-kingdom-elf-basic').count(), creatures.length)
 })
 
-test('startup removes only retired breeding test rows from collection data', async () => {
+test('startup preserves collection records including legacy demo and fixture ids', async () => {
   await resetDatabase()
   globalThis.fetch = async (url) => presetResponse(url)
   await ensureSeeded()
@@ -107,14 +107,40 @@ test('startup removes only retired breeding test rows from collection data', asy
     { key: 'seededRockKingdomBreedingFixturesV1', value: true },
   ])
 
+  const before = await db.catalogRows.where('tableId').equals(ownedTableId).toArray()
+  await db.meta.delete('rockKingdomRuntimeMigrationVersion')
+  await ensureSeeded()
   await ensureSeeded()
 
-  assert.equal(await db.catalogRows.get('owned-rock-breeding-demo-1'), undefined)
-  assert.equal(await db.catalogRows.get('owned-rock-breeding-fixture-test'), undefined)
+  assert.deepEqual(await db.catalogRows.where('tableId').equals(ownedTableId).toArray(), before)
+  assert.equal((await db.catalogRows.get('owned-rock-breeding-demo-1')).values.note, '旧演示')
+  assert.equal((await db.catalogRows.get('owned-rock-breeding-fixture-test')).values.note, '孵蛋推荐调试预置（可删除）')
   assert.equal((await db.catalogRows.get('owned-user-kept')).values.note, '用户记录')
   assert.equal((await db.catalogRows.get('owned-user-same-note')).values.note, '孵蛋推荐调试预置（可删除）')
-  assert.equal(await db.meta.get('seededRockKingdomBreedingDemoOwnedRows'), undefined)
-  assert.equal(await db.meta.get('seededRockKingdomBreedingFixturesV1'), undefined)
+  assert.equal((await db.meta.get('seededRockKingdomBreedingDemoOwnedRows')).value, true)
+  assert.equal((await db.meta.get('seededRockKingdomBreedingFixturesV1')).value, true)
+})
+
+
+test('startup preserves imported scene tools and field preferences without migration markers', async () => {
+  await resetDatabase()
+  globalThis.fetch = async (url) => presetResponse(url)
+  const { ROCK_KINGDOM_PRESET } = await import('../../src/presets/rockKingdom.js')
+  const scene = { ...ROCK_KINGDOM_PRESET.scene, name: '我的洛克', tools: ['catalog', 'owned', 'stock', 'nature', 'breeding'] }
+  const field = {
+    ...ROCK_KINGDOM_PRESET.fields.find((item) => item.key === 'traitName'),
+    name: '我的特性列', order: 123, hidden: false, display: { custom: true },
+  }
+  await importAllData({ data: { scenes: [scene], catalogFields: [field] } })
+  await ensureSeeded()
+  await ensureSeeded()
+  assert.deepEqual(await db.scenes.get(scene.id), scene)
+  assert.deepEqual(await db.catalogFields.get(field.id), field)
+
+  // 导入主动关闭工具的配置，同样不能凭旧默认数组重新打开工具。
+  await importAllData({ data: { scenes: [{ ...scene, tools: ['catalog'] }] } })
+  await ensureSeeded()
+  assert.deepEqual((await db.scenes.get(scene.id)).tools, ['catalog'])
 })
 
 test.after(async () => {
