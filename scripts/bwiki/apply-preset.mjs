@@ -4,6 +4,8 @@ import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { BWIKI_PATHS } from './lib/paths.mjs'
+import { buildSourceManifest } from './lib/source-manifest.mjs'
+import { assertPublishablePreview } from './lib/release-gate.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '../..')
@@ -16,6 +18,7 @@ const FILES = {
   migrationPreview: BWIKI_PATHS.artifacts.migrationPreview,
   migrationPreset: BWIKI_PATHS.presets.migration,
   report: BWIKI_PATHS.artifacts.applyReport,
+  sources: BWIKI_PATHS.presets.sources,
 }
 const CONFIRMATION = 'CONFIRM_BWIKI_PRESET'
 
@@ -58,9 +61,7 @@ function assertRows(rows, label) {
 }
 
 function presetRowsFromPreview(payload, label) {
-  assert(payload?.source === 'bwiki-preview', `${label} source 不是 bwiki-preview`)
-  assert(Array.isArray(payload.rows), `${label} 缺少 rows 数组`)
-  assert(payload.rowCount === payload.rows.length, `${label} rowCount 与 rows.length 不一致`)
+  assertPublishablePreview(payload, label)
   return payload.rows.map((row) => ({ id: row.id, values: row.values }))
 }
 
@@ -256,11 +257,12 @@ ${legacyUnmatched.length ? legacyUnmatched.map((item) => `- ${item}`).join('\n')
 `
 }
 
-async function writePresetFiles(creatureRows, skillRows, migrationManifest) {
+async function writePresetFiles(creatureRows, skillRows, migrationManifest, sourceManifest) {
   const targets = [
     [absolute(FILES.creaturePreset), `${JSON.stringify(creatureRows, null, 2)}\n`],
     [absolute(FILES.skillPreset), `${JSON.stringify(skillRows, null, 2)}\n`],
     [absolute(FILES.migrationPreset), `${JSON.stringify(migrationManifest, null, 2)}\n`],
+    [absolute(FILES.sources), `${JSON.stringify(sourceManifest, null, 2)}\n`],
   ]
   const originals = await Promise.all(targets.map(async ([target]) => {
     try {
@@ -290,7 +292,7 @@ async function writePresetFiles(creatureRows, skillRows, migrationManifest) {
 
 async function main() {
   const args = new Set(process.argv.slice(2))
-  const unknownArgs = [...args].filter((arg) => arg !== '--write')
+  const unknownArgs = [...args].filter((arg) => !['--write', '--source=nrc'].includes(arg))
   assert(unknownArgs.length === 0, `未知参数：${unknownArgs.join(' ')}`)
   const writeMode = args.has('--write')
 
@@ -304,9 +306,18 @@ async function main() {
   ])
   const creaturePreview = JSON.parse(creaturePreviewText)
   const skillPreview = JSON.parse(skillPreviewText)
+  if (args.has('--source=nrc')) {
+    assert(creaturePreview.sourceProfile === 'nrc' && skillPreview.sourceProfile === 'nrc', 'NRC preview 缺少来源版本')
+    assert(creaturePreview.sourceVersion && creaturePreview.sourceVersion === skillPreview.sourceVersion, 'NRC preview 版本不一致')
+    for (const key of ['creatures', 'skills', 'details', 'breeding']) {
+      const actual = sha256(JSON.stringify(await readJson(BWIKI_PATHS.staging[key])))
+      assert(creaturePreview.stagingHashes?.[key] === actual && skillPreview.stagingHashes?.[key] === actual, `NRC ${key} staging 与 preview 不一致，请重建预览`)
+    }
+  }
   if (existingManifest) assert(existingManifest.source === 'bwiki-preset-migration', '现有 public 迁移清单 source 不正确')
   const creatureRows = presetRowsFromPreview(creaturePreview, '精灵 preview')
   const skillRows = presetRowsFromPreview(skillPreview, '技能 preview')
+  const sourceManifest = buildSourceManifest({ creatures: creatureRows, skills: skillRows, creaturePreview, skillPreview })
 
   assertRows(currentCreatures, '当前精灵 preset')
   assertRows(currentSkills, '当前技能 preset')
@@ -341,7 +352,7 @@ async function main() {
       process.env.BWIKI_PRESET_OVERWRITE === CONFIRMATION,
       `拒绝覆盖：必须设置 BWIKI_PRESET_OVERWRITE=${CONFIRMATION}`,
     )
-    await writePresetFiles(creatureRows, skillRows, migrationManifest)
+    await writePresetFiles(creatureRows, skillRows, migrationManifest, sourceManifest)
     const [writtenCreatures, writtenSkills, writtenMigration] = await Promise.all([
       readFile(absolute(FILES.creaturePreset), 'utf8'),
       readFile(absolute(FILES.skillPreset), 'utf8'),

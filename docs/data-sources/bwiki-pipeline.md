@@ -25,6 +25,8 @@
 
 详细字段对应关系见 `docs/data-sources/bwiki-field-mapping.md`。
 
+新版 NRC 的采集与预览使用独立目录和命令，见 [`nrc-source.md`](nrc-source.md)。来源清单 `src/presets/rockKingdomSources.json` 按实际发布数据，与精灵、技能和迁移清单一起发布；应用提供版权说明及逐行来源链接。
+
 ## 当前产物
 
 ```text

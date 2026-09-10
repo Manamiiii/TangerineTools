@@ -2,6 +2,8 @@
 
 本文记录当前 BWiki staging / detail staging 到洛克王国资料库字段的正式映射口径。更新数据时先生成 preview 并校验，只有显式 apply 才覆盖 `public/presets/*`；不引入 Dexie schema version 变更。
 
+NRC 候选字段、快照与未决映射见 [`nrc-source.md`](nrc-source.md)，不改变本文的正式基线。技能“防御”在当前转换器中归入 `status`；这类表示差异不属于版本平衡调整。
+
 ## 输入与输出范围
 
 | 输入 | 产物 | 当前用途 |
