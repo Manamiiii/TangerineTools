@@ -1,5 +1,6 @@
 import { CellView } from './catalog.jsx'
 import { Modal } from './common.jsx'
+import { RowSourceLink } from './DataSourceContent.jsx'
 
 // 资料库、孵蛋推荐等工具共用的资料行详情。
 export function RowDetailModal({ row, fields, rows = [], onClose, onEdit, onDelete, onOpenReference, title = '详情' }) {
@@ -24,6 +25,7 @@ export function RowDetailModal({ row, fields, rows = [], onClose, onEdit, onDele
       }
     >
       <div className="row-detail">
+        <RowSourceLink row={row} />
         {detailFields.map((field) => (
           <div key={field.id} className="row-detail-item">
             <div className="row-detail-label">

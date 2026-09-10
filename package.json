@@ -18,6 +18,11 @@
     "check:official-announcements": "node scripts/bwiki/check-official-announcements.mjs",
     "sync:bwiki:staging": "node scripts/bwiki/sync-staging.mjs",
     "sync:bwiki:details": "node scripts/bwiki/sync-details.mjs",
+    "sync:bwiki:nrc": "node scripts/bwiki/sync-nrc.mjs",
+    "import:bwiki:nrc": "node scripts/bwiki/import-nrc-snapshot.mjs",
+    "preview:bwiki:nrc": "node scripts/bwiki/build-preview.mjs --source=nrc",
+    "check:bwiki:nrc": "node scripts/bwiki/apply-preset.mjs --source=nrc",
+    "check:bwiki:sources": "node scripts/bwiki/check-sources.mjs",
     "preview:bwiki": "node scripts/bwiki/build-preview.mjs",
     "check:bwiki:preset": "node scripts/bwiki/apply-preset.mjs",
     "apply:bwiki:preset": "node scripts/bwiki/apply-preset.mjs --write",
@@ -37,6 +42,7 @@
     "@vitejs/plugin-react": "^6.0.3",
     "fake-indexeddb": "^6.2.4",
     "oxlint": "^1.74.0",
+    "parse5": "^8.0.1",
     "sharp": "^0.35.3",
     "vite": "^8.1.5"
   }

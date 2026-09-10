@@ -4,6 +4,9 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { deriveSkillEffectTags, deriveSkillTags, deriveTraitTags } from './lib/rock-kingdom-tags.mjs'
 import { BWIKI_PATHS } from './lib/paths.mjs'
+import { fileURLToPath } from 'node:url'
+import { sha256 } from './lib/snapshots.mjs'
+import { SOURCE_NOTICES } from './lib/source-manifest.mjs'
 
 const INPUTS = {
   creatures: BWIKI_PATHS.staging.creatures,
@@ -232,7 +235,7 @@ function countFieldChanges(previewRows, currentRows, fields) {
   }).length])
 }
 
-function buildPreview({ creatures, skills, details, currentRows, currentSkills, breedingRows, syncedAt }) {
+export function buildPreview({ creatures, skills, details, currentRows, currentSkills, breedingRows, syncedAt }) {
   const detailByCreature = new Map(details.map((row) => [stagedCreatureKey(row), row]))
   const bossNames = new Set(
     creatures
@@ -570,7 +573,7 @@ ${renderList(skillIssues.newRows)}
 
 ${renderList(omittedCurrentCreatures)}
 
-> 用户已确认这些旧行均能在新版数据中找到对应精灵，差异主要来自“（本来的样子）”等括号文本消失。它们不再阻塞正式发布；现有浏览器仍按 merge-by-id 保留旧行和 owned 引用，发布命令不得主动删除或重写用户引用。
+> 未进入 preview 的稳定 ID 必须逐项核对身份与兼容策略，不自动继承其他版本的确认。现有浏览器按 merge-by-id 保留旧行和 owned 引用，发布不得主动删除或重写用户引用。
 
 ## 字段变化摘要
 
@@ -604,7 +607,7 @@ ${renderList(creatureIssues.elementOrderChanges)}
 
 ${renderList(creatureIssues.elementValueChanges)}
 
-> 用户已确认 BWiki 系别变化符合预期；技能与精灵系别继续以 BWiki staging 为新版本主来源。
+> 系别变化按本次 staging 逐项审阅，不自动继承其他版本的确认。
 
 ### 空值 / 非数字种族值
 
@@ -684,6 +687,7 @@ ${p4Blockers.length ? `当前 **不建议发布正式预置**：\n\n${renderList
 }
 
 async function main() {
+  if (process.argv.slice(2).some((arg) => arg !== '--source=nrc')) throw new Error('Unknown preview argument')
   const [creatureStaging, skillStaging, detailStaging, currentRows, currentSkills, breedingSnapshot] = await Promise.all([
     readJson(INPUTS.creatures),
     readJson(INPUTS.skills),
@@ -693,6 +697,11 @@ async function main() {
     readJson(INPUTS.breedingRows),
   ])
   const syncedAt = new Date().toISOString()
+  const nrc = process.argv.includes('--source=nrc')
+  const inputs = [creatureStaging, skillStaging, detailStaging, breedingSnapshot]
+  if (nrc && inputs.some((input) => input.source !== 'bwiki-nrc' || !input.version || input.version !== creatureStaging.version)) throw new Error('NRC staging versions differ')
+  const releaseBlockers = nrc ? [...new Set(inputs.flatMap((input) => input.releaseBlockers ?? []))] : []
+  const stagingHashes = nrc ? Object.fromEntries(await Promise.all(['creatures', 'skills', 'details', 'breeding'].map(async (key) => [key, sha256(JSON.stringify(await readJson(BWIKI_PATHS.staging[key])))]))) : undefined
   const { creaturePreviewRows, skillPreviewRows, report } = buildPreview({
     creatures: creatureStaging.rows ?? [],
     skills: skillStaging.rows ?? [],
@@ -703,9 +712,12 @@ async function main() {
     syncedAt,
   })
 
+  await mkdir(dirname(OUTPUTS.report), { recursive: true })
+  const provenance = nrc ? { sourceProfile: 'nrc', sourceVersion: creatureStaging.version, stagingHashes, releaseBlockers, sourceAttributions: SOURCE_NOTICES, sourceNotes: '未完成候选含当前 rocom 正式字段回填；不声明为全部来自 NRC 的完整新版数据。' } : {}
   await Promise.all([
     writeJson(OUTPUTS.rows, {
       source: 'bwiki-preview',
+      ...provenance,
       generatedAt: syncedAt,
       inputs: INPUTS,
       rowCount: creaturePreviewRows.length,
@@ -713,12 +725,13 @@ async function main() {
     }),
     writeJson(OUTPUTS.skills, {
       source: 'bwiki-preview',
+      ...provenance,
       generatedAt: syncedAt,
       inputs: INPUTS,
       rowCount: skillPreviewRows.length,
       rows: skillPreviewRows,
     }),
-    writeFile(OUTPUTS.report, report, 'utf8'),
+    writeFile(OUTPUTS.report, report + (nrc ? `\n## NRC 发布阻塞\n\n版本：${creatureStaging.version}\n\n${releaseBlockers.map((item) => `- ${item}`).join('\n')}\n` : ''), 'utf8'),
   ])
 
   console.log(`wrote ${OUTPUTS.rows} (${creaturePreviewRows.length} rows)`)
@@ -726,7 +739,7 @@ async function main() {
   console.log(`wrote ${OUTPUTS.report}`)
 }
 
-main().catch((error) => {
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch((error) => {
   console.error(error)
   process.exitCode = 1
 })

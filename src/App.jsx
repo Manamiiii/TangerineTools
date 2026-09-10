@@ -16,6 +16,7 @@ import { sceneToolsFor } from './constants.js'
 import { SceneList } from './components/scenes.jsx'
 import { IconButton, Modal } from './components/common.jsx'
 import { ErrorBoundary } from './components/ErrorBoundary.jsx'
+import { DataSourceNotice } from './components/DataSourceNotice.jsx'
 
 const lazyTool = (loader, name) => lazy(() => loader().then((module) => ({ default: module[name] })))
 const CatalogTool = lazyTool(() => import('./components/dataTables.jsx'), 'CatalogTool')
@@ -115,6 +116,7 @@ export default function App() {
           <SceneList scenes={visibleScenes} onOpen={goToScene} />
         )}
       </main>
+      <DataSourceNotice />
     </div>
   )
 }

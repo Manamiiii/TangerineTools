@@ -29,6 +29,11 @@ npm run dev
 | `npm run check:official-announcements` | 检查官方版本 / 平衡公告并生成人工复核报告 |
 | `npm run sync:bwiki:staging` | 同步 BWiki 基础 staging |
 | `npm run sync:bwiki:details` | 同步 BWiki 详情 staging |
+| `npm run sync:bwiki:nrc -- --version=S4-2026-09-10` | 同步新版 NRC 候选；默认最多请求 24 个缺失详情 |
+| `npm run import:bwiki:nrc -- --version=版本 --key=页面键 --file=快照.html` | 校验并导入 NRC HTML 快照 |
+| `npm run preview:bwiki:nrc` | 生成 NRC 候选预览与发布阻塞清单 |
+| `npm run check:bwiki:nrc` | 检查 NRC 发布条件；采集或审阅未完成时失败 |
+| `npm run check:bwiki:sources` | 核对正式资料与逐行来源清单 |
 | `npm run preview:bwiki` | 构建 BWiki 发布预览 |
 | `npm run check:bwiki:preset` | dry-run 检查正式预置差异 |
 | `npm run apply:bwiki:preset` | 显式应用正式预置 |
@@ -56,7 +61,7 @@ src/components/               场景和通用工具界面
 src/features/                 OCR、模型与洛克王国专项能力
 src/hooks/                    异步操作状态与收集表初始化
 src/db/                       Dexie、播种、导入导出与迁移
-src/presets/                  场景结构定义
+src/presets/                  场景结构定义与版本化来源清单
 ```
 
 ## 维护文档
@@ -65,6 +70,7 @@ src/presets/                  场景结构定义
 - [`docs/data-sync.md`](docs/data-sync.md)：Dexie、备份、导入与阅读迁移兼容。
 - [`docs/data-sources/bwiki-pipeline.md`](docs/data-sources/bwiki-pipeline.md)：正式资料发布流程。
 - [`docs/data-sources/bwiki-field-mapping.md`](docs/data-sources/bwiki-field-mapping.md)：字段转换、稳定 id 与校验门槛。
+- [`docs/data-sources/nrc-source.md`](docs/data-sources/nrc-source.md)：新版 NRC 快照采集、候选边界与署名许可。
 - [`docs/data-sources/research-sources.md`](docs/data-sources/research-sources.md)：玩家资料研究边界。
 - [`docs/wuhui-huaxia/catalog.md`](docs/wuhui-huaxia/catalog.md)：无悔华夏名臣资料、个人收集模型与来源约束。
 - [`docs/nature/rules.md`](docs/nature/rules.md)：性格推荐规则。

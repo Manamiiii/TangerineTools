@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 
-export const BWIKI_PATHS = Object.freeze({
+const LEGACY_PATHS = Object.freeze({
   staging: Object.freeze({
     creatures: 'scripts/bwiki/data/staging/creatures.json',
     skills: 'scripts/bwiki/data/staging/skills.json',
@@ -17,6 +17,7 @@ export const BWIKI_PATHS = Object.freeze({
     creatures: 'public/presets/rockKingdomRows.json',
     skills: 'public/presets/rockKingdomSkillRows.json',
     migration: 'public/presets/rockKingdomPresetMigration.json',
+    sources: 'src/presets/rockKingdomSources.json',
   }),
   artifacts: Object.freeze({
     officialAnnouncementsJson: 'artifacts/bwiki/official-announcements.json',
@@ -29,6 +30,19 @@ export const BWIKI_PATHS = Object.freeze({
     applyReport: 'artifacts/bwiki/apply-report.md',
   }),
 })
+
+export function getBwikiPaths(source = 'rocom') {
+  if (!['rocom', 'nrc'].includes(source)) throw new Error(`Unknown BWiki source: ${source}`)
+  if (source === 'rocom') return LEGACY_PATHS
+  return {
+    ...LEGACY_PATHS,
+    staging: Object.fromEntries(Object.entries(LEGACY_PATHS.staging).map(([key, value]) => [key, value.replace('/staging/', '/nrc/staging/')])),
+    preview: Object.fromEntries(Object.entries(LEGACY_PATHS.preview).map(([key, value]) => [key, value.replace('/preview/', '/nrc/preview/')])),
+    artifacts: Object.fromEntries(Object.entries(LEGACY_PATHS.artifacts).map(([key, value]) => [key, value.replace('artifacts/bwiki/', 'artifacts/bwiki/nrc/')])),
+  }
+}
+
+export const BWIKI_PATHS = getBwikiPaths(process.argv.includes('--source=nrc') ? 'nrc' : 'rocom')
 
 const repoRoot = fileURLToPath(new URL('../../../', import.meta.url))
 
