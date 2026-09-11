@@ -1,32 +1,43 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { setTimeout as delay } from 'node:timers/promises'
 import { getBwikiPaths } from './lib/paths.mjs'
 import { fetchSnapshot, readSnapshot, writeJsonAtomic } from './lib/snapshots.mjs'
 import { NRC_PAGES, parseNrcCreatures, parseNrcSkills, parseNrcBreeding, parseNrcDetail } from './lib/nrc-parser.mjs'
 import { SOURCE_NOTICES } from './lib/source-manifest.mjs'
 
-async function main() {
-  const args = process.argv.slice(2)
-  if (args.some((a) => !/^(--version=|--snapshots=|--limit=|--offline$)/.test(a))) throw new Error('Unknown argument')
+export function parseSyncOptions(args) {
+  if (args.some((a) => !/^(--version=|--snapshots=|--limit=|--interval=|--offline$)/.test(a))) throw new Error('Unknown argument')
+  if (new Set(args.map((arg) => arg.split('=')[0])).size !== args.length) throw new Error('Duplicate argument')
   const option = (key) => args.find((arg) => arg.startsWith(`--${key}=`))?.slice(key.length + 3)
   const version = option('version')
-  if (!version || !/^[\w.-]+$/.test(version)) throw new Error('Specify --version=S4-2026-09-10; snapshots cannot cross source versions')
+  if (!version || !/^[\w][\w.-]*$/.test(version)) throw new Error('Specify --version=S4-2026-09-10; snapshots cannot cross source versions')
   const requestedLimit = option('limit') ?? '24'
   const limit = requestedLimit === 'all' ? Infinity : Number(requestedLimit)
-  if (!(limit >= 0) || !Number.isInteger(limit) && limit !== Infinity) throw new Error('Invalid --limit')
+  if (requestedLimit !== 'all' && (!/^\d+$/.test(requestedLimit) || !Number.isSafeInteger(limit))) throw new Error('Invalid --limit')
+  const intervalText = option('interval') ?? '30'
+  const interval = Number(intervalText)
+  if (!/^\d+$/.test(intervalText) || !Number.isSafeInteger(interval) || interval < 30 || interval > 3600) throw new Error('Invalid --interval: use 30–3600 seconds')
   const directory = resolve(option('snapshots') ?? `artifacts/bwiki/nrc-snapshots/${version}`)
-  const paths = getBwikiPaths('nrc')
   const offline = args.includes('--offline')
+  return { version, limit, interval, directory, offline }
+}
+
+async function main() {
+  const { version, limit, interval, directory, offline } = parseSyncOptions(process.argv.slice(2))
+  const paths = getBwikiPaths('nrc')
   let fetched = 0
   let stopped = ''
   async function snapshot(key, sourceUrl) {
     try { return await readSnapshot(directory, key, sourceUrl, version) } catch (error) {
       if (error.code !== 'ENOENT') throw error
       if (offline || stopped) return null
-      await delay(2000)
+      console.log(`NRC waiting ${interval}s before ${key}: ${sourceUrl}`)
+      await delay(interval * 1000)
       try { return await fetchSnapshot(directory, key, sourceUrl, version) } catch (failure) {
         stopped = failure.message
+        console.error(`NRC requests stopped: ${stopped}`)
         await writeJsonAtomic(resolve(directory, 'last-failure.json'), { sourceUrl, version, attemptedAt: new Date().toISOString(), error: stopped })
         return null
       }
@@ -87,4 +98,4 @@ async function main() {
   if (missing.length || failures.length || stopped) process.exitCode = 1
 }
 
-main().catch((error) => { console.error(error.message); process.exitCode = 1 })
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch((error) => { console.error(error.message); process.exitCode = 1 })

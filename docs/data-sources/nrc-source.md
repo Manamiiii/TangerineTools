@@ -27,14 +27,14 @@
 
 ```powershell
 npm run sync:bwiki:nrc -- --version=S4-2026-09-10
-npm run sync:bwiki:nrc -- --version=S4-2026-09-10 --limit=all
+npm run sync:bwiki:nrc -- --version=S4-2026-09-10 --limit=all --interval=60
 npm run sync:bwiki:nrc -- --version=S4-2026-09-10 --offline
 npm run audit:bwiki:nrc
 npm run preview:bwiki:nrc
 npm run check:bwiki:nrc
 ```
 
-先处理三个聚合页，再顺序处理缺失详情。聚合数量不得低于已发布基线，否则先调查页面截断或移除记录。默认最多请求 24 个缺失详情，新请求间隔至少 2 秒，超时 25 秒。首次网络失败停止后续请求，成功快照继续可读；不切换客户端或代理重试，不绕过验证码或访问限制。缺失/解析失败使同步返回非零状态，并生成候选缺口。
+先处理三个聚合页，再顺序处理缺失详情。聚合数量不得低于已发布基线，否则先调查页面截断或移除记录。默认最多请求 24 个缺失详情，每次新请求前等待 30 秒，超时 25 秒。`--interval=秒数` 支持 30–3600 秒；例如 `--interval=60` 每次新请求前等待一分钟。缓存读取不等待、不请求网络。命令逐次输出等待的页面，成功快照立即落盘，重新运行只补缺失快照。首次网络失败停止后续请求，成功快照继续可读；不切换客户端或代理重试，不绕过验证码或访问限制。缺失/解析失败使同步返回非零状态，并生成候选缺口。
 
 缓存默认在 Git 忽略的 `artifacts/bwiki/nrc-snapshots/<version>/`。各 JSON 包含原 HTML、来源 URL、版本、时间、采集方式与 SHA-256。版本、地址或指纹不匹配时拒绝复用。更新批次使用新 `--version`，不跨版本复用成功缓存。`--snapshots=目录` 可指定目录；失败请求记录在该目录的 `last-failure.json`。
 
