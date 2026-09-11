@@ -1,7 +1,7 @@
 {
   "source": "bwiki-nrc",
-  "version": "S4-2026-09-10",
-  "syncedAt": "2026-09-11T02:58:17.615Z",
+  "version": "S4-2026-09-11-browser-full",
+  "syncedAt": "2026-09-11T09:05:38.023Z",
   "attribution": {
     "name": "洛克王国：世界 Wiki（NRC BWIKI）",
     "url": "https://wiki.biligame.com/nrc/首页",
@@ -15,27 +15,27 @@
   "provenance": [
     {
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "version": "S4-2026-09-10",
-      "capturedAt": "2026-09-10T11:23:14.376Z",
-      "method": "http",
-      "sha256": "7e0a0db9c8273e0ab375455c30de3cd1bf96ce872d186c7fba553e4770145560"
+      "version": "S4-2026-09-11-browser-full",
+      "capturedAt": "2026-09-11T08:50:45.269Z",
+      "method": "local-html-import",
+      "sha256": "8406ecca4f8cbface8369287df4247cb2c5c78edfb5587ea75690b46bfdc7516"
     },
     {
       "sourceUrl": "https://wiki.biligame.com/nrc/技能列表",
-      "version": "S4-2026-09-10",
-      "capturedAt": "2026-09-10T11:51:28.886Z",
-      "method": "http",
-      "sha256": "d888029344d1a6b81cd9bce57689694bd863ea84378c00e2a57c4054ab800fbb"
+      "version": "S4-2026-09-11-browser-full",
+      "capturedAt": "2026-09-11T08:51:22.429Z",
+      "method": "local-html-import",
+      "sha256": "dd7a998692f190a7db675ae17168cfc1af61283d77a8d3674ec858c5a875485f"
     },
     {
       "sourceUrl": "https://wiki.biligame.com/nrc/孵蛋组别查询",
-      "version": "S4-2026-09-10",
-      "capturedAt": "2026-09-10T11:34:34.733Z",
-      "method": "browser-dom",
-      "sha256": "edd660ee6aeaf27431d239c591f25981267404d03b09a36698829843ead05d82"
+      "version": "S4-2026-09-11-browser-full",
+      "capturedAt": "2026-09-11T08:51:55.888Z",
+      "method": "local-html-import",
+      "sha256": "5356cb67ff90be08967c665b956c437385bac4597e7f75a19a7d32658bc49389"
     }
   ],
-  "rowCount": 622,
+  "rowCount": 621,
   "rows": [
     {
       "sourceUrl": "https://wiki.biligame.com/nrc/孵蛋组别查询",
@@ -840,17 +840,6 @@
       "sourceId": "pet_000056",
       "no": "NO.035",
       "name": "幽影树",
-      "eggGroups": [
-        "植物组",
-        "妖精组"
-      ],
-      "femaleOnly": false
-    },
-    {
-      "sourceUrl": "https://wiki.biligame.com/nrc/孵蛋组别查询",
-      "sourceId": "pet_000532",
-      "no": "NO.035",
-      "name": "幽影树（突变的样子）",
       "eggGroups": [
         "植物组",
         "妖精组"
