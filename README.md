@@ -29,7 +29,7 @@ npm run dev
 | `npm run check:official-announcements` | 检查官方版本 / 平衡公告并生成人工复核报告 |
 | `npm run sync:bwiki:staging` | 同步 BWiki 基础 staging |
 | `npm run sync:bwiki:details` | 同步 BWiki 详情 staging |
-| `npm run sync:bwiki:nrc -- --version=S4-2026-09-10` | 同步新版 NRC 候选；默认最多请求 24 个缺失详情 |
+| `npm run sync:bwiki:nrc -- --version=S4-2026-09-10` | 同步新版 NRC 候选；默认最多请求 24 个缺失详情，每次等待 30 秒；可用 `--interval=60` 放慢 |
 | `npm run import:bwiki:nrc -- --version=版本 --key=页面键 --file=快照.html` | 校验并导入 NRC HTML 快照 |
 | `npm run preview:bwiki:nrc` | 生成 NRC 候选预览与发布阻塞清单 |
 | `npm run audit:bwiki:nrc` | 离线比较 NRC 源字段与正式资料，列出身份冲突、技能影响和详情缺口 |

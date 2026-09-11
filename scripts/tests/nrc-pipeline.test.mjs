@@ -7,8 +7,24 @@ import { parseNrcCreatures, parseNrcSkills, parseNrcBreeding, parseNrcDetail } f
 import { fetchSnapshot, saveSnapshot, readSnapshot } from '../bwiki/lib/snapshots.mjs'
 import { buildSourceManifest } from '../bwiki/lib/source-manifest.mjs'
 import { assertPublishablePreview } from '../bwiki/lib/release-gate.mjs'
+import { parseSyncOptions } from '../bwiki/sync-nrc.mjs'
 
 const fixture = async (name) => readFile(new URL(`./fixtures/nrc/${name}.html`, import.meta.url), 'utf8')
+
+test('NRC sync accepts slow resumable batches and rejects unsafe or ambiguous options', () => {
+  const defaults = parseSyncOptions(['--version=S4'])
+  assert.equal(defaults.interval, 30)
+  assert.equal(defaults.limit, 24)
+  const slow = parseSyncOptions(['--version=S4', '--interval=60', '--limit=all'])
+  assert.equal(slow.interval, 60)
+  assert.equal(slow.limit, Infinity)
+  assert.equal(parseSyncOptions(['--version=S4', '--offline']).offline, true)
+  for (const argument of ['--interval=0', '--interval=29', '--interval=', '--interval=Infinity', '--interval=3601', '--limit=-1', '--limit=', '--limit=Infinity', '--limit=1.5', '--unknown=1']) {
+    assert.throws(() => parseSyncOptions(['--version=S4', argument]))
+  }
+  assert.throws(() => parseSyncOptions(['--version=S4', '--interval=30', '--interval=60']), /Duplicate/)
+  for (const version of ['.', '..', '../outside']) assert.throws(() => parseSyncOptions([`--version=${version}`]), /Specify/)
+})
 
 test('NRC aggregate parser keeps form identity, actual image URLs and skill numbers', async () => {
   const creatures = parseNrcCreatures(await fixture('creatures'))
