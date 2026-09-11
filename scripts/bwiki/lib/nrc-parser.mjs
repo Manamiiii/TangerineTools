@@ -86,9 +86,11 @@ export function parseNrcBreeding(html) {
 }
 
 export function parseNrcDetail(html, creature) {
+  if (html.includes('[Truncated]')) throw new Error(`${creature.name}: truncated detail`)
   const root = parse(html)
-  const dex = byClass(root, 'roco-dex')[0]
-  if (!dex || attr(dex, 'data-pet-id') !== creature.sourceId) throw new Error(`${creature.name}: detail identity mismatch`)
+  const dexes = byClass(root, 'roco-dex')
+  const dex = dexes[0]
+  if (dexes.length !== 1 || attr(dex, 'data-pet-id') !== creature.sourceId) throw new Error(`${creature.name}: detail identity mismatch`)
   const keys = { HP: 'hp', ATK: 'patk', MATK: 'matk', DEF: 'pdef', MDEF: 'mdef', SPD: 'spd' }
   const stats = {}
   for (const node of byClass(dex, 'roco-stat')) {
@@ -105,10 +107,16 @@ export function parseNrcDetail(html, creature) {
   if (!skills.length || skills.some((row) => !row.name || !['level', 'machine', 'blood'].includes(row.sourceType))) throw new Error(`${creature.name}: incomplete/unknown skill sources`)
   const trait = { name: classText(dex, 'roco-feature-name'), description: classText(dex, 'roco-feature-desc'), image: image(byClass(dex, 'roco-feature-icon')[0]) }
   if (!trait.name || !trait.description) throw new Error(`${creature.name}: missing trait`)
-  const evolutionBranches = byClass(dex, 'roco-evo-timeline').map((branch) => byClass(branch, 'roco-evo-node').map((node) => ({
-    name: classText(node, 'roco-evo-name-main'), linkName: link(byClass(node, 'roco-evo-name-main')[0]).title || classText(node, 'roco-evo-name-main'),
-    image: image(byClass(node, 'roco-evo-avatar')[0]), isBoss: hasClass(node, 'is-lord'),
-  })))
+  const evolutionBranches = byClass(dex, 'roco-evo-timeline').map((branch) => byClass(branch, 'roco-evo-node').map((node) => {
+    const nameNode = byClass(node, 'roco-evo-name-main')[0]
+    const displayName = text(nameNode)
+    const target = link(nameNode)
+    // A MediaWiki selflink identifies this already ID-validated detail, even when
+    // its visible label omits a form suffix. Never strip suffixes to guess identity.
+    const self = nodes(nameNode, (item) => item.tagName === 'a' && hasClass(item, 'mw-selflink') && !attr(item, 'href')).length === 1
+    const name = self ? creature.name : target.title || displayName
+    return { name, displayName, linkName: name, image: image(byClass(node, 'roco-evo-avatar')[0]), isBoss: hasClass(node, 'is-lord') }
+  }))
   const evolution = evolutionBranches.find((branch) => branch.some((node) => node.name === creature.name)) ?? []
   return { source: 'bwiki-nrc-detail', sourceUrl: creature.detailUrl, sourceId: creature.sourceId, name: creature.name, no: creature.no, stats, trait, skills, evolution, evolutionBranches, evolutionReviewRequired: !evolution.length }
 }
