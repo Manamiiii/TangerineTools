@@ -3,17 +3,12 @@
   "sourceProfile": "nrc",
   "sourceVersion": "S4-2026-09-10",
   "stagingHashes": {
-    "creatures": "e7065b3e67958dfc96355315cd16b0ca9bc7695d86ddf306f479398d70c79fc4",
-    "skills": "7042586327a2ee6e9d2ebaab3055b4d2d7baa16aaa1f4871b78f1a52d76d958f",
-    "details": "8dcbb554f918f5dab06834e2e0402f33bab49d7662fee4f7cc526d4a67395f9e",
-    "breeding": "8d8bd713240bf2fd18cd1b09ac6a04b7c222687254305c02a4139cbdd3aadcca"
+    "creatures": "9329ccca1e828006e137cf1c33c4b5614a23481bb6d17181d58a2339da3c3251",
+    "skills": "036ea757763cec095fa448d3279b80f4dd41b345762ad8bbac386bfbc6ad3f7d",
+    "details": "f06fcf57b260c0a1f2d4989b701f89b9be52a1dfebc83a3f9893caa361a4d93b",
+    "breeding": "0ec30fc98c6c9e8520f7502fc99cb44a16735c67bd6f674712070fb052f1869b"
   },
   "releaseBlockers": [
-    "缺少详情：喵喵",
-    "缺少详情：喵呜",
-    "缺少详情：魔力猫",
-    "缺少详情：叶冕魔力猫",
-    "缺少详情：武斗酷猫",
     "缺少详情：火花",
     "缺少详情：焰火",
     "缺少详情：火神",
@@ -649,7 +644,7 @@
     }
   },
   "sourceNotes": "未完成候选含当前 rocom 正式字段回填；不声明为全部来自 NRC 的完整新版数据。",
-  "generatedAt": "2026-09-10T12:09:04.284Z",
+  "generatedAt": "2026-09-11T03:22:11.673Z",
   "inputs": {
     "creatures": "scripts/bwiki/data/nrc/staging/creatures.json",
     "skills": "scripts/bwiki/data/nrc/staging/skills.json",

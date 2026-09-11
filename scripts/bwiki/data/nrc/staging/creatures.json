@@ -1,7 +1,7 @@
 {
   "source": "bwiki-nrc",
   "version": "S4-2026-09-10",
-  "syncedAt": "2026-09-10T12:09:01.520Z",
+  "syncedAt": "2026-09-11T02:58:17.615Z",
   "attribution": {
     "name": "洛克王国：世界 Wiki（NRC BWIKI）",
     "url": "https://wiki.biligame.com/nrc/首页",
@@ -180,7 +180,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/2/24/oz3rw0p59i5ithijoul5wl0ma96n06p.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 65,
+      "patk": 66,
+      "matk": 66,
+      "pdef": 49,
+      "mdef": 91,
+      "spd": 33,
+      "bst": 370,
+      "traitName": "氧循环"
     },
     {
       "source": "bwiki-nrc",
@@ -197,7 +205,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/2/2f/cfn1d1hghzlzqg608j7t0y33jcyg36m.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 86,
+      "patk": 87,
+      "matk": 87,
+      "pdef": 65,
+      "mdef": 121,
+      "spd": 44,
+      "bst": 490,
+      "traitName": "氧循环"
     },
     {
       "source": "bwiki-nrc",
@@ -214,7 +230,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/8/8b/oi2pveabhx3cjnv6z95atr7r77r8go1.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 108,
+      "patk": 109,
+      "matk": 109,
+      "pdef": 81,
+      "mdef": 151,
+      "spd": 55,
+      "bst": 613,
+      "traitName": "氧循环"
     },
     {
       "source": "bwiki-nrc",
@@ -231,7 +255,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/e/ef/cd4elp36z8lpof8ymn6lzeajsv3flof.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 108,
+      "patk": 127,
+      "matk": 127,
+      "pdef": 81,
+      "mdef": 151,
+      "spd": 55,
+      "bst": 649,
+      "traitName": "深层氧循环"
     },
     {
       "source": "bwiki-nrc",
@@ -248,7 +280,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/2/29/2hbzww70gng13h24x8fsh2r87gexni2.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 126,
+      "patk": 134,
+      "matk": 57,
+      "pdef": 110,
+      "mdef": 80,
+      "spd": 135,
+      "bst": 642,
+      "traitName": "草木苏醒时"
     },
     {
       "source": "bwiki-nrc",
@@ -10981,11 +11021,6 @@
     }
   ],
   "releaseBlockers": [
-    "缺少详情：喵喵",
-    "缺少详情：喵呜",
-    "缺少详情：魔力猫",
-    "缺少详情：叶冕魔力猫",
-    "缺少详情：武斗酷猫",
     "缺少详情：火花",
     "缺少详情：焰火",
     "缺少详情：火神",

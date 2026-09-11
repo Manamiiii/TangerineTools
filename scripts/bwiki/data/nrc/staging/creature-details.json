@@ -1,7 +1,7 @@
 {
   "source": "bwiki-nrc",
   "version": "S4-2026-09-10",
-  "syncedAt": "2026-09-10T12:09:01.520Z",
+  "syncedAt": "2026-09-11T02:58:17.615Z",
   "attribution": {
     "name": "洛克王国：世界 Wiki（NRC BWIKI）",
     "url": "https://wiki.biligame.com/nrc/首页",
@@ -35,7 +35,7 @@
       "sha256": "edd660ee6aeaf27431d239c591f25981267404d03b09a36698829843ead05d82"
     }
   ],
-  "rowCount": 5,
+  "rowCount": 10,
   "rows": [
     {
       "source": "bwiki-nrc-detail",
@@ -2406,35 +2406,2350 @@
         "method": "http",
         "sha256": "074a3ef4e9e25176204916ef9b5e443caec0cf678d544681d9c54cb135097f1f"
       }
+    },
+    {
+      "source": "bwiki-nrc-detail",
+      "sourceUrl": "https://wiki.biligame.com/nrc/%E5%96%B5%E5%96%B5",
+      "sourceId": "pet_000001",
+      "name": "喵喵",
+      "no": "NO.002",
+      "stats": {
+        "hp": 65,
+        "patk": 66,
+        "matk": 66,
+        "pdef": 49,
+        "mdef": 91,
+        "spd": 33,
+        "bst": 370
+      },
+      "trait": {
+        "name": "氧循环",
+        "description": "使用草系技能后，回复10%生命。",
+        "image": "https://patchwiki.biligame.com/images/nrc/6/6b/ba7bcwt8s5w3i5d86zn6l5cpzrty4ag.png"
+      },
+      "skills": [
+        {
+          "name": "棘突",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV6"
+        },
+        {
+          "name": "光能聚集",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV50"
+        },
+        {
+          "name": "叶绿光束",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV17"
+        },
+        {
+          "name": "藤绞",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV8"
+        },
+        {
+          "name": "筛管奔流",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV29"
+        },
+        {
+          "name": "仙人掌刺击",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV42"
+        },
+        {
+          "name": "酶浓度调整",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "草",
+          "unlock": "LV21"
+        },
+        {
+          "name": "纤维化",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "草",
+          "unlock": "技能石"
+        },
+        {
+          "name": "徒长",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV12"
+        },
+        {
+          "name": "盛开",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV30"
+        },
+        {
+          "name": "孢子",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV36"
+        },
+        {
+          "name": "丰饶",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV48"
+        },
+        {
+          "name": "光合作用",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV49"
+        },
+        {
+          "name": "移花接木",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "草",
+          "unlock": "技能石"
+        },
+        {
+          "name": "抓挠",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "扫尾",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV7"
+        },
+        {
+          "name": "重击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "防御",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV10"
+        },
+        {
+          "name": "休息回复",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "晒太阳",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "借用",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "应激反应",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "摇篮曲",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "精神扰乱",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "腐蚀酸液",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "瘴气喷射",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "毒沼",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "毒孢子",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "腐化",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "剧毒",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "天光",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "光",
+          "unlock": "技能石"
+        },
+        {
+          "name": "透射",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "光",
+          "unlock": "技能石"
+        },
+        {
+          "name": "斩断",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "星星撞击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "血脉·普通"
+        },
+        {
+          "name": "虹光冲击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "光",
+          "unlock": "血脉·光"
+        },
+        {
+          "name": "升龙咆哮",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "龙",
+          "unlock": "血脉·龙"
+        },
+        {
+          "name": "溃烂触碰",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "毒",
+          "unlock": "血脉·毒"
+        },
+        {
+          "name": "荆棘爪",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "血脉·草"
+        },
+        {
+          "name": "引燃",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "火",
+          "unlock": "血脉·火"
+        },
+        {
+          "name": "蓄水",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "水",
+          "unlock": "血脉·水"
+        },
+        {
+          "name": "泥浆铠甲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "地",
+          "unlock": "血脉·地"
+        },
+        {
+          "name": "霜降",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "冰",
+          "unlock": "血脉·冰"
+        },
+        {
+          "name": "麻痹",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "电",
+          "unlock": "血脉·电"
+        },
+        {
+          "name": "假寐",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "虫",
+          "unlock": "血脉·虫"
+        },
+        {
+          "name": "化劲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "武",
+          "unlock": "血脉·武"
+        },
+        {
+          "name": "羽化加速",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "血脉·翼"
+        },
+        {
+          "name": "甜心续航",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "萌",
+          "unlock": "血脉·萌"
+        },
+        {
+          "name": "勾魂",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幽",
+          "unlock": "血脉·幽"
+        },
+        {
+          "name": "贪婪",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "恶",
+          "unlock": "血脉·恶"
+        },
+        {
+          "name": "啮合传递",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "机械",
+          "unlock": "血脉·机械"
+        },
+        {
+          "name": "超维投射",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幻",
+          "unlock": "血脉·幻"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "喵喵",
+          "linkName": "喵喵",
+          "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+          "isBoss": false
+        },
+        {
+          "name": "喵呜",
+          "linkName": "喵呜",
+          "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+          "isBoss": false
+        },
+        {
+          "name": "魔力猫",
+          "linkName": "魔力猫",
+          "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+          "isBoss": false
+        },
+        {
+          "name": "叶冕魔力猫",
+          "linkName": "叶冕魔力猫",
+          "image": "https://patchwiki.biligame.com/images/nrc/b/b6/kt41i5pfbzbmcat682d2s8trpdh08gr.png",
+          "isBoss": true
+        }
+      ],
+      "evolutionBranches": [
+        [
+          {
+            "name": "喵喵",
+            "linkName": "喵喵",
+            "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+            "isBoss": false
+          },
+          {
+            "name": "喵呜",
+            "linkName": "喵呜",
+            "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+            "isBoss": false
+          },
+          {
+            "name": "魔力猫",
+            "linkName": "魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+            "isBoss": false
+          },
+          {
+            "name": "叶冕魔力猫",
+            "linkName": "叶冕魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/b/b6/kt41i5pfbzbmcat682d2s8trpdh08gr.png",
+            "isBoss": true
+          }
+        ],
+        [
+          {
+            "name": "喵喵",
+            "linkName": "喵喵",
+            "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+            "isBoss": false
+          },
+          {
+            "name": "喵呜",
+            "linkName": "喵呜",
+            "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+            "isBoss": false
+          },
+          {
+            "name": "魔力猫",
+            "linkName": "魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+            "isBoss": false
+          },
+          {
+            "name": "武斗酷猫",
+            "linkName": "武斗酷猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/a/a1/21ji9ykzfalq4sr654olxr21bxmmwjt.png",
+            "isBoss": true
+          }
+        ]
+      ],
+      "evolutionReviewRequired": false,
+      "provenance": {
+        "sourceUrl": "https://wiki.biligame.com/nrc/%E5%96%B5%E5%96%B5",
+        "version": "S4-2026-09-10",
+        "capturedAt": "2026-09-11T02:53:14.002Z",
+        "method": "http",
+        "sha256": "8e5a9ce52cc3175934cda91f26dbe67e36637b8a0adf8d860ca98af74b184bee"
+      }
+    },
+    {
+      "source": "bwiki-nrc-detail",
+      "sourceUrl": "https://wiki.biligame.com/nrc/%E5%96%B5%E5%91%9C",
+      "sourceId": "pet_000022",
+      "name": "喵呜",
+      "no": "NO.003",
+      "stats": {
+        "hp": 86,
+        "patk": 87,
+        "matk": 87,
+        "pdef": 65,
+        "mdef": 121,
+        "spd": 44,
+        "bst": 490
+      },
+      "trait": {
+        "name": "氧循环",
+        "description": "使用草系技能后，回复10%生命。",
+        "image": "https://patchwiki.biligame.com/images/nrc/6/6b/ba7bcwt8s5w3i5d86zn6l5cpzrty4ag.png"
+      },
+      "skills": [
+        {
+          "name": "棘突",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV6"
+        },
+        {
+          "name": "光能聚集",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV50"
+        },
+        {
+          "name": "叶绿光束",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV17"
+        },
+        {
+          "name": "藤绞",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV8"
+        },
+        {
+          "name": "筛管奔流",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV29"
+        },
+        {
+          "name": "仙人掌刺击",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV42"
+        },
+        {
+          "name": "酶浓度调整",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "草",
+          "unlock": "LV21"
+        },
+        {
+          "name": "纤维化",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "草",
+          "unlock": "技能石"
+        },
+        {
+          "name": "徒长",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV12"
+        },
+        {
+          "name": "盛开",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV30"
+        },
+        {
+          "name": "孢子",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV36"
+        },
+        {
+          "name": "丰饶",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV48"
+        },
+        {
+          "name": "光合作用",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV49"
+        },
+        {
+          "name": "移花接木",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "草",
+          "unlock": "技能石"
+        },
+        {
+          "name": "抓挠",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "扫尾",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV7"
+        },
+        {
+          "name": "重击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "防御",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV10"
+        },
+        {
+          "name": "休息回复",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "晒太阳",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "借用",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "应激反应",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "摇篮曲",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "精神扰乱",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "腐蚀酸液",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "瘴气喷射",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "毒沼",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "毒孢子",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "腐化",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "剧毒",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "天光",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "光",
+          "unlock": "技能石"
+        },
+        {
+          "name": "透射",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "光",
+          "unlock": "技能石"
+        },
+        {
+          "name": "斩断",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "星星撞击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "血脉·普通"
+        },
+        {
+          "name": "虹光冲击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "光",
+          "unlock": "血脉·光"
+        },
+        {
+          "name": "升龙咆哮",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "龙",
+          "unlock": "血脉·龙"
+        },
+        {
+          "name": "溃烂触碰",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "毒",
+          "unlock": "血脉·毒"
+        },
+        {
+          "name": "荆棘爪",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "血脉·草"
+        },
+        {
+          "name": "引燃",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "火",
+          "unlock": "血脉·火"
+        },
+        {
+          "name": "蓄水",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "水",
+          "unlock": "血脉·水"
+        },
+        {
+          "name": "泥浆铠甲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "地",
+          "unlock": "血脉·地"
+        },
+        {
+          "name": "霜降",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "冰",
+          "unlock": "血脉·冰"
+        },
+        {
+          "name": "麻痹",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "电",
+          "unlock": "血脉·电"
+        },
+        {
+          "name": "假寐",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "虫",
+          "unlock": "血脉·虫"
+        },
+        {
+          "name": "化劲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "武",
+          "unlock": "血脉·武"
+        },
+        {
+          "name": "羽化加速",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "血脉·翼"
+        },
+        {
+          "name": "甜心续航",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "萌",
+          "unlock": "血脉·萌"
+        },
+        {
+          "name": "勾魂",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幽",
+          "unlock": "血脉·幽"
+        },
+        {
+          "name": "贪婪",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "恶",
+          "unlock": "血脉·恶"
+        },
+        {
+          "name": "啮合传递",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "机械",
+          "unlock": "血脉·机械"
+        },
+        {
+          "name": "超维投射",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幻",
+          "unlock": "血脉·幻"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "喵喵",
+          "linkName": "喵喵",
+          "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+          "isBoss": false
+        },
+        {
+          "name": "喵呜",
+          "linkName": "喵呜",
+          "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+          "isBoss": false
+        },
+        {
+          "name": "魔力猫",
+          "linkName": "魔力猫",
+          "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+          "isBoss": false
+        },
+        {
+          "name": "叶冕魔力猫",
+          "linkName": "叶冕魔力猫",
+          "image": "https://patchwiki.biligame.com/images/nrc/b/b6/kt41i5pfbzbmcat682d2s8trpdh08gr.png",
+          "isBoss": true
+        }
+      ],
+      "evolutionBranches": [
+        [
+          {
+            "name": "喵喵",
+            "linkName": "喵喵",
+            "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+            "isBoss": false
+          },
+          {
+            "name": "喵呜",
+            "linkName": "喵呜",
+            "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+            "isBoss": false
+          },
+          {
+            "name": "魔力猫",
+            "linkName": "魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+            "isBoss": false
+          },
+          {
+            "name": "叶冕魔力猫",
+            "linkName": "叶冕魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/b/b6/kt41i5pfbzbmcat682d2s8trpdh08gr.png",
+            "isBoss": true
+          }
+        ],
+        [
+          {
+            "name": "喵喵",
+            "linkName": "喵喵",
+            "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+            "isBoss": false
+          },
+          {
+            "name": "喵呜",
+            "linkName": "喵呜",
+            "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+            "isBoss": false
+          },
+          {
+            "name": "魔力猫",
+            "linkName": "魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+            "isBoss": false
+          },
+          {
+            "name": "武斗酷猫",
+            "linkName": "武斗酷猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/a/a1/21ji9ykzfalq4sr654olxr21bxmmwjt.png",
+            "isBoss": true
+          }
+        ]
+      ],
+      "evolutionReviewRequired": false,
+      "provenance": {
+        "sourceUrl": "https://wiki.biligame.com/nrc/%E5%96%B5%E5%91%9C",
+        "version": "S4-2026-09-10",
+        "capturedAt": "2026-09-11T02:54:14.743Z",
+        "method": "http",
+        "sha256": "96e8ee29931a8fceec1f6d25e30d4dbe277a71357607ef947533ed3cbbb2dcf7"
+      }
+    },
+    {
+      "source": "bwiki-nrc-detail",
+      "sourceUrl": "https://wiki.biligame.com/nrc/%E9%AD%94%E5%8A%9B%E7%8C%AB",
+      "sourceId": "pet_000007",
+      "name": "魔力猫",
+      "no": "NO.004",
+      "stats": {
+        "hp": 108,
+        "patk": 109,
+        "matk": 109,
+        "pdef": 81,
+        "mdef": 151,
+        "spd": 55,
+        "bst": 613
+      },
+      "trait": {
+        "name": "氧循环",
+        "description": "使用草系技能后，回复10%生命。",
+        "image": "https://patchwiki.biligame.com/images/nrc/6/6b/ba7bcwt8s5w3i5d86zn6l5cpzrty4ag.png"
+      },
+      "skills": [
+        {
+          "name": "棘突",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV6"
+        },
+        {
+          "name": "光能聚集",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV50"
+        },
+        {
+          "name": "叶绿光束",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV17"
+        },
+        {
+          "name": "藤绞",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV8"
+        },
+        {
+          "name": "筛管奔流",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV29"
+        },
+        {
+          "name": "仙人掌刺击",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV42"
+        },
+        {
+          "name": "酶浓度调整",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "草",
+          "unlock": "LV21"
+        },
+        {
+          "name": "纤维化",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "草",
+          "unlock": "技能石"
+        },
+        {
+          "name": "徒长",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV12"
+        },
+        {
+          "name": "盛开",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV30"
+        },
+        {
+          "name": "孢子",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV36"
+        },
+        {
+          "name": "丰饶",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV48"
+        },
+        {
+          "name": "光合作用",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV49"
+        },
+        {
+          "name": "移花接木",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "草",
+          "unlock": "技能石"
+        },
+        {
+          "name": "抓挠",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "扫尾",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV7"
+        },
+        {
+          "name": "重击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "防御",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV10"
+        },
+        {
+          "name": "休息回复",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "晒太阳",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "借用",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "应激反应",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "摇篮曲",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "精神扰乱",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "腐蚀酸液",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "瘴气喷射",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "毒沼",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "毒孢子",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "腐化",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "剧毒",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "天光",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "光",
+          "unlock": "技能石"
+        },
+        {
+          "name": "透射",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "光",
+          "unlock": "技能石"
+        },
+        {
+          "name": "斩断",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "星星撞击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "血脉·普通"
+        },
+        {
+          "name": "虹光冲击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "光",
+          "unlock": "血脉·光"
+        },
+        {
+          "name": "升龙咆哮",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "龙",
+          "unlock": "血脉·龙"
+        },
+        {
+          "name": "溃烂触碰",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "毒",
+          "unlock": "血脉·毒"
+        },
+        {
+          "name": "荆棘爪",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "血脉·草"
+        },
+        {
+          "name": "引燃",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "火",
+          "unlock": "血脉·火"
+        },
+        {
+          "name": "蓄水",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "水",
+          "unlock": "血脉·水"
+        },
+        {
+          "name": "泥浆铠甲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "地",
+          "unlock": "血脉·地"
+        },
+        {
+          "name": "霜降",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "冰",
+          "unlock": "血脉·冰"
+        },
+        {
+          "name": "麻痹",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "电",
+          "unlock": "血脉·电"
+        },
+        {
+          "name": "假寐",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "虫",
+          "unlock": "血脉·虫"
+        },
+        {
+          "name": "化劲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "武",
+          "unlock": "血脉·武"
+        },
+        {
+          "name": "羽化加速",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "血脉·翼"
+        },
+        {
+          "name": "甜心续航",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "萌",
+          "unlock": "血脉·萌"
+        },
+        {
+          "name": "勾魂",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幽",
+          "unlock": "血脉·幽"
+        },
+        {
+          "name": "贪婪",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "恶",
+          "unlock": "血脉·恶"
+        },
+        {
+          "name": "啮合传递",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "机械",
+          "unlock": "血脉·机械"
+        },
+        {
+          "name": "超维投射",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幻",
+          "unlock": "血脉·幻"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "喵喵",
+          "linkName": "喵喵",
+          "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+          "isBoss": false
+        },
+        {
+          "name": "喵呜",
+          "linkName": "喵呜",
+          "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+          "isBoss": false
+        },
+        {
+          "name": "魔力猫",
+          "linkName": "魔力猫",
+          "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+          "isBoss": false
+        },
+        {
+          "name": "叶冕魔力猫",
+          "linkName": "叶冕魔力猫",
+          "image": "https://patchwiki.biligame.com/images/nrc/b/b6/kt41i5pfbzbmcat682d2s8trpdh08gr.png",
+          "isBoss": true
+        }
+      ],
+      "evolutionBranches": [
+        [
+          {
+            "name": "喵喵",
+            "linkName": "喵喵",
+            "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+            "isBoss": false
+          },
+          {
+            "name": "喵呜",
+            "linkName": "喵呜",
+            "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+            "isBoss": false
+          },
+          {
+            "name": "魔力猫",
+            "linkName": "魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+            "isBoss": false
+          },
+          {
+            "name": "叶冕魔力猫",
+            "linkName": "叶冕魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/b/b6/kt41i5pfbzbmcat682d2s8trpdh08gr.png",
+            "isBoss": true
+          }
+        ],
+        [
+          {
+            "name": "喵喵",
+            "linkName": "喵喵",
+            "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+            "isBoss": false
+          },
+          {
+            "name": "喵呜",
+            "linkName": "喵呜",
+            "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+            "isBoss": false
+          },
+          {
+            "name": "魔力猫",
+            "linkName": "魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+            "isBoss": false
+          },
+          {
+            "name": "武斗酷猫",
+            "linkName": "武斗酷猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/a/a1/21ji9ykzfalq4sr654olxr21bxmmwjt.png",
+            "isBoss": true
+          }
+        ]
+      ],
+      "evolutionReviewRequired": false,
+      "provenance": {
+        "sourceUrl": "https://wiki.biligame.com/nrc/%E9%AD%94%E5%8A%9B%E7%8C%AB",
+        "version": "S4-2026-09-10",
+        "capturedAt": "2026-09-11T02:55:15.598Z",
+        "method": "http",
+        "sha256": "8307cbada5b880feb92da47cbb45680fdc8783b29fe5acb448cd94e512f6fb78"
+      }
+    },
+    {
+      "source": "bwiki-nrc-detail",
+      "sourceUrl": "https://wiki.biligame.com/nrc/%E5%8F%B6%E5%86%95%E9%AD%94%E5%8A%9B%E7%8C%AB",
+      "sourceId": "pet_000536",
+      "name": "叶冕魔力猫",
+      "no": "NO.004",
+      "stats": {
+        "hp": 108,
+        "patk": 127,
+        "matk": 127,
+        "pdef": 81,
+        "mdef": 151,
+        "spd": 55,
+        "bst": 649
+      },
+      "trait": {
+        "name": "深层氧循环",
+        "description": "使用草系技能后，回复15%生命。",
+        "image": "https://patchwiki.biligame.com/images/nrc/f/f6/h8rt5yh1tuh3db0fyowzxugv9kj6llf.png"
+      },
+      "skills": [
+        {
+          "name": "棘突",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV6"
+        },
+        {
+          "name": "光能聚集",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV50"
+        },
+        {
+          "name": "叶绿光束",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV17"
+        },
+        {
+          "name": "藤绞",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV8"
+        },
+        {
+          "name": "筛管奔流",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV29"
+        },
+        {
+          "name": "仙人掌刺击",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV42"
+        },
+        {
+          "name": "酶浓度调整",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "草",
+          "unlock": "LV21"
+        },
+        {
+          "name": "纤维化",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "草",
+          "unlock": "技能石"
+        },
+        {
+          "name": "徒长",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV12"
+        },
+        {
+          "name": "盛开",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV30"
+        },
+        {
+          "name": "孢子",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV36"
+        },
+        {
+          "name": "丰饶",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV48"
+        },
+        {
+          "name": "光合作用",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV49"
+        },
+        {
+          "name": "移花接木",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "草",
+          "unlock": "技能石"
+        },
+        {
+          "name": "抓挠",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "扫尾",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV7"
+        },
+        {
+          "name": "重击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "防御",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV10"
+        },
+        {
+          "name": "休息回复",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "晒太阳",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "借用",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "应激反应",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "摇篮曲",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "精神扰乱",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "腐蚀酸液",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "瘴气喷射",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "毒沼",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "毒孢子",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "腐化",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "剧毒",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "天光",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "光",
+          "unlock": "技能石"
+        },
+        {
+          "name": "透射",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "光",
+          "unlock": "技能石"
+        },
+        {
+          "name": "斩断",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "星星撞击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "血脉·普通"
+        },
+        {
+          "name": "虹光冲击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "光",
+          "unlock": "血脉·光"
+        },
+        {
+          "name": "升龙咆哮",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "龙",
+          "unlock": "血脉·龙"
+        },
+        {
+          "name": "溃烂触碰",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "毒",
+          "unlock": "血脉·毒"
+        },
+        {
+          "name": "荆棘爪",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "血脉·草"
+        },
+        {
+          "name": "引燃",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "火",
+          "unlock": "血脉·火"
+        },
+        {
+          "name": "蓄水",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "水",
+          "unlock": "血脉·水"
+        },
+        {
+          "name": "泥浆铠甲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "地",
+          "unlock": "血脉·地"
+        },
+        {
+          "name": "霜降",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "冰",
+          "unlock": "血脉·冰"
+        },
+        {
+          "name": "麻痹",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "电",
+          "unlock": "血脉·电"
+        },
+        {
+          "name": "假寐",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "虫",
+          "unlock": "血脉·虫"
+        },
+        {
+          "name": "化劲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "武",
+          "unlock": "血脉·武"
+        },
+        {
+          "name": "羽化加速",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "血脉·翼"
+        },
+        {
+          "name": "甜心续航",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "萌",
+          "unlock": "血脉·萌"
+        },
+        {
+          "name": "勾魂",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幽",
+          "unlock": "血脉·幽"
+        },
+        {
+          "name": "贪婪",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "恶",
+          "unlock": "血脉·恶"
+        },
+        {
+          "name": "啮合传递",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "机械",
+          "unlock": "血脉·机械"
+        },
+        {
+          "name": "超维投射",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幻",
+          "unlock": "血脉·幻"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "喵喵",
+          "linkName": "喵喵",
+          "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+          "isBoss": false
+        },
+        {
+          "name": "喵呜",
+          "linkName": "喵呜",
+          "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+          "isBoss": false
+        },
+        {
+          "name": "魔力猫",
+          "linkName": "魔力猫",
+          "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+          "isBoss": false
+        },
+        {
+          "name": "叶冕魔力猫",
+          "linkName": "叶冕魔力猫",
+          "image": "https://patchwiki.biligame.com/images/nrc/b/b6/kt41i5pfbzbmcat682d2s8trpdh08gr.png",
+          "isBoss": true
+        }
+      ],
+      "evolutionBranches": [
+        [
+          {
+            "name": "喵喵",
+            "linkName": "喵喵",
+            "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+            "isBoss": false
+          },
+          {
+            "name": "喵呜",
+            "linkName": "喵呜",
+            "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+            "isBoss": false
+          },
+          {
+            "name": "魔力猫",
+            "linkName": "魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+            "isBoss": false
+          },
+          {
+            "name": "叶冕魔力猫",
+            "linkName": "叶冕魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/b/b6/kt41i5pfbzbmcat682d2s8trpdh08gr.png",
+            "isBoss": true
+          }
+        ],
+        [
+          {
+            "name": "喵喵",
+            "linkName": "喵喵",
+            "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+            "isBoss": false
+          },
+          {
+            "name": "喵呜",
+            "linkName": "喵呜",
+            "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+            "isBoss": false
+          },
+          {
+            "name": "魔力猫",
+            "linkName": "魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+            "isBoss": false
+          },
+          {
+            "name": "武斗酷猫",
+            "linkName": "武斗酷猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/a/a1/21ji9ykzfalq4sr654olxr21bxmmwjt.png",
+            "isBoss": true
+          }
+        ]
+      ],
+      "evolutionReviewRequired": false,
+      "provenance": {
+        "sourceUrl": "https://wiki.biligame.com/nrc/%E5%8F%B6%E5%86%95%E9%AD%94%E5%8A%9B%E7%8C%AB",
+        "version": "S4-2026-09-10",
+        "capturedAt": "2026-09-11T02:56:16.290Z",
+        "method": "http",
+        "sha256": "859d49593e215dfbc4e4ca7545e812a6c7cfc22385cd09baed62a667b948b17b"
+      }
+    },
+    {
+      "source": "bwiki-nrc-detail",
+      "sourceUrl": "https://wiki.biligame.com/nrc/%E6%AD%A6%E6%96%97%E9%85%B7%E7%8C%AB",
+      "sourceId": "pet_000593",
+      "name": "武斗酷猫",
+      "no": "NO.004",
+      "stats": {
+        "hp": 126,
+        "patk": 134,
+        "matk": 57,
+        "pdef": 110,
+        "mdef": 80,
+        "spd": 135,
+        "bst": 642
+      },
+      "trait": {
+        "name": "草木苏醒时",
+        "description": "每回复1能量，物攻和魔攻永久+20%，攻击后重置。",
+        "image": "https://patchwiki.biligame.com/images/nrc/6/6b/ba7bcwt8s5w3i5d86zn6l5cpzrty4ag.png"
+      },
+      "skills": [
+        {
+          "name": "藤绞",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV8"
+        },
+        {
+          "name": "筛管奔流",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV29"
+        },
+        {
+          "name": "仙人掌刺击",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "LV42"
+        },
+        {
+          "name": "棘突",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV6"
+        },
+        {
+          "name": "光能聚集",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV50"
+        },
+        {
+          "name": "叶绿光束",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "LV17"
+        },
+        {
+          "name": "酶浓度调整",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "草",
+          "unlock": "LV21"
+        },
+        {
+          "name": "纤维化",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "草",
+          "unlock": "技能石"
+        },
+        {
+          "name": "徒长",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV12"
+        },
+        {
+          "name": "盛开",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV30"
+        },
+        {
+          "name": "孢子",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV36"
+        },
+        {
+          "name": "丰饶",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV48"
+        },
+        {
+          "name": "光合作用",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "草",
+          "unlock": "LV49"
+        },
+        {
+          "name": "移花接木",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "草",
+          "unlock": "技能石"
+        },
+        {
+          "name": "抓挠",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "扫尾",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV7"
+        },
+        {
+          "name": "重击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "防御",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV10"
+        },
+        {
+          "name": "休息回复",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "晒太阳",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "借用",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "应激反应",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "摇篮曲",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "精神扰乱",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "毒沼",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "腐蚀酸液",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "瘴气喷射",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "毒孢子",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "腐化",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "剧毒",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "技能石"
+        },
+        {
+          "name": "透射",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "光",
+          "unlock": "技能石"
+        },
+        {
+          "name": "天光",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "光",
+          "unlock": "技能石"
+        },
+        {
+          "name": "斩断",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "溃烂触碰",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "毒",
+          "unlock": "血脉·毒"
+        },
+        {
+          "name": "荆棘爪",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "草",
+          "unlock": "血脉·草"
+        },
+        {
+          "name": "星星撞击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "血脉·普通"
+        },
+        {
+          "name": "虹光冲击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "光",
+          "unlock": "血脉·光"
+        },
+        {
+          "name": "升龙咆哮",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "龙",
+          "unlock": "血脉·龙"
+        },
+        {
+          "name": "引燃",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "火",
+          "unlock": "血脉·火"
+        },
+        {
+          "name": "蓄水",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "水",
+          "unlock": "血脉·水"
+        },
+        {
+          "name": "泥浆铠甲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "地",
+          "unlock": "血脉·地"
+        },
+        {
+          "name": "霜降",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "冰",
+          "unlock": "血脉·冰"
+        },
+        {
+          "name": "麻痹",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "电",
+          "unlock": "血脉·电"
+        },
+        {
+          "name": "假寐",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "虫",
+          "unlock": "血脉·虫"
+        },
+        {
+          "name": "化劲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "武",
+          "unlock": "血脉·武"
+        },
+        {
+          "name": "羽化加速",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "血脉·翼"
+        },
+        {
+          "name": "甜心续航",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "萌",
+          "unlock": "血脉·萌"
+        },
+        {
+          "name": "勾魂",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幽",
+          "unlock": "血脉·幽"
+        },
+        {
+          "name": "贪婪",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "恶",
+          "unlock": "血脉·恶"
+        },
+        {
+          "name": "啮合传递",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "机械",
+          "unlock": "血脉·机械"
+        },
+        {
+          "name": "超维投射",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幻",
+          "unlock": "血脉·幻"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "喵喵",
+          "linkName": "喵喵",
+          "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+          "isBoss": false
+        },
+        {
+          "name": "喵呜",
+          "linkName": "喵呜",
+          "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+          "isBoss": false
+        },
+        {
+          "name": "魔力猫",
+          "linkName": "魔力猫",
+          "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+          "isBoss": false
+        },
+        {
+          "name": "武斗酷猫",
+          "linkName": "武斗酷猫",
+          "image": "https://patchwiki.biligame.com/images/nrc/a/a1/21ji9ykzfalq4sr654olxr21bxmmwjt.png",
+          "isBoss": true
+        }
+      ],
+      "evolutionBranches": [
+        [
+          {
+            "name": "喵喵",
+            "linkName": "喵喵",
+            "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+            "isBoss": false
+          },
+          {
+            "name": "喵呜",
+            "linkName": "喵呜",
+            "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+            "isBoss": false
+          },
+          {
+            "name": "魔力猫",
+            "linkName": "魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+            "isBoss": false
+          },
+          {
+            "name": "叶冕魔力猫",
+            "linkName": "叶冕魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/b/b6/kt41i5pfbzbmcat682d2s8trpdh08gr.png",
+            "isBoss": true
+          }
+        ],
+        [
+          {
+            "name": "喵喵",
+            "linkName": "喵喵",
+            "image": "https://patchwiki.biligame.com/images/nrc/5/5c/2t2bitjv0eouw6qb8r9y5l5utj24jnx.png",
+            "isBoss": false
+          },
+          {
+            "name": "喵呜",
+            "linkName": "喵呜",
+            "image": "https://patchwiki.biligame.com/images/nrc/f/f9/cy6y5sl8h1qjr801qypjzapr7mkucop.png",
+            "isBoss": false
+          },
+          {
+            "name": "魔力猫",
+            "linkName": "魔力猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/9/95/caseyh56hkt4c3xnitkd7zj1axnpnge.png",
+            "isBoss": false
+          },
+          {
+            "name": "武斗酷猫",
+            "linkName": "武斗酷猫",
+            "image": "https://patchwiki.biligame.com/images/nrc/a/a1/21ji9ykzfalq4sr654olxr21bxmmwjt.png",
+            "isBoss": true
+          }
+        ]
+      ],
+      "evolutionReviewRequired": false,
+      "provenance": {
+        "sourceUrl": "https://wiki.biligame.com/nrc/%E6%AD%A6%E6%96%97%E9%85%B7%E7%8C%AB",
+        "version": "S4-2026-09-10",
+        "capturedAt": "2026-09-11T02:57:17.142Z",
+        "method": "http",
+        "sha256": "830dd555320e7334dbc10b0a4fd4d9835712e822de60b88a3f1219524c2fdb77"
+      }
     }
   ],
-  "errorCount": 617,
+  "errorCount": 612,
   "missing": [
-    {
-      "name": "喵喵",
-      "url": "https://wiki.biligame.com/nrc/%E5%96%B5%E5%96%B5",
-      "sourceId": "pet_000001"
-    },
-    {
-      "name": "喵呜",
-      "url": "https://wiki.biligame.com/nrc/%E5%96%B5%E5%91%9C",
-      "sourceId": "pet_000022"
-    },
-    {
-      "name": "魔力猫",
-      "url": "https://wiki.biligame.com/nrc/%E9%AD%94%E5%8A%9B%E7%8C%AB",
-      "sourceId": "pet_000007"
-    },
-    {
-      "name": "叶冕魔力猫",
-      "url": "https://wiki.biligame.com/nrc/%E5%8F%B6%E5%86%95%E9%AD%94%E5%8A%9B%E7%8C%AB",
-      "sourceId": "pet_000536"
-    },
-    {
-      "name": "武斗酷猫",
-      "url": "https://wiki.biligame.com/nrc/%E6%AD%A6%E6%96%97%E9%85%B7%E7%8C%AB",
-      "sourceId": "pet_000593"
-    },
     {
       "name": "火花",
       "url": "https://wiki.biligame.com/nrc/%E7%81%AB%E8%8A%B1",
