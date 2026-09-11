@@ -29,6 +29,7 @@
 npm run sync:bwiki:nrc -- --version=S4-2026-09-10
 npm run sync:bwiki:nrc -- --version=S4-2026-09-10 --limit=all
 npm run sync:bwiki:nrc -- --version=S4-2026-09-10 --offline
+npm run audit:bwiki:nrc
 npm run preview:bwiki:nrc
 npm run check:bwiki:nrc
 ```
@@ -48,6 +49,10 @@ npm run sync:bwiki:nrc -- --version=S4-2026-09-10 --offline
 聚合页键为 `creatures` / `skills` / `breeding`，详情键来自该版图鉴 sourceId。导入先解析校验再保存；时间表示本地导入时间，不伪称网站修订时间。导入不直接更新 staging 或正式数据。
 
 ## 产物与发布
+
+`npm run audit:bwiki:nrc` 只读取四份同版 staging 与正式精灵、技能 JSON，在 `artifacts/bwiki/nrc/diff-report.json` 和 `.md` 生成字段级差异。报告包含输入指纹、来源、具体旧值与新值、技能变化的正式技能池关联范围，以及详情和图片缺口；不访问网络，不改 staging、preview 或正式资料。缺详情时不使用旧预置或聚合页残留数值冒充已验证详情。
+
+身份比较以唯一名称匹配；未匹配名称即使编号相同也只列作人工候选，不自动认定改名或复用 ID。技能“防御”沿用 preview 的 `status` 映射单列展示；效果文字差异不自动定性为平衡调整。报告成功表示比较已完成，不表示采集完整或允许发布，无法代替公告核对和发布检查。
 
 - staging：`scripts/bwiki/data/nrc/staging/`，包含精灵、技能、蛋组及成功详情，与 rocom 独立。
 - preview：`scripts/bwiki/data/nrc/preview/`。缺详情的旧行可能保留旧技能引用，新行未知数值为空，均是未完成候选。

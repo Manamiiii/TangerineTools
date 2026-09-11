@@ -32,6 +32,7 @@ npm run dev
 | `npm run sync:bwiki:nrc -- --version=S4-2026-09-10` | 同步新版 NRC 候选；默认最多请求 24 个缺失详情 |
 | `npm run import:bwiki:nrc -- --version=版本 --key=页面键 --file=快照.html` | 校验并导入 NRC HTML 快照 |
 | `npm run preview:bwiki:nrc` | 生成 NRC 候选预览与发布阻塞清单 |
+| `npm run audit:bwiki:nrc` | 离线比较 NRC 源字段与正式资料，列出身份冲突、技能影响和详情缺口 |
 | `npm run check:bwiki:nrc` | 检查 NRC 发布条件；采集或审阅未完成时失败 |
 | `npm run check:bwiki:sources` | 核对正式资料与逐行来源清单 |
 | `npm run preview:bwiki` | 构建 BWiki 发布预览 |

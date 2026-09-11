@@ -21,6 +21,7 @@
     "sync:bwiki:nrc": "node scripts/bwiki/sync-nrc.mjs",
     "import:bwiki:nrc": "node scripts/bwiki/import-nrc-snapshot.mjs",
     "preview:bwiki:nrc": "node scripts/bwiki/build-preview.mjs --source=nrc",
+    "audit:bwiki:nrc": "node scripts/bwiki/audit-nrc.mjs",
     "check:bwiki:nrc": "node scripts/bwiki/apply-preset.mjs --source=nrc",
     "check:bwiki:sources": "node scripts/bwiki/check-sources.mjs",
     "preview:bwiki": "node scripts/bwiki/build-preview.mjs",

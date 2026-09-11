@@ -86,7 +86,7 @@ function stagedSkillKey(row) {
   return normalizeName(row.name)
 }
 
-function mapElements(elements) {
+export function mapElements(elements) {
   const mapped = []
   const unknown = []
   for (const element of elements ?? []) {
@@ -97,25 +97,25 @@ function mapElements(elements) {
   return { mapped, unknown }
 }
 
-function mapSkillElement(element) {
+export function mapSkillElement(element) {
   const mapped = ELEMENT_MAP.get(element || '') || ''
   return { mapped, unknown: element && !mapped ? element : '' }
 }
 
-function mapSkillCategory(category) {
+export function mapSkillCategory(category) {
   if (/物攻|物理/.test(category || '')) return { mapped: 'physical', unknown: '' }
   if (/魔攻|魔法|特殊/.test(category || '')) return { mapped: 'magical', unknown: '' }
   if (/状态|变化|辅助|防御/.test(category || '')) return { mapped: 'status', unknown: '' }
   return { mapped: '', unknown: category || '' }
 }
 
-function mapShiny(label) {
+export function mapShiny(label) {
   if (label === '是') return 'yes'
   if (label === '否') return 'no'
   return 'unknown'
 }
 
-function normalizeNumber(value) {
+export function normalizeNumber(value) {
   if (value === null || value === undefined || value === '') return ''
   return Number.isFinite(Number(value)) ? Number(value) : ''
 }
