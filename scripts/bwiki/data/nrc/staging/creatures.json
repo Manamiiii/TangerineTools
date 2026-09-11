@@ -1,7 +1,7 @@
 {
   "source": "bwiki-nrc",
-  "version": "S4-2026-09-10",
-  "syncedAt": "2026-09-11T02:58:17.615Z",
+  "version": "S4-2026-09-11-browser-full",
+  "syncedAt": "2026-09-11T09:05:38.023Z",
   "attribution": {
     "name": "洛克王国：世界 Wiki（NRC BWIKI）",
     "url": "https://wiki.biligame.com/nrc/首页",
@@ -15,27 +15,27 @@
   "provenance": [
     {
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "version": "S4-2026-09-10",
-      "capturedAt": "2026-09-10T11:23:14.376Z",
-      "method": "http",
-      "sha256": "7e0a0db9c8273e0ab375455c30de3cd1bf96ce872d186c7fba553e4770145560"
+      "version": "S4-2026-09-11-browser-full",
+      "capturedAt": "2026-09-11T08:50:45.269Z",
+      "method": "local-html-import",
+      "sha256": "8406ecca4f8cbface8369287df4247cb2c5c78edfb5587ea75690b46bfdc7516"
     },
     {
       "sourceUrl": "https://wiki.biligame.com/nrc/技能列表",
-      "version": "S4-2026-09-10",
-      "capturedAt": "2026-09-10T11:51:28.886Z",
-      "method": "http",
-      "sha256": "d888029344d1a6b81cd9bce57689694bd863ea84378c00e2a57c4054ab800fbb"
+      "version": "S4-2026-09-11-browser-full",
+      "capturedAt": "2026-09-11T08:51:22.429Z",
+      "method": "local-html-import",
+      "sha256": "dd7a998692f190a7db675ae17168cfc1af61283d77a8d3674ec858c5a875485f"
     },
     {
       "sourceUrl": "https://wiki.biligame.com/nrc/孵蛋组别查询",
-      "version": "S4-2026-09-10",
-      "capturedAt": "2026-09-10T11:34:34.733Z",
-      "method": "browser-dom",
-      "sha256": "edd660ee6aeaf27431d239c591f25981267404d03b09a36698829843ead05d82"
+      "version": "S4-2026-09-11-browser-full",
+      "capturedAt": "2026-09-11T08:51:55.888Z",
+      "method": "local-html-import",
+      "sha256": "5356cb67ff90be08967c665b956c437385bac4597e7f75a19a7d32658bc49389"
     }
   ],
-  "rowCount": 622,
+  "rowCount": 621,
   "rows": [
     {
       "source": "bwiki-nrc",
@@ -305,7 +305,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/b/bb/ssqs82q81krezt93j5t1evi46xukl00.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 70,
+      "patk": 84,
+      "matk": 37,
+      "pdef": 56,
+      "mdef": 43,
+      "spd": 78,
+      "bst": 368,
+      "traitName": "助燃"
     },
     {
       "source": "bwiki-nrc",
@@ -322,7 +330,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/4/43/jnonu0qu2nny5go8q0j2cr9ehghwl3k.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 93,
+      "patk": 111,
+      "matk": 49,
+      "pdef": 75,
+      "mdef": 58,
+      "spd": 104,
+      "bst": 490,
+      "traitName": "助燃"
     },
     {
       "source": "bwiki-nrc",
@@ -339,7 +355,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/b/bd/71km9r77461tama4j7tqiodr6dh1p3t.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 117,
+      "patk": 139,
+      "matk": 61,
+      "pdef": 94,
+      "mdef": 72,
+      "spd": 130,
+      "bst": 613,
+      "traitName": "助燃"
     },
     {
       "source": "bwiki-nrc",
@@ -356,7 +380,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/1/15/1r6brh8mgzt3ahe6esm8vubz5fsh75h.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 117,
+      "patk": 175,
+      "matk": 84,
+      "pdef": 94,
+      "mdef": 72,
+      "spd": 130,
+      "bst": 672,
+      "traitName": "爆燃"
     },
     {
       "source": "bwiki-nrc",
@@ -373,7 +405,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/f/f0/k6un0ljv0cqjuf8i1eezmvxep7a2z39.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 75,
+      "patk": 35,
+      "matk": 76,
+      "pdef": 56,
+      "mdef": 79,
+      "spd": 51,
+      "bst": 372,
+      "traitName": "浸润"
     },
     {
       "source": "bwiki-nrc",
@@ -390,7 +430,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/a/ac/dbipi4q85wf15oesr44z8bk7ir1h4fd.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 100,
+      "patk": 46,
+      "matk": 102,
+      "pdef": 75,
+      "mdef": 106,
+      "spd": 68,
+      "bst": 497,
+      "traitName": "浸润"
     },
     {
       "source": "bwiki-nrc",
@@ -407,7 +455,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/a/a6/pqyev8paix9tmcwdhdrcaek3lm6wxmc.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 125,
+      "patk": 58,
+      "matk": 127,
+      "pdef": 94,
+      "mdef": 132,
+      "spd": 85,
+      "bst": 621,
+      "traitName": "浸润"
     },
     {
       "source": "bwiki-nrc",
@@ -424,7 +480,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/f/f0/as3tsl89a44a1n0nzsoxj08felg2qqu.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 125,
+      "patk": 67,
+      "matk": 141,
+      "pdef": 104,
+      "mdef": 145,
+      "spd": 85,
+      "bst": 667,
+      "traitName": "浪潮"
     },
     {
       "source": "bwiki-nrc",
@@ -441,24 +505,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/5/5c/msfg9bb0rar9rydwnwgxeq62r08kkgb.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E8%93%AC%E6%9D%BE%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000539",
-      "no": "NO.011",
-      "name": "鸭吉吉国王（蓬松的样子）",
-      "elements": [
-        "普通"
-      ],
-      "stageLabel": "首领",
-      "formCategoryLabel": "首领形态",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/c/c6/4cjbbsq1azdi2shn818nmgitk1nulop.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 136,
+      "patk": 95,
+      "matk": 35,
+      "pdef": 55,
+      "mdef": 45,
+      "spd": 105,
+      "bst": 471,
+      "traitName": "挺起胸脯"
     },
     {
       "source": "bwiki-nrc",
@@ -475,6 +530,131 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/e/eb/b8248rv3d09kopsi06gh47lya2f8skc.png",
+      "shinyImage": "",
+      "hp": 136,
+      "patk": 35,
+      "matk": 95,
+      "pdef": 45,
+      "mdef": 55,
+      "spd": 105,
+      "bst": 471,
+      "traitName": "挺起胸脯"
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%EF%BC%88%E6%80%A5%E6%80%A5%E6%80%A5%E9%B8%AD%EF%BC%89",
+      "sourceId": "pet_000353",
+      "no": "NO.011",
+      "name": "鸭吉吉（急急急鸭）",
+      "elements": [
+        "普通"
+      ],
+      "stageLabel": "一阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/1/14/sqap14w2379popluj8e6qeqgqzs7seq.png",
+      "shinyImage": "",
+      "hp": 130,
+      "patk": 95,
+      "matk": 35,
+      "pdef": 55,
+      "mdef": 45,
+      "spd": 110,
+      "bst": 470,
+      "traitName": "挺起胸脯"
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%EF%BC%88%E7%AD%89%E4%B8%80%E7%AD%89%E9%B8%AD%EF%BC%89",
+      "sourceId": "pet_000354",
+      "no": "NO.011",
+      "name": "鸭吉吉（等一等鸭）",
+      "elements": [
+        "普通"
+      ],
+      "stageLabel": "一阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/2/2e/dj0fsgvpvaqgenwhpixfixe1mnxsn5b.png",
+      "shinyImage": "",
+      "hp": 137,
+      "patk": 35,
+      "matk": 94,
+      "pdef": 46,
+      "mdef": 57,
+      "spd": 100,
+      "bst": 469,
+      "traitName": "挺起胸脯"
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%EF%BC%88%E7%87%83%E4%BA%86%E9%B8%AD%EF%BC%89",
+      "sourceId": "pet_000393",
+      "no": "NO.011",
+      "name": "鸭吉吉（燃了鸭）",
+      "elements": [
+        "普通"
+      ],
+      "stageLabel": "一阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/3/31/7e5f14nx7h8h8ns2to8h8zknu0cip7e.png",
+      "shinyImage": "",
+      "hp": 108,
+      "patk": 89,
+      "matk": 41,
+      "pdef": 74,
+      "mdef": 48,
+      "spd": 115,
+      "bst": 475,
+      "traitName": "挺起胸脯"
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%EF%BC%88%E8%B5%B7%E6%9D%A5%E9%B8%AD%EF%BC%89",
+      "sourceId": "pet_000513",
+      "no": "NO.011",
+      "name": "鸭吉吉（起来鸭）",
+      "elements": [
+        "普通"
+      ],
+      "stageLabel": "一阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/c/cf/tg0av2rw3ryn5utajpq9lnt0m2npkez.png",
+      "shinyImage": "",
+      "hp": 107,
+      "patk": 53,
+      "matk": 125,
+      "pdef": 80,
+      "mdef": 113,
+      "spd": 100,
+      "bst": 578,
+      "traitName": "挺起胸脯"
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E8%93%AC%E6%9D%BE%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000539",
+      "no": "NO.011",
+      "name": "鸭吉吉国王（蓬松的样子）",
+      "elements": [
+        "普通"
+      ],
+      "stageLabel": "首领",
+      "formCategoryLabel": "首领形态",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/c/c6/4cjbbsq1azdi2shn818nmgitk1nulop.png",
       "shinyImage": ""
     },
     {
@@ -497,23 +677,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%EF%BC%88%E6%80%A5%E6%80%A5%E6%80%A5%E9%B8%AD%EF%BC%89",
-      "sourceId": "pet_000353",
-      "no": "NO.011",
-      "name": "鸭吉吉（急急急鸭）",
-      "elements": [
-        "普通"
-      ],
-      "stageLabel": "一阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/1/14/sqap14w2379popluj8e6qeqgqzs7seq.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E6%80%A5%E6%80%A5%E6%80%A5%E9%B8%AD%EF%BC%89",
       "sourceId": "pet_000570",
       "no": "NO.011",
@@ -526,23 +689,6 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/c/c6/4cjbbsq1azdi2shn818nmgitk1nulop.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%EF%BC%88%E7%AD%89%E4%B8%80%E7%AD%89%E9%B8%AD%EF%BC%89",
-      "sourceId": "pet_000354",
-      "no": "NO.011",
-      "name": "鸭吉吉（等一等鸭）",
-      "elements": [
-        "普通"
-      ],
-      "stageLabel": "一阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/2/2e/dj0fsgvpvaqgenwhpixfixe1mnxsn5b.png",
       "shinyImage": ""
     },
     {
@@ -565,23 +711,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%EF%BC%88%E7%87%83%E4%BA%86%E9%B8%AD%EF%BC%89",
-      "sourceId": "pet_000393",
-      "no": "NO.011",
-      "name": "鸭吉吉（燃了鸭）",
-      "elements": [
-        "普通"
-      ],
-      "stageLabel": "一阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/3/31/7e5f14nx7h8h8ns2to8h8zknu0cip7e.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E7%87%83%E4%BA%86%E9%B8%AD%EF%BC%89",
       "sourceId": "pet_000572",
       "no": "NO.011",
@@ -594,23 +723,6 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/c/c6/4cjbbsq1azdi2shn818nmgitk1nulop.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%EF%BC%88%E8%B5%B7%E6%9D%A5%E9%B8%AD%EF%BC%89",
-      "sourceId": "pet_000513",
-      "no": "NO.011",
-      "name": "鸭吉吉（起来鸭）",
-      "elements": [
-        "普通"
-      ],
-      "stageLabel": "一阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/c/cf/tg0av2rw3ryn5utajpq9lnt0m2npkez.png",
       "shinyImage": ""
     },
     {
@@ -650,40 +762,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%92%94%E5%92%94%E5%A3%B3",
-      "sourceId": "pet_000048",
-      "no": "NO.013",
-      "name": "咔咔壳",
-      "elements": [
-        "水"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/b/be/l6fxai2n1qfubra4knsc5sqyfpgtlol.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%B0%B4%E6%B3%A1%E5%A3%B3",
-      "sourceId": "pet_000049",
-      "no": "NO.014",
-      "name": "水泡壳",
-      "elements": [
-        "水"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/b/b4/6xg9zq3hwr3ieih3k078yv2qlekvw9o.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E6%9D%BF%E6%9D%BF%E5%A3%B3%EF%BC%88%E8%9C%95%E7%9A%AE%E6%97%B6%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000409",
       "no": "NO.012",
@@ -701,6 +779,23 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%92%94%E5%92%94%E5%A3%B3",
+      "sourceId": "pet_000048",
+      "no": "NO.013",
+      "name": "咔咔壳",
+      "elements": [
+        "水"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/b/be/l6fxai2n1qfubra4knsc5sqyfpgtlol.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%92%94%E5%92%94%E5%A3%B3%EF%BC%88%E8%9C%95%E7%9A%AE%E6%97%B6%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000410",
       "no": "NO.013",
@@ -713,6 +808,23 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/e/ef/ra5ou2x15dqdpla0y7gtb1ba8nsjd4j.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%B0%B4%E6%B3%A1%E5%A3%B3",
+      "sourceId": "pet_000049",
+      "no": "NO.014",
+      "name": "水泡壳",
+      "elements": [
+        "水"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/b/b4/6xg9zq3hwr3ieih3k078yv2qlekvw9o.png",
       "shinyImage": ""
     },
     {
@@ -787,40 +899,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%86%AC%E7%BE%BD%E9%9B%80",
-      "sourceId": "pet_000025",
-      "no": "NO.019",
-      "name": "冬羽雀",
-      "elements": [
-        "翼"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/1/17/cl1ibfpmifvq7p4rfzheet7lhm6ps2i.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%B2%9A%E9%B8%9F",
-      "sourceId": "pet_000034",
-      "no": "NO.020",
-      "name": "岚鸟",
-      "elements": [
-        "翼"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/a/af/hsbm4ccn49jrgwofy93gmf124596was.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E9%9B%AA%E7%BB%92%E9%B8%9F%EF%BC%88%E6%98%A5%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000229",
       "no": "NO.018",
@@ -833,57 +911,6 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/9/99/j3vwj9ms11qveq3qgskogxn9q1nfkmo.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%86%AC%E7%BE%BD%E9%9B%80%EF%BC%88%E6%98%A5%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000232",
-      "no": "NO.019",
-      "name": "冬羽雀（春天的样子）",
-      "elements": [
-        "翼"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/7/7a/gn74af4wg8a1fb7holj64t23u1utqod.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%B2%9A%E9%B8%9F%EF%BC%88%E6%98%A5%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000235",
-      "no": "NO.020",
-      "name": "岚鸟（春天的样子）",
-      "elements": [
-        "翼"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/5/51/dci8duhlfnzv866xlpy6gcehgo1tt1p.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E9%9C%9C%E7%BF%BC%E9%A2%86%E4%B8%BB%EF%BC%88%E6%98%A5%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000563",
-      "no": "NO.020",
-      "name": "霜翼领主（春天的样子）",
-      "elements": [
-        "翼"
-      ],
-      "stageLabel": "首领",
-      "formCategoryLabel": "首领形态",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/f/fe/nd238ri240zewj2b71f8dtlkwhvmry5.png",
       "shinyImage": ""
     },
     {
@@ -906,57 +933,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%86%AC%E7%BE%BD%E9%9B%80%EF%BC%88%E5%A4%8F%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000233",
-      "no": "NO.019",
-      "name": "冬羽雀（夏天的样子）",
-      "elements": [
-        "翼"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/3/3e/a7x6o1b1rckbbpxljc3zbaj8m4p4p2v.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%B2%9A%E9%B8%9F%EF%BC%88%E5%A4%8F%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000236",
-      "no": "NO.020",
-      "name": "岚鸟（夏天的样子）",
-      "elements": [
-        "翼"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/2/27/qxb79vz9myv6lumto8m2m96mqvz2r73.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E9%9C%9C%E7%BF%BC%E9%A2%86%E4%B8%BB%EF%BC%88%E5%A4%8F%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000564",
-      "no": "NO.020",
-      "name": "霜翼领主（夏天的样子）",
-      "elements": [
-        "翼"
-      ],
-      "stageLabel": "首领",
-      "formCategoryLabel": "首领形态",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/f/fe/nd238ri240zewj2b71f8dtlkwhvmry5.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E9%9B%AA%E7%BB%92%E9%B8%9F%EF%BC%88%E7%A7%8B%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000231",
       "no": "NO.018",
@@ -969,6 +945,74 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/c/c8/t7v8m80u1qvgz1d0qfyrb4mvedx6lwr.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E9%9B%AA%E7%BB%92%E9%B8%9F",
+      "sourceId": "pet_000420",
+      "no": "NO.018",
+      "name": "雪绒鸟",
+      "elements": [
+        "翼"
+      ],
+      "stageLabel": "一阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/e/e3/emoanlbqa6baygyt1gfegpmqq4100ze.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%86%AC%E7%BE%BD%E9%9B%80",
+      "sourceId": "pet_000025",
+      "no": "NO.019",
+      "name": "冬羽雀",
+      "elements": [
+        "翼"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/1/17/cl1ibfpmifvq7p4rfzheet7lhm6ps2i.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%86%AC%E7%BE%BD%E9%9B%80%EF%BC%88%E6%98%A5%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000232",
+      "no": "NO.019",
+      "name": "冬羽雀（春天的样子）",
+      "elements": [
+        "翼"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/7/7a/gn74af4wg8a1fb7holj64t23u1utqod.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%86%AC%E7%BE%BD%E9%9B%80%EF%BC%88%E5%A4%8F%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000233",
+      "no": "NO.019",
+      "name": "冬羽雀（夏天的样子）",
+      "elements": [
+        "翼"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/3/3e/a7x6o1b1rckbbpxljc3zbaj8m4p4p2v.png",
       "shinyImage": ""
     },
     {
@@ -991,6 +1035,57 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%B2%9A%E9%B8%9F",
+      "sourceId": "pet_000034",
+      "no": "NO.020",
+      "name": "岚鸟",
+      "elements": [
+        "翼"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/a/af/hsbm4ccn49jrgwofy93gmf124596was.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%B2%9A%E9%B8%9F%EF%BC%88%E6%98%A5%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000235",
+      "no": "NO.020",
+      "name": "岚鸟（春天的样子）",
+      "elements": [
+        "翼"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/5/51/dci8duhlfnzv866xlpy6gcehgo1tt1p.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%B2%9A%E9%B8%9F%EF%BC%88%E5%A4%8F%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000236",
+      "no": "NO.020",
+      "name": "岚鸟（夏天的样子）",
+      "elements": [
+        "翼"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/2/27/qxb79vz9myv6lumto8m2m96mqvz2r73.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%B2%9A%E9%B8%9F%EF%BC%88%E7%A7%8B%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000237",
       "no": "NO.020",
@@ -1008,10 +1103,10 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E9%9C%9C%E7%BF%BC%E9%A2%86%E4%B8%BB%EF%BC%88%E7%A7%8B%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000565",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E9%9C%9C%E7%BF%BC%E9%A2%86%E4%B8%BB%EF%BC%88%E6%98%A5%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000563",
       "no": "NO.020",
-      "name": "霜翼领主（秋天的样子）",
+      "name": "霜翼领主（春天的样子）",
       "elements": [
         "翼"
       ],
@@ -1025,18 +1120,35 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E9%9B%AA%E7%BB%92%E9%B8%9F",
-      "sourceId": "pet_000420",
-      "no": "NO.018",
-      "name": "雪绒鸟",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E9%9C%9C%E7%BF%BC%E9%A2%86%E4%B8%BB%EF%BC%88%E5%A4%8F%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000564",
+      "no": "NO.020",
+      "name": "霜翼领主（夏天的样子）",
       "elements": [
         "翼"
       ],
-      "stageLabel": "一阶",
-      "formCategoryLabel": "",
+      "stageLabel": "首领",
+      "formCategoryLabel": "首领形态",
       "seasonLabel": "none",
       "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/e/e3/emoanlbqa6baygyt1gfegpmqq4100ze.png",
+      "image": "https://patchwiki.biligame.com/images/nrc/f/fe/nd238ri240zewj2b71f8dtlkwhvmry5.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E9%9C%9C%E7%BF%BC%E9%A2%86%E4%B8%BB%EF%BC%88%E7%A7%8B%E5%A4%A9%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000565",
+      "no": "NO.020",
+      "name": "霜翼领主（秋天的样子）",
+      "elements": [
+        "翼"
+      ],
+      "stageLabel": "首领",
+      "formCategoryLabel": "首领形态",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/f/fe/nd238ri240zewj2b71f8dtlkwhvmry5.png",
       "shinyImage": ""
     },
     {
@@ -1129,40 +1241,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E7%9F%B3%E5%88%BA%E8%9C%A5",
-      "sourceId": "pet_000096",
-      "no": "NO.025",
-      "name": "石刺蜥",
-      "elements": [
-        "地"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/0/0f/k1lybgh8lc0m8zdxbdi6tj1ix8ym7bz.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E7%9F%B3%E5%86%A0%E7%8E%8B%E8%9C%A5",
-      "sourceId": "pet_000097",
-      "no": "NO.026",
-      "name": "石冠王蜥",
-      "elements": [
-        "地"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/1/1e/m7fm4huv4m1uyeww4ij41dnqf73asjj.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E7%9F%B3%E8%82%A4%E8%9C%A5%EF%BC%88%E7%90%83%E7%90%83%E5%B0%BE%E5%B7%B4%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000398",
       "no": "NO.024",
@@ -1180,6 +1258,23 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E7%9F%B3%E5%88%BA%E8%9C%A5",
+      "sourceId": "pet_000096",
+      "no": "NO.025",
+      "name": "石刺蜥",
+      "elements": [
+        "地"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/0/0f/k1lybgh8lc0m8zdxbdi6tj1ix8ym7bz.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E7%9F%B3%E5%88%BA%E8%9C%A5%EF%BC%88%E7%90%83%E7%90%83%E5%B0%BE%E5%B7%B4%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000399",
       "no": "NO.025",
@@ -1192,6 +1287,23 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/3/39/fg5j1x2tmto012exarzj0td92gdrnh4.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E7%9F%B3%E5%86%A0%E7%8E%8B%E8%9C%A5",
+      "sourceId": "pet_000097",
+      "no": "NO.026",
+      "name": "石冠王蜥",
+      "elements": [
+        "地"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/1/1e/m7fm4huv4m1uyeww4ij41dnqf73asjj.png",
       "shinyImage": ""
     },
     {
@@ -1476,24 +1588,6 @@
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/1/1b/a15cite5banr2bmm8ezavunrcg78gmv.png",
       "shinyImage": "https://patchwiki.biligame.com/images/nrc/9/95/bs2p2yo3i9cbi6diwteoxrmgsx5tyjw.png"
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%B9%BD%E5%BD%B1%E6%A0%91%EF%BC%88%E7%AA%81%E5%8F%98%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000532",
-      "no": "NO.035",
-      "name": "幽影树（突变的样子）",
-      "elements": [
-        "幽",
-        "草"
-      ],
-      "stageLabel": "一阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "S2",
-      "shinyLabel": "是",
-      "image": "https://patchwiki.biligame.com/images/nrc/6/66/8fg9s5c1ttuzfxnahc1n14ilqdjbpbs.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/2/2e/1gi1oqq4jmbs9g4n0hhpcwzsezivada.png"
     },
     {
       "source": "bwiki-nrc",
@@ -1871,40 +1965,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%A1%E5%8D%A1%E8%99%AB%EF%BC%88%E8%8D%89%E5%9C%B0%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000038",
-      "no": "NO.045",
-      "name": "卡卡虫（草地附近的样子）",
-      "elements": [
-        "草"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/7/74/as45o5jef482aa6m98h0b5h5pf8aypk.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%A1%E7%93%A6%E9%87%8D%EF%BC%88%E8%8D%89%E5%9C%B0%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000039",
-      "no": "NO.046",
-      "name": "卡瓦重（草地附近的样子）",
-      "elements": [
-        "草"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/a/a4/a0tci45eitygv01o4vbkpkrw0iglbia.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E4%B8%A2%E4%B8%A2%EF%BC%88%E7%81%AB%E5%B1%B1%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000238",
       "no": "NO.044",
@@ -1918,42 +1978,6 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/0/03/rvcfbghgig9vh5r5r6l6fior46xu6q6.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%A1%E5%8D%A1%E8%99%AB%EF%BC%88%E7%81%AB%E5%B1%B1%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000241",
-      "no": "NO.045",
-      "name": "卡卡虫（火山附近的样子）",
-      "elements": [
-        "草",
-        "火"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/3/36/2w27re5w3h1gkm2f7864ctbs83bp5c1.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%A1%E7%93%A6%E9%87%8D%EF%BC%88%E7%81%AB%E5%B1%B1%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000244",
-      "no": "NO.046",
-      "name": "卡瓦重（火山附近的样子）",
-      "elements": [
-        "草",
-        "火"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/a/a9/q6bm9v8vu23eoihll2ubyln54m4jqeb.png",
       "shinyImage": ""
     },
     {
@@ -1977,42 +2001,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%A1%E5%8D%A1%E8%99%AB%EF%BC%88%E6%B2%99%E5%9C%B0%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000242",
-      "no": "NO.045",
-      "name": "卡卡虫（沙地附近的样子）",
-      "elements": [
-        "草",
-        "地"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/3/39/k2q4nqe6d937fg3ib5q8wqxmpubony4.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%A1%E7%93%A6%E9%87%8D%EF%BC%88%E6%B2%99%E5%9C%B0%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000245",
-      "no": "NO.046",
-      "name": "卡瓦重（沙地附近的样子）",
-      "elements": [
-        "草",
-        "地"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/5/5c/6w2elmetr9ddh17q5dpvghvi6f72olz.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E4%B8%A2%E4%B8%A2%EF%BC%88%E9%9B%AA%E5%B1%B1%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000240",
       "no": "NO.044",
@@ -2031,6 +2019,59 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%A1%E5%8D%A1%E8%99%AB%EF%BC%88%E8%8D%89%E5%9C%B0%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000038",
+      "no": "NO.045",
+      "name": "卡卡虫（草地附近的样子）",
+      "elements": [
+        "草"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/7/74/as45o5jef482aa6m98h0b5h5pf8aypk.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%A1%E5%8D%A1%E8%99%AB%EF%BC%88%E7%81%AB%E5%B1%B1%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000241",
+      "no": "NO.045",
+      "name": "卡卡虫（火山附近的样子）",
+      "elements": [
+        "草",
+        "火"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/3/36/2w27re5w3h1gkm2f7864ctbs83bp5c1.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%A1%E5%8D%A1%E8%99%AB%EF%BC%88%E6%B2%99%E5%9C%B0%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000242",
+      "no": "NO.045",
+      "name": "卡卡虫（沙地附近的样子）",
+      "elements": [
+        "草",
+        "地"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/3/39/k2q4nqe6d937fg3ib5q8wqxmpubony4.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%A1%E5%8D%A1%E8%99%AB%EF%BC%88%E9%9B%AA%E5%B1%B1%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000243",
       "no": "NO.045",
@@ -2044,6 +2085,59 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/2/2f/lqk8205jfmmzrie14tki9lhrd0eb3sh.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%A1%E7%93%A6%E9%87%8D%EF%BC%88%E8%8D%89%E5%9C%B0%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000039",
+      "no": "NO.046",
+      "name": "卡瓦重（草地附近的样子）",
+      "elements": [
+        "草"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/a/a4/a0tci45eitygv01o4vbkpkrw0iglbia.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%A1%E7%93%A6%E9%87%8D%EF%BC%88%E7%81%AB%E5%B1%B1%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000244",
+      "no": "NO.046",
+      "name": "卡瓦重（火山附近的样子）",
+      "elements": [
+        "草",
+        "火"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/a/a9/q6bm9v8vu23eoihll2ubyln54m4jqeb.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%A1%E7%93%A6%E9%87%8D%EF%BC%88%E6%B2%99%E5%9C%B0%E9%99%84%E8%BF%91%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000245",
+      "no": "NO.046",
+      "name": "卡瓦重（沙地附近的样子）",
+      "elements": [
+        "草",
+        "地"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/5/5c/6w2elmetr9ddh17q5dpvghvi6f72olz.png",
       "shinyImage": ""
     },
     {
@@ -2305,23 +2399,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A2%A6%E6%82%A0%E6%82%A0%EF%BC%88%E7%A9%BF%E6%97%A7%E7%9D%A1%E8%A1%A3%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000343",
-      "no": "NO.058",
-      "name": "梦悠悠（穿旧睡衣的样子）",
-      "elements": [
-        "幽"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/c/ce/jzuww847d5gjzcggq094qgxevyw3uj0.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E6%A2%A6%E6%B8%B8%EF%BC%88%E7%A9%BF%E6%98%9F%E6%98%9F%E7%9D%A1%E8%A1%A3%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000344",
       "no": "NO.057",
@@ -2335,6 +2412,23 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/a/ac/rlu4jqv5aw56wksqu6vo7c6yfselrgb.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A2%A6%E6%82%A0%E6%82%A0%EF%BC%88%E7%A9%BF%E6%97%A7%E7%9D%A1%E8%A1%A3%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000343",
+      "no": "NO.058",
+      "name": "梦悠悠（穿旧睡衣的样子）",
+      "elements": [
+        "幽"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/c/ce/jzuww847d5gjzcggq094qgxevyw3uj0.png",
       "shinyImage": ""
     },
     {
@@ -2445,60 +2539,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E8%8D%89%EF%BC%88%E6%B5%B7%E7%A5%9E%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
-      "sourceId": "pet_000017",
-      "no": "NO.064",
-      "name": "蹦蹦草（海神球形态）",
-      "elements": [
-        "草",
-        "毒"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/b/b8/hvf0eddprm5np9yir8ftm31ajy92skb.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E8%8A%B1%EF%BC%88%E6%B5%B7%E7%A5%9E%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
-      "sourceId": "pet_000018",
-      "no": "NO.065",
-      "name": "蹦蹦花（海神球形态）",
-      "elements": [
-        "草",
-        "毒"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/2/20/jkdrrmbpygms174eyf3ea4n47uaxg7p.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E6%9E%9C%EF%BC%88%E6%B5%B7%E7%A5%9E%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
-      "sourceId": "pet_000537",
-      "no": "NO.065",
-      "name": "蹦蹦果（海神球形态）",
-      "elements": [
-        "草",
-        "毒"
-      ],
-      "stageLabel": "首领",
-      "formCategoryLabel": "首领形态",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/f/fa/8w2dpyf26xivotetn27x0t4pgly6dd5.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E7%A7%8D%E5%AD%90%EF%BC%88%E5%BD%A9%E7%8E%89%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
       "sourceId": "pet_000247",
       "no": "NO.063",
@@ -2512,60 +2552,6 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/0/05/a4vypa202emreqcpc3ulkdmu9s4nwnz.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E8%8D%89%EF%BC%88%E5%BD%A9%E7%8E%89%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
-      "sourceId": "pet_000250",
-      "no": "NO.064",
-      "name": "蹦蹦草（彩玉球形态）",
-      "elements": [
-        "草",
-        "毒"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/a/ad/cfoai7qy8zm874aiezdk7zq2s7zf6rp.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E8%8A%B1%EF%BC%88%E5%BD%A9%E7%8E%89%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
-      "sourceId": "pet_000253",
-      "no": "NO.065",
-      "name": "蹦蹦花（彩玉球形态）",
-      "elements": [
-        "草",
-        "毒"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/b/b9/9qo8a1i49lyofvvev66cqgc0gtuwuca.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E6%9E%9C%EF%BC%88%E5%BD%A9%E7%8E%89%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
-      "sourceId": "pet_000566",
-      "no": "NO.065",
-      "name": "蹦蹦果（彩玉球形态）",
-      "elements": [
-        "草",
-        "毒"
-      ],
-      "stageLabel": "首领",
-      "formCategoryLabel": "首领形态",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/f/fa/8w2dpyf26xivotetn27x0t4pgly6dd5.png",
       "shinyImage": ""
     },
     {
@@ -2589,60 +2575,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E8%8D%89%EF%BC%88%E7%9F%AD%E6%AF%9B%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
-      "sourceId": "pet_000251",
-      "no": "NO.064",
-      "name": "蹦蹦草（短毛球形态）",
-      "elements": [
-        "草",
-        "毒"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/c/c2/n2fz34xey3dg13fw9csfsfw5mp3m8k2.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E8%8A%B1%EF%BC%88%E7%9F%AD%E6%AF%9B%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
-      "sourceId": "pet_000254",
-      "no": "NO.065",
-      "name": "蹦蹦花（短毛球形态）",
-      "elements": [
-        "草",
-        "毒"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/3/3b/jv3bc480tuxz6dk8itzte5d88mhsf4e.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E6%9E%9C%EF%BC%88%E7%9F%AD%E6%AF%9B%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
-      "sourceId": "pet_000567",
-      "no": "NO.065",
-      "name": "蹦蹦果（短毛球形态）",
-      "elements": [
-        "草",
-        "毒"
-      ],
-      "stageLabel": "首领",
-      "formCategoryLabel": "首领形态",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/f/fa/8w2dpyf26xivotetn27x0t4pgly6dd5.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E7%A7%8D%E5%AD%90%EF%BC%88%E8%B1%A1%E7%89%99%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
       "sourceId": "pet_000249",
       "no": "NO.063",
@@ -2656,6 +2588,60 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/e/e0/2mu0iomlkqfqo3tm3hw1a8l9kpbbfsy.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E8%8D%89%EF%BC%88%E6%B5%B7%E7%A5%9E%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
+      "sourceId": "pet_000017",
+      "no": "NO.064",
+      "name": "蹦蹦草（海神球形态）",
+      "elements": [
+        "草",
+        "毒"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/b/b8/hvf0eddprm5np9yir8ftm31ajy92skb.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E8%8D%89%EF%BC%88%E5%BD%A9%E7%8E%89%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
+      "sourceId": "pet_000250",
+      "no": "NO.064",
+      "name": "蹦蹦草（彩玉球形态）",
+      "elements": [
+        "草",
+        "毒"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/a/ad/cfoai7qy8zm874aiezdk7zq2s7zf6rp.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E8%8D%89%EF%BC%88%E7%9F%AD%E6%AF%9B%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
+      "sourceId": "pet_000251",
+      "no": "NO.064",
+      "name": "蹦蹦草（短毛球形态）",
+      "elements": [
+        "草",
+        "毒"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/c/c2/n2fz34xey3dg13fw9csfsfw5mp3m8k2.png",
       "shinyImage": ""
     },
     {
@@ -2679,6 +2665,60 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E8%8A%B1%EF%BC%88%E6%B5%B7%E7%A5%9E%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
+      "sourceId": "pet_000018",
+      "no": "NO.065",
+      "name": "蹦蹦花（海神球形态）",
+      "elements": [
+        "草",
+        "毒"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/2/20/jkdrrmbpygms174eyf3ea4n47uaxg7p.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E8%8A%B1%EF%BC%88%E5%BD%A9%E7%8E%89%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
+      "sourceId": "pet_000253",
+      "no": "NO.065",
+      "name": "蹦蹦花（彩玉球形态）",
+      "elements": [
+        "草",
+        "毒"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/b/b9/9qo8a1i49lyofvvev66cqgc0gtuwuca.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E8%8A%B1%EF%BC%88%E7%9F%AD%E6%AF%9B%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
+      "sourceId": "pet_000254",
+      "no": "NO.065",
+      "name": "蹦蹦花（短毛球形态）",
+      "elements": [
+        "草",
+        "毒"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/3/3b/jv3bc480tuxz6dk8itzte5d88mhsf4e.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E8%8A%B1%EF%BC%88%E8%B1%A1%E7%89%99%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
       "sourceId": "pet_000255",
       "no": "NO.065",
@@ -2692,6 +2732,60 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/e/e5/nf265k3yy0e003lbkwlwlemjrosqsxe.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E6%9E%9C%EF%BC%88%E6%B5%B7%E7%A5%9E%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
+      "sourceId": "pet_000537",
+      "no": "NO.065",
+      "name": "蹦蹦果（海神球形态）",
+      "elements": [
+        "草",
+        "毒"
+      ],
+      "stageLabel": "首领",
+      "formCategoryLabel": "首领形态",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/f/fa/8w2dpyf26xivotetn27x0t4pgly6dd5.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E6%9E%9C%EF%BC%88%E5%BD%A9%E7%8E%89%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
+      "sourceId": "pet_000566",
+      "no": "NO.065",
+      "name": "蹦蹦果（彩玉球形态）",
+      "elements": [
+        "草",
+        "毒"
+      ],
+      "stageLabel": "首领",
+      "formCategoryLabel": "首领形态",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/f/fa/8w2dpyf26xivotetn27x0t4pgly6dd5.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E8%B9%A6%E8%B9%A6%E6%9E%9C%EF%BC%88%E7%9F%AD%E6%AF%9B%E7%90%83%E5%BD%A2%E6%80%81%EF%BC%89",
+      "sourceId": "pet_000567",
+      "no": "NO.065",
+      "name": "蹦蹦果（短毛球形态）",
+      "elements": [
+        "草",
+        "毒"
+      ],
+      "stageLabel": "首领",
+      "formCategoryLabel": "首领形态",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/f/fa/8w2dpyf26xivotetn27x0t4pgly6dd5.png",
       "shinyImage": ""
     },
     {
@@ -2766,24 +2860,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E8%92%B2%E5%85%AC%E8%8B%B1%E5%A8%83%E5%A8%83",
-      "sourceId": "pet_000024",
-      "no": "NO.070",
-      "name": "蒲公英娃娃",
-      "elements": [
-        "草",
-        "萌"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/4/47/3yirm5nsmhzonju24jo4sh853ovakoy.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E8%92%B2%E5%85%AC%E8%8B%B1",
       "sourceId": "pet_000031",
       "no": "NO.069",
@@ -2797,6 +2873,24 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/9/94/mf3y7tab92zohwfwxedthsldc3ws6he.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E8%92%B2%E5%85%AC%E8%8B%B1%E5%A8%83%E5%A8%83",
+      "sourceId": "pet_000024",
+      "no": "NO.070",
+      "name": "蒲公英娃娃",
+      "elements": [
+        "草",
+        "萌"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/4/47/3yirm5nsmhzonju24jo4sh853ovakoy.png",
       "shinyImage": ""
     },
     {
@@ -2907,60 +3001,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%88%BA%E7%9B%94%E8%99%AB",
-      "sourceId": "pet_000270",
-      "no": "NO.077",
-      "name": "刺盔虫",
-      "elements": [
-        "水",
-        "毒"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "S3",
-      "shinyLabel": "是",
-      "image": "https://patchwiki.biligame.com/images/nrc/6/61/j694d7phhprdsa14xchykqu50uu8wxd.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/0/0d/b6tfej3h97d8pra9szo6i0xqk7huqwo.png"
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%83%E6%A3%98%E7%9B%94",
-      "sourceId": "pet_000271",
-      "no": "NO.078",
-      "name": "千棘盔",
-      "elements": [
-        "水",
-        "毒"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "S3",
-      "shinyLabel": "是",
-      "image": "https://patchwiki.biligame.com/images/nrc/8/8b/h0mitfla83t08a2x64og24qagefau5p.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/9/9b/ekz17ss94m6c1q8at07zqmm2y7lyj82.png"
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%83%E6%A3%98%E6%B5%B7%E9%92%88",
-      "sourceId": "pet_000545",
-      "no": "NO.078",
-      "name": "千棘海针",
-      "elements": [
-        "水",
-        "毒"
-      ],
-      "stageLabel": "首领",
-      "formCategoryLabel": "首领形态",
-      "seasonLabel": "S3",
-      "shinyLabel": "是",
-      "image": "https://patchwiki.biligame.com/images/nrc/e/e7/nadwdky316qpr6974k2z6tyqmp10wdd.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/2/28/py5a34uj9cv3r30h3dnxbeg2qyaf9ru.png"
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E6%B5%B7%E7%9B%94%E8%99%AB%EF%BC%88%E7%A3%A8%E6%8D%9F%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000376",
       "no": "NO.076",
@@ -2975,6 +3015,24 @@
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/8/88/bvmo493pe27oik9yw4bdkxt02ttzqey.png",
       "shinyImage": "https://patchwiki.biligame.com/images/nrc/a/ad/klsdfuy2l3jzj3s49hmtfi0rlrzivsg.png"
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%88%BA%E7%9B%94%E8%99%AB",
+      "sourceId": "pet_000270",
+      "no": "NO.077",
+      "name": "刺盔虫",
+      "elements": [
+        "水",
+        "毒"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "S3",
+      "shinyLabel": "是",
+      "image": "https://patchwiki.biligame.com/images/nrc/6/61/j694d7phhprdsa14xchykqu50uu8wxd.png",
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/0/0d/b6tfej3h97d8pra9szo6i0xqk7huqwo.png"
     },
     {
       "source": "bwiki-nrc",
@@ -2997,6 +3055,24 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%83%E6%A3%98%E7%9B%94",
+      "sourceId": "pet_000271",
+      "no": "NO.078",
+      "name": "千棘盔",
+      "elements": [
+        "水",
+        "毒"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "S3",
+      "shinyLabel": "是",
+      "image": "https://patchwiki.biligame.com/images/nrc/8/8b/h0mitfla83t08a2x64og24qagefau5p.png",
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/9/9b/ekz17ss94m6c1q8at07zqmm2y7lyj82.png"
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%83%E6%A3%98%E7%9B%94%EF%BC%88%E7%A3%A8%E6%8D%9F%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000378",
       "no": "NO.078",
@@ -3011,6 +3087,24 @@
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/a/a9/8hpkw915ninar2h9a2727jdw73vpuk1.png",
       "shinyImage": "https://patchwiki.biligame.com/images/nrc/6/6b/g9e623njxpxw4ao196wrrhb1ppzog8m.png"
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%8D%83%E6%A3%98%E6%B5%B7%E9%92%88",
+      "sourceId": "pet_000545",
+      "no": "NO.078",
+      "name": "千棘海针",
+      "elements": [
+        "水",
+        "毒"
+      ],
+      "stageLabel": "首领",
+      "formCategoryLabel": "首领形态",
+      "seasonLabel": "S3",
+      "shinyLabel": "是",
+      "image": "https://patchwiki.biligame.com/images/nrc/e/e7/nadwdky316qpr6974k2z6tyqmp10wdd.png",
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/2/28/py5a34uj9cv3r30h3dnxbeg2qyaf9ru.png"
     },
     {
       "source": "bwiki-nrc",
@@ -3067,23 +3161,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%98%9F%E5%85%89%E7%8B%AE%EF%BC%88%E6%98%9F%E5%85%89%E8%83%BD%E9%87%8F%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000171",
-      "no": "NO.081",
-      "name": "星光狮（星光能量的样子）",
-      "elements": [
-        "电"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/2/28/as6qt14bmqeq7whak2lidk78nhreu1y.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%B0%8F%E6%98%9F%E5%85%89%EF%BC%88%E6%9C%88%E5%85%89%E8%83%BD%E9%87%8F%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000346",
       "no": "NO.080",
@@ -3097,6 +3174,23 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/b/b0/qtp06qafrj2q4su6ipbr9e1c2hp2zmb.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%98%9F%E5%85%89%E7%8B%AE%EF%BC%88%E6%98%9F%E5%85%89%E8%83%BD%E9%87%8F%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000171",
+      "no": "NO.081",
+      "name": "星光狮（星光能量的样子）",
+      "elements": [
+        "电"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/2/28/as6qt14bmqeq7whak2lidk78nhreu1y.png",
       "shinyImage": ""
     },
     {
@@ -3866,60 +3960,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E8%93%AC%E5%8F%B6%E8%99%AB%EF%BC%88%E9%87%91%E9%BB%84%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000383",
-      "no": "NO.119",
-      "name": "蓬叶虫（金黄的样子）",
-      "elements": [
-        "普通",
-        "虫"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/3/39/suxk2b3fezzzykdba3ht3n59dlyhj4l.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E9%A3%8E%E6%BB%9A%E6%9A%AE%E8%99%AB%EF%BC%88%E9%87%91%E9%BB%84%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000304",
-      "no": "NO.120",
-      "name": "风滚暮虫（金黄的样子）",
-      "elements": [
-        "普通",
-        "虫"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/c/c5/4nz5f2kmy2dnovgg4s7ripg2q52cgi4.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%9A%AE%E9%A3%8E%E9%9A%90%E8%80%85%EF%BC%88%E9%87%91%E9%BB%84%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000589",
-      "no": "NO.120",
-      "name": "暮风隐者（金黄的样子）",
-      "elements": [
-        "普通",
-        "虫"
-      ],
-      "stageLabel": "首领",
-      "formCategoryLabel": "首领形态",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/3/32/jgm2uubbuv8jd9z4eeqekar1ah1mapq.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E6%97%8B%E5%8F%B6%E8%99%AB%EF%BC%88%E6%9E%AF%E5%8F%B6%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000394",
       "no": "NO.118",
@@ -3933,6 +3973,24 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/9/9f/hoifogc03naj928g788v41ppw69rkzx.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E8%93%AC%E5%8F%B6%E8%99%AB%EF%BC%88%E9%87%91%E9%BB%84%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000383",
+      "no": "NO.119",
+      "name": "蓬叶虫（金黄的样子）",
+      "elements": [
+        "普通",
+        "虫"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/3/39/suxk2b3fezzzykdba3ht3n59dlyhj4l.png",
       "shinyImage": ""
     },
     {
@@ -3956,6 +4014,24 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E9%A3%8E%E6%BB%9A%E6%9A%AE%E8%99%AB%EF%BC%88%E9%87%91%E9%BB%84%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000304",
+      "no": "NO.120",
+      "name": "风滚暮虫（金黄的样子）",
+      "elements": [
+        "普通",
+        "虫"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/c/c5/4nz5f2kmy2dnovgg4s7ripg2q52cgi4.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E9%A3%8E%E6%BB%9A%E6%9A%AE%E8%99%AB%EF%BC%88%E6%9E%AF%E5%8F%B6%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000396",
       "no": "NO.120",
@@ -3969,6 +4045,24 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/1/14/86akjl06t7zsc4zycxiiod30omrs3xf.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%9A%AE%E9%A3%8E%E9%9A%90%E8%80%85%EF%BC%88%E9%87%91%E9%BB%84%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000589",
+      "no": "NO.120",
+      "name": "暮风隐者（金黄的样子）",
+      "elements": [
+        "普通",
+        "虫"
+      ],
+      "stageLabel": "首领",
+      "formCategoryLabel": "首领形态",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/3/32/jgm2uubbuv8jd9z4eeqekar1ah1mapq.png",
       "shinyImage": ""
     },
     {
@@ -4833,40 +4927,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E7%A5%9E%E5%9C%A3%E7%8B%AE%E9%B9%AB%EF%BC%88%E5%B4%96%E9%97%B4%E5%9C%B0%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000117",
-      "no": "NO.166",
-      "name": "神圣狮鹫（崖间地的样子）",
-      "elements": [
-        "翼"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/1/13/nkwpjrldx2e50mc5j9y3drrilw7uzqg.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E7%9A%87%E5%AE%B6%E7%8B%AE%E9%B9%AB%EF%BC%88%E5%B4%96%E9%97%B4%E5%9C%B0%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000118",
-      "no": "NO.167",
-      "name": "皇家狮鹫（崖间地的样子）",
-      "elements": [
-        "翼"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/5/58/7jfmh6d0anhcns3i82ee17r8t74q9t7.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%B0%8F%E7%8B%AE%E9%B9%AB%EF%BC%88%E9%AB%98%E5%B1%B1%E5%9C%B0%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000368",
       "no": "NO.165",
@@ -4884,6 +4944,23 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E7%A5%9E%E5%9C%A3%E7%8B%AE%E9%B9%AB%EF%BC%88%E5%B4%96%E9%97%B4%E5%9C%B0%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000117",
+      "no": "NO.166",
+      "name": "神圣狮鹫（崖间地的样子）",
+      "elements": [
+        "翼"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/1/13/nkwpjrldx2e50mc5j9y3drrilw7uzqg.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E7%A5%9E%E5%9C%A3%E7%8B%AE%E9%B9%AB%EF%BC%88%E9%AB%98%E5%B1%B1%E5%9C%B0%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000369",
       "no": "NO.166",
@@ -4896,6 +4973,23 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/f/f4/nc67939gb6utzbxu4xcmqdin8ynp4el.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E7%9A%87%E5%AE%B6%E7%8B%AE%E9%B9%AB%EF%BC%88%E5%B4%96%E9%97%B4%E5%9C%B0%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000118",
+      "no": "NO.167",
+      "name": "皇家狮鹫（崖间地的样子）",
+      "elements": [
+        "翼"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/5/58/7jfmh6d0anhcns3i82ee17r8t74q9t7.png",
       "shinyImage": ""
     },
     {
@@ -4989,42 +5083,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%B6%88%E6%B3%A2%E8%9E%BA",
-      "sourceId": "pet_000404",
-      "no": "NO.172",
-      "name": "消波螺",
-      "elements": [
-        "地",
-        "水"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/f/f6/4mo6ev2fyu3l1ijsvj011ecypzg9rmo.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E5%97%9C%E6%B3%A2%E8%9E%BA",
-      "sourceId": "pet_000405",
-      "no": "NO.173",
-      "name": "嗜波螺",
-      "elements": [
-        "地",
-        "水"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/f/fe/i1snj2i38uopfj512qbi3pqu159dp4e.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E6%B3%A2%E6%B3%A2%E8%9E%BA%EF%BC%88%E8%A2%AB%E6%B1%A1%E6%9F%93%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000406",
       "no": "NO.171",
@@ -5043,6 +5101,24 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%B6%88%E6%B3%A2%E8%9E%BA",
+      "sourceId": "pet_000404",
+      "no": "NO.172",
+      "name": "消波螺",
+      "elements": [
+        "地",
+        "水"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/f/f6/4mo6ev2fyu3l1ijsvj011ecypzg9rmo.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E6%B6%88%E6%B3%A2%E8%9E%BA%EF%BC%88%E8%A2%AB%E6%B1%A1%E6%9F%93%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000407",
       "no": "NO.172",
@@ -5056,6 +5132,24 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/6/61/iq0arvjcee717celt1q7g6i28en0ju2.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E5%97%9C%E6%B3%A2%E8%9E%BA",
+      "sourceId": "pet_000405",
+      "no": "NO.173",
+      "name": "嗜波螺",
+      "elements": [
+        "地",
+        "水"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/f/fe/i1snj2i38uopfj512qbi3pqu159dp4e.png",
       "shinyImage": ""
     },
     {
@@ -5344,6 +5438,24 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E6%A3%8B%EF%BC%88%E9%BB%91%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000437",
+      "no": "NO.188",
+      "name": "棋棋（黑子）",
+      "elements": [
+        "武",
+        "地"
+      ],
+      "stageLabel": "一阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/a/a8/ljznjnziuiak86hu9g5flocfg8umem5.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E9%AA%91%E5%A3%AB%EF%BC%88%E7%99%BD%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000433",
       "no": "NO.189",
@@ -5362,10 +5474,46 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E9%AA%91%E5%A3%AB%EF%BC%88%E9%BB%91%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000438",
+      "no": "NO.189",
+      "name": "棋骑士（黑子）",
+      "elements": [
+        "武",
+        "地"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/b/bf/8ojoe1awtiketscpzotirsgsarg56bp.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E5%A5%91%E9%99%9B%E4%B8%8B%EF%BC%88%E7%99%BD%E6%A3%8B%E6%A3%8B%E9%AA%91%E5%A3%AB%E5%88%86%E6%94%AF%EF%BC%89",
       "sourceId": "pet_000556",
       "no": "NO.189",
       "name": "棋契陛下（白棋棋骑士分支）",
+      "elements": [
+        "武",
+        "地"
+      ],
+      "stageLabel": "首领",
+      "formCategoryLabel": "首领形态",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/8/85/c1jdl5b44v0gqttju5jlt3pugo2h40x.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E5%A5%91%E9%99%9B%E4%B8%8B%EF%BC%88%E9%BB%91%E6%A3%8B%E6%A3%8B%E9%AA%91%E5%A3%AB%E5%88%86%E6%94%AF%EF%BC%89",
+      "sourceId": "pet_000576",
+      "no": "NO.189",
+      "name": "棋契陛下（黑棋棋骑士分支）",
       "elements": [
         "武",
         "地"
@@ -5398,10 +5546,46 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E9%BD%90%E5%9E%92%EF%BC%88%E9%BB%91%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000440",
+      "no": "NO.190",
+      "name": "棋齐垒（黑子）",
+      "elements": [
+        "武",
+        "地"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/f/fb/persj8qhiqlgsagjcb52zxgrsxd5qil.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E5%A5%91%E9%99%9B%E4%B8%8B%EF%BC%88%E7%99%BD%E6%A3%8B%E6%A3%8B%E9%BD%90%E5%9E%92%E5%88%86%E6%94%AF%EF%BC%89",
       "sourceId": "pet_000574",
       "no": "NO.190",
       "name": "棋契陛下（白棋棋齐垒分支）",
+      "elements": [
+        "武",
+        "地"
+      ],
+      "stageLabel": "首领",
+      "formCategoryLabel": "首领形态",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/8/85/c1jdl5b44v0gqttju5jlt3pugo2h40x.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E5%A5%91%E9%99%9B%E4%B8%8B%EF%BC%88%E9%BB%91%E6%A3%8B%E6%A3%8B%E9%BD%90%E5%9E%92%E5%88%86%E6%94%AF%EF%BC%89",
+      "sourceId": "pet_000578",
+      "no": "NO.190",
+      "name": "棋契陛下（黑棋棋齐垒分支）",
       "elements": [
         "武",
         "地"
@@ -5434,10 +5618,46 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E7%A5%88%E7%9D%A3%EF%BC%88%E9%BB%91%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000441",
+      "no": "NO.191",
+      "name": "棋祈督（黑子）",
+      "elements": [
+        "武",
+        "地"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/a/a3/gxvqu7aajlmglb4ouilf8p1bkh578d2.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E5%A5%91%E9%99%9B%E4%B8%8B%EF%BC%88%E7%99%BD%E6%A3%8B%E6%A3%8B%E7%A5%88%E7%9D%A3%E5%88%86%E6%94%AF%EF%BC%89",
       "sourceId": "pet_000575",
       "no": "NO.191",
       "name": "棋契陛下（白棋棋祈督分支）",
+      "elements": [
+        "武",
+        "地"
+      ],
+      "stageLabel": "首领",
+      "formCategoryLabel": "首领形态",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/8/85/c1jdl5b44v0gqttju5jlt3pugo2h40x.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E5%A5%91%E9%99%9B%E4%B8%8B%EF%BC%88%E9%BB%91%E6%A3%8B%E6%A3%8B%E7%A5%88%E7%9D%A3%E5%88%86%E6%94%AF%EF%BC%89",
+      "sourceId": "pet_000579",
+      "no": "NO.191",
+      "name": "棋契陛下（黑棋棋祈督分支）",
       "elements": [
         "武",
         "地"
@@ -5470,150 +5690,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E5%A5%91%E9%99%9B%E4%B8%8B%EF%BC%88%E7%99%BD%E6%A3%8B%E6%A3%8B%E7%BB%AE%E5%90%8E%E5%88%86%E6%94%AF%EF%BC%89",
-      "sourceId": "pet_000573",
-      "no": "NO.192",
-      "name": "棋契陛下（白棋棋绮后分支）",
-      "elements": [
-        "武",
-        "地"
-      ],
-      "stageLabel": "首领",
-      "formCategoryLabel": "首领形态",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/8/85/c1jdl5b44v0gqttju5jlt3pugo2h40x.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E6%A3%8B%EF%BC%88%E9%BB%91%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000437",
-      "no": "NO.188",
-      "name": "棋棋（黑子）",
-      "elements": [
-        "武",
-        "地"
-      ],
-      "stageLabel": "一阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/a/a8/ljznjnziuiak86hu9g5flocfg8umem5.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E9%AA%91%E5%A3%AB%EF%BC%88%E9%BB%91%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000438",
-      "no": "NO.189",
-      "name": "棋骑士（黑子）",
-      "elements": [
-        "武",
-        "地"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/b/bf/8ojoe1awtiketscpzotirsgsarg56bp.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E5%A5%91%E9%99%9B%E4%B8%8B%EF%BC%88%E9%BB%91%E6%A3%8B%E6%A3%8B%E9%AA%91%E5%A3%AB%E5%88%86%E6%94%AF%EF%BC%89",
-      "sourceId": "pet_000576",
-      "no": "NO.189",
-      "name": "棋契陛下（黑棋棋骑士分支）",
-      "elements": [
-        "武",
-        "地"
-      ],
-      "stageLabel": "首领",
-      "formCategoryLabel": "首领形态",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/8/85/c1jdl5b44v0gqttju5jlt3pugo2h40x.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E9%BD%90%E5%9E%92%EF%BC%88%E9%BB%91%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000440",
-      "no": "NO.190",
-      "name": "棋齐垒（黑子）",
-      "elements": [
-        "武",
-        "地"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/f/fb/persj8qhiqlgsagjcb52zxgrsxd5qil.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E5%A5%91%E9%99%9B%E4%B8%8B%EF%BC%88%E9%BB%91%E6%A3%8B%E6%A3%8B%E9%BD%90%E5%9E%92%E5%88%86%E6%94%AF%EF%BC%89",
-      "sourceId": "pet_000578",
-      "no": "NO.190",
-      "name": "棋契陛下（黑棋棋齐垒分支）",
-      "elements": [
-        "武",
-        "地"
-      ],
-      "stageLabel": "首领",
-      "formCategoryLabel": "首领形态",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/8/85/c1jdl5b44v0gqttju5jlt3pugo2h40x.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E7%A5%88%E7%9D%A3%EF%BC%88%E9%BB%91%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000441",
-      "no": "NO.191",
-      "name": "棋祈督（黑子）",
-      "elements": [
-        "武",
-        "地"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/a/a3/gxvqu7aajlmglb4ouilf8p1bkh578d2.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E5%A5%91%E9%99%9B%E4%B8%8B%EF%BC%88%E9%BB%91%E6%A3%8B%E6%A3%8B%E7%A5%88%E7%9D%A3%E5%88%86%E6%94%AF%EF%BC%89",
-      "sourceId": "pet_000579",
-      "no": "NO.191",
-      "name": "棋契陛下（黑棋棋祈督分支）",
-      "elements": [
-        "武",
-        "地"
-      ],
-      "stageLabel": "首领",
-      "formCategoryLabel": "首领形态",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/8/85/c1jdl5b44v0gqttju5jlt3pugo2h40x.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E7%BB%AE%E5%90%8E%EF%BC%88%E9%BB%91%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000439",
       "no": "NO.192",
@@ -5627,6 +5703,24 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/6/6c/dopu6unhjoovnd2jwebwiy1ppkrx21v.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%A3%8B%E5%A5%91%E9%99%9B%E4%B8%8B%EF%BC%88%E7%99%BD%E6%A3%8B%E6%A3%8B%E7%BB%AE%E5%90%8E%E5%88%86%E6%94%AF%EF%BC%89",
+      "sourceId": "pet_000573",
+      "no": "NO.192",
+      "name": "棋契陛下（白棋棋绮后分支）",
+      "elements": [
+        "武",
+        "地"
+      ],
+      "stageLabel": "首领",
+      "formCategoryLabel": "首领形态",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/8/85/c1jdl5b44v0gqttju5jlt3pugo2h40x.png",
       "shinyImage": ""
     },
     {
@@ -6758,42 +6852,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%9C%88%E4%BA%AE%E7%A0%A3%EF%BC%88%E4%B8%8A%E5%BC%A6%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000453",
-      "no": "NO.238",
-      "name": "月亮砣（上弦的样子）",
-      "elements": [
-        "毒",
-        "萌"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "S4",
-      "shinyLabel": "是",
-      "image": "https://patchwiki.biligame.com/images/nrc/7/76/mwlggrfxeb9rodqmjcmo8h9g7xtlhor.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/f/f6/teqzcmmho8h0knvmztczqklqqe9tt2f.png"
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E6%BB%A1%E6%9C%88%E7%A0%A3%EF%BC%88%E4%B8%8A%E5%BC%A6%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000626",
-      "no": "NO.238",
-      "name": "满月砣（上弦的样子）",
-      "elements": [
-        "毒",
-        "萌"
-      ],
-      "stageLabel": "首领",
-      "formCategoryLabel": "首领形态",
-      "seasonLabel": "S4",
-      "shinyLabel": "是",
-      "image": "https://patchwiki.biligame.com/images/nrc/1/11/q9zx13fo5nr7x6y6c66v3z2ntvfvqgt.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/3/3b/efx49vpe3wm16xqsehue1jyonzr5so5.png"
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%88%BA%E8%BD%AE%E7%A0%A3%EF%BC%88%E4%B8%8B%E5%BC%A6%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000454",
       "no": "NO.237",
@@ -6812,6 +6870,24 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%9C%88%E4%BA%AE%E7%A0%A3%EF%BC%88%E4%B8%8A%E5%BC%A6%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000453",
+      "no": "NO.238",
+      "name": "月亮砣（上弦的样子）",
+      "elements": [
+        "毒",
+        "萌"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "S4",
+      "shinyLabel": "是",
+      "image": "https://patchwiki.biligame.com/images/nrc/7/76/mwlggrfxeb9rodqmjcmo8h9g7xtlhor.png",
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/f/f6/teqzcmmho8h0knvmztczqklqqe9tt2f.png"
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E6%9C%88%E4%BA%AE%E7%A0%A3%EF%BC%88%E4%B8%8B%E5%BC%A6%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000455",
       "no": "NO.238",
@@ -6826,6 +6902,24 @@
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/2/2e/4nsqrbw9jk1jd66uzdor4isd1tkt82b.png",
       "shinyImage": "https://patchwiki.biligame.com/images/nrc/d/d4/pvcu39amxrp9js6qe2t33gw4o1p1pc1.png"
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E6%BB%A1%E6%9C%88%E7%A0%A3%EF%BC%88%E4%B8%8A%E5%BC%A6%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000626",
+      "no": "NO.238",
+      "name": "满月砣（上弦的样子）",
+      "elements": [
+        "毒",
+        "萌"
+      ],
+      "stageLabel": "首领",
+      "formCategoryLabel": "首领形态",
+      "seasonLabel": "S4",
+      "shinyLabel": "是",
+      "image": "https://patchwiki.biligame.com/images/nrc/1/11/q9zx13fo5nr7x6y6c66v3z2ntvfvqgt.png",
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/3/3b/efx49vpe3wm16xqsehue1jyonzr5so5.png"
     },
     {
       "source": "bwiki-nrc",
@@ -7199,42 +7293,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E8%BF%B7%E4%BD%A0%E4%B9%8C%EF%BC%88%E6%9E%81%E6%98%BC%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000424",
-      "no": "NO.259",
-      "name": "迷你乌（极昼的样子）",
-      "elements": [
-        "恶",
-        "火"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/6/6f/5ry9oe8h4em42osvck9pymbluhf2vpk.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E4%B9%8C%E6%8B%89%E5%A1%94%EF%BC%88%E6%9E%81%E6%98%BC%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000425",
-      "no": "NO.260",
-      "name": "乌拉塔（极昼的样子）",
-      "elements": [
-        "恶",
-        "火"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/0/0e/pckfrp2tp6vvmh36okx31957g0z96lu.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E4%B9%8C%E8%BE%BE%EF%BC%88%E6%9E%81%E5%A4%9C%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000426",
       "no": "NO.258",
@@ -7253,6 +7311,24 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E8%BF%B7%E4%BD%A0%E4%B9%8C%EF%BC%88%E6%9E%81%E6%98%BC%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000424",
+      "no": "NO.259",
+      "name": "迷你乌（极昼的样子）",
+      "elements": [
+        "恶",
+        "火"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/6/6f/5ry9oe8h4em42osvck9pymbluhf2vpk.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E8%BF%B7%E4%BD%A0%E4%B9%8C%EF%BC%88%E6%9E%81%E5%A4%9C%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000427",
       "no": "NO.259",
@@ -7266,6 +7342,24 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/0/05/qfm2u57r22aqn2a9gzdlaq13zqciiy7.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E4%B9%8C%E6%8B%89%E5%A1%94%EF%BC%88%E6%9E%81%E6%98%BC%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000425",
+      "no": "NO.260",
+      "name": "乌拉塔（极昼的样子）",
+      "elements": [
+        "恶",
+        "火"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/0/0e/pckfrp2tp6vvmh36okx31957g0z96lu.png",
       "shinyImage": ""
     },
     {
@@ -7585,40 +7679,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E9%81%81%E9%BC%A0%EF%BC%88%E6%9E%AF%E6%B0%B4%E6%9C%9F%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000020",
-      "no": "NO.278",
-      "name": "遁鼠（枯水期的样子）",
-      "elements": [
-        "地"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "S3",
-      "shinyLabel": "是",
-      "image": "https://patchwiki.biligame.com/images/nrc/9/9d/1bzcozvcn5mt29e3nplk828jszy3lx8.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/b/b3/ll3bs43ehwcmyttoojzs9xyt855iush.png"
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E9%81%81%E5%9C%B0%E9%BC%A0%EF%BC%88%E6%9E%AF%E6%B0%B4%E6%9C%9F%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000021",
-      "no": "NO.279",
-      "name": "遁地鼠（枯水期的样子）",
-      "elements": [
-        "地"
-      ],
-      "stageLabel": "三阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "S3",
-      "shinyLabel": "是",
-      "image": "https://patchwiki.biligame.com/images/nrc/2/28/kczd04w0r9lkb38akh3bu9a8b0ygb32.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/8/87/c36mg5bdbhid8ajmpje2xgy8c2czzir.png"
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%9C%B0%E9%BC%A0%EF%BC%88%E5%82%A8%E6%B0%B4%E6%97%B6%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000355",
       "no": "NO.277",
@@ -7636,6 +7696,23 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E9%81%81%E9%BC%A0%EF%BC%88%E6%9E%AF%E6%B0%B4%E6%9C%9F%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000020",
+      "no": "NO.278",
+      "name": "遁鼠（枯水期的样子）",
+      "elements": [
+        "地"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "S3",
+      "shinyLabel": "是",
+      "image": "https://patchwiki.biligame.com/images/nrc/9/9d/1bzcozvcn5mt29e3nplk828jszy3lx8.png",
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/b/b3/ll3bs43ehwcmyttoojzs9xyt855iush.png"
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E9%81%81%E9%BC%A0%EF%BC%88%E5%82%A8%E6%B0%B4%E6%97%B6%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
       "sourceId": "pet_000356",
       "no": "NO.278",
@@ -7649,6 +7726,23 @@
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/1/17/glax4a3wu0lujovgia8r5hmjybiiv9f.png",
       "shinyImage": "https://patchwiki.biligame.com/images/nrc/f/f4/1r0d3h1q4vspcyj8oh2zpaezuzq7ing.png"
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E9%81%81%E5%9C%B0%E9%BC%A0%EF%BC%88%E6%9E%AF%E6%B0%B4%E6%9C%9F%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000021",
+      "no": "NO.279",
+      "name": "遁地鼠（枯水期的样子）",
+      "elements": [
+        "地"
+      ],
+      "stageLabel": "三阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "S3",
+      "shinyLabel": "是",
+      "image": "https://patchwiki.biligame.com/images/nrc/2/28/kczd04w0r9lkb38akh3bu9a8b0ygb32.png",
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/8/87/c36mg5bdbhid8ajmpje2xgy8c2czzir.png"
     },
     {
       "source": "bwiki-nrc",
@@ -7723,23 +7817,6 @@
     {
       "source": "bwiki-nrc",
       "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
-      "detailUrl": "https://wiki.biligame.com/nrc/%E9%93%A0%E7%94%B2%E8%99%AB",
-      "sourceId": "pet_000012",
-      "no": "NO.284",
-      "name": "铠甲虫",
-      "elements": [
-        "虫"
-      ],
-      "stageLabel": "二阶",
-      "formCategoryLabel": "",
-      "seasonLabel": "none",
-      "shinyLabel": "否",
-      "image": "https://patchwiki.biligame.com/images/nrc/b/b2/jbs16imbkhubgtt1cysls0j727gvtp5.png",
-      "shinyImage": ""
-    },
-    {
-      "source": "bwiki-nrc",
-      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
       "detailUrl": "https://wiki.biligame.com/nrc/%E5%B0%8F%E7%94%B2%E8%99%AB",
       "sourceId": "pet_000035",
       "no": "NO.283",
@@ -7752,6 +7829,23 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/2/28/sblomensrkplc7nfylmomx8uuvpkf3m.png",
+      "shinyImage": ""
+    },
+    {
+      "source": "bwiki-nrc",
+      "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
+      "detailUrl": "https://wiki.biligame.com/nrc/%E9%93%A0%E7%94%B2%E8%99%AB",
+      "sourceId": "pet_000012",
+      "no": "NO.284",
+      "name": "铠甲虫",
+      "elements": [
+        "虫"
+      ],
+      "stageLabel": "二阶",
+      "formCategoryLabel": "",
+      "seasonLabel": "none",
+      "shinyLabel": "否",
+      "image": "https://patchwiki.biligame.com/images/nrc/b/b2/jbs16imbkhubgtt1cysls0j727gvtp5.png",
       "shinyImage": ""
     },
     {
@@ -11021,59 +11115,45 @@
     }
   ],
   "releaseBlockers": [
-    "缺少详情：火花",
-    "缺少详情：焰火",
-    "缺少详情：火神",
-    "缺少详情：烈火战神",
-    "缺少详情：水蓝蓝",
-    "缺少详情：波波拉",
-    "缺少详情：水灵",
-    "缺少详情：圣水守护",
-    "缺少详情：鸭吉吉（蓬松的样子）",
     "缺少详情：鸭吉吉国王（蓬松的样子）",
-    "缺少详情：鸭吉吉（紧实的样子）",
     "缺少详情：鸭吉吉国王（紧实的样子）",
-    "缺少详情：鸭吉吉（急急急鸭）",
     "缺少详情：鸭吉吉国王（急急急鸭）",
-    "缺少详情：鸭吉吉（等一等鸭）",
     "缺少详情：鸭吉吉国王（等一等鸭）",
-    "缺少详情：鸭吉吉（燃了鸭）",
     "缺少详情：鸭吉吉国王（燃了鸭）",
-    "缺少详情：鸭吉吉（起来鸭）",
     "缺少详情：鸭吉吉国王（起来鸭）",
     "缺少详情：板板壳",
-    "缺少详情：咔咔壳",
-    "缺少详情：水泡壳",
     "缺少详情：板板壳（蜕皮时的样子）",
+    "缺少详情：咔咔壳",
     "缺少详情：咔咔壳（蜕皮时的样子）",
+    "缺少详情：水泡壳",
     "缺少详情：水泡壳（蜕皮时的样子）",
     "缺少详情：锥尾羊",
     "缺少详情：铃兰羊",
     "缺少详情：花影羚羊",
-    "缺少详情：冬羽雀",
-    "缺少详情：岚鸟",
     "缺少详情：雪绒鸟（春天的样子）",
-    "缺少详情：冬羽雀（春天的样子）",
-    "缺少详情：岚鸟（春天的样子）",
-    "缺少详情：霜翼领主（春天的样子）",
     "缺少详情：雪绒鸟（夏天的样子）",
-    "缺少详情：冬羽雀（夏天的样子）",
-    "缺少详情：岚鸟（夏天的样子）",
-    "缺少详情：霜翼领主（夏天的样子）",
     "缺少详情：雪绒鸟（秋天的样子）",
-    "缺少详情：冬羽雀（秋天的样子）",
-    "缺少详情：岚鸟（秋天的样子）",
-    "缺少详情：霜翼领主（秋天的样子）",
     "缺少详情：雪绒鸟",
+    "缺少详情：冬羽雀",
+    "缺少详情：冬羽雀（春天的样子）",
+    "缺少详情：冬羽雀（夏天的样子）",
+    "缺少详情：冬羽雀（秋天的样子）",
+    "缺少详情：岚鸟",
+    "缺少详情：岚鸟（春天的样子）",
+    "缺少详情：岚鸟（夏天的样子）",
+    "缺少详情：岚鸟（秋天的样子）",
+    "缺少详情：霜翼领主（春天的样子）",
+    "缺少详情：霜翼领主（夏天的样子）",
+    "缺少详情：霜翼领主（秋天的样子）",
     "缺少详情：霜翼领主",
     "缺少详情：小灵菇",
     "缺少详情：幻灵菇",
     "缺少详情：幻影灵菇",
     "缺少详情：石肤蜥",
-    "缺少详情：石刺蜥",
-    "缺少详情：石冠王蜥",
     "缺少详情：石肤蜥（球球尾巴的样子）",
+    "缺少详情：石刺蜥",
     "缺少详情：石刺蜥（球球尾巴的样子）",
+    "缺少详情：石冠王蜥",
     "缺少详情：石冠王蜥（球球尾巴的样子）",
     "缺少详情：布是石",
     "缺少详情：布是岩",
@@ -11090,7 +11170,6 @@
     "缺少详情：化蝶（奇丽花的样子）",
     "缺少详情：幽影树",
     "缺少详情：幻影荆棘",
-    "缺少详情：幽影树（突变的样子）",
     "缺少详情：小鼠獭",
     "缺少详情：燕尾獭",
     "缺少详情：卷胡巨獭",
@@ -11112,16 +11191,16 @@
     "缺少详情：奇丽花",
     "缺少详情：奇丽果",
     "缺少详情：丢丢（草地附近的样子）",
-    "缺少详情：卡卡虫（草地附近的样子）",
-    "缺少详情：卡瓦重（草地附近的样子）",
     "缺少详情：丢丢（火山附近的样子）",
-    "缺少详情：卡卡虫（火山附近的样子）",
-    "缺少详情：卡瓦重（火山附近的样子）",
     "缺少详情：丢丢（沙地附近的样子）",
-    "缺少详情：卡卡虫（沙地附近的样子）",
-    "缺少详情：卡瓦重（沙地附近的样子）",
     "缺少详情：丢丢（雪山附近的样子）",
+    "缺少详情：卡卡虫（草地附近的样子）",
+    "缺少详情：卡卡虫（火山附近的样子）",
+    "缺少详情：卡卡虫（沙地附近的样子）",
     "缺少详情：卡卡虫（雪山附近的样子）",
+    "缺少详情：卡瓦重（草地附近的样子）",
+    "缺少详情：卡瓦重（火山附近的样子）",
+    "缺少详情：卡瓦重（沙地附近的样子）",
     "缺少详情：卡瓦重（雪山附近的样子）",
     "缺少详情：护主犬",
     "缺少详情：音速犬",
@@ -11137,51 +11216,51 @@
     "缺少详情：幽冥眼（睁眼的样子）",
     "缺少详情：幽冥眼（闭眼的样子）",
     "缺少详情：梦游（穿旧睡衣的样子）",
-    "缺少详情：梦悠悠（穿旧睡衣的样子）",
     "缺少详情：梦游（穿星星睡衣的样子）",
+    "缺少详情：梦悠悠（穿旧睡衣的样子）",
     "缺少详情：梦悠悠（穿星星睡衣的样子）",
     "缺少详情：兽花蕾",
     "缺少详情：伏地兽",
     "缺少详情：贪食鼹",
     "缺少详情：巨噬针鼹",
     "缺少详情：蹦蹦种子（海神球形态）",
-    "缺少详情：蹦蹦草（海神球形态）",
-    "缺少详情：蹦蹦花（海神球形态）",
-    "缺少详情：蹦蹦果（海神球形态）",
     "缺少详情：蹦蹦种子（彩玉球形态）",
-    "缺少详情：蹦蹦草（彩玉球形态）",
-    "缺少详情：蹦蹦花（彩玉球形态）",
-    "缺少详情：蹦蹦果（彩玉球形态）",
     "缺少详情：蹦蹦种子（短毛球形态）",
-    "缺少详情：蹦蹦草（短毛球形态）",
-    "缺少详情：蹦蹦花（短毛球形态）",
-    "缺少详情：蹦蹦果（短毛球形态）",
     "缺少详情：蹦蹦种子（象牙球形态）",
+    "缺少详情：蹦蹦草（海神球形态）",
+    "缺少详情：蹦蹦草（彩玉球形态）",
+    "缺少详情：蹦蹦草（短毛球形态）",
     "缺少详情：蹦蹦草（象牙球形态）",
+    "缺少详情：蹦蹦花（海神球形态）",
+    "缺少详情：蹦蹦花（彩玉球形态）",
+    "缺少详情：蹦蹦花（短毛球形态）",
     "缺少详情：蹦蹦花（象牙球形态）",
+    "缺少详情：蹦蹦果（海神球形态）",
+    "缺少详情：蹦蹦果（彩玉球形态）",
+    "缺少详情：蹦蹦果（短毛球形态）",
     "缺少详情：蹦蹦果（象牙球形态）",
     "缺少详情：电咩咩",
     "缺少详情：粉咩咩",
     "缺少详情：电球咩咩",
-    "缺少详情：蒲公英娃娃",
     "缺少详情：蒲公英",
+    "缺少详情：蒲公英娃娃",
     "缺少详情：伊贝儿",
     "缺少详情：伊贝粉粉",
     "缺少详情：白发懒人",
     "缺少详情：动力猿",
     "缺少详情：瞌睡王",
     "缺少详情：海盔虫",
-    "缺少详情：刺盔虫",
-    "缺少详情：千棘盔",
-    "缺少详情：千棘海针",
     "缺少详情：海盔虫（磨损的样子）",
+    "缺少详情：刺盔虫",
     "缺少详情：刺盔虫（磨损的样子）",
+    "缺少详情：千棘盔",
     "缺少详情：千棘盔（磨损的样子）",
+    "缺少详情：千棘海针",
     "缺少详情：千棘海针（磨损的样子）",
     "缺少详情：菊花梨",
     "缺少详情：小星光（星光能量的样子）",
-    "缺少详情：星光狮（星光能量的样子）",
     "缺少详情：小星光（月光能量的样子）",
+    "缺少详情：星光狮（星光能量的样子）",
     "缺少详情：星光狮（月光能量的样子）",
     "缺少详情：一窝蜂",
     "缺少详情：黄蜂后",
@@ -11225,12 +11304,12 @@
     "缺少详情：白金独角兽",
     "缺少详情：彩虹独角兽",
     "缺少详情：旋叶虫（金黄的样子）",
-    "缺少详情：蓬叶虫（金黄的样子）",
-    "缺少详情：风滚暮虫（金黄的样子）",
-    "缺少详情：暮风隐者（金黄的样子）",
     "缺少详情：旋叶虫（枯叶的样子）",
+    "缺少详情：蓬叶虫（金黄的样子）",
     "缺少详情：蓬叶虫（枯叶的样子）",
+    "缺少详情：风滚暮虫（金黄的样子）",
     "缺少详情：风滚暮虫（枯叶的样子）",
+    "缺少详情：暮风隐者（金黄的样子）",
     "缺少详情：暮风隐者（枯叶的样子）",
     "缺少详情：小黑猫",
     "缺少详情：黑猫巫师",
@@ -11280,19 +11359,19 @@
     "缺少详情：小怂猫",
     "缺少详情：怒目怂猫",
     "缺少详情：小狮鹫（崖间地的样子）",
-    "缺少详情：神圣狮鹫（崖间地的样子）",
-    "缺少详情：皇家狮鹫（崖间地的样子）",
     "缺少详情：小狮鹫（高山地的样子）",
+    "缺少详情：神圣狮鹫（崖间地的样子）",
     "缺少详情：神圣狮鹫（高山地的样子）",
+    "缺少详情：皇家狮鹫（崖间地的样子）",
     "缺少详情：皇家狮鹫（高山地的样子）",
     "缺少详情：圆眼蜘蛛",
     "缺少详情：尖角蜘蛛",
     "缺少详情：芋香巨角蛛",
     "缺少详情：波波螺",
-    "缺少详情：消波螺",
-    "缺少详情：嗜波螺",
     "缺少详情：波波螺（被污染的样子）",
+    "缺少详情：消波螺",
     "缺少详情：消波螺（被污染的样子）",
+    "缺少详情：嗜波螺",
     "缺少详情：嗜波螺（被污染的样子）",
     "缺少详情：菇菇丁",
     "缺少详情：多菇丁",
@@ -11309,22 +11388,22 @@
     "缺少详情：壳乙螺",
     "缺少详情：卡洛儿",
     "缺少详情：棋棋（白子）",
-    "缺少详情：棋骑士（白子）",
-    "缺少详情：棋契陛下（白棋棋骑士分支）",
-    "缺少详情：棋齐垒（白子）",
-    "缺少详情：棋契陛下（白棋棋齐垒分支）",
-    "缺少详情：棋祈督（白子）",
-    "缺少详情：棋契陛下（白棋棋祈督分支）",
-    "缺少详情：棋绮后（白子）",
-    "缺少详情：棋契陛下（白棋棋绮后分支）",
     "缺少详情：棋棋（黑子）",
+    "缺少详情：棋骑士（白子）",
     "缺少详情：棋骑士（黑子）",
+    "缺少详情：棋契陛下（白棋棋骑士分支）",
     "缺少详情：棋契陛下（黑棋棋骑士分支）",
+    "缺少详情：棋齐垒（白子）",
     "缺少详情：棋齐垒（黑子）",
+    "缺少详情：棋契陛下（白棋棋齐垒分支）",
     "缺少详情：棋契陛下（黑棋棋齐垒分支）",
+    "缺少详情：棋祈督（白子）",
     "缺少详情：棋祈督（黑子）",
+    "缺少详情：棋契陛下（白棋棋祈督分支）",
     "缺少详情：棋契陛下（黑棋棋祈督分支）",
+    "缺少详情：棋绮后（白子）",
     "缺少详情：棋绮后（黑子）",
+    "缺少详情：棋契陛下（白棋棋绮后分支）",
     "缺少详情：棋契陛下（黑棋棋绮后分支）",
     "缺少详情：奔波鼠",
     "缺少详情：流浪鼠",
@@ -11390,10 +11469,10 @@
     "缺少详情：圣代甜甜（杨桃草莓口味）",
     "缺少详情：圣代甜甜（杨桃抹茶口味）",
     "缺少详情：刺轮砣（上弦的样子）",
-    "缺少详情：月亮砣（上弦的样子）",
-    "缺少详情：满月砣（上弦的样子）",
     "缺少详情：刺轮砣（下弦的样子）",
+    "缺少详情：月亮砣（上弦的样子）",
     "缺少详情：月亮砣（下弦的样子）",
+    "缺少详情：满月砣（上弦的样子）",
     "缺少详情：满月砣（下弦的样子）",
     "缺少详情：豆丁鱼",
     "缺少详情：快鳍鱼",
@@ -11415,10 +11494,10 @@
     "缺少详情：红丝绒",
     "缺少详情：红绒十字",
     "缺少详情：乌达（极昼的样子）",
-    "缺少详情：迷你乌（极昼的样子）",
-    "缺少详情：乌拉塔（极昼的样子）",
     "缺少详情：乌达（极夜的样子）",
+    "缺少详情：迷你乌（极昼的样子）",
     "缺少详情：迷你乌（极夜的样子）",
+    "缺少详情：乌拉塔（极昼的样子）",
     "缺少详情：乌拉塔（极夜的样子）",
     "缺少详情：螺旋帕帕",
     "缺少详情：帕帕斯卡",
@@ -11437,16 +11516,16 @@
     "缺少详情：格兰花",
     "缺少详情：格兰球",
     "缺少详情：地鼠（枯水期的样子）",
-    "缺少详情：遁鼠（枯水期的样子）",
-    "缺少详情：遁地鼠（枯水期的样子）",
     "缺少详情：地鼠（储水时的样子）",
+    "缺少详情：遁鼠（枯水期的样子）",
     "缺少详情：遁鼠（储水时的样子）",
+    "缺少详情：遁地鼠（枯水期的样子）",
     "缺少详情：遁地鼠（储水时的样子）",
     "缺少详情：墨鱿士",
     "缺少详情：混乱鱿彩",
     "缺少详情：秩序鱿墨",
-    "缺少详情：铠甲虫",
     "缺少详情：小甲虫",
+    "缺少详情：铠甲虫",
     "缺少详情：圣剑侍从",
     "缺少详情：圣剑-X",
     "缺少详情：圣剑骑士",
