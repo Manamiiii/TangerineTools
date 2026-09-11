@@ -19,6 +19,7 @@
     "sync:bwiki:staging": "node scripts/bwiki/sync-staging.mjs",
     "sync:bwiki:details": "node scripts/bwiki/sync-details.mjs",
     "sync:bwiki:nrc": "node scripts/bwiki/sync-nrc.mjs",
+    "collect:bwiki:browser": "node scripts/bwiki/collect-nrc-browser.mjs",
     "import:bwiki:nrc": "node scripts/bwiki/import-nrc-snapshot.mjs",
     "preview:bwiki:nrc": "node scripts/bwiki/build-preview.mjs --source=nrc",
     "audit:bwiki:nrc": "node scripts/bwiki/audit-nrc.mjs",
@@ -44,6 +45,7 @@
     "fake-indexeddb": "^6.2.4",
     "oxlint": "^1.74.0",
     "parse5": "^8.0.1",
+    "playwright-core": "^1.62.1",
     "sharp": "^0.35.3",
     "vite": "^8.1.5"
   }

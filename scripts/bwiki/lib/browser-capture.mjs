@@ -1,5 +1,5 @@
-// Browser access is supplied by the interactive browser tool, never a second client.
-// Keep this module dependency-free so the same checks run in that tool and in tests.
+// Browser access is supplied by the caller; this validator performs no network access.
+// Keep this module dependency-free for interactive tools, local collectors and tests.
 export const BROWSER_CAPTURE_FORMAT = 'nrc-browser-dom-v1'
 const CHUNK_SIZE = 50000
 

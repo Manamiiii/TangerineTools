@@ -31,6 +31,7 @@ npm run dev
 | `npm run sync:bwiki:details` | 同步 BWiki 详情 staging |
 | `npm run sync:bwiki:nrc -- --version=S4-2026-09-10` | 同步新版 NRC 候选；默认最多请求 24 个缺失详情，每次等待 30 秒；可用 `--interval=60` 放慢 |
 | `npm run import:bwiki:nrc -- --version=版本 --key=页面键 --file=快照.html` | 校验并导入 NRC HTML 快照 |
+| `npm run collect:bwiki:browser -- --version=版本 --limit=all` | 本地 Chrome 点击图鉴卡片并双遍读取详情；默认间隔 60 秒，只补同批次缓存缺口 |
 | `npm run import:bwiki:nrc -- --version=版本 --key=精灵sourceId --capture=采集记录.json` | 导入经过身份校验与双遍分段比对的浏览器详情记录；保留采集时间 |
 | `npm run preview:bwiki:nrc` | 生成 NRC 候选预览与发布阻塞清单 |
 | `npm run audit:bwiki:nrc` | 离线比较 NRC 源字段与正式资料，列出身份冲突、技能影响和详情缺口 |
