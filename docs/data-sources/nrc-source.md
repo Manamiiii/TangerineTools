@@ -50,7 +50,7 @@ npm run sync:bwiki:nrc -- --version=S4-2026-09-10 --offline
 
 ### 浏览器详情采集
 
-`scripts/bwiki/lib/browser-capture.mjs` 提供交互式浏览器工具使用的无依赖校验函数 `captureBrowserDetail`，不自行启动浏览器、访问网络或读取登录信息。它接受 `expected`（同批次图鉴提供的 `version`、`sourceId`、`sourceUrl`）和三个回调：
+`scripts/bwiki/lib/browser-capture.mjs` 提供交互式浏览器工具和本地采集器共用的无依赖校验函数 `captureBrowserDetail`，不自行启动浏览器、访问网络或读取登录信息。它接受 `expected`（同批次图鉴提供的 `version`、`sourceId`、`sourceUrl`）和三个回调：
 
 - `readMetadata()`：通过浏览器工具只读 DOM，返回实际 `sourceUrl`、`sourceId`、`.roco-dex` 的 `rootCount`、`characters` 和布尔 `ready`。就绪依据为文档非 loading；内容完整性还需通过后续双遍比对和离线解析。`data-nrc-pets-ready` 属于交互增强标记，静态内容完整的页面也可能没有它，不作为取数前提。
 - `readChunk(start, end)`：通过工具读取该根节点 `outerHTML.slice(start, end)`；下标和长度均为 JavaScript UTF-16 单元。
@@ -68,6 +68,19 @@ npm run import:bwiki:nrc -- --version=S4-2026-09-11-browser-validation --key=pet
 `--capture` 与 `--file` 互斥，只支持精灵详情。导入再次检查版本、来源、长度与精灵解析，并保留实际浏览器采集时间；快照方式为 `browser-dom-verified`，缓存继续使用 SHA-256 检查。记录是本地流程证据，不是网站签名或修订版本证明。聚合图鉴也必须来自该批次，禁止用旧批次图鉴替代；浏览器采样不得伪装为全量同步，样本数量不代表全目录稳定性。
 
 ## 产物与发布
+
+### 本地浏览器点击命令
+
+```powershell
+npm run collect:bwiki:browser -- --version=S4-2026-09-11-browser-full --limit=1
+npm run collect:bwiki:browser -- --version=S4-2026-09-11-browser-full --limit=all --interval=60
+```
+
+命令使用开发依赖 `playwright-core` 和本机 Chrome，打开独立可见窗口，不复用日常浏览器的用户目录、登录状态或扩展。图鉴和技能缓存必须预先存在；启动时读取当前图鉴并与同批次缓存逐项核对，变化时停止。它在同一标签中点击实际图鉴卡片链接进入详情，等待正文 DOM 与初始动画，再进行身份校验、双遍分段读取和离线解析。每页校验成功后保存至同版快照目录，返回图鉴后继续下一页；点击详情和返回图鉴前分别等待，默认各 60 秒，允许 30–3600 秒，默认每批 24 页。浏览器及本地解析不调用模型 API，不通过 Node fetch 采集详情。
+
+命令只写 Git 忽略的快照和 `browser-captures/` 原始采集记录，不改 staging、preview 或正式数据。`browser-status.json` 记录进度，`browser-last-failure.json` 记录失败。首次导航错误、HTTP 错误、访问验证、身份不符或内容变化即停止，无自动重试、代理切换或安全参数模拟。退出时关闭专用窗口。不要与 HTTP 采集器同时写同一批次；`browser-collector.lock` 防止重复启动浏览器采集器。若进程被强制结束而遗留锁，先确认锁内 PID 已结束，再移除该锁后续跑，保留成功缓存。
+
+采集后运行 `sync:bwiki:nrc -- --version=同版 --offline`、`audit:bwiki:nrc`、`preview:bwiki:nrc` 和 `check:bwiki:nrc`；缺详情或未完成审阅仍阻止发布。
 
 `npm run audit:bwiki:nrc` 只读取四份同版 staging 与正式精灵、技能 JSON，在 `artifacts/bwiki/nrc/diff-report.json` 和 `.md` 生成字段级差异。报告包含输入指纹、来源、具体旧值与新值、技能变化的正式技能池关联范围，以及详情和图片缺口；不访问网络，不改 staging、preview 或正式资料。缺详情时不使用旧预置或聚合页残留数值冒充已验证详情。
 
