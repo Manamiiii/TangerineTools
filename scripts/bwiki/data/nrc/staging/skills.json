@@ -1,7 +1,7 @@
 {
   "source": "bwiki-nrc",
   "version": "S4-2026-09-10",
-  "syncedAt": "2026-09-10T12:09:01.520Z",
+  "syncedAt": "2026-09-11T02:58:17.615Z",
   "attribution": {
     "name": "洛克王国：世界 Wiki（NRC BWIKI）",
     "url": "https://wiki.biligame.com/nrc/首页",
@@ -6987,11 +6987,6 @@
     }
   ],
   "releaseBlockers": [
-    "缺少详情：喵喵",
-    "缺少详情：喵呜",
-    "缺少详情：魔力猫",
-    "缺少详情：叶冕魔力猫",
-    "缺少详情：武斗酷猫",
     "缺少详情：火花",
     "缺少详情：焰火",
     "缺少详情：火神",
