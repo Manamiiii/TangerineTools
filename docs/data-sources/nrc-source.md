@@ -21,7 +21,7 @@
 | [孵蛋组别查询](https://wiki.biligame.com/nrc/孵蛋组别查询) | 蛋组与仅雌性标记 | `nrc-egg-card`；候选中“未发现”映射为“无法孵蛋” |
 | 图鉴实际详情链接 | 六维、特性、技能来源与进化分支 | `data-pet-id` 必须匹配；六维读取 `data-val` 并检查总和 |
 
-静态详情的 0 可能只是动画占位。解析器读取页面实际属性，不运行页面脚本，不把缺失值猜成 0。技能 `level` / `machine` / `blood` 来源保留在详情 staging，正式引用口径需要审阅。进化分支保存在 `evolutionBranches`，preview 使用包含当前名称的首条分支；缺少可靠分支时不宣称繁育谱系已验证。仅雌性标记是审计信息，尚未接入孵蛋规则。
+静态详情的 0 可能只是动画占位。解析器读取页面实际属性，不运行页面脚本，不把缺失值猜成 0。技能 `level` / `machine` / `blood` 来源保留在详情 staging，正式引用口径需要审阅。进化节点的 `name` 优先取完整链接标题；无 href 的 `mw-selflink` 取当前已校验 sourceId 的图鉴名称，原展示文字保存在 `displayName`。不通过删除括号后缀猜测形态身份。进化分支保存在 `evolutionBranches`，preview 使用包含当前完整名称的首条分支；缺少可靠分支时保留 `evolutionReviewRequired`，分支解析成功不代表繁育谱系已完成审阅。仅雌性标记是审计信息，尚未接入孵蛋规则。
 
 ## 命令与缓存
 
@@ -46,7 +46,26 @@ npm run import:bwiki:nrc -- --version=S4-2026-09-10 --key=pet_000004 --file=迪�
 npm run sync:bwiki:nrc -- --version=S4-2026-09-10 --offline
 ```
 
-聚合页键为 `creatures` / `skills` / `breeding`，详情键来自该版图鉴 sourceId。导入先解析校验再保存；时间表示本地导入时间，不伪称网站修订时间。导入不直接更新 staging 或正式数据。
+聚合页键为 `creatures` / `skills` / `breeding`，详情键来自该版图鉴 sourceId。导入先解析校验再保存；普通 HTML 的时间表示本地导入时间，不伪称网站修订时间。已有相同 HTML 的快照直接复用，已有不同内容或损坏快照则拒绝覆盖；更新内容使用新批次。导入不直接更新 staging 或正式数据。
+
+### 浏览器详情采集
+
+`scripts/bwiki/lib/browser-capture.mjs` 提供交互式浏览器工具使用的无依赖校验函数 `captureBrowserDetail`，不自行启动浏览器、访问网络或读取登录信息。它接受 `expected`（同批次图鉴提供的 `version`、`sourceId`、`sourceUrl`）和三个回调：
+
+- `readMetadata()`：通过浏览器工具只读 DOM，返回实际 `sourceUrl`、`sourceId`、`.roco-dex` 的 `rootCount`、`characters` 和布尔 `ready`。就绪依据为文档非 loading；内容完整性还需通过后续双遍比对和离线解析。`data-nrc-pets-ready` 属于交互增强标记，静态内容完整的页面也可能没有它，不作为取数前提。
+- `readChunk(start, end)`：通过工具读取该根节点 `outerHTML.slice(start, end)`；下标和长度均为 JavaScript UTF-16 单元。
+- `pause(ms)`：交互工具宿主中的等待，不操作页面。
+
+调用前按实际图鉴链接进入目标，读取页面状态确认导航完成；图鉴初始化和布局稳定前不连续点击。新页面访问保持至少 30 秒间隔，可用 60 秒进一步放慢；这只是请求节奏，不保证网站不会限流。隐藏页签内的链接需先通过 UI 展开页签；链接选择器限定在图鉴卡片或进化链内，避免与隐藏菜单同名链接冲突。校验函数检查唯一根节点、精确 URL 和 sourceId，间隔两秒确认长度稳定，按每段最多 50,000 字符连续读两遍并逐字比较；截断标记、身份或 DOM 变化均拒绝产物。分段读取只访问已加载 DOM，不产生额外采集请求。
+
+成功返回的记录按 `<sourceId>.capture.json` 逐页保存至 Git 忽略的独立批次目录，采用独占创建避免覆盖；停止后先导入和核对已成功文件，再补缺失页面。工具中断、页面未就绪或校验失败时停止批次并记录原因；先检查实际页面，不自动连续重试。遇到 567、验证码或访问限制时停止访问，不切换客户端、代理或模拟安全参数绕过。
+
+```powershell
+npm run import:bwiki:nrc -- --version=S4-2026-09-11-browser-validation --key=creatures --file=图鉴.html
+npm run import:bwiki:nrc -- --version=S4-2026-09-11-browser-validation --key=pet_000004 --capture=pet_000004.capture.json
+```
+
+`--capture` 与 `--file` 互斥，只支持精灵详情。导入再次检查版本、来源、长度与精灵解析，并保留实际浏览器采集时间；快照方式为 `browser-dom-verified`，缓存继续使用 SHA-256 检查。记录是本地流程证据，不是网站签名或修订版本证明。聚合图鉴也必须来自该批次，禁止用旧批次图鉴替代；浏览器采样不得伪装为全量同步，样本数量不代表全目录稳定性。
 
 ## 产物与发布
 
@@ -67,4 +86,4 @@ npm run sync:bwiki:nrc -- --version=S4-2026-09-10 --offline
 
 ## 回归
 
-`scripts/tests/fixtures/nrc/*.html` 是 2026-09-10 上述来源页面的精简片段，删除样式、导航及不相关记录，验证真实嵌套、动画属性和身份校验。适用署名许可按本文保留。运行 `node --test scripts/tests/nrc-pipeline.test.mjs` 或 `npm test`。parse5 仅用于开发期解析，不增加应用后端。
+`scripts/tests/fixtures/nrc/*.html` 是 2026-09-10 与 2026-09-11 上述来源页面的精简片段，删除样式、导航及不相关记录，验证真实嵌套、动画属性、身份校验和特殊形态自链接。适用署名许可按本文保留。运行 `node --test scripts/tests/nrc-pipeline.test.mjs scripts/tests/nrc-browser-capture.test.mjs` 或 `npm test`，覆盖分段截断、同长度内容变化、跨版本拒绝、断点复用和已有快照保护。parse5 仅用于开发期解析，不增加应用后端。

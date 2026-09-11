@@ -60,6 +60,29 @@ test('Empty, blocked and duplicate aggregate pages fail closed', async () => {
   assert.throws(() => parseNrcCreatures(html.replaceAll('https://patchwiki.biligame.com/', 'https://example.com/')), /Unexpected source URL/)
 })
 
+test('NRC evolution retains special-form identities from selflinks and link titles', async () => {
+  const samples = [
+    ['detail-duck', 'pet_000393', '鸭吉吉（燃了鸭）', 1],
+    ['detail-shell', 'pet_000409', '板板壳（蜕皮时的样子）', 1],
+    ['detail-chess', 'pet_000574', '棋契陛下（白棋棋齐垒分支）', 1],
+    ['detail-cherry', 'pet_000114', '香草甜甜（樱桃饰品）', 3],
+  ]
+  for (const [file, sourceId, name, branches] of samples) {
+    const html = await fixture(file)
+    const creature = { sourceId, name, detailUrl: `https://wiki.biligame.com/nrc/${encodeURIComponent(name)}` }
+    const detail = parseNrcDetail(html, creature)
+    assert.equal(detail.evolutionReviewRequired, false, name)
+    assert.equal(detail.evolutionBranches.length, branches)
+    assert(detail.evolution.some((node) => node.name === name && node.displayName !== name))
+    const withoutEvidence = parseNrcDetail(html.replaceAll('mw-selflink', 'unidentified'), creature)
+    assert.equal(withoutEvidence.evolutionReviewRequired, true, 'No suffix-stripping fallback')
+    assert.throws(() => parseNrcDetail(html + html, creature), /identity mismatch/)
+    assert.throws(() => parseNrcDetail(html + '[Truncated]', creature), /truncated/)
+    if (file === 'detail-shell') assert.equal(detail.evolution[1].name, '咔咔壳（蜕皮时的样子）')
+    if (file === 'detail-chess') assert.equal(detail.evolution[2].isBoss, true)
+  }
+})
+
 test('Snapshot cache is versioned and a 567 never retries or replaces a successful snapshot', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'tangerine-nrc-'))
   try {
