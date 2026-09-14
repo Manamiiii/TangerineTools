@@ -23,7 +23,11 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
   const directory = await mkdtemp(join(tmpdir(), 'nrc-browser-runner-'))
   try {
     const fixture = name => readFile(new URL(`./fixtures/nrc/${name}.html`, import.meta.url), 'utf8')
-    const catalogHtml = `<div class="npc-grid">${await fixture('creatures')}</div>`
+    const catalogHtml = `<div class="npc-grid">${await fixture('creatures')}</div>
+      <div class="nrc-site-welcome" style="position:fixed;inset:0;z-index:999;background:white">
+        游戏素材版权说明
+        <div role="button" tabindex="0" onclick="this.parentElement.remove()">我知道了</div>
+      </div>`
     const detailHtml = await fixture('detail')
     const creatures = parseNrcCreatures(catalogHtml)
     const version = 'test-browser-click'
