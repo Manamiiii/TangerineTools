@@ -82,6 +82,13 @@ export async function collectBrowserDetails({ context, directory, version, limit
       log(`Browser waiting ${interval}s before clicking ${creature.name}`)
       await pause(interval * 1000)
       await assertPage(catalog)
+      // Acknowledge only the site's known copyright notice through its UI.
+      const welcome = catalog.locator('.nrc-site-welcome')
+      if (await welcome.isVisible()) {
+        await welcome.getByRole('button', { name: '我知道了', exact: true }).click({ timeout: 20000 })
+        await welcome.waitFor({ state: 'hidden', timeout: 10000 })
+        await assertPage(catalog)
+      }
       const link = catalog.locator(`.npc-card[data-id="${creature.sourceId}"] a`)
       const links = await link.evaluateAll(elements => elements.map(e => e.href))
       if (links.length !== 1 || links[0] !== target) throw new Error(`Catalog link mismatch: ${creature.name}`)
