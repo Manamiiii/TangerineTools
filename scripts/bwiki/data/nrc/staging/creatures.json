@@ -1,7 +1,7 @@
 {
   "source": "bwiki-nrc",
   "version": "S4-2026-09-11-browser-full",
-  "syncedAt": "2026-09-11T09:05:38.023Z",
+  "syncedAt": "2026-09-14T03:39:32.859Z",
   "attribution": {
     "name": "洛克王国：世界 Wiki（NRC BWIKI）",
     "url": "https://wiki.biligame.com/nrc/首页",
@@ -655,7 +655,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/c/c6/4cjbbsq1azdi2shn818nmgitk1nulop.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 136,
+      "patk": 159,
+      "matk": 64,
+      "pdef": 79,
+      "mdef": 64,
+      "spd": 105,
+      "bst": 607,
+      "traitName": "“国王”的威严"
     },
     {
       "source": "bwiki-nrc",
@@ -672,7 +680,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/c/c6/4cjbbsq1azdi2shn818nmgitk1nulop.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 136,
+      "patk": 64,
+      "matk": 159,
+      "pdef": 64,
+      "mdef": 79,
+      "spd": 105,
+      "bst": 607,
+      "traitName": "“国王”的威严"
     },
     {
       "source": "bwiki-nrc",
@@ -689,7 +705,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/c/c6/4cjbbsq1azdi2shn818nmgitk1nulop.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 130,
+      "patk": 160,
+      "matk": 64,
+      "pdef": 79,
+      "mdef": 64,
+      "spd": 110,
+      "bst": 607,
+      "traitName": "“国王”的威严"
     },
     {
       "source": "bwiki-nrc",
@@ -706,7 +730,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/c/c6/4cjbbsq1azdi2shn818nmgitk1nulop.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 137,
+      "patk": 64,
+      "matk": 157,
+      "pdef": 66,
+      "mdef": 82,
+      "spd": 100,
+      "bst": 606,
+      "traitName": "“国王”的威严"
     },
     {
       "source": "bwiki-nrc",
@@ -11115,10 +11147,6 @@
     }
   ],
   "releaseBlockers": [
-    "缺少详情：鸭吉吉国王（蓬松的样子）",
-    "缺少详情：鸭吉吉国王（紧实的样子）",
-    "缺少详情：鸭吉吉国王（急急急鸭）",
-    "缺少详情：鸭吉吉国王（等一等鸭）",
     "缺少详情：鸭吉吉国王（燃了鸭）",
     "缺少详情：鸭吉吉国王（起来鸭）",
     "缺少详情：板板壳",
