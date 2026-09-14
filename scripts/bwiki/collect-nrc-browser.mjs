@@ -13,6 +13,27 @@ export function browserOptions(args) {
   return parseSyncOptions(args.some(a => a.startsWith('--interval=')) ? args : [...args, '--interval=60'])
 }
 
+export async function waitForDetailToSettle(page, { quietMs = 3000, timeoutMs = 30000 } = {}) {
+  await page.locator('.roco-dex').evaluate((root, { quietMs, timeoutMs }) => new Promise((resolve, reject) => {
+    let quietTimer
+    const finish = error => {
+      clearTimeout(quietTimer)
+      clearTimeout(deadline)
+      observer.disconnect()
+      if (error) reject(error)
+      else resolve()
+    }
+    const restart = () => {
+      clearTimeout(quietTimer)
+      quietTimer = setTimeout(() => finish(), quietMs)
+    }
+    const observer = new MutationObserver(restart)
+    const deadline = setTimeout(() => finish(new Error('Browser detail did not settle; stop capture')), timeoutMs)
+    observer.observe(root, { subtree: true, childList: true, attributes: true, characterData: true })
+    restart()
+  }), { quietMs, timeoutMs })
+}
+
 export async function persistCapture(directory, creature, record) {
   validateBrowserCapture(record, { version: record.version, sourceId: creature.sourceId, sourceUrl: creature.detailUrl })
   const captureFile = resolve(directory, 'browser-captures', `${creature.sourceId}.capture.json`)
@@ -87,6 +108,8 @@ export async function collectBrowserDetails({ context, directory, version, limit
       if (await welcome.isVisible()) {
         await welcome.getByRole('button', { name: '我知道了', exact: true }).click({ timeout: 20000 })
         await welcome.waitFor({ state: 'hidden', timeout: 10000 })
+        await catalog.waitForLoadState('domcontentloaded', { timeout: 20000 })
+        await catalog.locator('.npc-grid').waitFor({ state: 'visible', timeout: 20000 })
         await assertPage(catalog)
       }
       const link = catalog.locator(`.npc-card[data-id="${creature.sourceId}"] a`)
@@ -99,8 +122,8 @@ export async function collectBrowserDetails({ context, directory, version, limit
       ])
       await assertPage(detail)
       await detail.locator('.roco-dex').waitFor({ state: 'attached', timeout: 20000 })
-      // Allow initial page animations to finish before the strict two-pass check.
-      await pause(3000)
+      // Wait for a quiet DOM before starting the independent strict two-pass check.
+      await waitForDetailToSettle(detail)
       const record = await captureBrowserDetail({
         expected: { version, sourceId: creature.sourceId, sourceUrl: target },
         readMetadata: () => detail.evaluate(() => {
@@ -159,4 +182,4 @@ async function main() {
   }
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch(error => { console.error(error.message); process.exitCode = 1 })
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch(error => { console.error(error.stack ?? error.message); process.exitCode = 1 })

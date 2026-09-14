@@ -82,6 +82,8 @@ npm run collect:bwiki:browser -- --version=S4-2026-09-11-browser-full --limit=al
 
 点击卡片前若出现站点版权欢迎弹层，命令通过其中的“我知道了”按钮确认，并等待弹层关闭。只处理 `.nrc-site-welcome` 内的已知按钮；其他遮挡或访问验证仍使批次停止。
 
+详情读取前监听正文 DOM 变化，等待连续三秒无变化，最长等待三十秒；持续变化则停止。就绪后仍执行独立的身份检查、两秒稳定性检查和双遍逐字比对，不对采集内容删除动画属性或改写数值。
+
 采集后运行 `sync:bwiki:nrc -- --version=同版 --offline`、`audit:bwiki:nrc`、`preview:bwiki:nrc` 和 `check:bwiki:nrc`；缺详情或未完成审阅仍阻止发布。
 
 `npm run audit:bwiki:nrc` 只读取四份同版 staging 与正式精灵、技能 JSON，在 `artifacts/bwiki/nrc/diff-report.json` 和 `.md` 生成字段级差异。报告包含输入指纹、来源、具体旧值与新值、技能变化的正式技能池关联范围，以及详情和图片缺口；不访问网络，不改 staging、preview 或正式资料。缺详情时不使用旧预置或聚合页残留数值冒充已验证详情。
