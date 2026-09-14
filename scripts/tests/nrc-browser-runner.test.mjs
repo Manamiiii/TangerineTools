@@ -4,7 +4,7 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { chromium } from 'playwright-core'
-import { browserOptions, collectBrowserDetails } from '../bwiki/collect-nrc-browser.mjs'
+import { browserOptions, collectBrowserDetails, waitForDetailToSettle } from '../bwiki/collect-nrc-browser.mjs'
 import { saveSnapshot, readSnapshot } from '../bwiki/lib/snapshots.mjs'
 import { NRC_PAGES, parseNrcCreatures } from '../bwiki/lib/nrc-parser.mjs'
 
@@ -22,6 +22,21 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
   }
   const directory = await mkdtemp(join(tmpdir(), 'nrc-browser-runner-'))
   try {
+    const settlingPage = await browser.newPage()
+    await settlingPage.setContent('<div class="roco-dex">initial</div>')
+    await settlingPage.evaluate(() => {
+      window.detailAnimation = setInterval(() => {
+        document.querySelector('.roco-dex').textContent += '.'
+      }, 10)
+    })
+    await assert.rejects(waitForDetailToSettle(settlingPage, { quietMs: 50, timeoutMs: 200 }), /did not settle/)
+    await settlingPage.evaluate(() => {
+      clearInterval(window.detailAnimation)
+      setTimeout(() => { document.querySelector('.roco-dex').textContent = 'settled' }, 20)
+    })
+    await waitForDetailToSettle(settlingPage, { quietMs: 50, timeoutMs: 1000 })
+    assert.equal(await settlingPage.locator('.roco-dex').innerText(), 'settled')
+    await settlingPage.close()
     const fixture = name => readFile(new URL(`./fixtures/nrc/${name}.html`, import.meta.url), 'utf8')
     const catalogHtml = `<div class="npc-grid">${await fixture('creatures')}</div>
       <div class="nrc-site-welcome" style="position:fixed;inset:0;z-index:999;background:white">
