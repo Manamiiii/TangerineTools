@@ -3,16 +3,12 @@
   "sourceProfile": "nrc",
   "sourceVersion": "S4-2026-09-11-browser-full",
   "stagingHashes": {
-    "creatures": "a5ff23d0a3ed9fd12d4b6dd426e857097883a29f12e7eb6a7121685a781ab180",
-    "skills": "db947db35d1c65abfd021261629306be4b195741bdb31fb556f5b222f5f2e7c1",
-    "details": "5e38bac7eb52d822af27ccaa57dbaa19995382ea887fbe8809b33014529a24e6",
-    "breeding": "72a865616d9f4bfacfe18e2b90bcb19279bf936fa0b5cc385362bcfa34e1ae99"
+    "creatures": "fb5db5432b17e6ae09744af74e574842a347e45a844e47b64cc231a6eb693c62",
+    "skills": "1905287214ee896a983069bf8250cabd4c51b98e9d8f9383cc87180ac8cf4f14",
+    "details": "2985061fa7bb7d8000d98327d06b3fc7b46376ad6b30d22ff6f180be032ea190",
+    "breeding": "0999169f7f57ce30a27fcac55fcfa8eb5610bb5a0c50acbad03ad11f36dbf6c7"
   },
   "releaseBlockers": [
-    "缺少详情：鸭吉吉国王（蓬松的样子）",
-    "缺少详情：鸭吉吉国王（紧实的样子）",
-    "缺少详情：鸭吉吉国王（急急急鸭）",
-    "缺少详情：鸭吉吉国王（等一等鸭）",
     "缺少详情：鸭吉吉国王（燃了鸭）",
     "缺少详情：鸭吉吉国王（起来鸭）",
     "缺少详情：板板壳",
@@ -629,7 +625,7 @@
     }
   },
   "sourceNotes": "未完成候选含当前 rocom 正式字段回填；不声明为全部来自 NRC 的完整新版数据。",
-  "generatedAt": "2026-09-11T09:05:39.034Z",
+  "generatedAt": "2026-09-14T03:39:34.066Z",
   "inputs": {
     "creatures": "scripts/bwiki/data/nrc/staging/creatures.json",
     "skills": "scripts/bwiki/data/nrc/staging/skills.json",
@@ -7722,7 +7718,9 @@
           "rock-creature-src-014",
           "rock-creature-src-016",
           "rock-creature-src-015",
+          "rock-creature-bwiki-aef4b3565565",
           "rock-creature-bwiki-951142913acd",
+          "rock-creature-bwiki-63c96d833ebf",
           "rock-creature-bwiki-daa8e62d5a34",
           "rock-creature-bwiki-b7c1550c108b",
           "rock-creature-src-026",
@@ -8166,7 +8164,9 @@
           "rock-creature-src-016",
           "rock-creature-src-015",
           "rock-creature-bwiki-aef4b3565565",
+          "rock-creature-bwiki-951142913acd",
           "rock-creature-bwiki-63c96d833ebf",
+          "rock-creature-bwiki-daa8e62d5a34",
           "rock-creature-bwiki-e7acdd3351cd",
           "rock-creature-src-356",
           "rock-creature-src-357",

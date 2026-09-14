@@ -1,7 +1,7 @@
 {
   "source": "bwiki-nrc",
   "version": "S4-2026-09-11-browser-full",
-  "syncedAt": "2026-09-11T09:05:38.023Z",
+  "syncedAt": "2026-09-14T03:39:32.859Z",
   "attribution": {
     "name": "洛克王国：世界 Wiki（NRC BWIKI）",
     "url": "https://wiki.biligame.com/nrc/首页",
@@ -35,7 +35,7 @@
       "sha256": "5356cb67ff90be08967c665b956c437385bac4597e7f75a19a7d32658bc49389"
     }
   ],
-  "rowCount": 24,
+  "rowCount": 28,
   "rows": [
     {
       "source": "bwiki-nrc-detail",
@@ -10526,30 +10526,1614 @@
         "method": "browser-dom-verified",
         "sha256": "51f45f9a5a3a77a76d8d997b227b7e1228d34e9af8e28bb682dbb331c4db5f6e"
       }
+    },
+    {
+      "source": "bwiki-nrc-detail",
+      "sourceUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E8%93%AC%E6%9D%BE%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000539",
+      "name": "鸭吉吉国王（蓬松的样子）",
+      "no": "NO.011",
+      "stats": {
+        "hp": 136,
+        "patk": 159,
+        "matk": 64,
+        "pdef": 79,
+        "mdef": 64,
+        "spd": 105,
+        "bst": 607
+      },
+      "trait": {
+        "name": "“国王”的威严",
+        "description": "鸭吉吉国王的种族资质大幅增加，能耗为1的技能威力+50%。",
+        "image": "https://patchwiki.biligame.com/images/nrc/e/ea/5e2en2v29q78knov4bcfw7f8e65xo55.png"
+      },
+      "skills": [
+        {
+          "name": "旋转突击",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV12"
+        },
+        {
+          "name": "猛烈撞击",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "见招拆招",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV28"
+        },
+        {
+          "name": "扫尾",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV6"
+        },
+        {
+          "name": "冲撞",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "吨位压制",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV38"
+        },
+        {
+          "name": "防御",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV8"
+        },
+        {
+          "name": "吓退",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV25"
+        },
+        {
+          "name": "防反",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "力量增效",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "休息回复",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV10"
+        },
+        {
+          "name": "咆哮",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV21"
+        },
+        {
+          "name": "伺机而动",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV34"
+        },
+        {
+          "name": "热身运动",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV35"
+        },
+        {
+          "name": "快速移动",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV39"
+        },
+        {
+          "name": "精神扰乱",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "复写",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "三连破",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "主场优势",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "摇篮曲",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "加固",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "风矢",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "羽翼庇护",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "乘风",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "飞羽",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "超声波",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "反击拳",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "缠丝劲",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "提气",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "破绽",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "透射",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "光",
+          "unlock": "血脉·光"
+        },
+        {
+          "name": "星星撞击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "血脉·普通"
+        },
+        {
+          "name": "升龙咆哮",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "龙",
+          "unlock": "血脉·龙"
+        },
+        {
+          "name": "徒长",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "草",
+          "unlock": "血脉·草"
+        },
+        {
+          "name": "引燃",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "火",
+          "unlock": "血脉·火"
+        },
+        {
+          "name": "蓄水",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "水",
+          "unlock": "血脉·水"
+        },
+        {
+          "name": "泥浆铠甲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "地",
+          "unlock": "血脉·地"
+        },
+        {
+          "name": "霜降",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "冰",
+          "unlock": "血脉·冰"
+        },
+        {
+          "name": "麻痹",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "电",
+          "unlock": "血脉·电"
+        },
+        {
+          "name": "毒孢子",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "血脉·毒"
+        },
+        {
+          "name": "假寐",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "虫",
+          "unlock": "血脉·虫"
+        },
+        {
+          "name": "化劲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "武",
+          "unlock": "血脉·武"
+        },
+        {
+          "name": "羽化加速",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "血脉·翼"
+        },
+        {
+          "name": "甜心续航",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "萌",
+          "unlock": "血脉·萌"
+        },
+        {
+          "name": "勾魂",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幽",
+          "unlock": "血脉·幽"
+        },
+        {
+          "name": "贪婪",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "恶",
+          "unlock": "血脉·恶"
+        },
+        {
+          "name": "啮合传递",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "机械",
+          "unlock": "血脉·机械"
+        },
+        {
+          "name": "超维投射",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幻",
+          "unlock": "血脉·幻"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "鸭吉吉（蓬松的样子）",
+          "displayName": "鸭吉吉",
+          "linkName": "鸭吉吉（蓬松的样子）",
+          "image": "https://patchwiki.biligame.com/images/nrc/a/a0/c6ritp7erjxx24hyal6ifklb6561izu.png",
+          "isBoss": false
+        },
+        {
+          "name": "鸭吉吉国王（蓬松的样子）",
+          "displayName": "鸭吉吉国王",
+          "linkName": "鸭吉吉国王（蓬松的样子）",
+          "image": "https://patchwiki.biligame.com/images/nrc/6/67/r6wu04r4dj1hl10111zev6dpbphyjq1.png",
+          "isBoss": true
+        }
+      ],
+      "evolutionBranches": [
+        [
+          {
+            "name": "鸭吉吉（蓬松的样子）",
+            "displayName": "鸭吉吉",
+            "linkName": "鸭吉吉（蓬松的样子）",
+            "image": "https://patchwiki.biligame.com/images/nrc/a/a0/c6ritp7erjxx24hyal6ifklb6561izu.png",
+            "isBoss": false
+          },
+          {
+            "name": "鸭吉吉国王（蓬松的样子）",
+            "displayName": "鸭吉吉国王",
+            "linkName": "鸭吉吉国王（蓬松的样子）",
+            "image": "https://patchwiki.biligame.com/images/nrc/6/67/r6wu04r4dj1hl10111zev6dpbphyjq1.png",
+            "isBoss": true
+          }
+        ]
+      ],
+      "evolutionReviewRequired": false,
+      "provenance": {
+        "sourceUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E8%93%AC%E6%9D%BE%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+        "version": "S4-2026-09-11-browser-full",
+        "capturedAt": "2026-09-11T09:09:50.577Z",
+        "method": "http",
+        "sha256": "5b77d83c46a84168b9b0559ef8a2506176fd5db5aa63f80f8e26cf91dba9b986"
+      }
+    },
+    {
+      "source": "bwiki-nrc-detail",
+      "sourceUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E7%B4%A7%E5%AE%9E%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+      "sourceId": "pet_000569",
+      "name": "鸭吉吉国王（紧实的样子）",
+      "no": "NO.011",
+      "stats": {
+        "hp": 136,
+        "patk": 64,
+        "matk": 159,
+        "pdef": 64,
+        "mdef": 79,
+        "spd": 105,
+        "bst": 607
+      },
+      "trait": {
+        "name": "“国王”的威严",
+        "description": "鸭吉吉国王的种族资质大幅增加，能耗为1的技能威力+50%。",
+        "image": "https://patchwiki.biligame.com/images/nrc/e/ea/5e2en2v29q78knov4bcfw7f8e65xo55.png"
+      },
+      "skills": [
+        {
+          "name": "魔能爆",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "LV38"
+        },
+        {
+          "name": "音波弹",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "拍击",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "LV6"
+        },
+        {
+          "name": "许愿星",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "LV12"
+        },
+        {
+          "name": "蓄能轰击",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "LV28"
+        },
+        {
+          "name": "防御",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV8"
+        },
+        {
+          "name": "吓退",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV25"
+        },
+        {
+          "name": "嗜痛",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "魔法增效",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "休息回复",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV10"
+        },
+        {
+          "name": "咆哮",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV21"
+        },
+        {
+          "name": "伺机而动",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV34"
+        },
+        {
+          "name": "鼓劲",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV35"
+        },
+        {
+          "name": "快速移动",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV39"
+        },
+        {
+          "name": "精神扰乱",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "借用",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "加固",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "主场优势",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "摇篮曲",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "热身运动",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "翼击",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "回旋风暴",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "羽翼庇护",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "乘风",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "飞羽",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "超声波",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "气波",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "反击拳",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "提气",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "破绽",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "星星撞击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "血脉·普通"
+        },
+        {
+          "name": "虹光冲击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "光",
+          "unlock": "血脉·光"
+        },
+        {
+          "name": "升龙咆哮",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "龙",
+          "unlock": "血脉·龙"
+        },
+        {
+          "name": "徒长",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "草",
+          "unlock": "血脉·草"
+        },
+        {
+          "name": "引燃",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "火",
+          "unlock": "血脉·火"
+        },
+        {
+          "name": "蓄水",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "水",
+          "unlock": "血脉·水"
+        },
+        {
+          "name": "泥浆铠甲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "地",
+          "unlock": "血脉·地"
+        },
+        {
+          "name": "霜降",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "冰",
+          "unlock": "血脉·冰"
+        },
+        {
+          "name": "麻痹",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "电",
+          "unlock": "血脉·电"
+        },
+        {
+          "name": "毒孢子",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "血脉·毒"
+        },
+        {
+          "name": "假寐",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "虫",
+          "unlock": "血脉·虫"
+        },
+        {
+          "name": "化劲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "武",
+          "unlock": "血脉·武"
+        },
+        {
+          "name": "羽化加速",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "血脉·翼"
+        },
+        {
+          "name": "甜心续航",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "萌",
+          "unlock": "血脉·萌"
+        },
+        {
+          "name": "勾魂",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幽",
+          "unlock": "血脉·幽"
+        },
+        {
+          "name": "贪婪",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "恶",
+          "unlock": "血脉·恶"
+        },
+        {
+          "name": "啮合传递",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "机械",
+          "unlock": "血脉·机械"
+        },
+        {
+          "name": "超维投射",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幻",
+          "unlock": "血脉·幻"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "鸭吉吉（紧实的样子）",
+          "displayName": "鸭吉吉",
+          "linkName": "鸭吉吉（紧实的样子）",
+          "image": "https://patchwiki.biligame.com/images/nrc/a/a6/61cbf12txdi2n0an7frispzmc9l7vxt.png",
+          "isBoss": false
+        },
+        {
+          "name": "鸭吉吉国王（紧实的样子）",
+          "displayName": "鸭吉吉国王",
+          "linkName": "鸭吉吉国王（紧实的样子）",
+          "image": "https://patchwiki.biligame.com/images/nrc/6/67/r6wu04r4dj1hl10111zev6dpbphyjq1.png",
+          "isBoss": true
+        }
+      ],
+      "evolutionBranches": [
+        [
+          {
+            "name": "鸭吉吉（紧实的样子）",
+            "displayName": "鸭吉吉",
+            "linkName": "鸭吉吉（紧实的样子）",
+            "image": "https://patchwiki.biligame.com/images/nrc/a/a6/61cbf12txdi2n0an7frispzmc9l7vxt.png",
+            "isBoss": false
+          },
+          {
+            "name": "鸭吉吉国王（紧实的样子）",
+            "displayName": "鸭吉吉国王",
+            "linkName": "鸭吉吉国王（紧实的样子）",
+            "image": "https://patchwiki.biligame.com/images/nrc/6/67/r6wu04r4dj1hl10111zev6dpbphyjq1.png",
+            "isBoss": true
+          }
+        ]
+      ],
+      "evolutionReviewRequired": false,
+      "provenance": {
+        "sourceUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E7%B4%A7%E5%AE%9E%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
+        "version": "S4-2026-09-11-browser-full",
+        "capturedAt": "2026-09-11T09:11:28.103Z",
+        "method": "http",
+        "sha256": "253cec4bd0b8dbc23d809ab75f592e39d4ef09610bf0e582935fc3c02538842a"
+      }
+    },
+    {
+      "source": "bwiki-nrc-detail",
+      "sourceUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E6%80%A5%E6%80%A5%E6%80%A5%E9%B8%AD%EF%BC%89",
+      "sourceId": "pet_000570",
+      "name": "鸭吉吉国王（急急急鸭）",
+      "no": "NO.011",
+      "stats": {
+        "hp": 130,
+        "patk": 160,
+        "matk": 64,
+        "pdef": 79,
+        "mdef": 64,
+        "spd": 110,
+        "bst": 607
+      },
+      "trait": {
+        "name": "“国王”的威严",
+        "description": "鸭吉吉国王的种族资质大幅增加，能耗为1的技能威力+50%。",
+        "image": "https://patchwiki.biligame.com/images/nrc/e/ea/5e2en2v29q78knov4bcfw7f8e65xo55.png"
+      },
+      "skills": [
+        {
+          "name": "旋转突击",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV12"
+        },
+        {
+          "name": "猛烈撞击",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "见招拆招",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV27"
+        },
+        {
+          "name": "扫尾",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV6"
+        },
+        {
+          "name": "冲撞",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "吨位压制",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV35"
+        },
+        {
+          "name": "防御",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV8"
+        },
+        {
+          "name": "吓退",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV22"
+        },
+        {
+          "name": "防反",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "力量增效",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "休息回复",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV10"
+        },
+        {
+          "name": "咆哮",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV18"
+        },
+        {
+          "name": "伺机而动",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV30"
+        },
+        {
+          "name": "热身运动",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV34"
+        },
+        {
+          "name": "快速移动",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV39"
+        },
+        {
+          "name": "精神扰乱",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "复写",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "三连破",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "主场优势",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "摇篮曲",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "加固",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "风矢",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "羽翼庇护",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "乘风",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "飞羽",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "超声波",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "反击拳",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "缠丝劲",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "提气",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "破绽",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "透射",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "光",
+          "unlock": "血脉·光"
+        },
+        {
+          "name": "星星撞击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "血脉·普通"
+        },
+        {
+          "name": "升龙咆哮",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "龙",
+          "unlock": "血脉·龙"
+        },
+        {
+          "name": "徒长",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "草",
+          "unlock": "血脉·草"
+        },
+        {
+          "name": "引燃",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "火",
+          "unlock": "血脉·火"
+        },
+        {
+          "name": "蓄水",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "水",
+          "unlock": "血脉·水"
+        },
+        {
+          "name": "泥浆铠甲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "地",
+          "unlock": "血脉·地"
+        },
+        {
+          "name": "霜降",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "冰",
+          "unlock": "血脉·冰"
+        },
+        {
+          "name": "麻痹",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "电",
+          "unlock": "血脉·电"
+        },
+        {
+          "name": "毒孢子",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "血脉·毒"
+        },
+        {
+          "name": "假寐",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "虫",
+          "unlock": "血脉·虫"
+        },
+        {
+          "name": "化劲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "武",
+          "unlock": "血脉·武"
+        },
+        {
+          "name": "羽化加速",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "血脉·翼"
+        },
+        {
+          "name": "甜心续航",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "萌",
+          "unlock": "血脉·萌"
+        },
+        {
+          "name": "勾魂",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幽",
+          "unlock": "血脉·幽"
+        },
+        {
+          "name": "贪婪",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "恶",
+          "unlock": "血脉·恶"
+        },
+        {
+          "name": "啮合传递",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "机械",
+          "unlock": "血脉·机械"
+        },
+        {
+          "name": "超维投射",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幻",
+          "unlock": "血脉·幻"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "鸭吉吉（急急急鸭）",
+          "displayName": "鸭吉吉",
+          "linkName": "鸭吉吉（急急急鸭）",
+          "image": "https://patchwiki.biligame.com/images/nrc/9/99/jernwcu25qx8xtw1mh82qqn8ukyzjra.png",
+          "isBoss": false
+        },
+        {
+          "name": "鸭吉吉国王（急急急鸭）",
+          "displayName": "鸭吉吉国王",
+          "linkName": "鸭吉吉国王（急急急鸭）",
+          "image": "https://patchwiki.biligame.com/images/nrc/6/67/r6wu04r4dj1hl10111zev6dpbphyjq1.png",
+          "isBoss": true
+        }
+      ],
+      "evolutionBranches": [
+        [
+          {
+            "name": "鸭吉吉（急急急鸭）",
+            "displayName": "鸭吉吉",
+            "linkName": "鸭吉吉（急急急鸭）",
+            "image": "https://patchwiki.biligame.com/images/nrc/9/99/jernwcu25qx8xtw1mh82qqn8ukyzjra.png",
+            "isBoss": false
+          },
+          {
+            "name": "鸭吉吉国王（急急急鸭）",
+            "displayName": "鸭吉吉国王",
+            "linkName": "鸭吉吉国王（急急急鸭）",
+            "image": "https://patchwiki.biligame.com/images/nrc/6/67/r6wu04r4dj1hl10111zev6dpbphyjq1.png",
+            "isBoss": true
+          }
+        ]
+      ],
+      "evolutionReviewRequired": false,
+      "provenance": {
+        "sourceUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E6%80%A5%E6%80%A5%E6%80%A5%E9%B8%AD%EF%BC%89",
+        "version": "S4-2026-09-11-browser-full",
+        "capturedAt": "2026-09-11T09:12:29.099Z",
+        "method": "http",
+        "sha256": "c07277e0194048a15868f925842b493282af73e7179f1183c474cba3227e9538"
+      }
+    },
+    {
+      "source": "bwiki-nrc-detail",
+      "sourceUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E7%AD%89%E4%B8%80%E7%AD%89%E9%B8%AD%EF%BC%89",
+      "sourceId": "pet_000571",
+      "name": "鸭吉吉国王（等一等鸭）",
+      "no": "NO.011",
+      "stats": {
+        "hp": 137,
+        "patk": 64,
+        "matk": 157,
+        "pdef": 66,
+        "mdef": 82,
+        "spd": 100,
+        "bst": 606
+      },
+      "trait": {
+        "name": "“国王”的威严",
+        "description": "鸭吉吉国王的种族资质大幅增加，能耗为1的技能威力+50%。",
+        "image": "https://patchwiki.biligame.com/images/nrc/e/ea/5e2en2v29q78knov4bcfw7f8e65xo55.png"
+      },
+      "skills": [
+        {
+          "name": "魔能爆",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "LV38"
+        },
+        {
+          "name": "音波弹",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "拍击",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "LV6"
+        },
+        {
+          "name": "许愿星",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "LV12"
+        },
+        {
+          "name": "蓄能轰击",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "LV28"
+        },
+        {
+          "name": "防御",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV8"
+        },
+        {
+          "name": "吓退",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV25"
+        },
+        {
+          "name": "嗜痛",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "魔法增效",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "休息回复",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV10"
+        },
+        {
+          "name": "咆哮",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV21"
+        },
+        {
+          "name": "伺机而动",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV34"
+        },
+        {
+          "name": "鼓劲",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV35"
+        },
+        {
+          "name": "快速移动",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV39"
+        },
+        {
+          "name": "精神扰乱",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "借用",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "加固",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "主场优势",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "摇篮曲",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "热身运动",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "翼击",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "回旋风暴",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "羽翼庇护",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "乘风",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "飞羽",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "超声波",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "气波",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "反击拳",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "提气",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "破绽",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "武",
+          "unlock": "技能石"
+        },
+        {
+          "name": "星星撞击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "血脉·普通"
+        },
+        {
+          "name": "虹光冲击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "光",
+          "unlock": "血脉·光"
+        },
+        {
+          "name": "升龙咆哮",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "龙",
+          "unlock": "血脉·龙"
+        },
+        {
+          "name": "徒长",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "草",
+          "unlock": "血脉·草"
+        },
+        {
+          "name": "引燃",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "火",
+          "unlock": "血脉·火"
+        },
+        {
+          "name": "蓄水",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "水",
+          "unlock": "血脉·水"
+        },
+        {
+          "name": "泥浆铠甲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "地",
+          "unlock": "血脉·地"
+        },
+        {
+          "name": "霜降",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "冰",
+          "unlock": "血脉·冰"
+        },
+        {
+          "name": "麻痹",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "电",
+          "unlock": "血脉·电"
+        },
+        {
+          "name": "毒孢子",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "毒",
+          "unlock": "血脉·毒"
+        },
+        {
+          "name": "假寐",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "虫",
+          "unlock": "血脉·虫"
+        },
+        {
+          "name": "化劲",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "武",
+          "unlock": "血脉·武"
+        },
+        {
+          "name": "羽化加速",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "血脉·翼"
+        },
+        {
+          "name": "甜心续航",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "萌",
+          "unlock": "血脉·萌"
+        },
+        {
+          "name": "勾魂",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幽",
+          "unlock": "血脉·幽"
+        },
+        {
+          "name": "贪婪",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "恶",
+          "unlock": "血脉·恶"
+        },
+        {
+          "name": "啮合传递",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "机械",
+          "unlock": "血脉·机械"
+        },
+        {
+          "name": "超维投射",
+          "sourceType": "blood",
+          "category": "状态",
+          "element": "幻",
+          "unlock": "血脉·幻"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "鸭吉吉（等一等鸭）",
+          "displayName": "鸭吉吉",
+          "linkName": "鸭吉吉（等一等鸭）",
+          "image": "https://patchwiki.biligame.com/images/nrc/5/56/d9jbhzdflc9vh4ms72x71hlpudio2va.png",
+          "isBoss": false
+        },
+        {
+          "name": "鸭吉吉国王（等一等鸭）",
+          "displayName": "鸭吉吉国王",
+          "linkName": "鸭吉吉国王（等一等鸭）",
+          "image": "https://patchwiki.biligame.com/images/nrc/6/67/r6wu04r4dj1hl10111zev6dpbphyjq1.png",
+          "isBoss": true
+        }
+      ],
+      "evolutionBranches": [
+        [
+          {
+            "name": "鸭吉吉（等一等鸭）",
+            "displayName": "鸭吉吉",
+            "linkName": "鸭吉吉（等一等鸭）",
+            "image": "https://patchwiki.biligame.com/images/nrc/5/56/d9jbhzdflc9vh4ms72x71hlpudio2va.png",
+            "isBoss": false
+          },
+          {
+            "name": "鸭吉吉国王（等一等鸭）",
+            "displayName": "鸭吉吉国王",
+            "linkName": "鸭吉吉国王（等一等鸭）",
+            "image": "https://patchwiki.biligame.com/images/nrc/6/67/r6wu04r4dj1hl10111zev6dpbphyjq1.png",
+            "isBoss": true
+          }
+        ]
+      ],
+      "evolutionReviewRequired": false,
+      "provenance": {
+        "sourceUrl": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E7%AD%89%E4%B8%80%E7%AD%89%E9%B8%AD%EF%BC%89",
+        "version": "S4-2026-09-11-browser-full",
+        "capturedAt": "2026-09-11T09:13:29.800Z",
+        "method": "http",
+        "sha256": "dcca7e8acf229d48f81456cab247532bdc1a0ffa7eafde38098a8efc1b165911"
+      }
     }
   ],
-  "errorCount": 597,
+  "errorCount": 593,
   "missing": [
-    {
-      "name": "鸭吉吉国王（蓬松的样子）",
-      "url": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E8%93%AC%E6%9D%BE%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000539"
-    },
-    {
-      "name": "鸭吉吉国王（紧实的样子）",
-      "url": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E7%B4%A7%E5%AE%9E%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-      "sourceId": "pet_000569"
-    },
-    {
-      "name": "鸭吉吉国王（急急急鸭）",
-      "url": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E6%80%A5%E6%80%A5%E6%80%A5%E9%B8%AD%EF%BC%89",
-      "sourceId": "pet_000570"
-    },
-    {
-      "name": "鸭吉吉国王（等一等鸭）",
-      "url": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E7%AD%89%E4%B8%80%E7%AD%89%E9%B8%AD%EF%BC%89",
-      "sourceId": "pet_000571"
-    },
     {
       "name": "鸭吉吉国王（燃了鸭）",
       "url": "https://wiki.biligame.com/nrc/%E9%B8%AD%E5%90%89%E5%90%89%E5%9B%BD%E7%8E%8B%EF%BC%88%E7%87%83%E4%BA%86%E9%B8%AD%EF%BC%89",
