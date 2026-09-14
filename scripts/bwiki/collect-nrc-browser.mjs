@@ -13,7 +13,7 @@ export function browserOptions(args) {
   return parseSyncOptions(args.some(a => a.startsWith('--interval=')) ? args : [...args, '--interval=60'])
 }
 
-export async function waitForDetailToSettle(page, { quietMs = 3000, timeoutMs = 30000 } = {}) {
+export async function waitForDetailToSettle(page, { quietMs = 10000, timeoutMs = 60000 } = {}) {
   await page.locator('.roco-dex').evaluate((root, { quietMs, timeoutMs }) => new Promise((resolve, reject) => {
     let quietTimer
     const finish = error => {
@@ -121,7 +121,7 @@ export async function collectBrowserDetails({ context, directory, version, limit
         link.click({ timeout: 20000 }),
       ])
       await assertPage(detail)
-      await detail.locator('.roco-dex').waitFor({ state: 'attached', timeout: 20000 })
+      await detail.locator(`.roco-dex[data-pet-id="${creature.sourceId}"]`).waitFor({ state: 'attached', timeout: 20000 })
       // Wait for a quiet DOM before starting the independent strict two-pass check.
       await waitForDetailToSettle(detail)
       const record = await captureBrowserDetail({
@@ -151,7 +151,8 @@ export async function collectBrowserDetails({ context, directory, version, limit
     }
     await status(saved === pending.length ? 'complete' : 'batch-complete')
     return { saved, remaining: pending.length - saved }
-  } catch (error) {
+  } catch (caught) {
+    const error = fault ?? caught
     const page = context.pages().at(-1)
     if (page && !page.isClosed()) {
       try {

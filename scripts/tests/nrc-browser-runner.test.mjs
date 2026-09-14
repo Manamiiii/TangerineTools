@@ -42,7 +42,18 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
       <div class="nrc-site-welcome" style="position:fixed;inset:0;z-index:999;background:white">
         游戏素材版权说明
         <div role="button" tabindex="0" onclick="this.parentElement.remove()">我知道了</div>
-      </div>`
+      </div>
+      <div class="roco-dex" data-pet-id="pet_999999">Previous page retained during navigation</div>
+      <script>
+        document.querySelectorAll('.npc-card a').forEach(link => link.addEventListener('click', event => {
+          event.preventDefault()
+          history.pushState({}, '', link.href)
+          setTimeout(() => {
+            history.replaceState({}, '', ${JSON.stringify(NRC_PAGES.creatures)})
+            location.assign(link.href)
+          }, 4000)
+        }))
+      </script>`
     const detailHtml = await fixture('detail')
     const creatures = parseNrcCreatures(catalogHtml)
     const version = 'test-browser-click'
