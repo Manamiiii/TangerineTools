@@ -4,7 +4,7 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { chromium } from 'playwright-core'
-import { browserOptions, collectBrowserDetails, waitForDetailToSettle, captureSettledDetail } from '../bwiki/collect-nrc-browser.mjs'
+import { browserOptions, collectBrowserDetails, waitForDetailToSettle, captureSettledDetail, navigateToCatalog } from '../bwiki/collect-nrc-browser.mjs'
 import { saveSnapshot, readSnapshot } from '../bwiki/lib/snapshots.mjs'
 import { NRC_PAGES, parseNrcCreatures } from '../bwiki/lib/nrc-parser.mjs'
 
@@ -87,13 +87,37 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
       </script>`
     const detailHtml = await fixture('detail')
     const creatures = parseNrcCreatures(catalogHtml)
+    const catalogPage = await browser.newPage()
+    await catalogPage.route('**/*', route => route.fulfill({ contentType: 'text/html; charset=utf-8', body: catalogHtml }))
+    await catalogPage.goto(NRC_PAGES.creatures)
+    let navigationCalls = 0
+    const timeoutNavigation = async () => { navigationCalls++; const error = new Error('Navigation event timeout'); error.name = 'TimeoutError'; throw error }
+    await navigateToCatalog(catalogPage, timeoutNavigation, creatures, { quietMs: 20, timeoutMs: 1000 })
+    assert.equal(navigationCalls, 1)
+    await assert.rejects(navigateToCatalog(catalogPage, timeoutNavigation, creatures, {
+      assertHealthy: () => { throw new Error('HTTP 567') }, quietMs: 20, timeoutMs: 1000,
+    }), /567/)
+    await catalogPage.goto('https://wiki.biligame.com/nrc/wrong-page')
+    await assert.rejects(navigateToCatalog(catalogPage, timeoutNavigation, creatures, { quietMs: 20, timeoutMs: 100 }), /did not become ready/)
+    await catalogPage.close()
     const version = 'test-browser-click'
     await saveSnapshot(directory, 'creatures', { version, sourceUrl: NRC_PAGES.creatures, html: catalogHtml })
     await saveSnapshot(directory, 'skills', { version, sourceUrl: NRC_PAGES.skills, html: (await fixture('skills')).replaceAll('抓挠', '折射').replaceAll('猛烈撞击', '闪光') })
     const visited = []
     let blocked = true
+    let returnTimeouts = 0
     const newContext = async () => {
       const context = await browser.newContext()
+      context.on('page', page => {
+        const goBack = page.goBack.bind(page)
+        page.goBack = async options => {
+          await goBack(options)
+          returnTimeouts++
+          const error = new Error('Catalog reached but navigation event timed out')
+          error.name = 'TimeoutError'
+          throw error
+        }
+      })
       // All traffic is fulfilled locally; the test never accesses the source website.
       await context.route('**/*', async route => {
         const url = decodeURI(route.request().url())
@@ -112,6 +136,7 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
     const run = () => collectBrowserDetails({ context, directory, version, limit: Infinity, interval: 60, pause: async () => {}, log: () => {} })
     await assert.rejects(run(), /567|verification/)
     assert.deepEqual(visited, [0, 1])
+    assert.equal(returnTimeouts, 1)
     const cached = await readSnapshot(directory, creatures[0].sourceId, creatures[0].detailUrl, version)
     assert.equal(cached.method, 'browser-dom-verified')
     assert.equal(JSON.parse(await readFile(join(directory, 'browser-status.json'))).state, 'stopped')
