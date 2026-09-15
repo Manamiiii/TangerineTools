@@ -18,6 +18,51 @@ const assertAccess = text => {
   if (/验证码|访问受限|访问过于频繁|安全验证|Access Denied|Verify you are human|Just a moment/i.test(text)) throw new Error('Access verification/restriction shown; stop without retry')
 }
 
+export async function waitForCatalog(page, creatures, { assertHealthy = () => {}, timeoutMs = 60000, quietMs = 2000 } = {}) {
+  const normalize = rows => JSON.stringify([...rows].sort((a, b) => a.sourceId.localeCompare(b.sourceId)))
+  const expected = normalize(creatures)
+  const deadline = Date.now() + timeoutMs
+  let previous = null
+  let stableSince = Date.now()
+  while (Date.now() < deadline) {
+    assertHealthy()
+    try {
+      const state = await page.evaluate(() => {
+        const grids = document.querySelectorAll('.npc-grid')
+        return { url: location.href, count: grids.length, html: grids[0]?.outerHTML, text: document.body?.innerText ?? '' }
+      })
+      assertHealthy()
+      assertAccess(state.text)
+      if (state.url !== new URL(NRC_PAGES.creatures).href || state.count !== 1 || !state.html.includes('npc-card')) {
+        previous = null
+        stableSince = Date.now()
+      } else {
+        const current = normalize(parseNrcCreatures(state.html))
+        if (current !== previous) { previous = current; stableSince = Date.now() }
+        else if (Date.now() - stableSince >= quietMs) {
+          if (current !== expected) throw new Error('Live catalog differs from this batch; use a new version after review')
+          return
+        }
+      }
+    } catch (error) {
+      if (!navigationInterrupted(error)) throw error
+      previous = null
+      stableSince = Date.now()
+    }
+    await delay(Math.min(500, Math.max(10, quietMs / 4)))
+  }
+  throw new Error('Browser catalog did not become ready; stop collection')
+}
+
+export async function navigateToCatalog(page, navigate, creatures, options = {}) {
+  try { await navigate() } catch (error) {
+    options.assertHealthy?.()
+    if (error.name !== 'TimeoutError') throw error
+    options.log?.('Browser navigation wait timed out; checking existing catalog without another request')
+  }
+  await waitForCatalog(page, creatures, options)
+}
+
 // Keep the wait in Node: a page-owned Promise is destroyed by a normal reload.
 // Only re-read the existing page; this loop never clicks, reloads or requests a URL.
 export async function waitForDetailToSettle(page, { quietMs = 10000, timeoutMs = 60000, expected, assertHealthy = () => {} } = {}) {
@@ -158,12 +203,8 @@ export async function collectBrowserDetails({ context, directory, version, limit
     const catalog = await context.newPage()
     await status('opening-catalog')
     log(`Browser: open catalog; ${pending.length} details missing`)
-    await catalog.goto(NRC_PAGES.creatures, { waitUntil: 'domcontentloaded', timeout: 30000 })
-    await assertPage(catalog)
-    await catalog.locator('.npc-grid').waitFor({ state: 'visible', timeout: 20000 })
-    const live = parseNrcCreatures(await catalog.locator('.npc-grid').evaluate(e => e.outerHTML))
-    const normalize = rows => JSON.stringify([...rows].sort((a, b) => a.sourceId.localeCompare(b.sourceId)))
-    if (normalize(live) !== normalize(creatures)) throw new Error('Live catalog differs from this batch; use a new version after review')
+    const catalogOptions = { assertHealthy: () => { if (fault) throw fault }, log }
+    await navigateToCatalog(catalog, () => catalog.goto(NRC_PAGES.creatures, { waitUntil: 'commit', timeout: 30000 }), creatures, catalogOptions)
     for (const creature of pending.slice(0, limit)) {
       target = creature.detailUrl
       await status('waiting', { next: creature.name, sourceUrl: target })
@@ -175,9 +216,7 @@ export async function collectBrowserDetails({ context, directory, version, limit
       if (await welcome.isVisible()) {
         await welcome.getByRole('button', { name: '我知道了', exact: true }).click({ timeout: 20000 })
         await welcome.waitFor({ state: 'hidden', timeout: 10000 })
-        await catalog.waitForLoadState('domcontentloaded', { timeout: 20000 })
-        await catalog.locator('.npc-grid').waitFor({ state: 'visible', timeout: 20000 })
-        await assertPage(catalog)
+        await waitForCatalog(catalog, creatures, catalogOptions)
       }
       const link = catalog.locator(`.npc-card[data-id="${creature.sourceId}"] a`)
       const links = await link.evaluateAll(elements => elements.map(e => e.href))
@@ -200,11 +239,11 @@ export async function collectBrowserDetails({ context, directory, version, limit
       await status('captured', { last: creature.name })
       log(`Browser saved ${creature.sourceId} ${creature.name}; total ${creatures.length - pending.length + saved}/${creatures.length}`)
       if (saved < Math.min(pending.length, limit)) {
+        target = NRC_PAGES.creatures
+        await status('returning', { sourceUrl: target, last: creature.name })
         log(`Browser waiting ${interval}s before returning to catalog`)
         await pause(interval * 1000)
-        await catalog.goBack({ waitUntil: 'domcontentloaded', timeout: 30000 })
-        await assertPage(catalog)
-        await catalog.locator('.npc-grid').waitFor({ state: 'visible', timeout: 20000 })
+        await navigateToCatalog(catalog, () => catalog.goBack({ waitUntil: 'commit', timeout: 30000 }), creatures, catalogOptions)
       }
     }
     await status(saved === pending.length ? 'complete' : 'batch-complete')
