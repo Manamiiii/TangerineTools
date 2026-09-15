@@ -13,25 +13,92 @@ export function browserOptions(args) {
   return parseSyncOptions(args.some(a => a.startsWith('--interval=')) ? args : [...args, '--interval=60'])
 }
 
-export async function waitForDetailToSettle(page, { quietMs = 10000, timeoutMs = 60000 } = {}) {
-  await page.locator('.roco-dex').evaluate((root, { quietMs, timeoutMs }) => new Promise((resolve, reject) => {
-    let quietTimer
-    const finish = error => {
-      clearTimeout(quietTimer)
-      clearTimeout(deadline)
-      observer.disconnect()
-      if (error) reject(error)
-      else resolve()
+const navigationInterrupted = error => /Execution context was destroyed|Cannot find context with specified id/.test(error.message)
+const assertAccess = text => {
+  if (/验证码|访问受限|访问过于频繁|安全验证|Access Denied|Verify you are human|Just a moment/i.test(text)) throw new Error('Access verification/restriction shown; stop without retry')
+}
+
+// Keep the wait in Node: a page-owned Promise is destroyed by a normal reload.
+// Only re-read the existing page; this loop never clicks, reloads or requests a URL.
+export async function waitForDetailToSettle(page, { quietMs = 10000, timeoutMs = 60000, expected, assertHealthy = () => {} } = {}) {
+  const deadline = Date.now() + timeoutMs
+  let previous = null
+  let stableSince = Date.now()
+  const reset = frame => {
+    if (frame === page.mainFrame()) { previous = null; stableSince = Date.now() }
+  }
+  page.on('framenavigated', reset)
+  try {
+    while (Date.now() < deadline) {
+      assertHealthy()
+      try {
+        const state = await page.evaluate(() => {
+          const roots = document.querySelectorAll('.roco-dex')
+          return { url: location.href, ready: document.readyState !== 'loading', count: roots.length,
+            sourceId: roots[0]?.getAttribute('data-pet-id'), html: roots[0]?.outerHTML,
+            text: document.body?.innerText ?? '' }
+        })
+        assertHealthy()
+        assertAccess(state.text)
+        const ready = state.ready && state.count === 1 && (!expected || (state.sourceId === expected.sourceId && state.url === expected.sourceUrl))
+        if (!ready || state.html !== previous) {
+          previous = ready ? state.html : null
+          stableSince = Date.now()
+        } else if (Date.now() - stableSince >= quietMs) return
+      } catch (error) {
+        if (!navigationInterrupted(error)) throw error
+        previous = null
+        stableSince = Date.now()
+      }
+      await delay(Math.min(500, Math.max(10, quietMs / 4)))
     }
-    const restart = () => {
-      clearTimeout(quietTimer)
-      quietTimer = setTimeout(() => finish(), quietMs)
+    throw new Error('Browser detail did not settle; stop capture')
+  } finally { page.off('framenavigated', reset) }
+}
+
+export async function captureSettledDetail(page, expected, { assertHealthy = () => {}, log = console.log, quietMs = 10000, timeoutMs = 120000, pause = delay } = {}) {
+  const deadline = Date.now() + timeoutMs
+  let generation = 0
+  const navigated = frame => { if (frame === page.mainFrame()) generation++ }
+  page.on('framenavigated', navigated)
+  try {
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      await waitForDetailToSettle(page, { expected, assertHealthy, quietMs, timeoutMs: Math.max(1, deadline - Date.now()) })
+      const documentGeneration = generation
+      const check = () => {
+        assertHealthy()
+        if (generation !== documentGeneration) throw new Error('Browser DOM changed due to navigation')
+      }
+      try {
+        const record = await captureBrowserDetail({
+          expected,
+          readMetadata: async () => {
+            check()
+            const meta = await page.evaluate(() => {
+              const roots = document.querySelectorAll('.roco-dex')
+              return { sourceUrl: location.href, sourceId: roots[0]?.getAttribute('data-pet-id'), rootCount: roots.length,
+                characters: roots[0]?.outerHTML.length, ready: document.readyState !== 'loading' }
+            })
+            check()
+            return meta
+          },
+          readChunk: async (start, end) => {
+            check()
+            const chunk = await page.locator('.roco-dex').evaluate((e, range) => e.outerHTML.slice(range.start, range.end), { start, end })
+            check()
+            return chunk
+          },
+          pause,
+        })
+        check()
+        return record
+      } catch (error) {
+        assertHealthy()
+        if ((!navigationInterrupted(error) && !/Browser DOM changed/.test(error.message)) || attempt === 3 || Date.now() >= deadline) throw error
+        log(`Browser discarded unstable read; waiting on the same page (${attempt}/3): ${expected.sourceId}`)
+      }
     }
-    const observer = new MutationObserver(restart)
-    const deadline = setTimeout(() => finish(new Error('Browser detail did not settle; stop capture')), timeoutMs)
-    observer.observe(root, { subtree: true, childList: true, attributes: true, characterData: true })
-    restart()
-  }), { quietMs, timeoutMs })
+  } finally { page.off('framenavigated', navigated) }
 }
 
 export async function persistCapture(directory, creature, record) {
@@ -85,7 +152,7 @@ export async function collectBrowserDetails({ context, directory, version, limit
   const assertPage = async page => {
     if (fault) throw fault
     const text = await page.locator('body').innerText()
-    if (/验证码|访问受限|访问过于频繁|安全验证|Access Denied|Verify you are human|Just a moment/i.test(text.slice(0, 2000))) throw new Error('Access verification/restriction shown; stop without retry')
+    assertAccess(text)
   }
   try {
     const catalog = await context.newPage()
@@ -120,18 +187,9 @@ export async function collectBrowserDetails({ context, directory, version, limit
         detail.waitForURL(target, { waitUntil: 'domcontentloaded', timeout: 30000 }),
         link.click({ timeout: 20000 }),
       ])
-      await assertPage(detail)
-      await detail.locator(`.roco-dex[data-pet-id="${creature.sourceId}"]`).waitFor({ state: 'attached', timeout: 20000 })
-      // Wait for a quiet DOM before starting the independent strict two-pass check.
-      await waitForDetailToSettle(detail)
-      const record = await captureBrowserDetail({
-        expected: { version, sourceId: creature.sourceId, sourceUrl: target },
-        readMetadata: () => detail.evaluate(() => {
-          const roots = document.querySelectorAll('.roco-dex')
-          return { sourceUrl: location.href, sourceId: roots[0]?.getAttribute('data-pet-id'), rootCount: roots.length, characters: roots[0]?.outerHTML.length, ready: document.readyState !== 'loading' }
-        }),
-        readChunk: (start, end) => detail.locator('.roco-dex').evaluate((e, range) => e.outerHTML.slice(range.start, range.end), { start, end }),
-        pause,
+      await status('reading', { next: creature.name, sourceUrl: target })
+      const record = await captureSettledDetail(detail, { version, sourceId: creature.sourceId, sourceUrl: target }, {
+        assertHealthy: () => { if (fault) throw fault }, log, pause,
       })
       const parsed = parseNrcDetail(record.html, creature)
       const missingSkills = parsed.skills.filter(s => !names.has(s.name)).map(s => s.name)

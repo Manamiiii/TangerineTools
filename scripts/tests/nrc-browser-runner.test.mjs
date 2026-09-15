@@ -4,7 +4,7 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { chromium } from 'playwright-core'
-import { browserOptions, collectBrowserDetails, waitForDetailToSettle } from '../bwiki/collect-nrc-browser.mjs'
+import { browserOptions, collectBrowserDetails, waitForDetailToSettle, captureSettledDetail } from '../bwiki/collect-nrc-browser.mjs'
 import { saveSnapshot, readSnapshot } from '../bwiki/lib/snapshots.mjs'
 import { NRC_PAGES, parseNrcCreatures } from '../bwiki/lib/nrc-parser.mjs'
 
@@ -37,6 +37,37 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
     await waitForDetailToSettle(settlingPage, { quietMs: 50, timeoutMs: 1000 })
     assert.equal(await settlingPage.locator('.roco-dex').innerText(), 'settled')
     await settlingPage.close()
+    const reloadPage = await browser.newPage()
+    const identity = { version: 'reload-test', sourceId: 'pet_000004', sourceUrl: 'https://wiki.biligame.com/nrc/test' }
+    let loads = 0
+    await reloadPage.route('**/*', route => {
+      loads++
+      return route.fulfill({ contentType: 'text/html', body: `<div class="roco-dex" data-pet-id="pet_000004">document ${loads}</div>` })
+    })
+    await reloadPage.goto(identity.sourceUrl)
+    // The document is replaced while the quiet-period wait is active.
+    await reloadPage.evaluate(() => setTimeout(() => location.reload(), 100))
+    await waitForDetailToSettle(reloadPage, { expected: identity, quietMs: 300, timeoutMs: 3000 })
+    assert.equal(loads, 2)
+    let pauses = 0
+    const recovered = await captureSettledDetail(reloadPage, identity, {
+      quietMs: 50, timeoutMs: 3000, log: () => {},
+      pause: async () => { if (++pauses === 1) await reloadPage.reload() },
+    })
+    assert.equal(loads, 3)
+    assert.match(recovered.html, /document 3/)
+    assert.equal(recovered.verifiedPasses, 2)
+    // Repeated mutations are bounded and never returned as a successful capture.
+    let mutations = 0
+    await assert.rejects(captureSettledDetail(reloadPage, identity, {
+      quietMs: 20, timeoutMs: 3000, log: () => {},
+      pause: async () => { mutations++; await reloadPage.locator('.roco-dex').evaluate(e => { e.textContent += '.' }) },
+    }), /Browser DOM changed/)
+    assert.equal(mutations, 3)
+    await reloadPage.setContent('<p>安全验证</p>')
+    await assert.rejects(captureSettledDetail(reloadPage, identity, { quietMs: 20, timeoutMs: 1000 }), /verification/)
+    assert.equal(loads, 3)
+    await reloadPage.close()
     const fixture = name => readFile(new URL(`./fixtures/nrc/${name}.html`, import.meta.url), 'utf8')
     const catalogHtml = `<div class="npc-grid">${await fixture('creatures')}</div>
       <div class="nrc-site-welcome" style="position:fixed;inset:0;z-index:999;background:white">
