@@ -217,7 +217,7 @@ export async function collectBrowserDetails({ context, directory, version, limit
       // Acknowledge only the site's known copyright notice through its UI.
       const welcome = catalog.locator('.nrc-site-welcome')
       if (await welcome.isVisible()) {
-        await welcome.getByRole('button', { name: '我知道了', exact: true }).click({ timeout: 20000 })
+        await welcome.getByRole('button', { name: '我知道了', exact: true }).click({ timeout: 20000, noWaitAfter: true })
         await welcome.waitFor({ state: 'hidden', timeout: 10000 })
         await waitForCatalog(catalog, creatures, catalogOptions)
       }
@@ -225,10 +225,8 @@ export async function collectBrowserDetails({ context, directory, version, limit
       const links = await link.evaluateAll(elements => elements.map(e => e.href))
       if (links.length !== 1 || links[0] !== target) throw new Error(`Catalog link mismatch: ${creature.name}`)
       const detail = catalog
-      await Promise.all([
-        detail.waitForURL(target, { waitUntil: 'domcontentloaded', timeout: 30000 }),
-        link.click({ timeout: 20000 }),
-      ])
+      // The host-side capture gate owns navigation and readiness checks.
+      await link.click({ timeout: 20000, noWaitAfter: true })
       await status('reading', { next: creature.name, sourceUrl: target })
       const record = await captureSettledDetail(detail, { version, sourceId: creature.sourceId, sourceUrl: target }, {
         assertHealthy: () => { if (fault) throw fault }, log, pause,

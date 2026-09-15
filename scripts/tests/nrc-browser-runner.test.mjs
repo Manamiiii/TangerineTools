@@ -119,6 +119,7 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
     const visited = []
     let blocked = true
     let returnTimeouts = 0
+    let delayedScripts = 0
     const newContext = async () => {
       const context = await browser.newContext()
       context.on('page', page => {
@@ -134,12 +135,18 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
       // All traffic is fulfilled locally; the test never accesses the source website.
       await context.route('**/*', async route => {
         const url = decodeURI(route.request().url())
+        if (url === 'https://wiki.biligame.com/nrc/delayed.js') {
+          delayedScripts++
+          await new Promise(resolve => setTimeout(resolve, 35000))
+          return route.fulfill({ contentType: 'application/javascript', body: '' })
+        }
         if (url === NRC_PAGES.creatures) return route.fulfill({ contentType: 'text/html; charset=utf-8', body: catalogHtml })
         const index = creatures.findIndex(c => decodeURI(c.detailUrl) === url)
         if (index >= 0) {
           visited.push(index)
           if (index === 1 && blocked) return route.fulfill({ status: 567, contentType: 'text/html; charset=utf-8', body: 'Access Denied' })
-          return route.fulfill({ contentType: 'text/html; charset=utf-8', body: detailHtml.replaceAll(creatures[0].sourceId, creatures[index].sourceId) })
+          const loadingScript = index === 0 ? '<script src="/nrc/delayed.js"></script>' : ''
+          return route.fulfill({ contentType: 'text/html; charset=utf-8', body: detailHtml.replaceAll(creatures[0].sourceId, creatures[index].sourceId) + loadingScript })
         }
         return route.fulfill({ status: 200, body: '' })
       })
@@ -150,6 +157,7 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
     await assert.rejects(run(), /567|verification/)
     assert.deepEqual(visited, [0, 1])
     assert.equal(returnTimeouts, 1)
+    assert.equal(delayedScripts, 1)
     const cached = await readSnapshot(directory, creatures[0].sourceId, creatures[0].detailUrl, version)
     assert.equal(cached.method, 'browser-dom-verified')
     assert.equal(JSON.parse(await readFile(join(directory, 'browser-status.json'))).state, 'stopped')
