@@ -24,6 +24,7 @@ export async function waitForCatalog(page, creatures, { assertHealthy = () => {}
   const deadline = Date.now() + timeoutMs
   let previous = null
   let stableSince = Date.now()
+  let pendingReason = 'Catalog address or cards are not ready'
   while (Date.now() < deadline) {
     assertHealthy()
     try {
@@ -37,12 +38,14 @@ export async function waitForCatalog(page, creatures, { assertHealthy = () => {}
         previous = null
         stableSince = Date.now()
       } else {
-        const current = normalize(parseNrcCreatures(state.html))
-        if (current !== previous) { previous = current; stableSince = Date.now() }
-        else if (Date.now() - stableSince >= quietMs) {
-          if (current !== expected) throw new Error('Live catalog differs from this batch; use a new version after review')
-          return
-        }
+        let current = null
+        try { current = normalize(parseNrcCreatures(state.html)) } catch (error) { pendingReason = error.message }
+        if (current !== expected) {
+          if (current !== null) pendingReason = 'Live catalog differs from this batch; review the source before changing versions'
+          previous = null
+          stableSince = Date.now()
+        } else if (current !== previous) { previous = current; stableSince = Date.now() }
+        else if (Date.now() - stableSince >= quietMs) return
       }
     } catch (error) {
       if (!navigationInterrupted(error)) throw error
@@ -51,7 +54,7 @@ export async function waitForCatalog(page, creatures, { assertHealthy = () => {}
     }
     await delay(Math.min(500, Math.max(10, quietMs / 4)))
   }
-  throw new Error('Browser catalog did not become ready; stop collection')
+  throw new Error(`Browser catalog did not become ready; stop collection: ${pendingReason}`)
 }
 
 export async function navigateToCatalog(page, navigate, creatures, options = {}) {

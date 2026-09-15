@@ -4,7 +4,7 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { chromium } from 'playwright-core'
-import { browserOptions, collectBrowserDetails, waitForDetailToSettle, captureSettledDetail, navigateToCatalog } from '../bwiki/collect-nrc-browser.mjs'
+import { browserOptions, collectBrowserDetails, waitForDetailToSettle, captureSettledDetail, navigateToCatalog, waitForCatalog } from '../bwiki/collect-nrc-browser.mjs'
 import { saveSnapshot, readSnapshot } from '../bwiki/lib/snapshots.mjs'
 import { NRC_PAGES, parseNrcCreatures } from '../bwiki/lib/nrc-parser.mjs'
 
@@ -97,6 +97,19 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
     await assert.rejects(navigateToCatalog(catalogPage, timeoutNavigation, creatures, {
       assertHealthy: () => { throw new Error('HTTP 567') }, quietMs: 20, timeoutMs: 1000,
     }), /567/)
+    const partialCatalog = '<div class="npc-grid"><div class="npc-card" data-number="1" data-shiny="no"></div></div>'
+    await catalogPage.setContent(partialCatalog)
+    await catalogPage.evaluate(html => setTimeout(() => {
+      document.querySelector('.npc-grid').outerHTML = html
+    }, 100), `<div class="npc-grid">${await fixture('creatures')}</div>`)
+    await waitForCatalog(catalogPage, creatures, { quietMs: 20, timeoutMs: 1000 })
+    assert.equal(navigationCalls, 2)
+    await catalogPage.setContent(partialCatalog)
+    await assert.rejects(waitForCatalog(catalogPage, creatures, { quietMs: 20, timeoutMs: 100 }), /missing\/duplicate name/)
+    await catalogPage.setContent(catalogHtml.replaceAll('迪莫', '不同名称'))
+    await assert.rejects(waitForCatalog(catalogPage, creatures, { quietMs: 20, timeoutMs: 100 }), /differs from this batch/)
+    await catalogPage.setContent('<p>安全验证</p>')
+    await assert.rejects(waitForCatalog(catalogPage, creatures, { quietMs: 20, timeoutMs: 100 }), /verification/)
     await catalogPage.goto('https://wiki.biligame.com/nrc/wrong-page')
     await assert.rejects(navigateToCatalog(catalogPage, timeoutNavigation, creatures, { quietMs: 20, timeoutMs: 100 }), /did not become ready/)
     await catalogPage.close()
