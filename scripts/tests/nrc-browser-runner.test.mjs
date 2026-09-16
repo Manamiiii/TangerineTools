@@ -76,6 +76,7 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
       </div>
       <div class="roco-dex" data-pet-id="pet_999999">Previous page retained during navigation</div>
       <script>
+        document.querySelectorAll('.npc-stage, .npc-art-normal, .npc-art-shiny').forEach(e => e.remove())
         document.querySelectorAll('.npc-card a').forEach(link => link.addEventListener('click', event => {
           event.preventDefault()
           history.pushState({}, '', link.href)
@@ -92,7 +93,7 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
     await catalogPage.goto(NRC_PAGES.creatures)
     let navigationCalls = 0
     const timeoutNavigation = async () => { navigationCalls++; const error = new Error('Navigation event timeout'); error.name = 'TimeoutError'; throw error }
-    await navigateToCatalog(catalogPage, timeoutNavigation, creatures, { quietMs: 20, timeoutMs: 1000 })
+    await navigateToCatalog(catalogPage, timeoutNavigation, creatures, { quietMs: 20, timeoutMs: 1000, readSourceHtml: () => catalogHtml })
     assert.equal(navigationCalls, 1)
     await assert.rejects(navigateToCatalog(catalogPage, timeoutNavigation, creatures, {
       assertHealthy: () => { throw new Error('HTTP 567') }, quietMs: 20, timeoutMs: 1000,
@@ -104,6 +105,13 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
     }, 100), `<div class="npc-grid">${await fixture('creatures')}</div>`)
     await waitForCatalog(catalogPage, creatures, { quietMs: 20, timeoutMs: 1000 })
     assert.equal(navigationCalls, 2)
+    await catalogPage.locator('.npc-stage, .npc-art-normal, .npc-art-shiny').evaluateAll(elements => elements.forEach(e => e.remove()))
+    await assert.rejects(waitForCatalog(catalogPage, creatures, { quietMs: 20, timeoutMs: 100 }), /differs from this batch/)
+    const virtualOptions = { quietMs: 20, timeoutMs: 200, readSourceHtml: () => catalogHtml }
+    await waitForCatalog(catalogPage, creatures, virtualOptions)
+    await assert.rejects(waitForCatalog(catalogPage, creatures, { ...virtualOptions, readSourceHtml: () => catalogHtml.replaceAll('迪莫', '不同名称') }), /differs from this batch/)
+    await catalogPage.locator('.npc-card').first().evaluate(e => e.setAttribute('data-id', 'pet_999998'))
+    await assert.rejects(waitForCatalog(catalogPage, creatures, virtualOptions), /differs from this batch/)
     await catalogPage.setContent(partialCatalog)
     await assert.rejects(waitForCatalog(catalogPage, creatures, { quietMs: 20, timeoutMs: 100 }), /missing\/duplicate name/)
     await catalogPage.setContent(catalogHtml.replaceAll('迪莫', '不同名称'))

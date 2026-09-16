@@ -18,7 +18,7 @@ const assertAccess = text => {
   if (/验证码|访问受限|访问过于频繁|安全验证|Access Denied|Verify you are human|Just a moment/i.test(text)) throw new Error('Access verification/restriction shown; stop without retry')
 }
 
-export async function waitForCatalog(page, creatures, { assertHealthy = () => {}, timeoutMs = 60000, quietMs = 2000 } = {}) {
+export async function waitForCatalog(page, creatures, { assertHealthy = () => {}, readSourceHtml, timeoutMs = 60000, quietMs = 2000 } = {}) {
   const normalize = rows => JSON.stringify([...rows].sort((a, b) => a.sourceId.localeCompare(b.sourceId)))
   const expected = normalize(creatures)
   const deadline = Date.now() + timeoutMs
@@ -39,8 +39,30 @@ export async function waitForCatalog(page, creatures, { assertHealthy = () => {}
         stableSince = Date.now()
       } else {
         let current = null
-        try { current = normalize(parseNrcCreatures(state.html)) } catch (error) { pendingReason = error.message }
-        if (current !== expected) {
+        let matches = false
+        try {
+          const rows = parseNrcCreatures(state.html)
+          current = normalize(rows)
+          matches = current === expected
+          if (!matches && readSourceHtml) {
+            const sourceHtml = await readSourceHtml()
+            assertHealthy()
+            if (sourceHtml && normalize(parseNrcCreatures(sourceHtml)) === expected) {
+              // Virtualized cards retain identity but omit off-screen artwork/stage.
+              // The complete fields must first match in the actual browser response.
+              const byId = new Map(creatures.map(row => [row.sourceId, row]))
+              const ids = new Set(rows.map(row => row.sourceId))
+              matches = rows.length === creatures.length && ids.size === rows.length && rows.every(row => {
+                const old = byId.get(row.sourceId)
+                return old && Object.keys(old).every(key =>
+                  JSON.stringify(row[key]) === JSON.stringify(old[key]) ||
+                  (['stageLabel', 'image', 'shinyImage'].includes(key) && row[key] === ''))
+              })
+            }
+          }
+        } catch (error) { pendingReason = error.message }
+        assertHealthy()
+        if (!matches) {
           if (current !== null) pendingReason = 'Live catalog differs from this batch; review the source before changing versions'
           previous = null
           stableSince = Date.now()
@@ -188,9 +210,21 @@ export async function collectBrowserDetails({ context, directory, version, limit
   if (!pending.length || !limit) { await status('complete'); return { saved, remaining: pending.length } }
   let target = NRC_PAGES.creatures
   let fault = null
+  let catalogSource = null
+  let catalogResponse = null
   const watch = page => {
     page.on('response', response => {
-      if (response.request().isNavigationRequest() && response.frame() === page.mainFrame() && response.status() >= 400) fault = new Error(`HTTP ${response.status()}: stop browser collection`)
+      if (response.request().isNavigationRequest() && response.frame() === page.mainFrame()) {
+        if (response.status() >= 400) fault = new Error(`HTTP ${response.status()}: stop browser collection`)
+        if (response.url() === new URL(NRC_PAGES.creatures).href) {
+          // Read an already received browser response, never issue another request.
+          catalogSource = null
+          catalogResponse = response
+          response.text().then(html => {
+            if (catalogResponse === response) catalogSource = html
+          }).catch(() => { /* No complete source means virtualization cannot pass. */ })
+        }
+      }
     })
     page.on('requestfailed', request => {
       if (request.isNavigationRequest() && request.frame() === page.mainFrame()) fault = new Error(`Navigation failed: ${request.failure()?.errorText}`)
@@ -206,7 +240,7 @@ export async function collectBrowserDetails({ context, directory, version, limit
     const catalog = await context.newPage()
     await status('opening-catalog')
     log(`Browser: open catalog; ${pending.length} details missing`)
-    const catalogOptions = { assertHealthy: () => { if (fault) throw fault }, log }
+    const catalogOptions = { assertHealthy: () => { if (fault) throw fault }, readSourceHtml: () => catalogSource, log }
     await navigateToCatalog(catalog, () => catalog.goto(NRC_PAGES.creatures, { waitUntil: 'commit', timeout: 30000 }), creatures, catalogOptions)
     for (const creature of pending.slice(0, limit)) {
       target = creature.detailUrl
