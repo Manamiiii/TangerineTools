@@ -1,7 +1,7 @@
 {
   "source": "bwiki-nrc",
   "version": "S4-2026-09-11-browser-full",
-  "syncedAt": "2026-09-16T08:37:59.915Z",
+  "syncedAt": "2026-09-17T10:29:31.764Z",
   "attribution": {
     "name": "洛克王国：世界 Wiki（NRC BWIKI）",
     "url": "https://wiki.biligame.com/nrc/首页",
@@ -4582,7 +4582,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/5/55/nl1w0r1g0pxkc6fmuq1roisxslxoand.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 75,
+      "patk": 57,
+      "matk": 52,
+      "pdef": 83,
+      "mdef": 58,
+      "spd": 69,
+      "bst": 394,
+      "traitName": "洁癖"
     },
     {
       "source": "bwiki-nrc",
@@ -4600,7 +4608,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/7/7f/b4kkxg0ge9h8eh8fkjdp51y42p1m755.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 100,
+      "patk": 76,
+      "matk": 69,
+      "pdef": 110,
+      "mdef": 78,
+      "spd": 92,
+      "bst": 525,
+      "traitName": "洁癖"
     },
     {
       "source": "bwiki-nrc",
@@ -4618,7 +4634,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/e/ec/sxlomtnxj0vr4dfbous8nml6c9030r4.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 125,
+      "patk": 95,
+      "matk": 86,
+      "pdef": 138,
+      "mdef": 97,
+      "spd": 115,
+      "bst": 656,
+      "traitName": "洁癖"
     },
     {
       "source": "bwiki-nrc",
@@ -4636,7 +4660,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/6/6d/fsh9ueitvon6100s3z2bfj0bhira6ks.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 132,
+      "patk": 93,
+      "matk": 87,
+      "pdef": 130,
+      "mdef": 90,
+      "spd": 120,
+      "bst": 652,
+      "traitName": "孤傲"
     },
     {
       "source": "bwiki-nrc",
@@ -4654,7 +4686,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/2/25/lzfak0tl2l8ldthdlmmj4oppext378k.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 128,
+      "patk": 77,
+      "matk": 75,
+      "pdef": 101,
+      "mdef": 81,
+      "spd": 105,
+      "bst": 567,
+      "traitName": "快锤"
     },
     {
       "source": "bwiki-nrc",
@@ -4672,7 +4712,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/b/b1/m0n2ktxnlzi6do8t2ffm7ooxip6jx8y.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 87,
+      "patk": 39,
+      "matk": 96,
+      "pdef": 92,
+      "mdef": 118,
+      "spd": 72,
+      "bst": 504,
+      "traitName": "木桶戏法"
     },
     {
       "source": "bwiki-nrc",
@@ -4690,7 +4738,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/7/7b/0yg4nxs1yslni9rdl8prol8iomwdn45.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 109,
+      "patk": 48,
+      "matk": 120,
+      "pdef": 115,
+      "mdef": 147,
+      "spd": 90,
+      "bst": 629,
+      "traitName": "木桶戏法"
     },
     {
       "source": "bwiki-nrc",
@@ -4707,7 +4763,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/3/39/07sicqevfkpdjqbx3t0bqg1bqnkgu4h.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 112,
+      "patk": 108,
+      "matk": 97,
+      "pdef": 141,
+      "mdef": 79,
+      "spd": 70,
+      "bst": 607,
+      "traitName": "不移"
     },
     {
       "source": "bwiki-nrc",
@@ -4725,7 +4789,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/6/61/jphmgufai0rymltryuc8j3t3n4hr9dq.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 58,
+      "patk": 68,
+      "matk": 66,
+      "pdef": 61,
+      "mdef": 53,
+      "spd": 72,
+      "bst": 378,
+      "traitName": "咔咔冲刺"
     },
     {
       "source": "bwiki-nrc",
@@ -4743,7 +4815,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/c/c2/270rdusmayt9qo0jokw1fl3lca4z1tv.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 78,
+      "patk": 91,
+      "matk": 88,
+      "pdef": 81,
+      "mdef": 71,
+      "spd": 96,
+      "bst": 505,
+      "traitName": "咔咔冲刺"
     },
     {
       "source": "bwiki-nrc",
@@ -4761,7 +4841,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/8/8f/llvslnghkmtm4d7rkz09cllg2rfq67i.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 97,
+      "patk": 114,
+      "matk": 110,
+      "pdef": 101,
+      "mdef": 89,
+      "spd": 120,
+      "bst": 631,
+      "traitName": "咔咔冲刺"
     },
     {
       "source": "bwiki-nrc",
@@ -4779,7 +4867,15 @@
       "seasonLabel": "S3",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/5/51/ebddividnygfai0h3p3p4hrsadyp3t6.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/2/25/mfwj6ab0te3y6vjob0f00b8o0hyozyd.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/2/25/mfwj6ab0te3y6vjob0f00b8o0hyozyd.png",
+      "hp": 79,
+      "patk": 43,
+      "matk": 46,
+      "pdef": 54,
+      "mdef": 60,
+      "spd": 60,
+      "bst": 342,
+      "traitName": "花精灵"
     },
     {
       "source": "bwiki-nrc",
@@ -4797,7 +4893,15 @@
       "seasonLabel": "S3",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/b/b0/8fyiiku41ur6a5jq97r6t0ip4ffp2p6.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/5/59/kf4szcd6t5tbjl6ffswbl96zgzbn82f.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/5/59/kf4szcd6t5tbjl6ffswbl96zgzbn82f.png",
+      "hp": 105,
+      "patk": 58,
+      "matk": 62,
+      "pdef": 72,
+      "mdef": 80,
+      "spd": 80,
+      "bst": 457,
+      "traitName": "花精灵"
     },
     {
       "source": "bwiki-nrc",
@@ -4815,7 +4919,15 @@
       "seasonLabel": "S3",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/f/fa/eucs1d50hngi096yj5k2geusfugwvkl.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/3/30/mk6ipcrouff3gn242zkidzyo56yes6v.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/3/30/mk6ipcrouff3gn242zkidzyo56yes6v.png",
+      "hp": 132,
+      "patk": 72,
+      "matk": 77,
+      "pdef": 89,
+      "mdef": 100,
+      "spd": 100,
+      "bst": 570,
+      "traitName": "花精灵"
     },
     {
       "source": "bwiki-nrc",
@@ -4833,7 +4945,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/f/f4/lye0fozhyf4gyfw57zhvfju73qpz64f.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 52,
+      "patk": 63,
+      "matk": 18,
+      "pdef": 56,
+      "mdef": 53,
+      "spd": 81,
+      "bst": 323,
+      "traitName": "自由飘"
     },
     {
       "source": "bwiki-nrc",
@@ -4851,7 +4971,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/9/9b/ole2m1b6ukjdkls33nkala5pwssut59.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 70,
+      "patk": 85,
+      "matk": 23,
+      "pdef": 75,
+      "mdef": 70,
+      "spd": 108,
+      "bst": 431,
+      "traitName": "自由飘"
     },
     {
       "source": "bwiki-nrc",
@@ -4869,7 +4997,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/c/c6/jv1yxjanrstkw438asrmi3gvdztwlcs.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 87,
+      "patk": 106,
+      "matk": 29,
+      "pdef": 94,
+      "mdef": 88,
+      "spd": 135,
+      "bst": 539,
+      "traitName": "自由飘"
     },
     {
       "source": "bwiki-nrc",
@@ -4886,7 +5022,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/4/4d/222dlmd5p19a7x512f4svvz2fk4c2tt.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 64,
+      "patk": 95,
+      "matk": 47,
+      "pdef": 67,
+      "mdef": 42,
+      "spd": 45,
+      "bst": 360,
+      "traitName": "石头大餐"
     },
     {
       "source": "bwiki-nrc",
@@ -4903,7 +5047,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/f/fb/aejky0cg8hlbi1igj4iy5qhpztyozdx.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 86,
+      "patk": 127,
+      "matk": 62,
+      "pdef": 89,
+      "mdef": 56,
+      "spd": 60,
+      "bst": 480,
+      "traitName": "石头大餐"
     },
     {
       "source": "bwiki-nrc",
@@ -4921,7 +5073,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/6/6e/m6jaol299otchtf99t8xuyecbz0k5wq.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 107,
+      "patk": 159,
+      "matk": 78,
+      "pdef": 112,
+      "mdef": 70,
+      "spd": 75,
+      "bst": 601,
+      "traitName": "石头大餐"
     },
     {
       "source": "bwiki-nrc",
@@ -4939,7 +5099,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/2/21/6gye6wybmc9mm09150iso88vwp08mi3.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 107,
+      "patk": 159,
+      "matk": 78,
+      "pdef": 167,
+      "mdef": 32,
+      "spd": 75,
+      "bst": 618,
+      "traitName": "盛宴"
     },
     {
       "source": "bwiki-nrc",
@@ -4957,7 +5125,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/4/48/e7j0qoimhju9f7k3l84xlas9qhwaf86.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 54,
+      "patk": 59,
+      "matk": 59,
+      "pdef": 63,
+      "mdef": 63,
+      "spd": 75,
+      "bst": 373,
+      "traitName": "水翼推进"
     },
     {
       "source": "bwiki-nrc",
@@ -4975,7 +5151,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/8/8d/hz8op1ismxafui106srgpx5p0031cmi.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 72,
+      "patk": 78,
+      "matk": 78,
+      "pdef": 84,
+      "mdef": 84,
+      "spd": 100,
+      "bst": 496,
+      "traitName": "水翼推进"
     },
     {
       "source": "bwiki-nrc",
@@ -4993,7 +5177,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/1/12/qm5ny9yzby2plajwp46a90rcm8d3j5j.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 90,
+      "patk": 98,
+      "matk": 98,
+      "pdef": 105,
+      "mdef": 105,
+      "spd": 125,
+      "bst": 621,
+      "traitName": "水翼推进"
     },
     {
       "source": "bwiki-nrc",
@@ -5011,7 +5203,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/9/97/ca4ma5y9decz90v7w05xie2k89d89kk.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 90,
+      "patk": 98,
+      "matk": 98,
+      "pdef": 105,
+      "mdef": 105,
+      "spd": 125,
+      "bst": 621,
+      "traitName": "水翼飞升"
     },
     {
       "source": "bwiki-nrc",
@@ -5028,7 +5228,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/6/62/ijqbyususo343fy8msox6laf983zhro.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 76,
+      "patk": 79,
+      "matk": 79,
+      "pdef": 101,
+      "mdef": 56,
+      "spd": 76,
+      "bst": 467,
+      "traitName": "石天平"
     },
     {
       "source": "bwiki-nrc",
@@ -5046,7 +5254,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/7/7b/t9h8czgfk19ffke7y5h5a4et6yk6479.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 95,
+      "patk": 99,
+      "matk": 99,
+      "pdef": 126,
+      "mdef": 70,
+      "spd": 95,
+      "bst": 584,
+      "traitName": "石天平"
     },
     {
       "source": "bwiki-nrc",
@@ -5064,7 +5280,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/7/73/tlhv0oq8naxe5mb4e52ujvs4g745i12.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 64,
+      "patk": 50,
+      "matk": 54,
+      "pdef": 69,
+      "mdef": 71,
+      "spd": 51,
+      "bst": 359,
+      "traitName": "观星"
     },
     {
       "source": "bwiki-nrc",
@@ -5082,7 +5306,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/e/ed/ne830cg3fy6lu3777ufd0fad2skgntk.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 85,
+      "patk": 67,
+      "matk": 71,
+      "pdef": 92,
+      "mdef": 95,
+      "spd": 68,
+      "bst": 478,
+      "traitName": "观星"
     },
     {
       "source": "bwiki-nrc",
@@ -5100,7 +5332,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/9/92/bvkd7o6f1jt91u0716c7p5aef0lpg1i.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 106,
+      "patk": 84,
+      "matk": 89,
+      "pdef": 115,
+      "mdef": 119,
+      "spd": 85,
+      "bst": 598,
+      "traitName": "观星"
     },
     {
       "source": "bwiki-nrc",
@@ -5118,7 +5358,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/d/df/q072xopnvjhhvyb862j7am6tn1ysdlc.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 106,
+      "patk": 96,
+      "matk": 101,
+      "pdef": 115,
+      "mdef": 119,
+      "spd": 85,
+      "bst": 622,
+      "traitName": "坠星"
     },
     {
       "source": "bwiki-nrc",
@@ -5135,7 +5383,15 @@
       "seasonLabel": "S2",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/6/61/o5dkkzgy6234f69ilyxw66qb0d3e3mq.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/1/18/5b8mm7wewfq8xi0i99vm2gsmb3q6ra1.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/1/18/5b8mm7wewfq8xi0i99vm2gsmb3q6ra1.png",
+      "hp": 79,
+      "patk": 48,
+      "matk": 129,
+      "pdef": 62,
+      "mdef": 74,
+      "spd": 84,
+      "bst": 476,
+      "traitName": "目空"
     },
     {
       "source": "bwiki-nrc",
@@ -5152,7 +5408,15 @@
       "seasonLabel": "S2",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/8/82/bk8ftswyp2uv960wtwfuw6hw56i27xt.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/6/6e/58b5k6vc347i6g292okjzxcf1k9ewwf.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/6/6e/58b5k6vc347i6g292okjzxcf1k9ewwf.png",
+      "hp": 99,
+      "patk": 61,
+      "matk": 161,
+      "pdef": 77,
+      "mdef": 92,
+      "spd": 105,
+      "bst": 595,
+      "traitName": "目空"
     },
     {
       "source": "bwiki-nrc",
@@ -5169,7 +5433,15 @@
       "seasonLabel": "S2",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/4/45/ozz4dwembtnqch6cds6ft135qn199he.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/b/b9/dur5wdskdd70vk248r30wob3uwlo4gp.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/b/b9/dur5wdskdd70vk248r30wob3uwlo4gp.png",
+      "hp": 99,
+      "patk": 78,
+      "matk": 192,
+      "pdef": 77,
+      "mdef": 92,
+      "spd": 105,
+      "bst": 643,
+      "traitName": "夺目"
     },
     {
       "source": "bwiki-nrc",
@@ -5187,7 +5459,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/4/43/ljin9tosr6u2kik6yiwcdevy2es1ye1.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 56,
+      "patk": 15,
+      "matk": 65,
+      "pdef": 63,
+      "mdef": 55,
+      "spd": 72,
+      "bst": 326,
+      "traitName": "共鸣"
     },
     {
       "source": "bwiki-nrc",
@@ -5205,7 +5485,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/9/9f/hoifogc03naj928g788v41ppw69rkzx.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 57,
+      "patk": 15,
+      "matk": 67,
+      "pdef": 61,
+      "mdef": 52,
+      "spd": 72,
+      "bst": 324,
+      "traitName": "共鸣"
     },
     {
       "source": "bwiki-nrc",
@@ -5223,7 +5511,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/3/39/suxk2b3fezzzykdba3ht3n59dlyhj4l.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 74,
+      "patk": 19,
+      "matk": 87,
+      "pdef": 84,
+      "mdef": 73,
+      "spd": 96,
+      "bst": 433,
+      "traitName": "共鸣"
     },
     {
       "source": "bwiki-nrc",
@@ -5241,7 +5537,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/b/bd/52fz9zecz3u0d4kiu4jewr2xr397jlq.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 76,
+      "patk": 20,
+      "matk": 89,
+      "pdef": 82,
+      "mdef": 70,
+      "spd": 96,
+      "bst": 433,
+      "traitName": "共鸣"
     },
     {
       "source": "bwiki-nrc",
@@ -5259,7 +5563,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/c/c5/4nz5f2kmy2dnovgg4s7ripg2q52cgi4.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 93,
+      "patk": 24,
+      "matk": 109,
+      "pdef": 105,
+      "mdef": 91,
+      "spd": 120,
+      "bst": 542,
+      "traitName": "共鸣"
     },
     {
       "source": "bwiki-nrc",
@@ -5277,7 +5589,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/1/14/86akjl06t7zsc4zycxiiod30omrs3xf.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 95,
+      "patk": 25,
+      "matk": 111,
+      "pdef": 102,
+      "mdef": 87,
+      "spd": 120,
+      "bst": 540,
+      "traitName": "共鸣"
     },
     {
       "source": "bwiki-nrc",
@@ -5295,7 +5615,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/3/32/jgm2uubbuv8jd9z4eeqekar1ah1mapq.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 105,
+      "patk": 30,
+      "matk": 119,
+      "pdef": 105,
+      "mdef": 91,
+      "spd": 125,
+      "bst": 575,
+      "traitName": "齐鸣"
     },
     {
       "source": "bwiki-nrc",
@@ -5313,7 +5641,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/3/32/jgm2uubbuv8jd9z4eeqekar1ah1mapq.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 107,
+      "patk": 31,
+      "matk": 122,
+      "pdef": 102,
+      "mdef": 87,
+      "spd": 125,
+      "bst": 574,
+      "traitName": "齐鸣"
     },
     {
       "source": "bwiki-nrc",
@@ -5330,7 +5666,15 @@
       "seasonLabel": "S4",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/c/cb/2rgpnxsglelj43w3sdlxta3mp7k62vz.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/5/51/jad5gld5mmf4xjadn03t2yitutso2n8.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/5/51/jad5gld5mmf4xjadn03t2yitutso2n8.png",
+      "hp": 119,
+      "patk": 42,
+      "matk": 99,
+      "pdef": 72,
+      "mdef": 103,
+      "spd": 56,
+      "bst": 491,
+      "traitName": "预警"
     },
     {
       "source": "bwiki-nrc",
@@ -5347,7 +5691,15 @@
       "seasonLabel": "S4",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/6/69/3n75dnmrl88jkw6wnsltrxtek4pw5dp.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/4/4a/ieku0dy9b3x53q0w00s1z69wfckh9nd.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/4/4a/ieku0dy9b3x53q0w00s1z69wfckh9nd.png",
+      "hp": 149,
+      "patk": 53,
+      "matk": 124,
+      "pdef": 90,
+      "mdef": 129,
+      "spd": 70,
+      "bst": 615,
+      "traitName": "预警"
     },
     {
       "source": "bwiki-nrc",
@@ -5364,7 +5716,15 @@
       "seasonLabel": "S4",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/9/9f/25k4v5dj0z41m889hnbdlbo3rrxuza5.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/6/66/fb8qzvf8xr9gm0tu3tkasnyhoj23xyo.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/6/66/fb8qzvf8xr9gm0tu3tkasnyhoj23xyo.png",
+      "hp": 149,
+      "patk": 65,
+      "matk": 143,
+      "pdef": 90,
+      "mdef": 129,
+      "spd": 70,
+      "bst": 646,
+      "traitName": "先知"
     },
     {
       "source": "bwiki-nrc",
@@ -5382,7 +5742,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/9/90/3z6oddlb4bhtx4g3ql2bj7gyasw7rry.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 78,
+      "patk": 87,
+      "matk": 84,
+      "pdef": 84,
+      "mdef": 56,
+      "spd": 104,
+      "bst": 493,
+      "traitName": "下黑手"
     },
     {
       "source": "bwiki-nrc",
@@ -5400,7 +5768,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/4/41/bxs8ukh38zg62y8m6qhih90xqycjgau.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 97,
+      "patk": 109,
+      "matk": 105,
+      "pdef": 105,
+      "mdef": 70,
+      "spd": 130,
+      "bst": 616,
+      "traitName": "下黑手"
     },
     {
       "source": "bwiki-nrc",
@@ -5418,7 +5794,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/8/88/n5s0r5aapb0pls9c3yyp5tgyralbb78.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 51,
+      "patk": 53,
+      "matk": 53,
+      "pdef": 80,
+      "mdef": 44,
+      "spd": 54,
+      "bst": 335,
+      "traitName": "毒牙"
     },
     {
       "source": "bwiki-nrc",
@@ -5436,7 +5820,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/0/08/gc3a0ne974uaaqdbqlrx9qru4w36q08.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 68,
+      "patk": 70,
+      "matk": 70,
+      "pdef": 107,
+      "mdef": 59,
+      "spd": 72,
+      "bst": 446,
+      "traitName": "毒牙"
     },
     {
       "source": "bwiki-nrc",
@@ -5454,7 +5846,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/3/36/3wj052570n8tv2rzmajj7rxbbgff82n.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 85,
+      "patk": 88,
+      "matk": 88,
+      "pdef": 134,
+      "mdef": 74,
+      "spd": 90,
+      "bst": 559,
+      "traitName": "毒牙"
     },
     {
       "source": "bwiki-nrc",
@@ -5471,7 +5871,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/9/97/syuxyjwe0aaxnttbfkbfpcgfa6j8kln.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 74,
+      "patk": 38,
+      "matk": 41,
+      "pdef": 30,
+      "mdef": 60,
+      "spd": 36,
+      "bst": 279,
+      "traitName": "吸积盘"
     },
     {
       "source": "bwiki-nrc",
@@ -5488,7 +5896,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/0/05/hod9m1sfs3w7mbqbs0fi4jvcww3201t.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 99,
+      "patk": 50,
+      "matk": 55,
+      "pdef": 40,
+      "mdef": 80,
+      "spd": 48,
+      "bst": 372,
+      "traitName": "吸积盘"
     },
     {
       "source": "bwiki-nrc",
@@ -5505,7 +5921,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/b/bf/nlm5eswhbtgfgymnc9ywd31ksw20vj7.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 124,
+      "patk": 63,
+      "matk": 69,
+      "pdef": 50,
+      "mdef": 100,
+      "spd": 60,
+      "bst": 466,
+      "traitName": "吸积盘"
     },
     {
       "source": "bwiki-nrc",
@@ -5522,7 +5946,15 @@
       "seasonLabel": "S1",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/4/41/o9vwhwwjbk20z09kivara197vk6048l.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/c/c5/gj61gicaywylz26cbh044dvve0tpm25.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/c/c5/gj61gicaywylz26cbh044dvve0tpm25.png",
+      "hp": 115,
+      "patk": 114,
+      "matk": 45,
+      "pdef": 91,
+      "mdef": 63,
+      "spd": 120,
+      "bst": 548,
+      "traitName": "悲悯"
     },
     {
       "source": "bwiki-nrc",
@@ -5539,7 +5971,15 @@
       "seasonLabel": "S1",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/d/d6/ng9us87m8ezk9cgc5guzn809dsh9bwn.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/7/76/h5x05rpg5j0g5mq20c437xjdtvqwyji.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/7/76/h5x05rpg5j0g5mq20c437xjdtvqwyji.png",
+      "hp": 115,
+      "patk": 121,
+      "matk": 50,
+      "pdef": 91,
+      "mdef": 63,
+      "spd": 120,
+      "bst": 560,
+      "traitName": "悼亡"
     },
     {
       "source": "bwiki-nrc",
@@ -5557,7 +5997,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/9/9c/khzemejd5wpohov9pgpw9nfq4u1fakp.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 75,
+      "patk": 45,
+      "matk": 101,
+      "pdef": 59,
+      "mdef": 87,
+      "spd": 100,
+      "bst": 467,
+      "traitName": "超负荷"
     },
     {
       "source": "bwiki-nrc",
@@ -5575,7 +6023,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/2/28/0id7zcve7tlwjkrgdv5i5jmtfcbn7vu.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 94,
+      "patk": 56,
+      "matk": 126,
+      "pdef": 73,
+      "mdef": 109,
+      "spd": 125,
+      "bst": 583,
+      "traitName": "超负荷"
     },
     {
       "source": "bwiki-nrc",
@@ -5592,7 +6048,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/5/52/6nu91qhpmxnah849hiv4k9avgr590ix.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 97,
+      "patk": 104,
+      "matk": 47,
+      "pdef": 83,
+      "mdef": 62,
+      "spd": 36,
+      "bst": 429,
+      "traitName": "结晶水"
     },
     {
       "source": "bwiki-nrc",
@@ -5609,7 +6073,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/2/27/m82uy0cn9nk4exl5n0kflidevn1mi9e.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 130,
+      "patk": 139,
+      "matk": 63,
+      "pdef": 111,
+      "mdef": 83,
+      "spd": 48,
+      "bst": 574,
+      "traitName": "结晶水"
     },
     {
       "source": "bwiki-nrc",
@@ -5626,7 +6098,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/6/6d/7k3ouohrudddrmkzbvg9x6ao00c4vuj.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 162,
+      "patk": 174,
+      "matk": 79,
+      "pdef": 139,
+      "mdef": 104,
+      "spd": 60,
+      "bst": 718,
+      "traitName": "结晶水"
     },
     {
       "source": "bwiki-nrc",
@@ -5644,7 +6124,15 @@
       "seasonLabel": "S1",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/b/b6/g57shy2n05mra21af1vtx0h8eob0yd5.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/1/1d/apo56anommg5zejprgvbc9qzmbnaew1.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/1/1d/apo56anommg5zejprgvbc9qzmbnaew1.png",
+      "hp": 98,
+      "patk": 95,
+      "matk": 33,
+      "pdef": 88,
+      "mdef": 81,
+      "spd": 68,
+      "bst": 463,
+      "traitName": "冻土"
     },
     {
       "source": "bwiki-nrc",
@@ -5662,7 +6150,15 @@
       "seasonLabel": "S1",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/6/6d/khwlzusbgzeo6qr6j4gt5g4lrn8x2wt.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/a/ab/pfdlicfy896l3weixetmgwfznt9huot.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/a/ab/pfdlicfy896l3weixetmgwfznt9huot.png",
+      "hp": 123,
+      "patk": 119,
+      "matk": 41,
+      "pdef": 110,
+      "mdef": 101,
+      "spd": 85,
+      "bst": 579,
+      "traitName": "冻土"
     },
     {
       "source": "bwiki-nrc",
@@ -5679,7 +6175,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/4/47/hw7axgvi8rq6ni0293j2s3mr4ieuv7t.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 56,
+      "patk": 67,
+      "matk": 67,
+      "pdef": 63,
+      "mdef": 63,
+      "spd": 69,
+      "bst": 385,
+      "traitName": "冰封"
     },
     {
       "source": "bwiki-nrc",
@@ -5696,7 +6200,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/c/c9/5rlmx5ih1a11gqli1ym9ij7lblvw9p9.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 75,
+      "patk": 90,
+      "matk": 90,
+      "pdef": 84,
+      "mdef": 84,
+      "spd": 92,
+      "bst": 515,
+      "traitName": "冰封"
     },
     {
       "source": "bwiki-nrc",
@@ -5713,7 +6225,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/3/3c/g2z20likwjumqc2091bnd0gus8gc3cd.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 94,
+      "patk": 112,
+      "matk": 112,
+      "pdef": 105,
+      "mdef": 105,
+      "spd": 115,
+      "bst": 643,
+      "traitName": "冰封"
     },
     {
       "source": "bwiki-nrc",
@@ -5731,7 +6251,15 @@
       "seasonLabel": "S1",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/b/ba/klinkws8190nmwndg1wrspeqb4b949n.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/f/fc/64u30xbj9xtyr3ap2x5ekety72bw5c3.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/f/fc/64u30xbj9xtyr3ap2x5ekety72bw5c3.png",
+      "hp": 78,
+      "patk": 62,
+      "matk": 59,
+      "pdef": 39,
+      "mdef": 78,
+      "spd": 54,
+      "bst": 370,
+      "traitName": "捉迷藏"
     },
     {
       "source": "bwiki-nrc",
@@ -5749,7 +6277,15 @@
       "seasonLabel": "S1",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/7/7c/59yukv5drlpfg2r41uszk08dipf59nj.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/0/0a/s4bsf2yh2y1hgojgkl2xt4hmkfp29xi.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/0/0a/s4bsf2yh2y1hgojgkl2xt4hmkfp29xi.png",
+      "hp": 104,
+      "patk": 83,
+      "matk": 78,
+      "pdef": 52,
+      "mdef": 104,
+      "spd": 72,
+      "bst": 493,
+      "traitName": "捉迷藏"
     },
     {
       "source": "bwiki-nrc",
@@ -5767,7 +6303,15 @@
       "seasonLabel": "S1",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/f/f1/tdv6a5mz86mhk7iyb3fhtze7f7p0uur.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/7/75/7d8xbshi07u1470v3ooz38pf2o9ynou.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/7/75/7d8xbshi07u1470v3ooz38pf2o9ynou.png",
+      "hp": 130,
+      "patk": 103,
+      "matk": 98,
+      "pdef": 66,
+      "mdef": 130,
+      "spd": 90,
+      "bst": 617,
+      "traitName": "捉迷藏"
     },
     {
       "source": "bwiki-nrc",
@@ -5785,7 +6329,15 @@
       "seasonLabel": "S1",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/7/7e/1243n95qjebl2v43sjgsx6f470wyz1w.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/5/5f/ryvbrtfxahiszawjpvjla9v7y3qrjmi.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/5/5f/ryvbrtfxahiszawjpvjla9v7y3qrjmi.png",
+      "hp": 130,
+      "patk": 120,
+      "matk": 114,
+      "pdef": 66,
+      "mdef": 130,
+      "spd": 90,
+      "bst": 650,
+      "traitName": "抓到你了"
     },
     {
       "source": "bwiki-nrc",
@@ -5802,7 +6354,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/9/9e/pu4wlhh9styl9dr6zdcuzpxl737e7ek.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 82,
+      "patk": 84,
+      "matk": 78,
+      "pdef": 109,
+      "mdef": 109,
+      "spd": 60,
+      "bst": 522,
+      "traitName": "机械变式"
     },
     {
       "source": "bwiki-nrc",
@@ -5819,7 +6379,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/2/23/0ntrhu35ulw0jy3nhed3bv0tepc0bok.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 103,
+      "patk": 105,
+      "matk": 97,
+      "pdef": 136,
+      "mdef": 136,
+      "spd": 75,
+      "bst": 652,
+      "traitName": "机械变式"
     },
     {
       "source": "bwiki-nrc",
@@ -5837,7 +6405,15 @@
       "seasonLabel": "S2",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/7/7f/8xhafzs8vrlgc00w9j484vhhnlruy12.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/b/bf/b44r17f5qco2ke86560exnmgm5hhdum.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/b/bf/b44r17f5qco2ke86560exnmgm5hhdum.png",
+      "hp": 69,
+      "patk": 52,
+      "matk": 52,
+      "pdef": 50,
+      "mdef": 64,
+      "spd": 60,
+      "bst": 347,
+      "traitName": "灵魂灼伤"
     },
     {
       "source": "bwiki-nrc",
@@ -5855,7 +6431,15 @@
       "seasonLabel": "S2",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/9/95/8798jgypa4wffegoqmnr5cvlqrlh3iu.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/d/d5/clp19p945ffm9oq1enjbtd4uqzx4lcn.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/d/d5/clp19p945ffm9oq1enjbtd4uqzx4lcn.png",
+      "hp": 92,
+      "patk": 70,
+      "matk": 70,
+      "pdef": 67,
+      "mdef": 86,
+      "spd": 80,
+      "bst": 465,
+      "traitName": "灵魂灼伤"
     },
     {
       "source": "bwiki-nrc",
@@ -5873,7 +6457,15 @@
       "seasonLabel": "S2",
       "shinyLabel": "是",
       "image": "https://patchwiki.biligame.com/images/nrc/b/b4/4wcleqofhodtlwsvji5laqc73kyc17w.png",
-      "shinyImage": "https://patchwiki.biligame.com/images/nrc/1/18/ki5ss4ieh7oqewf3ipnvjvzx1a9b27t.png"
+      "shinyImage": "https://patchwiki.biligame.com/images/nrc/1/18/ki5ss4ieh7oqewf3ipnvjvzx1a9b27t.png",
+      "hp": 115,
+      "patk": 87,
+      "matk": 87,
+      "pdef": 84,
+      "mdef": 107,
+      "spd": 100,
+      "bst": 580,
+      "traitName": "灵魂灼伤"
     },
     {
       "source": "bwiki-nrc",
@@ -5890,7 +6482,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/f/fd/asr0objcbb99lvkboch0k0po33olat2.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 79,
+      "patk": 65,
+      "matk": 65,
+      "pdef": 77,
+      "mdef": 50,
+      "spd": 75,
+      "bst": 411,
+      "traitName": "飓风"
     },
     {
       "source": "bwiki-nrc",
@@ -12347,81 +12947,6 @@
     }
   ],
   "releaseBlockers": [
-    "缺少详情：乖乖鹄",
-    "缺少详情：蓝珠天鹅",
-    "缺少详情：翠顶夫人",
-    "缺少详情：黑羽夫人",
-    "缺少详情：锤头鹳",
-    "缺少详情：绿草精灵",
-    "缺少详情：魔草巫灵",
-    "缺少详情：记忆石",
-    "缺少详情：咔咔羽毛",
-    "缺少详情：咔咔雀",
-    "缺少详情：咔咔鸟",
-    "缺少详情：小草虫",
-    "缺少详情：草衣虫",
-    "缺少详情：花衣蝶",
-    "缺少详情：绿翼鸟",
-    "缺少详情：魔翼鸟",
-    "缺少详情：魔眷鸟",
-    "缺少详情：阿米亚特",
-    "缺少详情：阿米樱",
-    "缺少详情：罗隐",
-    "缺少详情：深渊罗隐",
-    "缺少详情：风铃鲨",
-    "缺少详情：蓝蝶鲨",
-    "缺少详情：彩蝶鲨",
-    "缺少详情：神谕鲨",
-    "缺少详情：石石",
-    "缺少详情：巨灵石",
-    "缺少详情：仪使者",
-    "缺少详情：仪式之星",
-    "缺少详情：仪式巨像",
-    "缺少详情：祭礼巨像",
-    "缺少详情：小独角兽",
-    "缺少详情：白金独角兽",
-    "缺少详情：彩虹独角兽",
-    "缺少详情：旋叶虫（金黄的样子）",
-    "缺少详情：旋叶虫（枯叶的样子）",
-    "缺少详情：蓬叶虫（金黄的样子）",
-    "缺少详情：蓬叶虫（枯叶的样子）",
-    "缺少详情：风滚暮虫（金黄的样子）",
-    "缺少详情：风滚暮虫（枯叶的样子）",
-    "缺少详情：暮风隐者（金黄的样子）",
-    "缺少详情：暮风隐者（枯叶的样子）",
-    "缺少详情：小黑猫",
-    "缺少详情：黑猫巫师",
-    "缺少详情：黑猫密探",
-    "缺少详情：忽幽狸",
-    "缺少详情：影狸",
-    "缺少详情：多多",
-    "缺少详情：多啦多",
-    "缺少详情：古啦多",
-    "缺少详情：哭哭菇",
-    "缺少详情：怖须菇",
-    "缺少详情：怖哭菇",
-    "缺少详情：恶魔狼",
-    "缺少详情：恶魔狼王",
-    "缺少详情：小电企鹅",
-    "缺少详情：电企鹅",
-    "缺少详情：雪豆丁",
-    "缺少详情：雪蛮人",
-    "缺少详情：雪巨人",
-    "缺少详情：呼呼猪",
-    "缺少详情：獠牙猪",
-    "缺少详情：雪娃娃",
-    "缺少详情：冰封怨灵",
-    "缺少详情：雪灵",
-    "缺少详情：大耳帽兜",
-    "缺少详情：帽兜娃娃",
-    "缺少详情：雪影娃娃",
-    "缺少详情：雪影冰灵",
-    "缺少详情：权杖-Ⅱ",
-    "缺少详情：权杖-V",
-    "缺少详情：灵狐",
-    "缺少详情：九尾狐",
-    "缺少详情：尖嘴狐仙",
-    "缺少详情：里奥",
     "缺少详情：灵羽勇士",
     "缺少详情：圣羽翼王",
     "缺少详情：松仔",
@@ -12790,7 +13315,7 @@
     "缺少详情：布灵",
     "缺少详情：布灵布灵",
     "缺少详情：果实立方人",
-    "技能来源 level / machine / blood 与正式引用口径待审阅",
+    "技能来源 level / machine / blood / legendary 与正式引用口径待审阅",
     "改名、编号及异色撤销冲突待审阅；未确认前禁止发布"
   ]
 }

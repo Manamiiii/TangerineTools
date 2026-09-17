@@ -1,6 +1,7 @@
 import { parse } from 'parse5'
 
 export const NRC_ROOT = 'https://wiki.biligame.com/nrc/'
+export const NRC_SKILL_SOURCES = Object.freeze(['level', 'machine', 'blood', 'legendary'])
 export const NRC_PAGES = Object.freeze({ creatures: `${NRC_ROOT}精灵图鉴`, skills: `${NRC_ROOT}技能列表`, breeding: `${NRC_ROOT}孵蛋组别查询` })
 const attr = (node, name) => node?.attrs?.find((a) => a.name === name)?.value ?? ''
 const hasClass = (node, name) => attr(node, 'class').split(/\s+/).includes(name)
@@ -104,7 +105,7 @@ export function parseNrcDetail(html, creature) {
     name: classText(node, 'roco-sk-name'), sourceType: attr(node, 'data-source'),
     category: attr(node, 'data-cat'), element: attr(node, 'data-type'), unlock: classText(node, 'roco-sk-lv'),
   }))
-  if (!skills.length || skills.some((row) => !row.name || !['level', 'machine', 'blood'].includes(row.sourceType))) throw new Error(`${creature.name}: incomplete/unknown skill sources`)
+  if (!skills.length || skills.some((row) => !row.name || !NRC_SKILL_SOURCES.includes(row.sourceType))) throw new Error(`${creature.name}: incomplete/unknown skill sources`)
   const trait = { name: classText(dex, 'roco-feature-name'), description: classText(dex, 'roco-feature-desc'), image: image(byClass(dex, 'roco-feature-icon')[0]) }
   if (!trait.name || !trait.description) throw new Error(`${creature.name}: missing trait`)
   const evolutionBranches = byClass(dex, 'roco-evo-timeline').map((branch) => byClass(branch, 'roco-evo-node').map((node) => {
