@@ -265,7 +265,11 @@ export async function collectBrowserDetails({ context, directory, version, limit
       const record = await captureSettledDetail(detail, { version, sourceId: creature.sourceId, sourceUrl: target }, {
         assertHealthy: () => { if (fault) throw fault }, log, pause,
       })
-      const parsed = parseNrcDetail(record.html, creature)
+      let parsed
+      try { parsed = parseNrcDetail(record.html, creature) } catch (error) {
+        await writeJsonAtomic(resolve(directory, 'browser-rejected-capture.json'), { ...record, error: error.message })
+        throw error
+      }
       const missingSkills = parsed.skills.filter(s => !names.has(s.name)).map(s => s.name)
       if (missingSkills.length) throw new Error(`Detail has skills absent from this batch: ${missingSkills.join(', ')}`)
       if (fault) throw fault

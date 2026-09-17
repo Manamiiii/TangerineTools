@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { getBwikiPaths, resolveRepoPath } from './lib/paths.mjs'
 import { sha256 } from './lib/snapshots.mjs'
 import { SOURCE_NOTICES } from './lib/source-manifest.mjs'
+import { NRC_SKILL_SOURCES } from './lib/nrc-parser.mjs'
 import { mapElements, mapSkillElement, mapSkillCategory, mapShiny, normalizeNumber } from './build-preview.mjs'
 
 const nameKey = (name) => String(name ?? '').replace(/\s+/g, '')
@@ -100,7 +101,7 @@ export function auditNrc({ staging, currentRows, currentSkills }) {
       if (!detail.skills?.length) report.detailIssues.push({ ...info, issue: '详情缺少技能' })
       if (!detail.evolution?.length || detail.evolutionReviewRequired) report.detailIssues.push({ ...info, issue: '进化分支缺少可靠匹配' })
       const sourceTypes = sorted((detail.skills ?? []).map((row) => row.sourceType))
-      if (sourceTypes.some((type) => !['level', 'machine', 'blood'].includes(type))) report.detailIssues.push({ ...info, issue: '未知技能来源', names: sourceTypes })
+      if (sourceTypes.some((type) => !NRC_SKILL_SOURCES.includes(type))) report.detailIssues.push({ ...info, issue: '未知技能来源', names: sourceTypes })
       if (old) {
         const oldIds = new Set(old.values.skillRefs || [])
         const previous = sorted(currentSkills.filter((row) => oldIds.has(row.id)).map((row) => nameKey(row.values.name)))

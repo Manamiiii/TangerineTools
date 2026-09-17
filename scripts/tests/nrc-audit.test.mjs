@@ -72,6 +72,10 @@ test('Only valid details supply stats and skill-pool changes; Markdown escapes s
   assert.ok(report.creatureChanges[0].changes.some((change) => change.field === 'hp' && change.after === 120))
   assert.ok(report.creatureChanges[0].changes.some((change) => change.field === 'skillNames'))
   assert.equal(report.detailIssues.length, 2)
+  input.staging.details.rows[0].skills[0].sourceType = 'legendary'
+  assert.equal(auditNrc(input).detailIssues.some(row => row.issue === '未知技能来源'), false)
+  input.staging.details.rows[0].skills[0].sourceType = 'unknown'
+  assert.equal(auditNrc(input).detailIssues.some(row => row.issue === '未知技能来源'), true)
   const markdown = renderNrcAudit(report)
   assert.match(markdown, /&#124; &lt;script&gt; \/ 下一行/)
   input.staging.details.rows[0].stats.hp = 0

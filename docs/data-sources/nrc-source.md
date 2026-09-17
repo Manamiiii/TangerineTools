@@ -21,7 +21,7 @@
 | [孵蛋组别查询](https://wiki.biligame.com/nrc/孵蛋组别查询) | 蛋组与仅雌性标记 | `nrc-egg-card`；候选中“未发现”映射为“无法孵蛋” |
 | 图鉴实际详情链接 | 六维、特性、技能来源与进化分支 | `data-pet-id` 必须匹配；六维读取 `data-val` 并检查总和 |
 
-静态详情的 0 可能只是动画占位。解析器读取页面实际属性，不运行页面脚本，不把缺失值猜成 0。技能 `level` / `machine` / `blood` 来源保留在详情 staging，正式引用口径需要审阅。进化节点的 `name` 优先取完整链接标题；无 href 的 `mw-selflink` 取当前已校验 sourceId 的图鉴名称，原展示文字保存在 `displayName`。不通过删除括号后缀猜测形态身份。进化分支保存在 `evolutionBranches`，preview 使用包含当前完整名称的首条分支；缺少可靠分支时保留 `evolutionReviewRequired`，分支解析成功不代表繁育谱系已完成审阅。仅雌性标记是审计信息，尚未接入孵蛋规则。
+静态详情的 0 可能只是动画占位。解析器读取页面实际属性，不运行页面脚本，不把缺失值猜成 0。技能 `level` / `machine` / `blood` / `legendary`（传说） 来源保留在详情 staging，正式引用口径需要审阅。进化节点的 `name` 优先取完整链接标题；无 href 的 `mw-selflink` 取当前已校验 sourceId 的图鉴名称，原展示文字保存在 `displayName`。不通过删除括号后缀猜测形态身份。进化分支保存在 `evolutionBranches`，preview 使用包含当前完整名称的首条分支；缺少可靠分支时保留 `evolutionReviewRequired`，分支解析成功不代表繁育谱系已完成审阅。仅雌性标记是审计信息，尚未接入孵蛋规则。
 
 ## 命令与缓存
 
@@ -78,7 +78,7 @@ npm run collect:bwiki:browser -- --version=S4-2026-09-11-browser-full --limit=al
 
 命令使用开发依赖 `playwright-core` 和本机 Chrome，打开独立可见窗口，不复用日常浏览器的用户目录、登录状态或扩展。图鉴和技能缓存必须预先存在；启动时读取当前图鉴并与同批次缓存逐项核对，变化时停止。它在同一标签中点击实际图鉴卡片链接进入详情，等待正文 DOM 与初始动画，再进行身份校验、双遍分段读取和离线解析。每页校验成功后保存至同版快照目录，返回图鉴后继续下一页；点击详情和返回图鉴前分别等待，默认各 60 秒，允许 30–3600 秒，默认每批 24 页。浏览器及本地解析不调用模型 API，不通过 Node fetch 采集详情。
 
-命令只写 Git 忽略的快照和 `browser-captures/` 原始采集记录，不改 staging、preview 或正式数据。`browser-status.json` 记录进度及等待、读取阶段，`browser-last-failure.json` 记录失败。HTTP 错误、访问验证、请求失败及最终校验失败使批次停止；不自动重新导航、切换代理或模拟安全参数。页面自身导航或正文变化只允许有界地重新读取当前页面，规则见下文。退出时关闭专用窗口。不要与 HTTP 采集器同时写同一批次；`browser-collector.lock` 防止重复启动浏览器采集器。若进程被强制结束而遗留锁，先确认锁内 PID 已结束，再移除该锁后续跑，保留成功缓存。
+命令只写 Git 忽略的快照和 `browser-captures/` 原始采集记录，不改 staging、preview 或正式数据。`browser-status.json` 记录进度及等待、读取阶段，`browser-last-failure.json` 记录失败。详情解析拒绝时，`browser-rejected-capture.json` 保存双遍校验后的原始记录和错误，仅作诊断，不计入成功快照。HTTP 错误、访问验证、请求失败及最终校验失败使批次停止；不自动重新导航、切换代理或模拟安全参数。页面自身导航或正文变化只允许有界地重新读取当前页面，规则见下文。退出时关闭专用窗口。不要与 HTTP 采集器同时写同一批次；`browser-collector.lock` 防止重复启动浏览器采集器。若进程被强制结束而遗留锁，先确认锁内 PID 已结束，再移除该锁后续跑，保留成功缓存。
 
 点击卡片前若出现站点版权欢迎弹层，命令通过其中的“我知道了”按钮确认，并等待弹层关闭。只处理 `.nrc-site-welcome` 内的已知按钮；其他遮挡或访问验证仍使批次停止。
 
@@ -113,4 +113,4 @@ npm run collect:bwiki:browser -- --version=S4-2026-09-11-browser-full --limit=al
 
 ## 回归
 
-`scripts/tests/fixtures/nrc/*.html` 是 2026-09-10 与 2026-09-11 上述来源页面的精简片段，删除样式、导航及不相关记录，验证真实嵌套、动画属性、身份校验和特殊形态自链接。适用署名许可按本文保留。运行 `node --test scripts/tests/nrc-pipeline.test.mjs scripts/tests/nrc-browser-capture.test.mjs` 或 `npm test`，覆盖分段截断、同长度内容变化、跨版本拒绝、断点复用和已有快照保护。parse5 仅用于开发期解析，不增加应用后端。
+`scripts/tests/fixtures/nrc/*.html` 是 2026-09-10 与 2026-09-11 上述来源页面的精简片段，删除样式、导航及不相关记录，验证真实嵌套、动画属性、身份校验和特殊形态自链接。`skill-legendary.html` 来自 2026-09-17 的 NRC [里奥](https://wiki.biligame.com/nrc/里奥) 页面，保留疾风连袭的 `legendary` 来源与“传说”标签，用于来源解析回归。适用署名许可按本文保留。运行 `node --test scripts/tests/nrc-pipeline.test.mjs scripts/tests/nrc-browser-capture.test.mjs` 或 `npm test`，覆盖分段截断、同长度内容变化、跨版本拒绝、断点复用和已有快照保护。parse5 仅用于开发期解析，不增加应用后端。

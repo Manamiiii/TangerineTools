@@ -53,6 +53,14 @@ test('NRC detail reads data-val, checks six-stat sum and validates page identity
   assert.throws(() => parseNrcDetail(html.replaceAll('data-source="level"', 'data-source="unknown"'), creature), /unknown skill sources/)
 })
 
+test('NRC preserves the observed legendary skill source without accepting arbitrary sources', async () => {
+  const creature = parseNrcCreatures(await fixture('creatures'))[0]
+  const html = (await fixture('detail')).replace(/<\/div>\s*$/, `${await fixture('skill-legendary')}</div>`)
+  const skill = parseNrcDetail(html, creature).skills.find(row => row.sourceType === 'legendary')
+  assert.deepEqual(skill, { name: '疾风连袭', sourceType: 'legendary', category: '状态', element: '翼', unlock: '传说' })
+  assert.throws(() => parseNrcDetail(html.replace('data-source="legendary"', 'data-source="unknown"'), creature), /unknown skill sources/)
+})
+
 test('Empty, blocked and duplicate aggregate pages fail closed', async () => {
   assert.throws(() => parseNrcCreatures('<html>Access denied</html>'), /no rows/)
   const html = await fixture('creatures')

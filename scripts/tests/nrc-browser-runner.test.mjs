@@ -126,6 +126,7 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
     await saveSnapshot(directory, 'skills', { version, sourceUrl: NRC_PAGES.skills, html: (await fixture('skills')).replaceAll('抓挠', '折射').replaceAll('猛烈撞击', '闪光') })
     const visited = []
     let blocked = true
+    let invalidSource = false
     let returnTimeouts = 0
     let delayedScripts = 0
     const newContext = async () => {
@@ -154,7 +155,8 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
           visited.push(index)
           if (index === 1 && blocked) return route.fulfill({ status: 567, contentType: 'text/html; charset=utf-8', body: 'Access Denied' })
           const loadingScript = index === 0 ? '<script src="/nrc/delayed.js"></script>' : ''
-          return route.fulfill({ contentType: 'text/html; charset=utf-8', body: detailHtml.replaceAll(creatures[0].sourceId, creatures[index].sourceId) + loadingScript })
+          const body = detailHtml.replaceAll(creatures[0].sourceId, creatures[index].sourceId)
+          return route.fulfill({ contentType: 'text/html; charset=utf-8', body: (invalidSource ? body.replaceAll('data-source="level"', 'data-source="unknown"') : body) + loadingScript })
         }
         return route.fulfill({ status: 200, body: '' })
       })
@@ -171,9 +173,19 @@ test('Real browser clicks links, stops on 567 and resumes without revisiting cac
     assert.equal(JSON.parse(await readFile(join(directory, 'browser-status.json'))).state, 'stopped')
     await context.close()
     blocked = false
+    invalidSource = true
+    context = await newContext()
+    await assert.rejects(run(), /unknown skill sources/)
+    const rejected = JSON.parse(await readFile(join(directory, 'browser-rejected-capture.json')))
+    assert.equal(rejected.sourceId, creatures[1].sourceId)
+    assert.equal(rejected.verifiedPasses, 2)
+    assert.match(rejected.html, /data-source="unknown"/)
+    await assert.rejects(readSnapshot(directory, creatures[1].sourceId, creatures[1].detailUrl, version), { code: 'ENOENT' })
+    await context.close()
+    invalidSource = false
     context = await newContext()
     assert.deepEqual(await run(), { saved: 1, remaining: 0 })
-    assert.deepEqual(visited, [0, 1, 1])
+    assert.deepEqual(visited, [0, 1, 1, 1])
     assert.equal((await readSnapshot(directory, creatures[0].sourceId, creatures[0].detailUrl, version)).sha256, cached.sha256)
     await context.close()
   } finally { await browser.close(); await rm(directory, { recursive: true, force: true }) }

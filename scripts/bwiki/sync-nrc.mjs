@@ -85,7 +85,7 @@ async function main() {
   const syncedAt = new Date().toISOString()
   const unresolved = [
     ...missing.map((row) => `缺少详情：${row.name}`), ...failures.map((row) => `${row.name}：${row.reason}`),
-    '技能来源 level / machine / blood 与正式引用口径待审阅',
+    '技能来源 level / machine / blood / legendary 与正式引用口径待审阅',
     '改名、编号及异色撤销冲突待审阅；未确认前禁止发布',
   ]
   const wrapper = (rows, extra = {}) => ({ source: 'bwiki-nrc', version, syncedAt, attribution: SOURCE_NOTICES.nrc, modifications: '解析为结构化记录；名称与数值保留源页面内容；未发现蛋组映射为无法孵蛋。', provenance, rowCount: rows.length, rows, ...extra })
