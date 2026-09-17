@@ -3,14 +3,12 @@
   "sourceProfile": "nrc",
   "sourceVersion": "S4-2026-09-11-browser-full",
   "stagingHashes": {
-    "creatures": "bb93bb07ba8fa420a262d86c8185048e122496df6b82a217f53cc629549ca23d",
-    "skills": "db173ee225776cba11b2852ba35fb36ee6853d2f4cd64f243a5172b998d4b055",
-    "details": "41799330459855142722e8368eed05b708bf4b86254d10c5ab3fa6447e63287a",
-    "breeding": "b2a992fc17b89fe68973d6de96ef7c39eaa782ab982023de2597f22d863ecc96"
+    "creatures": "6839972ad8e7174a6f16d34319f31f98ac961070c2316a7c8dbeda2bc3e2df07",
+    "skills": "094047ff15302c354ae2c8af717eb7afa0e7c65eeee6a56f07e3b703f1d62cab",
+    "details": "bf976a050284ee93234e5bbf1db9b4f15fcaf981adab02d54418eb13822dbed8",
+    "breeding": "d8f4b1bfd3f11aa107c6e2ffb3588d0bcf7637a2a0d6876a505c58c12a3b4a08"
   },
   "releaseBlockers": [
-    "缺少详情：灵羽勇士",
-    "缺少详情：圣羽翼王",
     "缺少详情：松仔",
     "缺少详情：松叶羊",
     "缺少详情：针叶巡林",
@@ -400,7 +398,7 @@
     }
   },
   "sourceNotes": "未完成候选含当前 rocom 正式字段回填；不声明为全部来自 NRC 的完整新版数据。",
-  "generatedAt": "2026-09-17T10:29:32.465Z",
+  "generatedAt": "2026-09-17T11:25:22.269Z",
   "inputs": {
     "creatures": "scripts/bwiki/data/nrc/staging/creatures.json",
     "skills": "scripts/bwiki/data/nrc/staging/skills.json",
@@ -35241,6 +35239,8 @@
           "rock-creature-src-095",
           "rock-creature-src-096",
           "rock-creature-src-155",
+          "rock-creature-src-156",
+          "rock-creature-src-157",
           "rock-creature-src-182",
           "rock-creature-src-183",
           "rock-creature-src-229",

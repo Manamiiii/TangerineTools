@@ -1,7 +1,7 @@
 {
   "source": "bwiki-nrc",
   "version": "S4-2026-09-11-browser-full",
-  "syncedAt": "2026-09-17T10:29:31.764Z",
+  "syncedAt": "2026-09-17T11:25:21.570Z",
   "attribution": {
     "name": "洛克王国：世界 Wiki（NRC BWIKI）",
     "url": "https://wiki.biligame.com/nrc/首页",
@@ -6507,7 +6507,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/7/7c/9q657kdgpnxe2wz5lgx1huipkahoyp1.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 105,
+      "patk": 87,
+      "matk": 87,
+      "pdef": 102,
+      "mdef": 66,
+      "spd": 100,
+      "bst": 547,
+      "traitName": "飓风"
     },
     {
       "source": "bwiki-nrc",
@@ -6524,7 +6532,15 @@
       "seasonLabel": "none",
       "shinyLabel": "否",
       "image": "https://patchwiki.biligame.com/images/nrc/c/ce/rijvhuhe3mdl5uwyup8rv4u4y58813j.png",
-      "shinyImage": ""
+      "shinyImage": "",
+      "hp": 132,
+      "patk": 109,
+      "matk": 109,
+      "pdef": 128,
+      "mdef": 83,
+      "spd": 125,
+      "bst": 686,
+      "traitName": "飓风"
     },
     {
       "source": "bwiki-nrc",
@@ -12947,8 +12963,6 @@
     }
   ],
   "releaseBlockers": [
-    "缺少详情：灵羽勇士",
-    "缺少详情：圣羽翼王",
     "缺少详情：松仔",
     "缺少详情：松叶羊",
     "缺少详情：针叶巡林",

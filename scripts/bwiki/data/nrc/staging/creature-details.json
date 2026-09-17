@@ -1,7 +1,7 @@
 {
   "source": "bwiki-nrc",
   "version": "S4-2026-09-11-browser-full",
-  "syncedAt": "2026-09-17T10:29:31.764Z",
+  "syncedAt": "2026-09-17T11:25:21.570Z",
   "attribution": {
     "name": "洛克王国：世界 Wiki（NRC BWIKI）",
     "url": "https://wiki.biligame.com/nrc/首页",
@@ -35,7 +35,7 @@
       "sha256": "5356cb67ff90be08967c665b956c437385bac4597e7f75a19a7d32658bc49389"
     }
   ],
-  "rowCount": 253,
+  "rowCount": 255,
   "rows": [
     {
       "source": "bwiki-nrc-detail",
@@ -108389,20 +108389,910 @@
         "method": "browser-dom-verified",
         "sha256": "5ae9cbce2b9cf8065ac6b00c908a046529a36a88933d62a6b557e8ce95907fdd"
       }
+    },
+    {
+      "source": "bwiki-nrc-detail",
+      "sourceUrl": "https://wiki.biligame.com/nrc/%E7%81%B5%E7%BE%BD%E5%8B%87%E5%A3%AB",
+      "sourceId": "pet_000318",
+      "name": "灵羽勇士",
+      "no": "NO.151",
+      "stats": {
+        "hp": 105,
+        "patk": 87,
+        "matk": 87,
+        "pdef": 102,
+        "mdef": 66,
+        "spd": 100,
+        "bst": 547
+      },
+      "trait": {
+        "name": "飓风",
+        "description": "对本精灵的技能，若其他翼系精灵携带相同技能，则获得迅捷。被敌方精灵击败时，自己额外损失1点魔力。",
+        "image": "https://patchwiki.biligame.com/images/nrc/9/9b/mcuwyi1qxy7d7tex1fkj7to7a6qq0wm.png"
+      },
+      "skills": [
+        {
+          "name": "翼击",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "翼",
+          "unlock": "LV34"
+        },
+        {
+          "name": "回旋风暴",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "翼",
+          "unlock": "LV23"
+        },
+        {
+          "name": "啄击",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "LV1"
+        },
+        {
+          "name": "疾风刺",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "LV3"
+        },
+        {
+          "name": "闪击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "龙卷风",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "LV50"
+        },
+        {
+          "name": "扇风",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "LV11"
+        },
+        {
+          "name": "羽刃",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "LV39"
+        },
+        {
+          "name": "俯冲猛击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "暴风眼",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "LV25"
+        },
+        {
+          "name": "羽化加速",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "LV31"
+        },
+        {
+          "name": "风起",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "LV36"
+        },
+        {
+          "name": "疾风连袭",
+          "sourceType": "legendary",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "传说"
+        },
+        {
+          "name": "阻断",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "连续爪击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "乘胜追击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "后发制人",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV26"
+        },
+        {
+          "name": "防御",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "有效预防",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "魔法增效",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "伺机而动",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV10"
+        },
+        {
+          "name": "力量增效",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV16"
+        },
+        {
+          "name": "借用",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "三连破",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "热身运动",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "快速移动",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "水花四溅",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "水",
+          "unlock": "技能石"
+        },
+        {
+          "name": "水炮",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "水",
+          "unlock": "技能石"
+        },
+        {
+          "name": "水幕冲击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "水",
+          "unlock": "技能石"
+        },
+        {
+          "name": "水刃",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "水",
+          "unlock": "技能石"
+        },
+        {
+          "name": "蓄水",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "水",
+          "unlock": "技能石"
+        },
+        {
+          "name": "天光",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "光",
+          "unlock": "技能石"
+        },
+        {
+          "name": "光之矛",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "光",
+          "unlock": "技能石"
+        },
+        {
+          "name": "龙吼",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "龙",
+          "unlock": "技能石"
+        },
+        {
+          "name": "龙炮",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "龙",
+          "unlock": "技能石"
+        },
+        {
+          "name": "花香",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "血脉·草"
+        },
+        {
+          "name": "冷风",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "冰",
+          "unlock": "血脉·冰"
+        },
+        {
+          "name": "魅惑",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "萌",
+          "unlock": "血脉·萌"
+        },
+        {
+          "name": "拍击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "血脉·普通"
+        },
+        {
+          "name": "离子震荡",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "机械",
+          "unlock": "血脉·机械"
+        },
+        {
+          "name": "升龙咆哮",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "龙",
+          "unlock": "血脉·龙"
+        },
+        {
+          "name": "缠丝劲",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "武",
+          "unlock": "血脉·武"
+        },
+        {
+          "name": "火焰冲锋",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "火",
+          "unlock": "血脉·火"
+        },
+        {
+          "name": "泡沫",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "水",
+          "unlock": "血脉·水"
+        },
+        {
+          "name": "扬沙",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "地",
+          "unlock": "血脉·地"
+        },
+        {
+          "name": "球状闪电",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "电",
+          "unlock": "血脉·电"
+        },
+        {
+          "name": "溃烂触碰",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "毒",
+          "unlock": "血脉·毒"
+        },
+        {
+          "name": "噬心",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "虫",
+          "unlock": "血脉·虫"
+        },
+        {
+          "name": "幻象",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "幽",
+          "unlock": "血脉·幽"
+        },
+        {
+          "name": "恶能量",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "恶",
+          "unlock": "血脉·恶"
+        },
+        {
+          "name": "折线冲击",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "光",
+          "unlock": "血脉·光"
+        },
+        {
+          "name": "风矢",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "血脉·翼"
+        },
+        {
+          "name": "念力膨胀",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "幻",
+          "unlock": "血脉·幻"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "里奥",
+          "displayName": "里奥",
+          "linkName": "里奥",
+          "image": "https://patchwiki.biligame.com/images/nrc/5/59/600au4ln1zz40cm3b3fascx1jpaf3yj.png",
+          "isBoss": false
+        },
+        {
+          "name": "灵羽勇士",
+          "displayName": "灵羽勇士",
+          "linkName": "灵羽勇士",
+          "image": "https://patchwiki.biligame.com/images/nrc/4/4c/thgvw5un2vihz4299687g38k1qa4oqs.png",
+          "isBoss": false
+        },
+        {
+          "name": "圣羽翼王",
+          "displayName": "圣羽翼王",
+          "linkName": "圣羽翼王",
+          "image": "https://patchwiki.biligame.com/images/nrc/e/e8/amsvyxkj8x34wefldtpjs9szd4ukvna.png",
+          "isBoss": false
+        }
+      ],
+      "evolutionBranches": [
+        [
+          {
+            "name": "里奥",
+            "displayName": "里奥",
+            "linkName": "里奥",
+            "image": "https://patchwiki.biligame.com/images/nrc/5/59/600au4ln1zz40cm3b3fascx1jpaf3yj.png",
+            "isBoss": false
+          },
+          {
+            "name": "灵羽勇士",
+            "displayName": "灵羽勇士",
+            "linkName": "灵羽勇士",
+            "image": "https://patchwiki.biligame.com/images/nrc/4/4c/thgvw5un2vihz4299687g38k1qa4oqs.png",
+            "isBoss": false
+          },
+          {
+            "name": "圣羽翼王",
+            "displayName": "圣羽翼王",
+            "linkName": "圣羽翼王",
+            "image": "https://patchwiki.biligame.com/images/nrc/e/e8/amsvyxkj8x34wefldtpjs9szd4ukvna.png",
+            "isBoss": false
+          }
+        ]
+      ],
+      "evolutionReviewRequired": false,
+      "provenance": {
+        "sourceUrl": "https://wiki.biligame.com/nrc/%E7%81%B5%E7%BE%BD%E5%8B%87%E5%A3%AB",
+        "version": "S4-2026-09-11-browser-full",
+        "capturedAt": "2026-09-17T10:30:39.875Z",
+        "method": "browser-dom-verified",
+        "sha256": "8dbdb96283e37fd27aad8caad6e8be9430626358209129698e30a2c95c3a80a6"
+      }
+    },
+    {
+      "source": "bwiki-nrc-detail",
+      "sourceUrl": "https://wiki.biligame.com/nrc/%E5%9C%A3%E7%BE%BD%E7%BF%BC%E7%8E%8B",
+      "sourceId": "pet_000319",
+      "name": "圣羽翼王",
+      "no": "NO.152",
+      "stats": {
+        "hp": 132,
+        "patk": 109,
+        "matk": 109,
+        "pdef": 128,
+        "mdef": 83,
+        "spd": 125,
+        "bst": 686
+      },
+      "trait": {
+        "name": "飓风",
+        "description": "对本精灵的技能，若其他翼系精灵携带相同技能，则获得迅捷。被敌方精灵击败时，自己额外损失1点魔力。",
+        "image": "https://patchwiki.biligame.com/images/nrc/9/9b/mcuwyi1qxy7d7tex1fkj7to7a6qq0wm.png"
+      },
+      "skills": [
+        {
+          "name": "翼击",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "翼",
+          "unlock": "LV34"
+        },
+        {
+          "name": "回旋风暴",
+          "sourceType": "level",
+          "category": "魔攻",
+          "element": "翼",
+          "unlock": "LV23"
+        },
+        {
+          "name": "啄击",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "LV1"
+        },
+        {
+          "name": "疾风刺",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "LV3"
+        },
+        {
+          "name": "闪击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "龙卷风",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "LV50"
+        },
+        {
+          "name": "扇风",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "LV11"
+        },
+        {
+          "name": "羽刃",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "LV39"
+        },
+        {
+          "name": "俯冲猛击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "技能石"
+        },
+        {
+          "name": "暴风眼",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "LV25"
+        },
+        {
+          "name": "羽化加速",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "LV31"
+        },
+        {
+          "name": "风起",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "LV36"
+        },
+        {
+          "name": "疾风连袭",
+          "sourceType": "legendary",
+          "category": "状态",
+          "element": "翼",
+          "unlock": "传说"
+        },
+        {
+          "name": "阻断",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "连续爪击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "乘胜追击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "后发制人",
+          "sourceType": "level",
+          "category": "物攻",
+          "element": "普通",
+          "unlock": "LV26"
+        },
+        {
+          "name": "防御",
+          "sourceType": "level",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "有效预防",
+          "sourceType": "machine",
+          "category": "防御",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "魔法增效",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV1"
+        },
+        {
+          "name": "伺机而动",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV10"
+        },
+        {
+          "name": "力量增效",
+          "sourceType": "level",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "LV16"
+        },
+        {
+          "name": "借用",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "三连破",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "热身运动",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "快速移动",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "普通",
+          "unlock": "技能石"
+        },
+        {
+          "name": "水花四溅",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "水",
+          "unlock": "技能石"
+        },
+        {
+          "name": "水炮",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "水",
+          "unlock": "技能石"
+        },
+        {
+          "name": "水幕冲击",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "水",
+          "unlock": "技能石"
+        },
+        {
+          "name": "水刃",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "水",
+          "unlock": "技能石"
+        },
+        {
+          "name": "蓄水",
+          "sourceType": "machine",
+          "category": "状态",
+          "element": "水",
+          "unlock": "技能石"
+        },
+        {
+          "name": "天光",
+          "sourceType": "machine",
+          "category": "魔攻",
+          "element": "光",
+          "unlock": "技能石"
+        },
+        {
+          "name": "光之矛",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "光",
+          "unlock": "技能石"
+        },
+        {
+          "name": "龙吼",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "龙",
+          "unlock": "技能石"
+        },
+        {
+          "name": "龙炮",
+          "sourceType": "machine",
+          "category": "物攻",
+          "element": "龙",
+          "unlock": "技能石"
+        },
+        {
+          "name": "花香",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "草",
+          "unlock": "血脉·草"
+        },
+        {
+          "name": "冷风",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "冰",
+          "unlock": "血脉·冰"
+        },
+        {
+          "name": "魅惑",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "萌",
+          "unlock": "血脉·萌"
+        },
+        {
+          "name": "拍击",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "普通",
+          "unlock": "血脉·普通"
+        },
+        {
+          "name": "离子震荡",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "机械",
+          "unlock": "血脉·机械"
+        },
+        {
+          "name": "升龙咆哮",
+          "sourceType": "blood",
+          "category": "魔攻",
+          "element": "龙",
+          "unlock": "血脉·龙"
+        },
+        {
+          "name": "缠丝劲",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "武",
+          "unlock": "血脉·武"
+        },
+        {
+          "name": "火焰冲锋",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "火",
+          "unlock": "血脉·火"
+        },
+        {
+          "name": "泡沫",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "水",
+          "unlock": "血脉·水"
+        },
+        {
+          "name": "扬沙",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "地",
+          "unlock": "血脉·地"
+        },
+        {
+          "name": "球状闪电",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "电",
+          "unlock": "血脉·电"
+        },
+        {
+          "name": "溃烂触碰",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "毒",
+          "unlock": "血脉·毒"
+        },
+        {
+          "name": "噬心",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "虫",
+          "unlock": "血脉·虫"
+        },
+        {
+          "name": "幻象",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "幽",
+          "unlock": "血脉·幽"
+        },
+        {
+          "name": "恶能量",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "恶",
+          "unlock": "血脉·恶"
+        },
+        {
+          "name": "折线冲击",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "光",
+          "unlock": "血脉·光"
+        },
+        {
+          "name": "风矢",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "翼",
+          "unlock": "血脉·翼"
+        },
+        {
+          "name": "念力膨胀",
+          "sourceType": "blood",
+          "category": "物攻",
+          "element": "幻",
+          "unlock": "血脉·幻"
+        }
+      ],
+      "evolution": [
+        {
+          "name": "里奥",
+          "displayName": "里奥",
+          "linkName": "里奥",
+          "image": "https://patchwiki.biligame.com/images/nrc/5/59/600au4ln1zz40cm3b3fascx1jpaf3yj.png",
+          "isBoss": false
+        },
+        {
+          "name": "灵羽勇士",
+          "displayName": "灵羽勇士",
+          "linkName": "灵羽勇士",
+          "image": "https://patchwiki.biligame.com/images/nrc/4/4c/thgvw5un2vihz4299687g38k1qa4oqs.png",
+          "isBoss": false
+        },
+        {
+          "name": "圣羽翼王",
+          "displayName": "圣羽翼王",
+          "linkName": "圣羽翼王",
+          "image": "https://patchwiki.biligame.com/images/nrc/e/e8/amsvyxkj8x34wefldtpjs9szd4ukvna.png",
+          "isBoss": false
+        }
+      ],
+      "evolutionBranches": [
+        [
+          {
+            "name": "里奥",
+            "displayName": "里奥",
+            "linkName": "里奥",
+            "image": "https://patchwiki.biligame.com/images/nrc/5/59/600au4ln1zz40cm3b3fascx1jpaf3yj.png",
+            "isBoss": false
+          },
+          {
+            "name": "灵羽勇士",
+            "displayName": "灵羽勇士",
+            "linkName": "灵羽勇士",
+            "image": "https://patchwiki.biligame.com/images/nrc/4/4c/thgvw5un2vihz4299687g38k1qa4oqs.png",
+            "isBoss": false
+          },
+          {
+            "name": "圣羽翼王",
+            "displayName": "圣羽翼王",
+            "linkName": "圣羽翼王",
+            "image": "https://patchwiki.biligame.com/images/nrc/e/e8/amsvyxkj8x34wefldtpjs9szd4ukvna.png",
+            "isBoss": false
+          }
+        ]
+      ],
+      "evolutionReviewRequired": false,
+      "provenance": {
+        "sourceUrl": "https://wiki.biligame.com/nrc/%E5%9C%A3%E7%BE%BD%E7%BF%BC%E7%8E%8B",
+        "version": "S4-2026-09-11-browser-full",
+        "capturedAt": "2026-09-17T10:33:00.698Z",
+        "method": "browser-dom-verified",
+        "sha256": "3d0cf19b120d3c04d31d5328d99ad4f60129fcd0a242adf1365603e2ad23ccc8"
+      }
     }
   ],
-  "errorCount": 368,
+  "errorCount": 366,
   "missing": [
-    {
-      "name": "灵羽勇士",
-      "url": "https://wiki.biligame.com/nrc/%E7%81%B5%E7%BE%BD%E5%8B%87%E5%A3%AB",
-      "sourceId": "pet_000318"
-    },
-    {
-      "name": "圣羽翼王",
-      "url": "https://wiki.biligame.com/nrc/%E5%9C%A3%E7%BE%BD%E7%BF%BC%E7%8E%8B",
-      "sourceId": "pet_000319"
-    },
     {
       "name": "松仔",
       "url": "https://wiki.biligame.com/nrc/%E6%9D%BE%E4%BB%94",
