@@ -204,11 +204,26 @@ function findDuplicateIds(rows) {
     .map(([id, count]) => `${id}（${count} 行）`)
 }
 
-function findCreatureMatch(row, indexes) {
+export function confirmedNrcPreviousName(row, sourceVersion) {
+  if (row.source !== 'bwiki-nrc' || sourceVersion !== 'S4-2026-09-11-browser-full') return null
+  return [
+    { sourceId: 'pet_000114', name: '香草甜甜（樱桃饰品）', no: 'NO.235', previousName: '香草甜甜', previousId: 'rock-creature-src-240' },
+    { sourceId: 'pet_000115', name: '圣代甜甜（樱桃巧克力口味）', no: 'NO.236', previousName: '圣代甜甜', previousId: 'rock-creature-src-241' },
+    { sourceId: 'pet_000487', name: '加油蟹（两只海葵的样子）', no: 'NO.361', previousName: '加油蟹', previousId: 'rock-creature-src-482' },
+  ].find(item => item.sourceId === row.sourceId && item.name === row.name && item.no === row.no) ?? null
+}
+
+function findCreatureMatch(row, indexes, sourceVersion) {
   const exact = firstUnique(indexes.creatureByExact, stagedCreatureKey(row))
   if (exact) return { row: exact, strategy: 'no+name' }
   const byName = firstUnique(indexes.creatureByName, normalizeName(row.name))
   if (byName) return { row: byName, strategy: 'name' }
+  const confirmed = confirmedNrcPreviousName(row, sourceVersion)
+  if (confirmed) {
+    const previous = firstUnique(indexes.creatureByExact, `${confirmed.no}|${normalizeName(confirmed.previousName)}`)
+    if (previous?.id !== confirmed.previousId) throw new Error(`${row.name}：已确认旧名称的正式 ID 不匹配，需重新审阅`)
+    return { row: previous, strategy: 'user-confirmed-name', decision: `用户确认默认形态补全名称：${confirmed.previousName} → ${row.name}` }
+  }
   return { row: null, strategy: 'new' }
 }
 
@@ -360,7 +375,7 @@ export function buildPreview({ creatures, skills, details, currentRows, currentS
   }
 
   const creaturePreviewRows = creatures.map((creature) => {
-    const match = findCreatureMatch(creature, creatureIndexes)
+    const match = findCreatureMatch(creature, creatureIndexes, sourceVersion)
     const existingValues = match.row?.values ?? {}
     const id = match.row?.id ?? hashId('rock-creature-bwiki', `${creature.no}|${creature.name}`)
     const detail = detailByCreature.get(stagedCreatureKey(creature))
@@ -455,6 +470,7 @@ export function buildPreview({ creatures, skills, details, currentRows, currentS
         idStrategy: match.strategy,
         previousId: match.row?.id || '',
         detailStaging: Boolean(detail),
+        ...(match.decision ? { identityDecision: match.decision } : {}),
         formStrategy: form.strategy,
         formCategoryLabel: creature.formCategoryLabel || '',
         isMainForm: Boolean(creature.isMainForm),

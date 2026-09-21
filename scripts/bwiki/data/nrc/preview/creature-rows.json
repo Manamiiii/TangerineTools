@@ -32,7 +32,7 @@
     }
   },
   "sourceNotes": "未完成候选含当前 rocom 正式字段回填；不声明为全部来自 NRC 的完整新版数据。",
-  "generatedAt": "2026-09-21T08:12:40.558Z",
+  "generatedAt": "2026-09-21T08:15:49.486Z",
   "inputs": {
     "creatures": "scripts/bwiki/data/nrc/staging/creatures.json",
     "skills": "scripts/bwiki/data/nrc/staging/skills.json",
@@ -42624,10 +42624,9 @@
       }
     },
     {
-      "id": "rock-creature-bwiki-f947be285443",
+      "id": "rock-creature-src-240",
       "values": {
         "image": "https://patchwiki.biligame.com/images/nrc/0/01/ix3idupb3r158o1qpgmga5nikisw404.png",
-        "shinyImage": "",
         "name": "香草甜甜（樱桃饰品）",
         "no": "NO.235",
         "element": [
@@ -42635,12 +42634,6 @@
         ],
         "form": "Ⅱ阶",
         "bst": 491,
-        "hp": 96,
-        "patk": 90,
-        "matk": 95,
-        "pdef": 56,
-        "mdef": 74,
-        "spd": 80,
         "shiny": "no",
         "traitName": "加个雪球",
         "traitTags": [
@@ -42714,31 +42707,38 @@
           "rock-skill-7cfa70f36494",
           "rock-skill-5652797a19fd"
         ],
+        "evolutionLine": "脆筒甜甜 → 香草甜甜（樱桃饰品） → 圣代甜甜（樱桃巧克力口味）",
+        "breedingLine": "脆筒甜甜",
+        "speciesGroup": "脆筒甜甜",
         "eggGroups": [
           "软体组",
           "魔力组"
         ],
-        "speciesGroup": "脆筒甜甜",
-        "evolutionLine": "脆筒甜甜 → 香草甜甜（樱桃饰品） → 圣代甜甜（樱桃巧克力口味）",
+        "hp": 96,
+        "patk": 90,
+        "matk": 95,
+        "pdef": 56,
+        "mdef": 74,
+        "spd": 80,
         "eggImage": "",
-        "fruitImage": ""
+        "fruitImage": "",
+        "shinyImage": ""
       },
       "previewMeta": {
         "source": "bwiki-nrc",
         "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
         "detailUrl": "https://wiki.biligame.com/nrc/%E9%A6%99%E8%8D%89%E7%94%9C%E7%94%9C%EF%BC%88%E6%A8%B1%E6%A1%83%E9%A5%B0%E5%93%81%EF%BC%89",
-        "idStrategy": "new",
-        "previousId": "",
+        "idStrategy": "user-confirmed-name",
+        "previousId": "rock-creature-src-240",
         "detailStaging": true,
+        "identityDecision": "用户确认默认形态补全名称：香草甜甜 → 香草甜甜（樱桃饰品）",
         "formStrategy": "stage",
         "formCategoryLabel": "",
         "isMainForm": false,
         "seasonLabel": "none",
         "breedingSource": "https://wiki.biligame.com/nrc/孵蛋组别查询",
-        "speciesGroupStrategy": "evolution-initial-form",
-        "speciesGroupRoots": [
-          "脆筒甜甜"
-        ],
+        "speciesGroupStrategy": "existing-public-preset",
+        "speciesGroupRoots": [],
         "imageSource": "patchwiki",
         "shinyImageSource": "empty"
       }
@@ -42982,10 +42982,9 @@
       }
     },
     {
-      "id": "rock-creature-bwiki-57b6de098c77",
+      "id": "rock-creature-src-241",
       "values": {
         "image": "https://patchwiki.biligame.com/images/nrc/f/fb/6avdpfot7q88tsex89cjow7xpmceemc.png",
-        "shinyImage": "",
         "name": "圣代甜甜（樱桃巧克力口味）",
         "no": "NO.236",
         "element": [
@@ -42993,12 +42992,6 @@
         ],
         "form": "最终形态",
         "bst": 612,
-        "hp": 119,
-        "patk": 112,
-        "matk": 119,
-        "pdef": 70,
-        "mdef": 92,
-        "spd": 100,
         "shiny": "no",
         "traitName": "加个雪球",
         "traitTags": [
@@ -43074,31 +43067,38 @@
           "rock-skill-7cfa70f36494",
           "rock-skill-5652797a19fd"
         ],
+        "evolutionLine": "脆筒甜甜 → 香草甜甜（樱桃饰品） → 圣代甜甜（樱桃巧克力口味）",
+        "breedingLine": "脆筒甜甜",
+        "speciesGroup": "脆筒甜甜",
         "eggGroups": [
           "软体组",
           "魔力组"
         ],
-        "speciesGroup": "脆筒甜甜",
-        "evolutionLine": "脆筒甜甜 → 香草甜甜（樱桃饰品） → 圣代甜甜（樱桃巧克力口味）",
+        "hp": 119,
+        "patk": 112,
+        "matk": 119,
+        "pdef": 70,
+        "mdef": 92,
+        "spd": 100,
         "eggImage": "",
-        "fruitImage": ""
+        "fruitImage": "",
+        "shinyImage": ""
       },
       "previewMeta": {
         "source": "bwiki-nrc",
         "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
         "detailUrl": "https://wiki.biligame.com/nrc/%E5%9C%A3%E4%BB%A3%E7%94%9C%E7%94%9C%EF%BC%88%E6%A8%B1%E6%A1%83%E5%B7%A7%E5%85%8B%E5%8A%9B%E5%8F%A3%E5%91%B3%EF%BC%89",
-        "idStrategy": "new",
-        "previousId": "",
+        "idStrategy": "user-confirmed-name",
+        "previousId": "rock-creature-src-241",
         "detailStaging": true,
+        "identityDecision": "用户确认默认形态补全名称：圣代甜甜 → 圣代甜甜（樱桃巧克力口味）",
         "formStrategy": "evolution-terminal",
         "formCategoryLabel": "",
         "isMainForm": false,
         "seasonLabel": "none",
         "breedingSource": "https://wiki.biligame.com/nrc/孵蛋组别查询",
-        "speciesGroupStrategy": "evolution-initial-form",
-        "speciesGroupRoots": [
-          "脆筒甜甜"
-        ],
+        "speciesGroupStrategy": "existing-public-preset",
+        "speciesGroupRoots": [],
         "imageSource": "patchwiki",
         "shinyImageSource": "empty"
       }
@@ -59905,10 +59905,9 @@
       }
     },
     {
-      "id": "rock-creature-bwiki-79ca82b45d23",
+      "id": "rock-creature-src-482",
       "values": {
         "image": "https://patchwiki.biligame.com/images/nrc/7/7b/24w15lhnz2m24vmc34sxuwevoe4f4lu.png",
-        "shinyImage": "https://patchwiki.biligame.com/images/nrc/d/da/6zyc5gyiabn431ik1m2wyi15d4zxzkq.png",
         "name": "加油蟹（两只海葵的样子）",
         "no": "NO.361",
         "element": [
@@ -59917,12 +59916,6 @@
         ],
         "form": "最终形态",
         "bst": 656,
-        "hp": 116,
-        "patk": 92,
-        "matk": 92,
-        "pdef": 128,
-        "mdef": 128,
-        "spd": 100,
         "shiny": "yes",
         "traitName": "拉拉队长",
         "traitTags": [
@@ -59993,31 +59986,38 @@
           "rock-skill-b6bd984a1f11",
           "rock-skill-fa84fcf93f1b"
         ],
+        "evolutionLine": "加油海葵 → 加油蟹（两只海葵的样子）",
+        "breedingLine": "加油海葵",
+        "speciesGroup": "加油海葵",
         "eggGroups": [
           "妖精组",
           "两栖组"
         ],
-        "speciesGroup": "加油海葵",
-        "evolutionLine": "加油海葵 → 加油蟹（两只海葵的样子）",
+        "hp": 116,
+        "patk": 92,
+        "matk": 92,
+        "pdef": 128,
+        "mdef": 128,
+        "spd": 100,
         "eggImage": "",
-        "fruitImage": ""
+        "fruitImage": "",
+        "shinyImage": "https://patchwiki.biligame.com/images/nrc/d/da/6zyc5gyiabn431ik1m2wyi15d4zxzkq.png"
       },
       "previewMeta": {
         "source": "bwiki-nrc",
         "sourceUrl": "https://wiki.biligame.com/nrc/精灵图鉴",
         "detailUrl": "https://wiki.biligame.com/nrc/%E5%8A%A0%E6%B2%B9%E8%9F%B9%EF%BC%88%E4%B8%A4%E5%8F%AA%E6%B5%B7%E8%91%B5%E7%9A%84%E6%A0%B7%E5%AD%90%EF%BC%89",
-        "idStrategy": "new",
-        "previousId": "",
+        "idStrategy": "user-confirmed-name",
+        "previousId": "rock-creature-src-482",
         "detailStaging": true,
+        "identityDecision": "用户确认默认形态补全名称：加油蟹 → 加油蟹（两只海葵的样子）",
         "formStrategy": "evolution-terminal",
         "formCategoryLabel": "",
         "isMainForm": false,
         "seasonLabel": "S2",
         "breedingSource": "https://wiki.biligame.com/nrc/孵蛋组别查询",
-        "speciesGroupStrategy": "evolution-initial-form",
-        "speciesGroupRoots": [
-          "加油海葵"
-        ],
+        "speciesGroupStrategy": "existing-public-preset",
+        "speciesGroupRoots": [],
         "imageSource": "patchwiki",
         "shinyImageSource": "patchwiki"
       }
