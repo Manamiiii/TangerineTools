@@ -30,6 +30,12 @@ export function buildSourceManifest({ creatures, skills, creaturePreview, skillP
       if (address.protocol !== 'https:' || address.hostname !== 'wiki.biligame.com' || !SOURCE_NOTICES[source]) throw new Error(`不支持的来源：${address.href}`)
       usedSources.add(source)
       rows[row.id] = { name: row.values.name, source, url: address.href }
+      if (source === 'nrc' && meta.shinyDecision && meta.shinyImageSource === 'existing-public-preset') {
+        const asset = new URL(row.values.shinyImage)
+        if (asset.protocol !== 'https:' || asset.hostname !== 'patchwiki.biligame.com' || !asset.pathname.startsWith('/images/rocom/')) throw new Error(`已确认异色图片来源不匹配：${row.id}`)
+        usedSources.add('rocom')
+        rows[row.id].fieldSources = { shiny: { source: 'user-confirmed', decision: meta.shinyDecision }, shinyImage: { source: 'rocom', url: asset.href } }
+      }
     }
   }
   return {

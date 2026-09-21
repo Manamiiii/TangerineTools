@@ -118,3 +118,13 @@ test('NRC release gate rejects missing review metadata and incomplete candidates
   assert.throws(() => assertPublishablePreview({ ...payload, releaseBlockers: ['缺少详情'] }, 'test'), /发布阻塞/)
   assert.doesNotThrow(() => assertPublishablePreview({ ...payload, sourceVersion: 'S4', stagingHashes: {}, releaseBlockers: [] }, 'test'))
 })
+
+test('NRC source manifest retains the rocom attribution of confirmed shiny images', () => {
+  const row = { id: 'sample', values: { name: '火红尾', shiny: 'yes', shinyImage: 'https://patchwiki.biligame.com/images/rocom/example.png' } }
+  const preview = { rows: [{ ...row, previewMeta: { detailUrl: 'https://wiki.biligame.com/nrc/火红尾', shinyDecision: '用户确认有异色', shinyImageSource: 'existing-public-preset' } }], sourceVersion: 'S4' }
+  const manifest = buildSourceManifest({ creatures: [row], skills: [], creaturePreview: preview, skillPreview: { rows: [] } })
+  assert.equal(manifest.rows.sample.source, 'nrc')
+  assert.equal(manifest.rows.sample.fieldSources.shinyImage.source, 'rocom')
+  assert.equal(manifest.rows.sample.fieldSources.shiny.source, 'user-confirmed')
+  assert(manifest.sources.rocom)
+})
