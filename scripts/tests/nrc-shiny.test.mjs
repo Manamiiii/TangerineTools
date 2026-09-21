@@ -18,11 +18,19 @@ test('Confirmed shiny exception preserves the old source and does not change raw
 })
 
 test('Shiny confirmation is limited to one identity and batch; no-shiny never inherits a stale image', () => {
-  for (const [creature, batch] of [[{ ...fire, name: '雅丹鬃', sourceId: 'pet_000516' }, version], [fire, 'future-batch']]) {
+  for (const [creature, batch] of [[{ ...fire, name: '其他', sourceId: 'pet_other' }, version], [fire, 'future-batch']]) {
     const result = resolveNrcShiny(creature, old, batch)
     assert.equal(result.value, 'no')
     assert.equal(result.image, '')
     assert.equal(result.decision, '')
   }
   assert.equal(resolveNrcShiny({ ...fire, name: '其他', shinyLabel: '是' }, old, version).image, '')
+})
+
+test('Yadan confirmation requires its own exact identity and baseline', () => {
+  const creature = { ...fire, name: '雅丹鬃', sourceId: 'pet_000516' }
+  const baseline = { ...old, id: 'rock-creature-src-346' }
+  assert.equal(resolveNrcShiny(creature, baseline, version).value, 'yes')
+  assert.equal(resolveNrcShiny(creature, baseline, version).image, baseline.values.shinyImage)
+  assert.throws(() => resolveNrcShiny(creature, old, version), /重新审阅/)
 })
