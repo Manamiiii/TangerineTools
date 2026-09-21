@@ -32,7 +32,7 @@
     }
   },
   "sourceNotes": "未完成候选含当前 rocom 正式字段回填；不声明为全部来自 NRC 的完整新版数据。",
-  "generatedAt": "2026-09-20T11:11:49.645Z",
+  "generatedAt": "2026-09-21T07:13:35.988Z",
   "inputs": {
     "creatures": "scripts/bwiki/data/nrc/staging/creatures.json",
     "skills": "scripts/bwiki/data/nrc/staging/skills.json",
