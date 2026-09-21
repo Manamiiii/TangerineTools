@@ -25,11 +25,13 @@ test('Full NRC preview fills all new families without changing existing family k
   const result = buildPreview({ creatures, details: (await json('../bwiki/data/nrc/staging/creature-details.json')).rows,
     skills: (await json('../bwiki/data/nrc/staging/skills.json')).rows,
     breedingRows: (await json('../bwiki/data/nrc/staging/breeding-rows.json')).rows,
-    currentRows, currentSkills: await json('../../public/presets/rockKingdomSkillRows.json'), syncedAt: 'test' })
+    currentRows, currentSkills: await json('../../public/presets/rockKingdomSkillRows.json'), syncedAt: 'test', sourceVersion: 'S4-2026-09-11-browser-full' })
   const rows = result.creaturePreviewRows
   assert.equal(rows.length, creatures.length)
   assert.equal(new Set(rows.map(row => row.id)).size, rows.length)
   assert(rows.every(row => row.values.speciesGroup))
+  assert.equal(rows.find(row => row.values.name === '火红尾').values.shiny, 'yes')
+  assert.equal(rows.filter(row => row.values.shiny === 'no' && row.values.shinyImage).length, 0)
   for (const row of rows) {
     const old = currentRows.find(old => old.id === row.id)
     if (old?.values.speciesGroup) assert.equal(row.values.speciesGroup, old.values.speciesGroup)

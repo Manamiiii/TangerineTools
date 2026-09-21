@@ -249,7 +249,22 @@ export function resolveNrcFamily(creature, detail, creatures, currentRows) {
   return { value: unique.length === 1 ? unique[0] : '', roots, strategy: unique.length === 1 && unique[0] ? 'evolution-initial-form' : 'unresolved' }
 }
 
-export function buildPreview({ creatures, skills, details, currentRows, currentSkills, breedingRows, syncedAt }) {
+export function resolveNrcShiny(creature, existingRow, sourceVersion) {
+  const confirmed = sourceVersion === 'S4-2026-09-11-browser-full'
+    && creature.sourceId === 'pet_000515' && creature.name === '火红尾'
+  if (confirmed) {
+    if (existingRow?.id !== 'rock-creature-src-345' || existingRow.values.shiny !== 'yes'
+      || !existingRow.values.shinyImage?.startsWith('https://patchwiki.biligame.com/images/rocom/')) {
+      throw new Error('火红尾异色确认所依据的正式记录不匹配，需重新审阅')
+    }
+    return { value: 'yes', image: existingRow.values.shinyImage, source: 'existing-public-preset',
+      decision: '用户于2026-09-21确认火红尾保留异色；图片沿用rocom正式来源' }
+  }
+  const value = mapShiny(creature.shinyLabel)
+  return { value, image: value === 'yes' ? creature.shinyImage || '' : '', source: value === 'yes' && creature.shinyImage ? 'patchwiki' : 'empty', decision: '' }
+}
+
+export function buildPreview({ creatures, skills, details, currentRows, currentSkills, breedingRows, syncedAt, sourceVersion }) {
   const detailByCreature = new Map(details.map((row) => [stagedCreatureKey(row), row]))
   const bossNames = new Set(
     creatures
@@ -347,6 +362,7 @@ export function buildPreview({ creatures, skills, details, currentRows, currentS
     const id = match.row?.id ?? hashId('rock-creature-bwiki', `${creature.no}|${creature.name}`)
     const detail = detailByCreature.get(stagedCreatureKey(creature))
     const breeding = findBreedingMatch(creature, breedingIndexes)
+    const nrcShiny = creature.source === 'bwiki-nrc' ? resolveNrcShiny(creature, match.row, sourceVersion) : null
     const family = existingValues.speciesGroup
       ? { value: existingValues.speciesGroup, strategy: 'existing-public-preset', roots: [] }
       : breeding?.speciesGroup
@@ -410,13 +426,13 @@ export function buildPreview({ creatures, skills, details, currentRows, currentS
       values: {
         ...existingValues,
         image: creature.image || existingValues.image || '',
-        shinyImage: creature.shinyImage || existingValues.shinyImage || '',
+        shinyImage: nrcShiny ? nrcShiny.image : creature.shinyImage || existingValues.shinyImage || '',
         name: creature.name,
         no: creature.no,
         element: element.mapped,
         form: form.value,
         ...stats,
-        shiny: mapShiny(creature.shinyLabel),
+        shiny: nrcShiny ? nrcShiny.value : mapShiny(creature.shinyLabel),
         traitName: detail?.trait?.name || creature.traitName || existingValues.traitName || '',
         traitTags: existingValues.traitTags?.length ? existingValues.traitTags : deriveTraitTags(traitDesc, stats),
         traitIcon: detail?.trait?.image || existingValues.traitIcon || '',
@@ -443,7 +459,8 @@ export function buildPreview({ creatures, skills, details, currentRows, currentS
         breedingSource: breeding?.sourceUrl || '',
         ...(creature.source === 'bwiki-nrc' ? { speciesGroupStrategy: family.strategy, speciesGroupRoots: family.roots } : {}),
         imageSource: creature.image ? (creature.image.includes('patchwiki') ? 'patchwiki' : 'bwiki') : existingValues.image ? 'existing-public-preset' : 'empty',
-        shinyImageSource: creature.shinyImage ? 'patchwiki' : existingValues.shinyImage ? 'existing-public-preset' : 'empty',
+        shinyImageSource: nrcShiny ? nrcShiny.source : creature.shinyImage ? 'patchwiki' : existingValues.shinyImage ? 'existing-public-preset' : 'empty',
+        ...(nrcShiny?.decision ? { shinyDecision: nrcShiny.decision, shinySourceLabel: creature.shinyLabel } : {}),
       },
     }
   })
@@ -733,9 +750,12 @@ async function main() {
     currentSkills,
     breedingRows: breedingSnapshot.rows ?? [],
     syncedAt,
+    sourceVersion: nrc ? creatureStaging.version : undefined,
   })
   if (nrc) for (const row of creaturePreviewRows) {
     if (!row.values.speciesGroup) releaseBlockers.push(`繁育谱系无法确定：${row.values.name}`)
+    const old = currentRows.find(item => item.id === row.id)
+    if (old?.values.shiny === 'yes' && row.values.shiny !== 'yes') releaseBlockers.push(`异色撤销待确认：${row.values.name}`)
   }
 
   await mkdir(dirname(OUTPUTS.report), { recursive: true })
