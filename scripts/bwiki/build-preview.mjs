@@ -235,6 +235,20 @@ function countFieldChanges(previewRows, currentRows, fields) {
   }).length])
 }
 
+export function resolveNrcFamily(creature, detail, creatures, currentRows) {
+  if (!detail || detail.sourceId !== creature.sourceId || detail.name !== creature.name) return { value: '', roots: [], strategy: 'unresolved' }
+  const branches = (detail.evolutionBranches ?? []).filter(branch => branch.some(node => node.name === creature.name))
+  const roots = [...new Set(branches.map(branch => branch[0]?.name))]
+  if (!roots.length || roots.some(name => !name || creatures.filter(row => row.name === name).length !== 1)) return { value: '', roots, strategy: 'unresolved' }
+  const groups = roots.map(name => {
+    const matches = currentRows.filter(row => row.values?.name === name)
+    if (matches.length > 1) return ''
+    return matches[0]?.values?.speciesGroup || name
+  })
+  const unique = [...new Set(groups)]
+  return { value: unique.length === 1 ? unique[0] : '', roots, strategy: unique.length === 1 && unique[0] ? 'evolution-initial-form' : 'unresolved' }
+}
+
 export function buildPreview({ creatures, skills, details, currentRows, currentSkills, breedingRows, syncedAt }) {
   const detailByCreature = new Map(details.map((row) => [stagedCreatureKey(row), row]))
   const bossNames = new Set(
@@ -333,6 +347,13 @@ export function buildPreview({ creatures, skills, details, currentRows, currentS
     const id = match.row?.id ?? hashId('rock-creature-bwiki', `${creature.no}|${creature.name}`)
     const detail = detailByCreature.get(stagedCreatureKey(creature))
     const breeding = findBreedingMatch(creature, breedingIndexes)
+    const family = existingValues.speciesGroup
+      ? { value: existingValues.speciesGroup, strategy: 'existing-public-preset', roots: [] }
+      : breeding?.speciesGroup
+        ? { value: breeding.speciesGroup, strategy: 'breeding-snapshot', roots: [] }
+        : creature.source === 'bwiki-nrc'
+          ? resolveNrcFamily(creature, detail, creatures, currentRows)
+          : { value: '', strategy: 'unresolved', roots: [] }
     const element = mapElements(creature.elements)
     const form = deriveForm(creature, existingValues, detail, bossNames)
     if (element.unknown.length > 0) creatureIssues.unknownElements.push(`${creature.no} ${creature.name}：${element.unknown.join('、')}`)
@@ -403,7 +424,7 @@ export function buildPreview({ creatures, skills, details, currentRows, currentS
         skillTags: existingValues.skillTags?.length ? existingValues.skillTags : deriveSkillTags(skillTexts),
         skillRefs: skillRefs.length > 0 ? skillRefs : existingValues.skillRefs || [],
         eggGroups: existingValues.eggGroups?.length ? existingValues.eggGroups : breeding?.eggGroups || [],
-        speciesGroup: existingValues.speciesGroup || breeding?.speciesGroup || '',
+        speciesGroup: family.value,
         evolutionLine: formatEvolutionLine(detail?.evolution) || existingValues.evolutionLine || '',
         eggImage: creature.eggImage || existingValues.eggImage || '',
         fruitImage: creature.fruitImage || existingValues.fruitImage || '',
@@ -420,6 +441,7 @@ export function buildPreview({ creatures, skills, details, currentRows, currentS
         isMainForm: Boolean(creature.isMainForm),
         seasonLabel: creature.seasonLabel || '',
         breedingSource: breeding?.sourceUrl || '',
+        ...(creature.source === 'bwiki-nrc' ? { speciesGroupStrategy: family.strategy, speciesGroupRoots: family.roots } : {}),
         imageSource: creature.image ? (creature.image.includes('patchwiki') ? 'patchwiki' : 'bwiki') : existingValues.image ? 'existing-public-preset' : 'empty',
         shinyImageSource: creature.shinyImage ? 'patchwiki' : existingValues.shinyImage ? 'existing-public-preset' : 'empty',
       },
@@ -651,6 +673,7 @@ ${renderList(legacyUnmatchedRefs)}
 
 - BWiki 精灵筛选页的 \`data-param8\` 是归属赛季，preview 只把它保留在 \`previewMeta.seasonLabel\` 供审计，不写入蛋组。
 - 已匹配精灵保留当前 public 预置中的 \`eggGroups\` / \`speciesGroup\`；空值或新增精灵只从版本化的孵蛋补充快照按“编号 + 名称”或唯一名称安全补齐。
+- NRC 候选缺少家族归属时，按已确认的初始形态规则从身份匹配的详情进化分支补齐；沿用初始形态已有的家族标识，证据不足或分支冲突时保留缺口并阻止发布。
 
 ## 图片来源摘要
 
@@ -711,6 +734,9 @@ async function main() {
     breedingRows: breedingSnapshot.rows ?? [],
     syncedAt,
   })
+  if (nrc) for (const row of creaturePreviewRows) {
+    if (!row.values.speciesGroup) releaseBlockers.push(`繁育谱系无法确定：${row.values.name}`)
+  }
 
   await mkdir(dirname(OUTPUTS.report), { recursive: true })
   const provenance = nrc ? { sourceProfile: 'nrc', sourceVersion: creatureStaging.version, stagingHashes, releaseBlockers, sourceAttributions: SOURCE_NOTICES, sourceNotes: '未完成候选含当前 rocom 正式字段回填；不声明为全部来自 NRC 的完整新版数据。' } : {}
