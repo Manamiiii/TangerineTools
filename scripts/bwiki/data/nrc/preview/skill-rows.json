@@ -10,8 +10,7 @@
   },
   "releaseBlockers": [
     "技能来源 level / machine / blood / legendary 与正式引用口径待审阅",
-    "改名、编号及异色撤销冲突待审阅；未确认前禁止发布",
-    "异色撤销待确认：雅丹鬃"
+    "改名、编号及异色撤销冲突待审阅；未确认前禁止发布"
   ],
   "sourceAttributions": {
     "rocom": {
@@ -33,7 +32,7 @@
     }
   },
   "sourceNotes": "未完成候选含当前 rocom 正式字段回填；不声明为全部来自 NRC 的完整新版数据。",
-  "generatedAt": "2026-09-21T07:22:52.105Z",
+  "generatedAt": "2026-09-21T08:12:40.558Z",
   "inputs": {
     "creatures": "scripts/bwiki/data/nrc/staging/creatures.json",
     "skills": "scripts/bwiki/data/nrc/staging/skills.json",

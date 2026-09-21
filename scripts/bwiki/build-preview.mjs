@@ -250,15 +250,18 @@ export function resolveNrcFamily(creature, detail, creatures, currentRows) {
 }
 
 export function resolveNrcShiny(creature, existingRow, sourceVersion) {
-  const confirmed = sourceVersion === 'S4-2026-09-11-browser-full'
-    && creature.sourceId === 'pet_000515' && creature.name === '火红尾'
+  const decision = [
+    { sourceId: 'pet_000515', name: '火红尾', previousId: 'rock-creature-src-345' },
+    { sourceId: 'pet_000516', name: '雅丹鬃', previousId: 'rock-creature-src-346' },
+  ].find(row => row.sourceId === creature.sourceId && row.name === creature.name)
+  const confirmed = sourceVersion === 'S4-2026-09-11-browser-full' && decision
   if (confirmed) {
-    if (existingRow?.id !== 'rock-creature-src-345' || existingRow.values.shiny !== 'yes'
+    if (existingRow?.id !== decision.previousId || existingRow.values.shiny !== 'yes'
       || !existingRow.values.shinyImage?.startsWith('https://patchwiki.biligame.com/images/rocom/')) {
-      throw new Error('火红尾异色确认所依据的正式记录不匹配，需重新审阅')
+      throw new Error(`${creature.name}异色确认所依据的正式记录不匹配，需重新审阅`)
     }
     return { value: 'yes', image: existingRow.values.shinyImage, source: 'existing-public-preset',
-      decision: '用户于2026-09-21确认火红尾保留异色；图片沿用rocom正式来源' }
+      decision: `用户于2026-09-21确认${creature.name}保留异色；图片沿用rocom正式来源` }
   }
   const value = mapShiny(creature.shinyLabel)
   return { value, image: value === 'yes' ? creature.shinyImage || '' : '', source: value === 'yes' && creature.shinyImage ? 'patchwiki' : 'empty', decision: '' }
