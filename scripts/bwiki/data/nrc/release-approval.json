@@ -1,0 +1,24 @@
+{
+  "source": "nrc-user-release-approval",
+  "version": "S4-2026-09-11-browser-full",
+  "approvedAt": "2026-09-21",
+  "decision": "用户确认发布完整候选：四类技能来源并集、全部已审阅数值及编号变化、三处默认形态补名、初始形态家族、火红尾与雅丹鬃保留异色。",
+  "stagingHashes": {
+    "creatures": "cd4588c2608dc8f84ddda68b0eb733bc5e5dde49adc71ddce88f4493c9996908",
+    "skills": "293fa0a74a7c7e87dffc07ac8d6c6d2893569b061708ce720717edf5ea2ada1a",
+    "details": "51e1b08c65c4a6f64967eb7fecfeeecca72278a4bca6f9e8d5fb71020f997aee",
+    "breeding": "b104ab7963eee7c18112f9365c206bd356f65fcd8194b4dcfdc5687a40a6c484"
+  },
+  "reviewedBlockers": [
+    "技能来源 level / machine / blood / legendary 与正式引用口径待审阅",
+    "改名、编号及异色撤销冲突待审阅；未确认前禁止发布"
+  ],
+  "rowHashes": {
+    "creatures": "f76276f78dd419efef8545f31c039d32b88bc3fec0ac909e3a0a9e881a1dc745",
+    "skills": "b121500c8629be24e39b84f5c9e5a8ba010c9aed85cfd6c399206d99ec754b73"
+  },
+  "baselineHashes": {
+    "creatures": "2eb5ec4daa3e8074038dbcdc4ffd224369740d19ddab3a7c8dca61ee8dc3d4d5",
+    "skills": "69a8123e6c1f1b15a7759dce975b7a30d587adad0772edd638daf645b0117121"
+  }
+}

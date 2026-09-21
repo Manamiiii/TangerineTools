@@ -36,7 +36,8 @@ npm run dev
 | `npm run preview:bwiki:nrc` | 生成 NRC 候选预览与发布阻塞清单 |
 | `npm run audit:bwiki:nrc` | 离线比较 NRC 源字段与正式资料，列出身份冲突、技能影响和详情缺口 |
 | `npm run review:bwiki:nrc` | 离线验证最终 NRC 候选的完整性、旧 ID、家族、异色及技能引用，生成发布审阅清单；不批准发布 |
-| `npm run check:bwiki:nrc` | 检查 NRC 发布条件；采集或审阅未完成时失败 |
+| `npm run check:bwiki:nrc` | 检查 NRC 发布条件及绑定具体候选的用户批准 |
+| `npm run apply:bwiki:preset -- --source=nrc` | 用户确认并设置覆盖口令后发布 NRC 预置；同步运行时迁移版本，详见 NRC 来源文档 |
 | `npm run check:bwiki:sources` | 核对正式资料与逐行来源清单 |
 | `npm run preview:bwiki` | 构建 BWiki 发布预览 |
 | `npm run check:bwiki:preset` | dry-run 检查正式预置差异 |

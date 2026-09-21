@@ -21,7 +21,9 @@ test('NRC family uses an exact initial form and preserves established cross-form
 test('Full NRC preview fills all new families without changing existing family keys or merging forms', async () => {
   const json = async path => JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'))
   const creatures = (await json('../bwiki/data/nrc/staging/creatures.json')).rows
-  const currentRows = await json('../../public/presets/rockKingdomRows.json')
+  const previousNames = { 'rock-creature-src-240': '香草甜甜', 'rock-creature-src-241': '圣代甜甜', 'rock-creature-src-482': '加油蟹' }
+  const currentRows = (await json('../../public/presets/rockKingdomRows.json')).map(row => previousNames[row.id]
+    ? { ...row, values: { ...row.values, name: previousNames[row.id] } } : row)
   const result = buildPreview({ creatures, details: (await json('../bwiki/data/nrc/staging/creature-details.json')).rows,
     skills: (await json('../bwiki/data/nrc/staging/skills.json')).rows,
     breedingRows: (await json('../bwiki/data/nrc/staging/breeding-rows.json')).rows,

@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { BWIKI_PATHS } from './lib/paths.mjs'
 import { buildSourceManifest } from './lib/source-manifest.mjs'
 import { assertPublishablePreview } from './lib/release-gate.mjs'
+import { reviewNrc } from './review-nrc.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '../..')
@@ -60,8 +61,8 @@ function assertRows(rows, label) {
   return ids
 }
 
-function presetRowsFromPreview(payload, label) {
-  assertPublishablePreview(payload, label)
+function presetRowsFromPreview(payload, label, approval, kind) {
+  assertPublishablePreview(payload, label, approval, kind)
   return payload.rows.map((row) => ({ id: row.id, values: row.values }))
 }
 
@@ -306,6 +307,7 @@ async function main() {
   ])
   const creaturePreview = JSON.parse(creaturePreviewText)
   const skillPreview = JSON.parse(skillPreviewText)
+  const approval = args.has('--source=nrc') ? await readOptionalJson('scripts/bwiki/data/nrc/release-approval.json', null) : null
   if (args.has('--source=nrc')) {
     assert(creaturePreview.sourceProfile === 'nrc' && skillPreview.sourceProfile === 'nrc', 'NRC preview 缺少来源版本')
     assert(creaturePreview.sourceVersion && creaturePreview.sourceVersion === skillPreview.sourceVersion, 'NRC preview 版本不一致')
@@ -313,10 +315,18 @@ async function main() {
       const actual = sha256(JSON.stringify(await readJson(BWIKI_PATHS.staging[key])))
       assert(creaturePreview.stagingHashes?.[key] === actual && skillPreview.stagingHashes?.[key] === actual, `NRC ${key} staging 与 preview 不一致，请重建预览`)
     }
+    const staging = Object.fromEntries(await Promise.all(['creatures', 'skills', 'details', 'breeding'].map(async key => [key, await readJson(BWIKI_PATHS.staging[key])])))
+    const review = reviewNrc({ staging, creatures: creaturePreview, skills: skillPreview, currentCreatures, currentSkills })
+    assert(review.errors.length === 0, `NRC 技术检查失败：${review.errors.slice(0, 3).join('；')}`)
+    for (const [kind, current, target] of [['creatures', currentCreatures, creaturePreview], ['skills', currentSkills, skillPreview]]) {
+      const actual = sha256(JSON.stringify(current))
+      const published = sha256(JSON.stringify(target.rows.map(row => ({ id: row.id, values: row.values }))))
+      assert(actual === approval?.baselineHashes?.[kind] || actual === published, `NRC ${kind} 正式基线已变化，需重新审阅`)
+    }
   }
   if (existingManifest) assert(existingManifest.source === 'bwiki-preset-migration', '现有 public 迁移清单 source 不正确')
-  const creatureRows = presetRowsFromPreview(creaturePreview, '精灵 preview')
-  const skillRows = presetRowsFromPreview(skillPreview, '技能 preview')
+  const creatureRows = presetRowsFromPreview(creaturePreview, '精灵 preview', approval, 'creatures')
+  const skillRows = presetRowsFromPreview(skillPreview, '技能 preview', approval, 'skills')
   const sourceManifest = buildSourceManifest({ creatures: creatureRows, skills: skillRows, creaturePreview, skillPreview })
 
   assertRows(currentCreatures, '当前精灵 preset')

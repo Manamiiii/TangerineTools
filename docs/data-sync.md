@@ -30,6 +30,8 @@ db.version(1).stores({
 
 `ensureSeeded()` 初始化稳定 id 为 `scene-rock-kingdom` 的洛克王国世界场景。场景骨架只播种一次；正式精灵与技能资料从 `public/presets/` 加载，并通过版本标记执行字段级三方合并。
 
+`src/presets/rockKingdom.js` 的 `ROCK_KINGDOM_ROWS_VERSION` 必须与正式迁移清单的 `version` 一致；每次发布同时更新，已有浏览器才会触发对应迁移。数据库集成测试检查两者一致及同版本不重复加载。
+
 预置迁移可以补充空值、修正仍匹配正式基线指纹的字段，并保留用户自定义的非空值。用户新增资料以及 owned / stock 记录不属于正式资料迁移目标。正式资料只通过 BWiki staging → preview → 显式 apply 流程维护。
 
 默认工具列表仅用于创建内置场景，已有场景的工具选择保持原样；需要启用其他工具时通过场景编辑操作。播种标记缺失时只补齐缺失的结构，保留已有场景、表和同 key 字段，包括随机字段 id。

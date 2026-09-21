@@ -8,7 +8,7 @@
 
 游戏角色、立绘、图标、截图、音视频、标识等素材权利归魔方工作室、腾讯游戏及相应权利人；其他第三方内容归各自权利人。这些素材不适用上述 CC 许可。资料许可不被扩展声明为游戏素材、项目代码或个人收集记录的许可。
 
-运行时清单 `src/presets/rockKingdomSources.json` 按实际发布数据逐行记录来源、页面链接与原名称，并绑定正式内容指纹。应用底部“数据来源与版权”和资料详情来源链接读取该清单。当前正式预置对应 rocom 来源；NRC 候选署名保存在独立 staging。发布同时更新来源清单，不提前将旧数据标为 NRC 数据。
+运行时清单 `src/presets/rockKingdomSources.json` 按实际发布数据逐行记录来源、页面链接与原名称，并绑定正式内容指纹。应用底部“数据来源与版权”和资料详情来源链接读取该清单。当前正式预置为 NRC 批次 `S4-2026-09-11-browser-full`，包含 621 条精灵和 579 条技能；火红尾、雅丹鬃的保留异色图单独标注 rocom 来源。发布同时更新来源清单。
 
 `npm run check:bwiki:sources` 校验清单；`-- --write` 可依据与正式值完全一致的 preview 重建来源元数据。NRC 发布后使用 `-- --source=nrc`。来源批次表示 preview 版本或生成时间，实际页面采集时间见 staging provenance。
 
@@ -21,7 +21,7 @@
 | [孵蛋组别查询](https://wiki.biligame.com/nrc/孵蛋组别查询) | 蛋组与仅雌性标记 | `nrc-egg-card`；候选中“未发现”映射为“无法孵蛋” |
 | 图鉴实际详情链接 | 六维、特性、技能来源与进化分支 | `data-pet-id` 必须匹配；六维读取 `data-val` 并检查总和 |
 
-静态详情的 0 可能只是动画占位。解析器读取页面实际属性，不运行页面脚本，不把缺失值猜成 0。技能 `level` / `machine` / `blood` / `legendary`（传说） 来源保留在详情 staging，正式引用口径需要审阅。进化节点的 `name` 优先取完整链接标题；无 href 的 `mw-selflink` 取当前已校验 sourceId 的图鉴名称，原展示文字保存在 `displayName`。不通过删除括号后缀猜测形态身份。进化分支保存在 `evolutionBranches`，preview 使用包含当前完整名称的首条分支；缺少可靠分支时保留 `evolutionReviewRequired`，分支解析成功不代表繁育谱系已完成审阅。仅雌性标记是审计信息，尚未接入孵蛋规则。
+静态详情的 0 可能只是动画占位。解析器读取页面实际属性，不运行页面脚本，不把缺失值猜成 0。技能 `level` / `machine` / `blood` / `legendary`（传说） 来源保留在详情 staging，正式 `skillRefs` 使用四类来源的去重并集，表示资料库可学技能池，不表示某只已收集精灵已解锁全部技能。进化节点的 `name` 优先取完整链接标题；无 href 的 `mw-selflink` 取当前已校验 sourceId 的图鉴名称，原展示文字保存在 `displayName`。不通过删除括号后缀猜测形态身份。进化分支保存在 `evolutionBranches`，preview 使用包含当前完整名称的首条分支；缺少可靠分支时保留 `evolutionReviewRequired`，分支解析成功不代表繁育谱系已完成审阅。仅雌性标记是审计信息，尚未接入孵蛋规则。
 
 ## 命令与缓存
 
@@ -105,17 +105,21 @@ npm run collect:bwiki:browser -- --version=S4-2026-09-11-browser-full --limit=al
 - staging：`scripts/bwiki/data/nrc/staging/`，包含精灵、技能、蛋组及成功详情，与 rocom 独立。
 - preview：`scripts/bwiki/data/nrc/preview/`。缺详情的旧行可能保留旧技能引用，新行未知数值为空，均是未完成候选。
 - 报告：`artifacts/bwiki/nrc/source-report.json` 与 `artifacts/bwiki/nrc/preview-report.md`。
-- preview 记录版本、输入指纹与发布阻塞；发布检查两份 preview 的版本一致、输入未变，且无发布阻塞。不能通过删除提示文字或设置覆盖口令绕过完整性审阅。
-- 适配范围为聚合页及详情读取、预览和拦截；技能来源口径、改名/编号/异色冲突、完整进化与繁育字段须完成审阅。生成器为此保留发布阻塞，不提供自动批准入口。
+- preview 记录版本、输入指纹与发布阻塞；发布检查两份 preview 的版本一致、输入未变，并核对明确的用户发布确认。不能通过删除提示文字或设置覆盖口令绕过完整性审阅。
+- 适配范围为聚合页及详情读取、预览和拦截；技能来源口径、改名/编号/异色冲突、完整进化与繁育字段须完成审阅。生成器保留审阅提示；`scripts/bwiki/data/nrc/release-approval.json` 记录用户对具体候选的批准，绑定批次、staging 指纹、两份候选完整行指纹、审阅提示及原正式基线。发布时重新执行完整技术检查，候选、来源或提示变化均使确认失效；正式基线只允许原批准基线或相同的已发布目标。该文件不能由采集或预览命令自动批准。
 - 正式数据仍经过版本化 staging → preview → 显式 apply。用户确认针对具体审阅结果，不继承其他版本的旧确认。
+
+用户批准并通过 `check:bwiki:nrc` 后，设置 `BWIKI_PRESET_OVERWRITE=CONFIRM_BWIKI_PRESET` 并执行 `npm run apply:bwiki:preset -- --source=nrc`。同步将 `src/presets/rockKingdom.js` 的 `ROCK_KINGDOM_ROWS_VERSION` 更新为正式迁移清单的 `version`，让已有浏览器在启动时执行三方迁移；运行数据库集成测试验证版本一致及自定义值保护。
 
 ## 已确认事实
 
-2026-09-21，用户确认批次 `S4-2026-09-11-browser-full` 中三条默认形态仅补全名称：香草甜甜 → 香草甜甜（樱桃饰品），沿用 `rock-creature-src-240`；圣代甜甜 → 圣代甜甜（樱桃巧克力口味），沿用 `rock-creature-src-241`；加油蟹 → 加油蟹（两只海葵的样子），沿用 `rock-creature-src-482`。`build-preview.mjs` 按来源、批次、sourceId、完整名称、编号及旧 ID 限定对应关系，并记录 `previewMeta.identityDecision`；不按括号后缀泛化、不合并其他形态。此确认仅针对身份与名称，不批准数值变化或正式发布。
+2026-09-21，用户确认发布批次 `S4-2026-09-11-browser-full` 的完整审阅候选，包含四类技能来源并集、数值与编号变化、三条默认形态补名、初始形态家族及两项保留异色决定。批准仅适用于 `release-approval.json` 所绑定的具体内容；不包含性格规则修改。
+
+2026-09-21，用户确认批次 `S4-2026-09-11-browser-full` 中三条默认形态仅补全名称：香草甜甜 → 香草甜甜（樱桃饰品），沿用 `rock-creature-src-240`；圣代甜甜 → 圣代甜甜（樱桃巧克力口味），沿用 `rock-creature-src-241`；加油蟹 → 加油蟹（两只海葵的样子），沿用 `rock-creature-src-482`。`build-preview.mjs` 按来源、批次、sourceId、完整名称、编号及旧 ID 限定对应关系，并记录 `previewMeta.identityDecision`；不按括号后缀泛化、不合并其他形态。身份映射仅限这三项，不泛化为其他改名授权。
 
 2026-09-21，用户确认繁育家族以初始形态命名。NRC preview 优先保留已有正式家族标识，其次使用明确的孵蛋快照归属；缺失时依据身份匹配的详情进化分支补齐。只检查包含当前完整形态名称的分支，各分支起点必须唯一存在于同批次图鉴中；起点已有正式家族时沿用该标识，否则使用起点完整名称。不同分支推导出不同家族或缺少起点证据时保留缺口并阻止发布，不删除括号推测身份。推导依据记录在 `previewMeta.speciesGroupStrategy` 和 `speciesGroupRoots`。家族归属不合并精灵形态行，也不等于确认旧名称对应或允许孵蛋；可否孵蛋仍读取蛋组。
 
-2026-09-21，用户确认火红尾存在异色，要求按“有异色”处理。批次 `S4-2026-09-11-browser-full` 的 NRC 聚合页标记与此冲突，候选发布映射须保留此项用户确认及旧正式异色图片的来源；原始快照不改写。用户随后单独确认雅丹鬃也按有异色保留；两者均沿用旧正式异色图片，不批准正式发布。
+2026-09-21，用户确认火红尾存在异色，要求按“有异色”处理。批次 `S4-2026-09-11-browser-full` 的 NRC 聚合页标记与此冲突，候选发布映射须保留此项用户确认及旧正式异色图片的来源；原始快照不改写。用户随后单独确认雅丹鬃也按有异色保留；两者均沿用旧正式异色图片。
 
 `build-preview.mjs` 的 `resolveNrcShiny` 按批次、sourceId 和完整名称限定火红尾和雅丹鬃各自的确认，校验旧正式 ID 与 rocom 图片来源，并在 `previewMeta.shinyDecision`、`shinySourceLabel` 中记录决定和原始标记。其他 NRC 行的异色图片只来自该批次；“无异色”不回填旧图，缺图不补造。旧正式记录存在异色而候选撤销时，发布阻塞逐行列出待确认名称。候选变化不修改用户收藏。
 

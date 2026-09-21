@@ -4,7 +4,7 @@ import { readFile, mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { parseNrcCreatures, parseNrcSkills, parseNrcBreeding, parseNrcDetail } from '../bwiki/lib/nrc-parser.mjs'
-import { fetchSnapshot, saveSnapshot, readSnapshot } from '../bwiki/lib/snapshots.mjs'
+import { fetchSnapshot, saveSnapshot, readSnapshot, sha256 } from '../bwiki/lib/snapshots.mjs'
 import { buildSourceManifest } from '../bwiki/lib/source-manifest.mjs'
 import { assertPublishablePreview } from '../bwiki/lib/release-gate.mjs'
 import { parseSyncOptions } from '../bwiki/sync-nrc.mjs'
@@ -115,8 +115,18 @@ test('Source manifest refuses attribution from a different preset revision', () 
 test('NRC release gate rejects missing review metadata and incomplete candidates', () => {
   const payload = { source: 'bwiki-preview', sourceProfile: 'nrc', rows: [], rowCount: 0 }
   assert.throws(() => assertPublishablePreview(payload, 'test'), /缺少 NRC/)
-  assert.throws(() => assertPublishablePreview({ ...payload, releaseBlockers: ['缺少详情'] }, 'test'), /发布阻塞/)
-  assert.doesNotThrow(() => assertPublishablePreview({ ...payload, sourceVersion: 'S4', stagingHashes: {}, releaseBlockers: [] }, 'test'))
+  assert.throws(() => assertPublishablePreview({ ...payload, releaseBlockers: ['缺少详情'] }, 'test'), /缺少 NRC/)
+  const complete = { ...payload, sourceVersion: 'S4', stagingHashes: { creatures: 'hash' }, releaseBlockers: ['技能来源待审阅'] }
+  const approval = { source: 'nrc-user-release-approval', version: 'S4', approvedAt: '2026-09-21', decision: '确认具体候选', stagingHashes: complete.stagingHashes, reviewedBlockers: complete.releaseBlockers, rowHashes: { creatures: sha256(JSON.stringify(complete.rows)) } }
+  assert.throws(() => assertPublishablePreview(complete, 'test'), /用户发布确认/)
+  assert.doesNotThrow(() => assertPublishablePreview(complete, 'test', approval, 'creatures'))
+  for (const changed of [
+    { ...complete, sourceVersion: 'S5' },
+    { ...complete, stagingHashes: { creatures: 'changed' } },
+    { ...complete, releaseBlockers: [] },
+    { ...complete, rows: [{ id: 'changed', values: {} }], rowCount: 1 },
+  ]) assert.throws(() => assertPublishablePreview(changed, 'test', approval, 'creatures'), /用户发布确认/)
+  assert.throws(() => assertPublishablePreview(complete, 'test', approval, 'skills'), /用户发布确认/)
 })
 
 test('NRC source manifest retains the rocom attribution of confirmed shiny images', () => {
