@@ -100,6 +100,8 @@ npm run collect:bwiki:browser -- --version=S4-2026-09-11-browser-full --limit=al
 
 身份比较以唯一名称匹配；未匹配名称即使编号相同也只列作人工候选，不自动认定改名或复用 ID。技能“防御”沿用 preview 的 `status` 映射单列展示；效果文字差异不自动定性为平衡调整。报告成功表示比较已完成，不表示采集完整或允许发布，无法代替公告核对和发布检查。
 
+`npm run review:bwiki:nrc` 检查经过已确认映射后的完整候选：同版 staging 指纹、详情身份与六维、原正式 ID 保留、家族与蛋组完整性、异色图片一致性、四种技能来源并集、技能正文与双向引用。生成 `artifacts/bwiki/nrc/publication-review.json` 和 `.md`，记录输入指纹、全部字段差异、新增资料及发布阻塞。技术检查与内容批准相互独立：该命令不接受发布选项，不修改正式数据、迁移清单或任何发布阻塞；报告固定标明未批准发布。`check:bwiki:nrc` 仍执行完整发布准入检查。
+
 - staging：`scripts/bwiki/data/nrc/staging/`，包含精灵、技能、蛋组及成功详情，与 rocom 独立。
 - preview：`scripts/bwiki/data/nrc/preview/`。缺详情的旧行可能保留旧技能引用，新行未知数值为空，均是未完成候选。
 - 报告：`artifacts/bwiki/nrc/source-report.json` 与 `artifacts/bwiki/nrc/preview-report.md`。
@@ -116,6 +118,8 @@ npm run collect:bwiki:browser -- --version=S4-2026-09-11-browser-full --limit=al
 2026-09-21，用户确认火红尾存在异色，要求按“有异色”处理。批次 `S4-2026-09-11-browser-full` 的 NRC 聚合页标记与此冲突，候选发布映射须保留此项用户确认及旧正式异色图片的来源；原始快照不改写。用户随后单独确认雅丹鬃也按有异色保留；两者均沿用旧正式异色图片，不批准正式发布。
 
 `build-preview.mjs` 的 `resolveNrcShiny` 按批次、sourceId 和完整名称限定火红尾和雅丹鬃各自的确认，校验旧正式 ID 与 rocom 图片来源，并在 `previewMeta.shinyDecision`、`shinySourceLabel` 中记录决定和原始标记。其他 NRC 行的异色图片只来自该批次；“无异色”不回填旧图，缺图不补造。旧正式记录存在异色而候选撤销时，发布阻塞逐行列出待确认名称。候选变化不修改用户收藏。
+
+发布来源清单对上述确认保留字段级 `fieldSources`：异色存在性标记为用户确认，旧异色图标明 rocom 和实际图片地址，并包含 rocom 来源声明；精灵详情来源仍为 NRC，不将旧图片重新归因于 NRC。
 
 2026-09-10，用户在游戏中核对迪莫“超导”并确认 NRC 页面正确：威力 90、基础能耗 3、迸发减耗 2。仅确认数据事实，不批准广泛性格规则变更或跳过发布流程。
 
