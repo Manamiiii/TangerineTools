@@ -113,9 +113,13 @@ npm run collect:bwiki:browser -- --version=S4-2026-09-11-browser-full --limit=al
 
 2026-09-21，用户确认火红尾存在异色，要求按“有异色”处理。批次 `S4-2026-09-11-browser-full` 的 NRC 聚合页标记与此冲突，候选发布映射须保留此项用户确认及旧正式异色图片的来源；原始快照不改写。该确认仅适用于火红尾，不自动扩展至雅丹鬃，也不批准正式发布。
 
+`build-preview.mjs` 的 `resolveNrcShiny` 按批次、sourceId 和完整名称限定火红尾确认，校验旧正式 ID 与 rocom 图片来源，并在 `previewMeta.shinyDecision`、`shinySourceLabel` 中记录决定和原始标记。其他 NRC 行的异色图片只来自该批次；“无异色”不回填旧图，缺图不补造。旧正式记录存在异色而候选撤销时，发布阻塞逐行列出待确认名称。候选变化不修改用户收藏。
+
 2026-09-10，用户在游戏中核对迪莫“超导”并确认 NRC 页面正确：威力 90、基础能耗 3、迸发减耗 2。仅确认数据事实，不批准广泛性格规则变更或跳过发布流程。
 
 ## 回归
+
+`node --test scripts/tests/nrc-shiny.test.mjs` 检查火红尾确认的批次与身份范围、旧来源保留、原始记录不变，以及无异色时拒绝回填旧图。
 
 `node --test scripts/tests/nrc-family.test.mjs` 检查家族推导中的分支冲突、缺失起点、详情身份不符、既有跨形态家族兼容，以及完整 NRC 候选的家族覆盖和独立形态 ID。
 
