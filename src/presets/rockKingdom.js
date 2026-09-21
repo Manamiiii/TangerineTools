@@ -12,7 +12,7 @@ const SCENE_ID = ROCK_KINGDOM_SCENE_ID
 export const ROCK_KINGDOM_CREATURE_TABLE_ID = 'table-rock-kingdom-elf-basic'
 const TABLE_ID = ROCK_KINGDOM_CREATURE_TABLE_ID
 const SKILL_TABLE_ID = 'table-rock-kingdom-skills'
-export const ROCK_KINGDOM_ROWS_VERSION = 'bwiki-2026-07-24-4d9c47ed04b75fb8'
+export const ROCK_KINGDOM_ROWS_VERSION = 'bwiki-2026-09-21-d0e64ce592f2a21d'
 
 // 系别图标使用 BWiki 精灵筛选页公开的无文字 patchwiki 小图标。
 // 覆盖当前全部 18 系；用户仍可在字段编辑中按需增删或替换自定义图标。

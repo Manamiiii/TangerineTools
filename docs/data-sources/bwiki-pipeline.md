@@ -8,11 +8,11 @@
 |---|---|---|
 | 最高 | 用户 IndexedDB / 导入 JSON | 用户自己的资料、收集记录和手工修正；预置迁移不得覆盖非空自定义值 |
 | 正式 | `public/presets/*.json` | 浏览器运行时读取的版本化精灵、技能和三方迁移清单 |
-| 生产 | `scripts/bwiki/data/staging/*.json` | 从 BWiki 页面解析出的当前源快照 |
-| 审阅 | `scripts/bwiki/data/preview/*.json` | 对齐正式预置结构、供发布前审阅和校验 |
+| 生产 | `scripts/bwiki/data/staging/*.json` | rocom 页面解析快照；NRC 使用 `data/nrc/staging/` |
+| 审阅 | `scripts/bwiki/data/preview/*.json` | 对齐正式预置结构、供发布前审阅和校验；NRC 使用 `data/nrc/preview/` |
 | 旁证 | 外部攻略 / 社区资料 | 只用于性格定位和机制核对，不覆盖正式资料字段 |
 
-## 当前 BWiki 页面
+## rocom 来源页面
 
 | 页面 | URL | 用途 |
 |---|---|---|
@@ -25,9 +25,9 @@
 
 详细字段对应关系见 `docs/data-sources/bwiki-field-mapping.md`。
 
-新版 NRC 的采集与预览使用独立目录和命令，见 [`nrc-source.md`](nrc-source.md)。来源清单 `src/presets/rockKingdomSources.json` 按实际发布数据，与精灵、技能和迁移清单一起发布；应用提供版权说明及逐行来源链接。
+当前正式数据采用 NRC，其采集、预览与发布使用独立目录和命令，见 [`nrc-source.md`](nrc-source.md)。来源清单 `src/presets/rockKingdomSources.json` 按实际发布数据，与精灵、技能和迁移清单一起发布；应用提供版权说明及逐行来源链接。
 
-## 当前产物
+## rocom 产物
 
 ```text
 scripts/bwiki/data/
@@ -67,7 +67,7 @@ npm run check:official-announcements
 
 公告发现只确定可能受影响的精灵、技能、特性和字段。正文只有图片或缺少明确文字信号时，报告会要求人工查看；流程不做 OCR 猜测。官方公告不直接写入 staging 或正式预置，确认范围后仍需回到 BWiki 核对结构化字段。
 
-## 刷新与发布顺序
+## rocom 刷新与发布顺序
 
 1. `npm run check:official-announcements`：确定版本 / 平衡变更的人工复核范围。
 2. `npm run sync:bwiki:staging`：刷新精灵、技能和精灵蛋 staging。

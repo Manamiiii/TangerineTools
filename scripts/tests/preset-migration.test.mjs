@@ -104,8 +104,8 @@ test('returns the original object when no field needs migration', async () => {
 
 test('migrates a real reused creature while preserving a customized field', async () => {
   const [currentRows, preview, manifest] = await Promise.all([
-    readFile(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8').then(JSON.parse),
-    readFile(new URL('../bwiki/data/preview/creature-rows.json', import.meta.url), 'utf8').then(JSON.parse),
+    readFile(new URL('../bwiki/data/preview/creature-rows.json', import.meta.url), 'utf8').then(JSON.parse).then(payload => payload.rows),
+    readFile(new URL('../../public/presets/rockKingdomRows.json', import.meta.url), 'utf8').then(JSON.parse).then(rows => ({ rows })),
     readFile(new URL('../../public/presets/rockKingdomPresetMigration.json', import.meta.url), 'utf8').then(JSON.parse),
   ])
   const id = 'rock-creature-src-001'
@@ -130,14 +130,14 @@ test('migrates every reused official row to all material target values', async (
     'utf8',
   ).then(JSON.parse)
   const cases = [
-    ['creatures', '../../public/presets/rockKingdomRows.json', '../bwiki/data/preview/creature-rows.json'],
-    ['skills', '../../public/presets/rockKingdomSkillRows.json', '../bwiki/data/preview/skill-rows.json'],
+    ['creatures', '../bwiki/data/preview/creature-rows.json', '../../public/presets/rockKingdomRows.json'],
+    ['skills', '../bwiki/data/preview/skill-rows.json', '../../public/presets/rockKingdomSkillRows.json'],
   ]
 
   for (const [section, currentPath, previewPath] of cases) {
     const [currentRows, preview] = await Promise.all([
-      readFile(new URL(currentPath, import.meta.url), 'utf8').then(JSON.parse),
-      readFile(new URL(previewPath, import.meta.url), 'utf8').then(JSON.parse),
+      readFile(new URL(currentPath, import.meta.url), 'utf8').then(JSON.parse).then(payload => payload.rows),
+      readFile(new URL(previewPath, import.meta.url), 'utf8').then(JSON.parse).then(rows => ({ rows })),
     ])
     const currentById = new Map(currentRows.map((row) => [row.id, row]))
     const patchById = new Map(manifest[section].rows.map((row) => [row.id, row.fields]))

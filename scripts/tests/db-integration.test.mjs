@@ -34,7 +34,7 @@ async function resetDatabase() {
 
 test('official shiny creature rows have audited BWiki images', () => {
   const shinyRows = creatures.filter((row) => row.values.shiny === 'yes')
-  assert.equal(shinyRows.length, 145)
+  assert.equal(shinyRows.length, 195)
   assert.equal(shinyRows.filter((row) => row.values.shinyImage).length, shinyRows.length)
   assert.equal(
     creatures.filter((row) => row.values.shiny !== 'yes' && row.values.shinyImage).length,
