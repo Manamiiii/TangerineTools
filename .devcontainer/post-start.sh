@@ -40,12 +40,12 @@ if [ -e "$codex_auth" ] && ! chmod 600 "$codex_auth"; then
   echo "warning: could not secure \$HOME/.codex/auth.json permissions" >&2
 fi
 
-if curl --fail --silent --show-error http://127.0.0.1:5173/ >/dev/null 2>&1; then
-  echo "TangerineTools is already running on port 5173."
+if curl --fail --silent --show-error http://127.0.0.1:5188/ >/dev/null 2>&1; then
+  echo "TangerineTools is already running on port 5188."
   exit 0
 fi
 
 nohup npm run dev -- --host 0.0.0.0 > /tmp/tangerine-tools-vite.log 2>&1 &
-echo "Starting TangerineTools on port 5173 (log: /tmp/tangerine-tools-vite.log)."
+echo "Starting TangerineTools on port 5188 (log: /tmp/tangerine-tools-vite.log)."
 
 exit 0

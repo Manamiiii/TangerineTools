@@ -38,10 +38,12 @@ npm run dev
 | `npm run review:bwiki:nrc` | 离线验证最终 NRC 候选的完整性、旧 ID、家族、异色及技能引用，生成发布审阅清单；不批准发布 |
 | `npm run check:bwiki:nrc` | 检查 NRC 发布条件及绑定具体候选的用户批准 |
 | `npm run apply:bwiki:preset -- --source=nrc` | 用户确认并设置覆盖口令后发布 NRC 预置；同步运行时迁移版本，详见 NRC 来源文档 |
-| `npm run check:bwiki:sources` | 核对正式资料与逐行来源清单 |
+| `npm run check:bwiki:sources` | 核对 NRC 正式资料与逐行来源清单 |
 | `npm run preview:bwiki` | 构建 BWiki 发布预览 |
-| `npm run check:bwiki:preset` | dry-run 检查正式预置差异 |
-| `npm run apply:bwiki:preset` | 显式应用正式预置 |
+| `npm run check:bwiki:preset` | dry-run 检查 NRC 正式预置差异 |
+| `npm run apply:bwiki:preset -- --source=rocom` | 显式检查来源的 rocom 发布入口；遗漏正式稳定 ID 时拒绝写入 |
+
+自动测试包含本机 Chrome 无界面回归，需已安装 Chrome。OCR 运行资源从锁定依赖打包到 `dist/ocr-runtime/`，语言包使用 `public/reader-ocr/` 的版本化文件。静态缓存版本由产物内容生成，模板或运行资源变化会刷新缓存。
 
 ## 数据边界
 
@@ -61,6 +63,7 @@ public/presets/               洛克王国运行时正式预置
 scripts/bwiki/                官方公告审计与 BWiki staging / preview / apply
 scripts/nature/               性格推荐校准
 scripts/rock-kingdom-scanner/ 扫描模板维护
+scripts/vite/                 本地 OCR 运行资源打包与静态缓存版本
 scripts/tests/                自动化回归测试
 src/components/               场景和通用工具界面
 src/features/                 OCR、模型与洛克王国专项能力
@@ -88,12 +91,12 @@ src/presets/                  场景结构定义与版本化来源清单
 
 ## 发布预置
 
-正式资料写入需要显式确认：
+正式资料写入需要显式选择来源、确认具体候选并设置覆盖口令；所有来源都禁止遗漏现有正式稳定 ID：
 
 ```bash
 # PowerShell
 $env:BWIKI_PRESET_OVERWRITE='CONFIRM_BWIKI_PRESET'
-npm run apply:bwiki:preset
+npm run apply:bwiki:preset -- --source=nrc
 ```
 
 不提供云同步、账号体系、战斗模拟、PVP 自动化或属性克制系统。

@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { AlertTriangle, Camera, Check, FileImage, ScanLine, Settings2, Sparkles, Trash2, Video } from 'lucide-react'
-import { createRow, db } from '../../db.js'
+import { db } from '../../db.js'
 import { FieldInput } from '../../components/catalog.jsx'
 import { FormRow, Modal } from '../../components/common.jsx'
 import { RockKingdomStatFormulaGuide } from '../../components/RockKingdomStatFormulaGuide.jsx'
-import { valuesWithAppearance } from '../../domain/rockKingdomAppearance.js'
+import { saveScannerFrames, scannerDuplicateCandidates } from './scannerPersistence.js'
 import { recognizeNumericImageText, recognizeStructuredImageText } from '../ocr/localOcr.js'
 import {
   captureVideoFrame,
@@ -27,7 +27,6 @@ import {
   bestScannerReferenceText,
   catalogNameCandidates,
   constrainScannerFormulaInputs,
-  findScannerDuplicateCandidates,
   isScannerFrameReady,
   parseScannerLevel,
   rankScanCandidates,
@@ -334,7 +333,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
 
   const selected = frames.find((frame) => frame.id === selectedId) || frames[0]
   const selectedDuplicateCandidates = selected
-    ? findScannerDuplicateCandidates(selected.values, ownedRows || [])
+    ? scannerDuplicateCandidates(selected, frames, ownedRows || [])
     : []
   const selectedHasBlockingDuplicate = selectedDuplicateCandidates.some((item) => item.blocking)
 
@@ -1097,7 +1096,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   }
 
   function frameHasBlockingDuplicate(frame) {
-    return findScannerDuplicateCandidates(frame.values, ownedRows || [])
+    return scannerDuplicateCandidates(frame, frames, ownedRows || [])
       .some((candidate) => candidate.blocking)
   }
 
@@ -1115,10 +1114,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
     setBusy('save')
     setError('')
     try {
-      for (let index = 0; index < ready.length; index += 1) {
-        setProgress(`正在写入 ${index + 1} / ${ready.length}`)
-        await createRow(table.id, valuesWithAppearance(ready[index].values))
-      }
+      await saveScannerFrames(table.id, ready)
       setProgress(`已写入 ${ready.length} 条收集记录。`)
       const savedIds = new Set(ready.map((frame) => frame.id))
       setFrames((current) => current.filter((frame) => {
@@ -1141,6 +1137,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
   return (
     <Modal
       title="精灵扫描录入"
+      busy={Boolean(busy)}
       onClose={onClose}
       width={1180}
       footer={
@@ -1153,13 +1150,14 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
         </>
       }
     >
-      <div className="scanner-shell">
+      <fieldset className="scanner-shell" disabled={Boolean(busy)}>
         <div className="scanner-import-row">
           <label className="btn">
             <Video size={15} />
             选择视频
             <input
               type="file"
+              disabled={Boolean(busy)}
               accept="video/mp4"
               hidden
               onChange={(event) => {
@@ -1229,6 +1227,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
                 选择截图
                 <input
                   type="file"
+              disabled={Boolean(busy)}
                   accept="image/*"
                   multiple
                   hidden
@@ -1520,7 +1519,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
             )}
           </section>
         </div>
-      </div>
+      </fieldset>
       {modelSettingsOpen && (
         <ModelSettingsModal
           config={modelConfig}

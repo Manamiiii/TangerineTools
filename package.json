@@ -25,15 +25,13 @@
     "audit:bwiki:nrc": "node scripts/bwiki/audit-nrc.mjs",
     "review:bwiki:nrc": "node scripts/bwiki/review-nrc.mjs",
     "check:bwiki:nrc": "node scripts/bwiki/apply-preset.mjs --source=nrc",
-    "check:bwiki:sources": "node scripts/bwiki/check-sources.mjs",
+    "check:bwiki:sources": "node scripts/bwiki/check-sources.mjs --source=nrc",
     "preview:bwiki": "node scripts/bwiki/build-preview.mjs",
-    "check:bwiki:preset": "node scripts/bwiki/apply-preset.mjs",
+    "check:bwiki:preset": "node scripts/bwiki/apply-preset.mjs --source=nrc",
     "apply:bwiki:preset": "node scripts/bwiki/apply-preset.mjs --write",
     "test": "node --test scripts/tests/*.test.mjs"
   },
   "dependencies": {
-    "@tesseract.js-data/chi_sim": "^1.0.0",
-    "@tesseract.js-data/eng": "^1.0.0",
     "dexie": "^4.4.4",
     "dexie-react-hooks": "^4.4.0",
     "lucide-react": "^1.25.0",

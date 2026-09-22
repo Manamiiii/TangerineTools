@@ -14,9 +14,9 @@
   "remoteEnv": {
     "CODEX_HOME": "/home/codespace/.codex"
   },
-  "forwardPorts": [5173],
+  "forwardPorts": [5188],
   "portsAttributes": {
-    "5173": {
+    "5188": {
       "label": "TangerineTools",
       "onAutoForward": "openBrowser"
     }

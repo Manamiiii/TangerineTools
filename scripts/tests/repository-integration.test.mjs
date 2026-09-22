@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import 'fake-indexeddb/auto'
+import { saveScannerFrames, scannerDuplicateCandidates } from '../../src/features/rock-kingdom-scanner/scannerPersistence.js'
 import { db } from '../../src/db/core.js'
 import {
   createCatalogTable,
@@ -11,6 +12,7 @@ import {
   deleteScene,
   ensureOwnedTable,
   updateRows,
+  writeOwnedRecords,
 } from '../../src/db/repository.js'
 import { ROCK_KINGDOM_COLLECTION_FIELDS } from '../../src/domain/owned.js'
 import { ROCK_KINGDOM_PRESET } from '../../src/presets/rockKingdom.js'
@@ -151,4 +153,52 @@ test('owned field configuration and random ids survive initialization without ro
 
 test.after(async () => {
   await db.delete()
+})
+
+
+test('concurrent field creation keeps distinct keys and contiguous order', async () => {
+  await resetDatabase()
+  const fields = await Promise.all(Array.from({ length: 5 }, () => createField('t', { name: '名称', type: 'text' })))
+  assert.equal(new Set(fields.map((field) => field.key)).size, 5)
+  await db.catalogFields.delete(fields[1].id)
+  await createField('t', { name: '名称', type: 'text' })
+  assert.deepEqual((await db.catalogFields.where('tableId').equals('t').sortBy('order')).map((f) => f.order), [0, 1, 2, 3, 4])
+})
+
+test('owned batch failure rolls back earlier writes and preserves single-mode records', async () => {
+  await resetDatabase()
+  await db.catalogTables.put({ id: 'owned', kind: 'owned', collectionMode: 'single' })
+  await db.catalogFields.put({ id: 'ref', tableId: 'owned', key: 'ref', type: 'reference' })
+  await assert.rejects(writeOwnedRecords('owned', [{ values: { ref: 'a' } }, { values: { ref: 'a' } }], { appendOnly: true }), /一对一/)
+  assert.equal(await db.catalogRows.count(), 0)
+  const [a] = await writeOwnedRecords('owned', [{ values: { ref: 'a', note: 'original' } }])
+  const [updated] = await writeOwnedRecords('owned', [{ values: { ref: 'a', note: 'edited' } }])
+  assert.equal(updated.id, a.id)
+  const [b] = await writeOwnedRecords('owned', [{ values: { ref: 'b' } }])
+  await assert.rejects(writeOwnedRecords('owned', [{ id: b.id, values: { ref: 'a' } }]), /一对一/)
+  assert.equal((await db.catalogRows.get(b.id)).values.ref, 'b')
+})
+
+
+test('scanner checks pending and persisted duplicates inside an atomic batch', async () => {
+  await resetDatabase()
+  await db.catalogTables.put({ id: 'scan', kind: 'owned', collectionMode: 'multiple' })
+  const frame = { id: 'one', reviewed: true, values: { ref: 'a', nature: 'focused', appearance: 'none', gender: 'male', specialty: 'none' } }
+  const duplicate = { ...frame, id: 'two' }
+  assert.equal(scannerDuplicateCandidates(duplicate, [frame, duplicate], []).some((item) => item.blocking), true)
+  await assert.rejects(saveScannerFrames('scan', [frame, duplicate]), /相似/)
+  assert.equal(await db.catalogRows.count(), 0)
+  await saveScannerFrames('scan', [frame, { ...duplicate, duplicateDecision: 'add' }])
+  assert.equal(await db.catalogRows.count(), 2)
+  await assert.rejects(saveScannerFrames('scan', [frame]), /相似/)
+  assert.equal(await db.catalogRows.count(), 2)
+})
+
+test('invalid shiny batch rolls back and leaves prior values untouched', async () => {
+  await resetDatabase()
+  await db.catalogTables.put({ id: 'owned', kind: 'owned', collectionMode: 'multiple' })
+  await db.catalogFields.put({ id: 'ref', tableId: 'owned', key: 'ref', type: 'reference' })
+  await db.catalogRows.bulkPut([{ id: 'allowed', tableId: 'table-rock-kingdom-elf-basic', values: { shiny: 'yes' } }, { id: 'blocked', tableId: 'table-rock-kingdom-elf-basic', values: { shiny: 'no' } }])
+  await assert.rejects(writeOwnedRecords('owned', [{ values: { ref: 'allowed', appearance: 'shiny' } }, { values: { ref: 'blocked', appearance: 'shiny' } }]), /无异色/)
+  assert.equal(await db.catalogRows.where('tableId').equals('owned').count(), 0)
 })

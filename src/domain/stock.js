@@ -1,6 +1,7 @@
 // 统计视图的纯聚合逻辑。组件只负责选择数据源和渲染，便于独立回归分组语义。
 
 import { stringifyCellValue } from '../utils.js'
+import { ownedFieldValue } from './owned.js'
 
 const CATEGORICAL_FIELD_TYPES = new Set(['select', 'multiselect', 'boolean', 'reference', 'references', 'date'])
 const LOW_VALUE_DEFAULT_TYPES = new Set(['stats', 'image', 'url', 'longtext'])
@@ -26,7 +27,11 @@ export function stockOptionLabel(field, value) {
 
 export function stockRowGroupKeys(row, field) {
   if (!field) return ['全部记录']
-  const raw = row.values?.[field.key]
+  const raw = ownedFieldValue(row, field)
+  if (field.type === 'reference' || field.type === 'references') {
+    const ids = Array.isArray(raw) ? [...new Set(raw)] : raw ? [raw] : []
+    return ids.length ? ids : ['未填写']
+  }
   if (field.type === 'multiselect') {
     const values = Array.isArray(raw) ? raw : []
     return values.length
@@ -37,7 +42,7 @@ export function stockRowGroupKeys(row, field) {
   return label ? [label] : ['未填写']
 }
 
-export function buildStockSummary(rows = [], groupField = null, numberField = null, threshold = '') {
+export function buildStockSummary(rows = [], groupField = null, numberField = null, threshold = '', referenceLabels = new Map()) {
   const groups = new Map()
   const matchedRows = rows.filter((row) => {
     if (!numberField || threshold === '') return true
@@ -56,7 +61,9 @@ export function buildStockSummary(rows = [], groupField = null, numberField = nu
     total: rows.length,
     matched: matchedRows.length,
     groups: Array.from(groups.entries())
-      .map(([label, count]) => ({ label, count }))
+      .map(([key, count]) => ['reference', 'references'].includes(groupField?.type)
+        ? { key, label: referenceLabels.get(key) || key, count }
+        : { label: key, count })
       .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label)),
   }
 }

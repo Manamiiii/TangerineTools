@@ -14,6 +14,7 @@ export {
   createCatalogTable,
   createField,
   createRow,
+  writeOwnedRecords,
   createScene,
   deleteCatalogTable,
   deleteField,

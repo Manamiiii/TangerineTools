@@ -98,22 +98,24 @@ export async function requestModelJson({
       }),
       signal: controller.signal,
     })
+
+    if (!response.ok) {
+      let detail = ''
+      try {
+        const body = await response.json()
+        detail = body?.error?.message || ''
+      } catch (error) {
+        if (error?.name === 'AbortError') throw error
+        // The status is enough when a provider does not return JSON.
+      }
+      throw new Error(`模型接口返回 ${response.status}${detail ? `：${detail}` : ''}`)
+    }
+    const body = await response.json()
+    return parseJsonObject(body?.choices?.[0]?.message?.content)
   } catch (error) {
     if (error?.name === 'AbortError') throw new Error('模型请求超时')
     throw new Error(`模型请求失败：${error?.message || '网络不可用或接口不允许浏览器访问'}`)
   } finally {
     clearTimeout(timeout)
   }
-  if (!response.ok) {
-    let detail = ''
-    try {
-      const body = await response.json()
-      detail = body?.error?.message || ''
-    } catch {
-      // The status is enough when a provider does not return JSON.
-    }
-    throw new Error(`模型接口返回 ${response.status}${detail ? `：${detail}` : ''}`)
-  }
-  const body = await response.json()
-  return parseJsonObject(body?.choices?.[0]?.message?.content)
 }

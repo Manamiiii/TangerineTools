@@ -151,13 +151,13 @@ try {
 } catch {
   // Missing output is reported below or created in write mode.
 }
-if (currentPortraitOutput !== portraitOutput) {
+if (currentPortraitOutput?.replace(/\r\n/g, '\n') !== portraitOutput) {
   stale += 1
   if (write) await writeFile(portraitOutputPath, portraitOutput)
 }
 
 if (stale && !write) {
-  throw new Error(`${stale} 个固定设备文字模板缺失或已过期；运行 npm run apply:scanner:templates。`)
+  throw new Error(`${stale} 个固定设备文字模板或头像索引缺失或已过期；运行 npm run apply:scanner:templates。`)
 }
 
 console.log(write

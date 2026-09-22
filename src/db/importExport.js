@@ -1,4 +1,4 @@
-import { nowIso } from '../utils.js'
+import { nowIso, normalizeLegacyOptions } from '../utils.js'
 import { db } from './core.js'
 
 export const EXPORT_SCHEMA_VERSION = 1
@@ -160,7 +160,9 @@ export async function importAllData(payload) {
     async () => {
       if (data.scenes) await db.scenes.bulkPut(data.scenes)
       if (data.catalogTables) await db.catalogTables.bulkPut(data.catalogTables)
-      if (data.catalogFields) await db.catalogFields.bulkPut(data.catalogFields)
+      if (data.catalogFields) await db.catalogFields.bulkPut(data.catalogFields.map((field) => ({
+        ...field, ...(Array.isArray(field.options) ? { options: normalizeLegacyOptions(field.options) } : {}),
+      })))
       if (data.catalogRows) await db.catalogRows.bulkPut(data.catalogRows)
       if (data.meta) await db.meta.bulkPut(data.meta)
       await db.meta.delete('rockKingdomRuntimeMigrationVersion')
