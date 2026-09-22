@@ -1,6 +1,7 @@
 // 资料库通用控件：字段管理弹窗、列头菜单、单元格展示/编辑组件。
 // 这些是资料表格的底层构件，被 dataTables.jsx 中的资料库/资料表/详情页组合使用。
 
+import { useAsyncAction } from '../hooks/useAsyncAction.js'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import {
@@ -25,7 +26,7 @@ import {
   isRockKingdomCreatureReference,
   selectableReferenceRows,
 } from '../domain/rockKingdomPresentation.js'
-import { generateId, getStatsValues, resolveStatsMapping, stringifyCellValue } from '../utils.js'
+import { referenceRowLabel, generateId, getStatsValues, resolveStatsMapping } from '../utils.js'
 import {
   ClampText,
   ColorSwatchPicker,
@@ -45,6 +46,7 @@ import {
 // ---------------------------------------------------------------------------
 
 export function FieldManagerModal({ tableId, fields, sceneTables, onClose, focusFieldId }) {
+  const { pending, error, run } = useAsyncAction()
   const sorted = [...fields].sort((a, b) => a.order - b.order)
   const { onDragStart, onDragOver, onDrop } = useDragReorder(sorted, (next) => {
     reorderFields(next.map((f) => f.id))
@@ -56,21 +58,23 @@ export function FieldManagerModal({ tableId, fields, sceneTables, onClose, focus
   }, [focusFieldId])
 
   async function handleAddField() {
-    await createField(tableId, { name: '新字段', type: 'text' })
+    await run(() => createField(tableId, { name: '新字段', type: 'text' }))
   }
 
   return (
     <Modal
       title="字段管理"
+      busy={pending}
       onClose={onClose}
       width={680}
       footer={
-        <button type="button" className="btn btn-primary" onClick={onClose}>
+        <button type="button" className="btn btn-primary" onClick={onClose} disabled={pending}>
           完成
         </button>
       }
     >
       <div className="field-manager">
+        {error && <p role="alert">{error}</p>}
         {sorted.map((field, index) => (
           <div
             key={field.id}
@@ -84,7 +88,7 @@ export function FieldManagerModal({ tableId, fields, sceneTables, onClose, focus
             <FieldRow field={field} allFields={sorted} sceneTables={sceneTables} />
           </div>
         ))}
-        <button type="button" className="btn btn-dashed" onClick={handleAddField}>
+        <button type="button" className="btn btn-dashed" onClick={handleAddField} disabled={pending}>
           <Plus size={14} /> 添加字段
         </button>
       </div>
@@ -439,25 +443,6 @@ function ReferenceLookupProvider({ fields, children }) {
       {children}
     </ReferenceLookupContext.Provider>
   )
-}
-
-function referenceRowLabel(fields, row, field) {
-  if (!row) return ''
-  const configuredKeys = field?.display?.referenceLabelFields
-  if (Array.isArray(configuredKeys) && configuredKeys.length > 0) {
-    const parts = configuredKeys
-      .map((key) => {
-        const referenceField = fields.find((item) => item.key === key)
-        return referenceField
-          ? stringifyCellValue(row.values?.[key], referenceField)
-          : row.values?.[key]
-      })
-      .filter(Boolean)
-    if (parts.length > 0) return parts.join(field.display.referenceLabelSeparator || ' · ')
-  }
-  const labelField = fields.find((f) => f.type === 'text') || fields[0]
-  if (!labelField) return row.id
-  return stringifyCellValue(row.values?.[labelField.key], labelField) || row.id
 }
 
 function ParentheticalText({ value }) {

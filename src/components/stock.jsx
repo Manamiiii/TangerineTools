@@ -2,6 +2,7 @@
 // 一个数值阈值条件，快速回答“满足条件的记录有哪些/有多少”。
 
 import { useMemo, useState } from 'react'
+import { referenceRowLabel } from '../utils.js'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { BarChart3 } from 'lucide-react'
 import { db } from '../db.js'
@@ -52,6 +53,11 @@ export function StockTool({ scene }) {
   const groupField = safeFields.find((field) => field.key === groupFieldKey)
     || defaultStockGroupField(groupableFields)
   const numberField = safeFields.find((field) => field.key === numberFieldKey) || null
+  const referenceRows = useLiveQuery(() => groupField?.referenceTableId
+    ? db.catalogRows.where('tableId').equals(groupField.referenceTableId).toArray() : [], [groupField?.referenceTableId || ''])
+  const referenceFields = useLiveQuery(() => groupField?.referenceTableId
+    ? db.catalogFields.where('tableId').equals(groupField.referenceTableId).sortBy('order') : [], [groupField?.referenceTableId || ''])
+  const referenceLabels = useMemo(() => new Map((referenceRows || []).map((row) => [row.id, referenceRowLabel(referenceFields || [], row, groupField)])), [referenceRows, referenceFields, groupField])
   const displayRows = useMemo(
     () => sourceTable?.id === ROCK_KINGDOM_CREATURE_TABLE_ID
       ? visibleRockKingdomCreatureRows(safeRows)
@@ -60,8 +66,8 @@ export function StockTool({ scene }) {
   )
 
   const stats = useMemo(
-    () => buildStockSummary(displayRows, groupField, numberField, threshold),
-    [displayRows, groupField, numberField, threshold],
+    () => buildStockSummary(displayRows, groupField, numberField, threshold, referenceLabels),
+    [displayRows, groupField, numberField, threshold, referenceLabels],
   )
 
   if (!tables || !fields || !rows) return null
@@ -152,7 +158,7 @@ export function StockTool({ scene }) {
             </p>
             <ul className="stock-stats-list">
               {stats.groups.map((item) => (
-                <li key={item.label}>
+                <li key={item.key || item.label}>
                   <span>{item.label}</span>
                   <span className="stock-stats-count">{item.count}</span>
                 </li>

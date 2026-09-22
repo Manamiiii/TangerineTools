@@ -74,14 +74,16 @@ npm run check:official-announcements
 3. `npm run sync:bwiki:details`：刷新精灵详情 staging；默认复用已有成功行。
 4. `npm run sync:breeding`：刷新蛋组和繁育谱系 staging。
 5. `npm run preview:bwiki`：生成精灵与技能 preview，并输出临时审计报告。
-6. `npm run check:bwiki:preset`：dry-run 校验行数、稳定 id、技能双向引用和迁移字段。
-7. 用户确认后，设置 `BWIKI_PRESET_OVERWRITE=CONFIRM_BWIKI_PRESET` 并运行 `npm run apply:bwiki:preset`。
+6. `node scripts/bwiki/apply-preset.mjs --source=rocom`：dry-run 校验行数、稳定 id、技能双向引用和迁移字段。
+7. 用户确认后，设置 `BWIKI_PRESET_OVERWRITE=CONFIRM_BWIKI_PRESET` 并运行 `npm run apply:bwiki:preset -- --source=rocom`。
 8. 运行 `npm test`、`npm run check:nature`、`npm run lint`、`npm run build`。
 
 ## 发布边界
 
 - preview 和 dry-run 不修改 `public/presets/*`。
 - apply 只写入精灵、技能和迁移清单，不直接操作 IndexedDB。
+- apply 必须显式传入 `--source=nrc` 或 `--source=rocom`；常用预置检查及来源检查默认使用 NRC。
+- 所有来源的候选均不得遗漏现有正式稳定 id；缺失时阻止 dry-run 与写入，必须先制定兼容方案。
 - 稳定 id 必须保持；用户已有 owned / stock 引用不能因发布断裂。
 - 正式迁移只更新空值、无效值或仍匹配旧正式值指纹的字段。
 - BWiki 图片 URL 必须来自实际解析结果，不拼接或猜测。

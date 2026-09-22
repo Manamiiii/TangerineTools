@@ -197,7 +197,8 @@ function TableView({ table, tables, sceneId, onSwitchTable }) {
       : compareRowsBySort(a, b, sort, sortedFields))
 
   const pageCount = totalPages(filteredRows.length, pageSize)
-  const pageRows = paginate(filteredRows, page, pageSize)
+  const safePage = Math.min(page, pageCount)
+  const pageRows = paginate(filteredRows, safePage, pageSize)
 
   function handleSortChange(fieldKey, direction) {
     if (direction !== 'toggle') {
@@ -320,7 +321,7 @@ function TableView({ table, tables, sceneId, onSwitchTable }) {
             onOpenReference={setReferenceDetail}
           />
           <Pagination
-            page={page}
+            page={safePage}
             pageCount={pageCount}
             pageSize={pageSize}
             total={filteredRows.length}

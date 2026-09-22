@@ -293,8 +293,9 @@ async function writePresetFiles(creatureRows, skillRows, migrationManifest, sour
 
 async function main() {
   const args = new Set(process.argv.slice(2))
-  const unknownArgs = [...args].filter((arg) => !['--write', '--source=nrc'].includes(arg))
+  const unknownArgs = [...args].filter((arg) => !['--write', '--source=nrc', '--source=rocom'].includes(arg))
   assert(unknownArgs.length === 0, `未知参数：${unknownArgs.join(' ')}`)
+  assert(Number(args.has('--source=nrc')) + Number(args.has('--source=rocom')) === 1, '必须明确选择 --source=nrc 或 --source=rocom')
   const writeMode = args.has('--write')
 
   const [creaturePreviewText, skillPreviewText, currentCreatures, currentSkills, details, existingManifest] = await Promise.all([
@@ -340,6 +341,7 @@ async function main() {
   const relations = validateRelations(creatureRows, skillRows)
   const creatureDiff = compareIds(currentCreatures, creatureRows)
   const skillDiff = compareIds(currentSkills, skillRows)
+  assert(creatureDiff.omitted.length === 0 && skillDiff.omitted.length === 0, `候选遗漏正式稳定 ID：精灵 ${creatureDiff.omitted.length}、技能 ${skillDiff.omitted.length}；必须先制定兼容方案`)
   const legacyUnmatched = details.rows.flatMap((row) =>
     (row.legacyUnmatchedSkillNames ?? []).map((name) => `${row.no} ${row.name}：${name}`))
   const generatedAt = new Date().toISOString()

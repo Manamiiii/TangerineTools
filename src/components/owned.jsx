@@ -9,8 +9,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { useAsyncAction } from '../hooks/useAsyncAction.js'
 import { useOwnedTable } from '../hooks/useOwnedTable.js'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { BarChart3, FilterX, ListChecks, Pencil, Plus, ScanLine, Search, Settings2, Sparkles, Trash2 } from 'lucide-react'
-import { createRow, db, deleteRow, updateRow, updateRows } from '../db.js'
+import { BarChart3, Eye, FilterX, ListChecks, Pencil, Plus, ScanLine, Search, Settings2, Sparkles, Trash2 } from 'lucide-react'
+import { db, deleteRow, writeOwnedRecords } from '../db.js'
 import {
   matchesOwnedFieldFilters,
   matchesOwnedSearch,
@@ -24,6 +24,7 @@ import { RockKingdomScannerModal } from '../features/rock-kingdom-scanner/RockKi
 import { OwnedIntelligenceModal } from '../features/rock-kingdom-model/OwnedIntelligenceModal.jsx'
 import { ROCK_KINGDOM_PRESET } from '../presets/rockKingdom.js'
 import { ConfirmDialog, EmptyState, FormRow, IconButton, LoadState, Modal, OptionTag, Pagination } from './common.jsx'
+import { RowDetailModal } from './rowDetail.jsx'
 import { CellView, FieldInput, FieldManagerModal, fieldDisplayProps } from './catalog.jsx'
 
 export function OwnedTool({ scene }) {
@@ -129,6 +130,7 @@ function OwnedTableView({ table, sceneId }) {
 
   const [fieldManagerOpen, setFieldManagerOpen] = useState(false)
   const [keyword, setKeyword] = useState('')
+  const [rowDetail, setRowDetail] = useState(null)
   const [rowForm, setRowForm] = useState(null) // null | 'new' | row
   const [deletingRow, setDeletingRow] = useState(null)
   const [scannerOpen, setScannerOpen] = useState(false)
@@ -456,6 +458,7 @@ function OwnedTableView({ table, sceneId }) {
           allPageSelected={pageRows.length > 0 && pageRows.every((row) => selectedIds.has(row.id))}
           onToggleRow={toggleRow}
           onTogglePage={togglePageRows}
+          onDetailRow={setRowDetail}
           onEditRow={setRowForm}
           onDeleteRow={setDeletingRow}
         />
@@ -485,13 +488,13 @@ function OwnedTableView({ table, sceneId }) {
         />
       )}
 
+      {rowDetail && <RowDetailModal row={rowDetail} fields={sortedFields} onClose={() => setRowDetail(null)} />}
+
       {rowForm && (
         <OwnedFormModal
           table={table}
           fields={visibleFields}
           row={rowForm === 'new' ? null : rowForm}
-          rows={rows}
-          collectionMode={table.collectionMode || 'single'}
           onClose={() => setRowForm(null)}
         />
       )}
@@ -506,6 +509,7 @@ function OwnedTableView({ table, sceneId }) {
 
       {batchOpen && (
         <OwnedBatchEditModal
+          table={table}
           fields={visibleFields}
           rows={selectedRows}
           rockKingdom={sceneId === ROCK_KINGDOM_PRESET.scene.id}
@@ -554,6 +558,7 @@ function OwnedGrid({
   allPageSelected,
   onToggleRow,
   onTogglePage,
+  onDetailRow,
   onEditRow,
   onDeleteRow,
 }) {
@@ -600,6 +605,7 @@ function OwnedGrid({
               )}
               <td className="td-actions">
                 <span className="data-grid-actions">
+                  <IconButton icon={Eye} title="详情" onClick={() => onDetailRow(row)} />
                   <IconButton icon={Pencil} title="编辑" onClick={() => onEditRow(row)} />
                   <IconButton
                     icon={Trash2}
@@ -636,7 +642,7 @@ function PartnerMarkRecommendation({ value }) {
   )
 }
 
-function OwnedBatchEditModal({ fields, rows, rockKingdom, onClose, onSaved }) {
+function OwnedBatchEditModal({ table, fields, rows, rockKingdom, onClose, onSaved }) {
   const editableFields = fields.filter((field) => {
     if (field.type === 'stats' || field.type === 'reference' || field.type === 'references' || field.type === 'image') return false
     if (rockKingdom) return ROCK_BATCH_FIELD_KEYS.has(field.key)
@@ -650,7 +656,7 @@ function OwnedBatchEditModal({ fields, rows, rockKingdom, onClose, onSaved }) {
   async function applyBatch() {
     if (!field || value === undefined || rows.length === 0) return
     await run(async () => {
-      await updateRows(rows.map((row) => {
+      await writeOwnedRecords(table.id, rows.map((row) => {
         const next = { ...row.values, [field.key]: value }
         return {
           id: row.id,
@@ -723,7 +729,7 @@ function OwnedBatchEditModal({ fields, rows, rockKingdom, onClose, onSaved }) {
 // 新增 / 编辑记录弹窗
 // ---------------------------------------------------------------------------
 
-export function OwnedFormModal({ table, fields, row, rows, collectionMode, initialValues = {}, onClose, onSaved }) {
+export function OwnedFormModal({ table, fields, row, initialValues = {}, onClose, onSaved }) {
   const [values, setValues] = useState(() => {
     const init = {}
     fields.forEach((f) => {
@@ -764,18 +770,7 @@ export function OwnedFormModal({ table, fields, row, rows, collectionMode, initi
     }
     await run(async () => {
       const savedValues = values.appearance ? valuesWithAppearance(values) : values
-      if (row) {
-        await updateRow(row.id, { ...row.values, ...savedValues })
-      } else {
-        const refField = fields.find((field) => field.type === 'reference')
-        const duplicate = collectionMode === 'single' && refField
-          ? rows.find((item) =>
-              item.values?.[refField.key] && item.values?.[refField.key] === savedValues[refField.key],
-            )
-          : null
-        if (duplicate) await updateRow(duplicate.id, { ...duplicate.values, ...savedValues })
-        else await createRow(table.id, savedValues)
-      }
+      await writeOwnedRecords(table.id, [{ id: row?.id, values: savedValues }])
       onSaved?.({ ...savedValues })
       onClose()
     })

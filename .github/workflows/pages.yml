@@ -39,10 +39,15 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Verify preset sources and scanner assets
+        run: |
+          npm run check:bwiki:sources
+          npm run check:bwiki:preset
+          npm run check:scanner:templates
+          npm run check:nature
+
       - name: Build
         run: npm run build
-        env:
-          VITE_APP_BUILD: ${{ github.sha }}
 
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'

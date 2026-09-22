@@ -1,4 +1,3 @@
-let workerPromise = null
 let metadataWorkerPromise = null
 let numericWorkerPromise = null
 let progressListener = null
@@ -43,6 +42,8 @@ async function createOcrWorker(languages = ['chi_sim', 'eng']) {
   const { createWorker, OEM } = await import('tesseract.js')
   return createWorker(languages, OEM.LSTM, {
     langPath: localLanguagePath(),
+    workerPath: new URL('ocr-runtime/worker.min.js', document.baseURI).href,
+    corePath: new URL('ocr-runtime/', document.baseURI).href,
     logger: (message) => {
       if (typeof progressListener === 'function') progressListener(message)
     },
@@ -62,24 +63,6 @@ async function createNumericOcrWorker() {
     tessedit_char_whitelist: '0123456789',
   })
   return worker
-}
-
-export async function recognizeImageText(image, onProgress, options) {
-  if (!image) throw new Error('请先选择一张截图')
-  progressListener = onProgress
-  if (!workerPromise) {
-    workerPromise = createOcrWorker().catch((error) => {
-      workerPromise = null
-      throw error
-    })
-  }
-  try {
-    const worker = await workerPromise
-    const result = await worker.recognize(image)
-    return normalizeOcrText(result?.data?.text, options)
-  } finally {
-    progressListener = null
-  }
 }
 
 export async function recognizeStructuredImageText(

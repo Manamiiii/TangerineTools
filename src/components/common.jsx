@@ -2,6 +2,7 @@
 // 指标视图、分页、弹出菜单、拖拽排序等。所有工具型页面共用。
 
 import { useEffect, useId, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Check, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, GripVertical, Search, X } from 'lucide-react'
 import { COLOR_PALETTE, PAGE_SIZE_OPTIONS, STATS_SCALE_MAX } from '../constants.js'
 import { clamp } from '../utils.js'
@@ -13,22 +14,57 @@ import { useAsyncAction } from '../hooks/useAsyncAction.js'
 
 export function Modal({ title, onClose, children, width = 520, footer, busy = false }) {
   const titleId = useId()
+  const panelRef = useRef(null)
+  const closeState = useRef({ onClose, busy })
+  closeState.current = { onClose, busy }
   useEffect(() => {
-    function onKey(e) {
-      if (e.key === 'Escape' && !busy) onClose?.()
+    const panel = panelRef.current
+    const previousFocus = document.activeElement
+    const isTop = () => [...document.querySelectorAll('.modal-panel')].at(-1) === panel
+    const focusable = () => [...panel.querySelectorAll('button, input, select, textarea, a[href], [tabindex]')]
+      .filter((element) => !element.matches(':disabled') && element.tabIndex >= 0 && element.getClientRects().length > 0)
+    const focusPanel = () => (focusable()[0] || panel).focus()
+    const initialFocus = requestAnimationFrame(() => { if (isTop()) focusPanel() })
+    function onFocus(event) {
+      if (isTop() && !panel.contains(event.target)) focusPanel()
     }
+    function onKey(event) {
+      if (!isTop() || event.defaultPrevented) return
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopImmediatePropagation()
+        if (!closeState.current.busy) closeState.current.onClose?.()
+      }
+      if (event.key === 'Tab') {
+        const items = focusable()
+        const first = items[0] || panel
+        const last = items.at(-1) || panel
+        if (!items.length || (event.shiftKey && document.activeElement === first)
+          || (!event.shiftKey && document.activeElement === last)) {
+          event.preventDefault()
+          const target = event.shiftKey ? last : first
+          target.focus()
+        }
+      }
+    }
+    document.addEventListener('focusin', onFocus)
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose, busy])
+    return () => {
+      cancelAnimationFrame(initialFocus)
+      document.removeEventListener('focusin', onFocus)
+      window.removeEventListener('keydown', onKey)
+      if (previousFocus?.isConnected) previousFocus.focus()
+    }
+  }, [])
 
-  return (
+  return createPortal(
     <div
       className="modal-backdrop"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget && !busy) onClose?.()
       }}
     >
-      <div className="modal-panel" style={{ maxWidth: width }} role="dialog" aria-modal="true" aria-labelledby={titleId} aria-busy={busy}>
+      <div ref={panelRef} tabIndex={-1} className="modal-panel" style={{ maxWidth: width }} role="dialog" aria-modal="true" aria-labelledby={titleId} aria-busy={busy}>
         <div className="modal-header">
           <h3 id={titleId}>{title}</h3>
           <button type="button" className="icon-btn" onClick={onClose} aria-label="关闭" disabled={busy}>
@@ -38,7 +74,8 @@ export function Modal({ title, onClose, children, width = 520, footer, busy = fa
         <div className="modal-body">{children}</div>
         {footer && <div className="modal-footer">{footer}</div>}
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
 
@@ -192,7 +229,7 @@ export function SearchableSelect({
             setOpen(true)
           }}
           onKeyDown={(event) => {
-            if (event.key === 'Escape') setOpen(false)
+            if (event.key === 'Escape' && open) { event.preventDefault(); event.stopPropagation(); setOpen(false) }
             if (event.key === 'Enter' && filtered.length === 1) {
               event.preventDefault()
               choose(filtered[0].value)

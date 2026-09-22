@@ -49,12 +49,16 @@ export function normalizeOption(opt) {
   }
 }
 
+export function normalizeLegacyOptions(options) {
+  return options.map((option) => typeof option === 'string' ? normalizeOption(option) : option)
+}
+
 // 合并字段的选项列表：预置里新增的选项会被补齐（本地没有才追加）；
 // 本地已有的选项里，如果其 label/color 仍完全等于 legacyDefaults 记录的
 // 旧默认值（即用户没有手动改过），会被更新为预置的最新展示名/颜色；
 // 已被用户修改过的选项、以及预置里没有的本地自定义选项都保持原样不变。
 export function mergeFieldOptions(existingOptions, presetOptions, legacyDefaults = {}) {
-  const existing = Array.isArray(existingOptions) ? existingOptions : []
+  const existing = Array.isArray(existingOptions) ? normalizeLegacyOptions(existingOptions) : []
   const preset = Array.isArray(presetOptions) ? presetOptions : []
   const presetByValue = new Map(preset.map((opt) => [opt.value, opt]))
 
@@ -262,6 +266,7 @@ export function rowMatchesFilters(row, fields, filters) {
     const raw = row.values?.[fieldKey]
     switch (field.type) {
       case 'number': {
+        if (raw == null || raw === '') return (cond.min == null || cond.min === '') && (cond.max == null || cond.max === '')
         const num = Number(raw)
         if (cond.min !== '' && cond.min != null && !(num >= Number(cond.min))) return false
         if (cond.max !== '' && cond.max != null && !(num <= Number(cond.max))) return false
@@ -317,4 +322,23 @@ export function paginate(list, page, pageSize) {
 
 export function totalPages(count, pageSize) {
   return Math.max(1, Math.ceil(count / pageSize))
+}
+
+export function referenceRowLabel(fields, row, field) {
+  if (!row) return ''
+  const configuredKeys = field?.display?.referenceLabelFields
+  if (Array.isArray(configuredKeys) && configuredKeys.length > 0) {
+    const parts = configuredKeys
+      .map((key) => {
+        const referenceField = fields.find((item) => item.key === key)
+        return referenceField
+          ? stringifyCellValue(row.values?.[key], referenceField)
+          : row.values?.[key]
+      })
+      .filter(Boolean)
+    if (parts.length > 0) return parts.join(field.display.referenceLabelSeparator || ' · ')
+  }
+  const labelField = fields.find((f) => f.type === 'text') || fields[0]
+  if (!labelField) return row.id
+  return stringifyCellValue(row.values?.[labelField.key], labelField) || row.id
 }

@@ -1,5 +1,6 @@
 // 场景、资料表、字段、行和收集记录表的数据访问。
 
+import { appearanceFlags } from '../domain/rockKingdomAppearance.js'
 import { db } from './core.js'
 import { OWNED_TABLE_NAME, ROCK_KINGDOM_COLLECTION_FIELDS } from '../domain/owned.js'
 import {
@@ -197,32 +198,28 @@ export async function ensureOwnedTable(sceneId) {
 // ---------------------------------------------------------------------------
 
 export async function createField(tableId, { name, type }, atIndex = null) {
-  const existing = await db.catalogFields.where('tableId').equals(tableId).sortBy('order')
-  const key = deriveFieldKey(
-    name,
-    existing.map((f) => f.key),
-  )
-  const now = nowIso()
-  const field = normalizeField({
-    id: generateId('field'),
-    tableId,
-    key,
-    name,
-    type,
-    order: atIndex == null ? existing.length : atIndex,
-    createdAt: now,
-    updatedAt: now,
-  })
-  if (atIndex == null) {
-    await db.catalogFields.put(field)
-    return field
-  }
-  const ordered = [...existing]
-  ordered.splice(atIndex, 0, field)
-  await db.transaction('rw', db.catalogFields, async () => {
+  return db.transaction('rw', db.catalogFields, async () => {
+    const existing = await db.catalogFields.where('tableId').equals(tableId).sortBy('order')
+    const key = deriveFieldKey(
+      name,
+      existing.map((f) => f.key),
+    )
+    const now = nowIso()
+    const field = normalizeField({
+      id: generateId('field'),
+      tableId,
+      key,
+      name,
+      type,
+      order: atIndex == null ? existing.length : atIndex,
+      createdAt: now,
+      updatedAt: now,
+    })
+    const ordered = [...existing]
+    ordered.splice(atIndex == null ? ordered.length : atIndex, 0, field)
     await Promise.all(ordered.map((f, index) => db.catalogFields.put({ ...f, order: index })))
+    return field
   })
-  return field
 }
 
 export async function updateField(id, patch) {
@@ -269,4 +266,41 @@ export async function updateRows(updates = []) {
 
 export async function deleteRow(id) {
   await db.catalogRows.delete(id)
+}
+
+// 所有收集写入口共用事务和约束；扫描 appendOnly 不允许覆盖已有个体。
+export async function writeOwnedRecords(tableId, records, { appendOnly = false } = {}) {
+  return db.transaction('rw', db.catalogTables, db.catalogFields, db.catalogRows, async () => {
+    const table = await db.catalogTables.get(tableId)
+    if (!table || table.kind !== 'owned') throw new Error('收集表不存在')
+    const fields = await db.catalogFields.where('tableId').equals(tableId).sortBy('order')
+    const refField = fields.find((field) => field.type === 'reference')
+    const existing = await db.catalogRows.where('tableId').equals(tableId).toArray()
+    const saved = []
+    for (const record of records) {
+      const previous = record.id ? existing.find((row) => row.id === record.id) : null
+      if (record.id && !previous) throw new Error('收集记录已变化，请重新打开后保存')
+      const values = { ...previous?.values, ...record.values }
+      const reference = refField && values[refField.key] ? await db.catalogRows.get(values[refField.key]) : null
+      if (reference?.tableId === 'table-rock-kingdom-elf-basic'
+        && (values.appearance ? appearanceFlags(values.appearance).shiny === 'yes' : values.shiny === 'yes' || values.shiny === true)
+        && reference.values?.shiny !== 'yes' && reference.values?.shiny !== true) {
+        throw new Error('资料库标记该精灵无异色形态，不能保存为异色个体。')
+      }
+      const duplicate = table.collectionMode !== 'multiple' && refField && values[refField.key]
+        ? existing.find((row) => row.id !== record.id && row.values?.[refField.key] === values[refField.key]) : null
+      if (duplicate && (record.id || appendOnly)) throw new Error('一对一收集表已有该资料对象；请编辑已有记录，或切换为一对多。')
+      const target = previous || duplicate
+      const now = nowIso()
+      const row = target
+        ? { ...target, values: { ...target.values, ...values }, updatedAt: now }
+        : { id: generateId('row'), tableId, values, createdAt: now, updatedAt: now }
+      await db.catalogRows.put(row)
+      const index = existing.findIndex((item) => item.id === row.id)
+      if (index < 0) existing.push(row)
+      else existing[index] = row
+      saved.push(row)
+    }
+    return saved
+  })
 }

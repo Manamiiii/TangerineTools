@@ -24,7 +24,8 @@ export async function ensureSeeded() {
   }
   const migrationKey = 'rockKingdomRuntimeMigrationVersion'
   const migrated = await db.meta.get(migrationKey)
-  if (migrated?.value === ROCK_KINGDOM_ROWS_VERSION) {
+  const verified = await db.meta.get('rockKingdomVerifiedMigrationVersion')
+  if (migrated?.value === ROCK_KINGDOM_ROWS_VERSION && verified?.value === ROCK_KINGDOM_ROWS_VERSION) {
     await migrateRockKingdomStructure()
     await migrateRockKingdomFieldLayout()
     return
@@ -37,12 +38,16 @@ export async function ensureSeeded() {
   await migrateRockKingdomFieldOptions()
   await migrateRockKingdomFieldLayout()
   const presetMigration = await loadRockKingdomPresetMigration()
+  if (!presetMigration) return
   const creatureRowsReady = await migrateRockKingdomRows(presetMigration)
   await migrateRockKingdomBreedingFieldLabels()
   const skillRowsReady = await migrateRockKingdomSkillRows(presetMigration)
   // 静态预置离线时保留未完成状态，下次启动继续尝试，不把空骨架误标成已迁移。
   if (creatureRowsReady && skillRowsReady) {
-    await db.meta.put({ key: migrationKey, value: ROCK_KINGDOM_ROWS_VERSION })
+    await db.meta.bulkPut([
+      { key: migrationKey, value: ROCK_KINGDOM_ROWS_VERSION },
+      { key: 'rockKingdomVerifiedMigrationVersion', value: ROCK_KINGDOM_ROWS_VERSION },
+    ])
   }
 }
 
@@ -206,7 +211,8 @@ async function loadRockKingdomPresetMigration() {
     const res = await fetch(presetUrl('rockKingdomPresetMigration.json'))
     if (!res.ok) return null
     const payload = await res.json()
-    if (payload?.source !== 'bwiki-preset-migration') return null
+    if (payload?.source !== 'bwiki-preset-migration' || payload.version !== ROCK_KINGDOM_ROWS_VERSION
+      || !Array.isArray(payload.creatures?.rows) || !Array.isArray(payload.skills?.rows)) return null
     return payload
   } catch {
     return null
@@ -228,6 +234,8 @@ async function migrateRockKingdomRows(presetMigration) {
     const res = await fetch(presetUrl('rockKingdomRows.json'))
     if (!res.ok) return false
     const presetRows = await res.json()
+    if (!Array.isArray(presetRows) || presetRows.length !== presetMigration.target?.creatureRows
+      || presetRows.some((row) => !row.id || !row.values || typeof row.values !== 'object')) return false
     const isVersionedPreset = presetRows.some((row) =>
       row.id?.startsWith('rock-creature-src-') || row.id?.startsWith('rock-creature-bwiki-'),
     )
@@ -318,11 +326,13 @@ async function migrateRockKingdomSkillRows(presetMigration) {
   const table = ROCK_KINGDOM_PRESET.tables.find((item) => item.id === 'table-rock-kingdom-skills')
   if (!table) return true
   const existingTable = await db.catalogTables.get(table.id)
-  if (!existingTable) return
+  if (!existingTable) return true
   try {
     const res = await fetch(presetUrl('rockKingdomSkillRows.json'))
     if (!res.ok) return false
     const presetRows = await res.json()
+    if (!Array.isArray(presetRows) || presetRows.length !== presetMigration.target?.skillRows
+      || presetRows.some((row) => !row.id || !row.values || typeof row.values !== 'object')) return false
     const now = nowIso()
     const existingRows = await db.catalogRows.where('tableId').equals(table.id).toArray()
     const existingById = new Map(existingRows.map((row) => [row.id, row]))

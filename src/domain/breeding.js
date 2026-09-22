@@ -3,9 +3,7 @@
 
 import { evaluateAllNatures } from './nature.js'
 import { extractSkillInfoFromReferenceRows, extractSkillRefsFromRow, extractStatsFromRow, extractTraitTagsFromRow } from './natureRowAdapter.js'
-import { BILI_EGG_GROUP_SOURCE_URL } from './breedingData.js'
-
-export const EGG_GROUP_SOURCE_URL = BILI_EGG_GROUP_SOURCE_URL
+import { appearanceFlags } from './rockKingdomAppearance.js'
 export const BREEDING_RULE_STORAGE_KEY = 'tangerine:rock-kingdom:breeding-rules'
 
 export const DEFAULT_BREEDING_RULES = Object.freeze([
@@ -42,10 +40,7 @@ export function splitGroups(value) {
 export function speciesKey(row) {
   const explicit = normText(row.values?.speciesGroup || row.values?.breedingLine || row.values?.sameSpecies)
   if (explicit) return explicit
-  const no = normText(row.values?.no).replace(/^NO\.?/i, '')
-  const n = Number(no)
-  if (Number.isFinite(n) && n > 1) return String(Math.ceil(n / 3))
-  return normText(row.values?.name) || row.id
+  return `row:${row.id}`
 }
 
 function displayName(row) {
@@ -114,18 +109,11 @@ function buildOwnedFromProfiles(ownedRows, profiles) {
       source: 'owned',
       gender: owned.values?.gender,
       nature: owned.values?.nature,
-      shiny: yes(owned.values?.shiny),
-      colorful: yes(owned.values?.colorful),
+      shiny: yes(owned.values?.appearance ? appearanceFlags(owned.values.appearance).shiny : owned.values?.shiny),
+      colorful: yes(owned.values?.appearance ? appearanceFlags(owned.values.appearance).colorful : owned.values?.colorful),
       catalog,
     }
   }).filter(Boolean)
-}
-
-export function buildOwnedCreatures({ ownedRows = [], catalogRows = [], catalogFields = [], skillRows = [] }) {
-  const profiles = createCatalogProfiles(catalogRows)
-  const creatures = buildOwnedFromProfiles(ownedRows, profiles)
-  hydrateNatureRanks(profiles, new Set(creatures.map((item) => item.catalog.speciesKey)), catalogFields, skillRows)
-  return creatures
 }
 
 function emptyRareSummary() {
@@ -208,7 +196,8 @@ export function buildBreedingDataset(input = {}) {
 }
 
 export function summarizeMissingEggGroups(creatures = []) {
-  const missing = creatures.filter((item) => item.catalog.eggGroups.length === 0)
+  const missing = creatures.filter((item) => item.catalog.eggGroups.length === 0
+    && !splitGroups(item.catalog.row.values?.eggGroups || item.catalog.row.values?.eggGroup || item.catalog.row.values?.蛋组).includes(UNBREEDABLE_GROUP))
   const grouped = new Map()
   for (const item of missing) {
     const key = item.catalog.row.id

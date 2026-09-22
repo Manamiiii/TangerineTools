@@ -1,4 +1,4 @@
-const STATIC_CACHE = 'tangerine-static-v5'
+const STATIC_CACHE = 'tangerine-static-__BUILD_VERSION__'
 const ENABLE_RUNTIME_CACHE = self.location.protocol === 'https:'
 
 self.addEventListener('install', () => {
@@ -24,9 +24,9 @@ self.addEventListener('fetch', (event) => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
-        .then((response) => {
+        .then(async (response) => {
           const copy = response.clone()
-          caches.open(STATIC_CACHE).then((cache) => cache.put(event.request, copy))
+          await caches.open(STATIC_CACHE).then((cache) => cache.put(event.request, copy)).catch(() => {})
           return response
         })
         .catch(() => caches.match(event.request)),
@@ -37,10 +37,10 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cached) => (
       cached
-      || fetch(event.request).then((response) => {
+      || fetch(event.request).then(async (response) => {
         if (response.ok) {
           const copy = response.clone()
-          caches.open(STATIC_CACHE).then((cache) => cache.put(event.request, copy))
+          await caches.open(STATIC_CACHE).then((cache) => cache.put(event.request, copy)).catch(() => {})
         }
         return response
       })

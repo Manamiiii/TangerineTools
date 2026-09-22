@@ -146,3 +146,36 @@ test('startup preserves imported scene tools and field preferences without migra
 test.after(async () => {
   await db.delete()
 })
+
+
+test('missing or mismatched migration manifest cannot mark an upgrade complete', async () => {
+  for (const invalid of [null, { ...migration, version: 'wrong-version' }]) {
+    await resetDatabase()
+    globalThis.fetch = async (url) => String(url).endsWith('rockKingdomPresetMigration.json')
+      ? invalid ? new Response(JSON.stringify(invalid)) : new Response('', { status: 503 })
+      : presetResponse(url)
+    await ensureSeeded()
+    assert.equal(await db.meta.get('rockKingdomRuntimeMigrationVersion'), undefined)
+    assert.equal(await db.catalogRows.count(), 0)
+    globalThis.fetch = async (url) => presetResponse(url)
+    await ensureSeeded()
+    assert.equal((await db.meta.get('rockKingdomRuntimeMigrationVersion')).value, migration.version)
+  }
+})
+
+test('old completion marker without manifest verification is revalidated', async () => {
+  await resetDatabase()
+  globalThis.fetch = async (url) => presetResponse(url)
+  await ensureSeeded()
+  await db.meta.delete('rockKingdomVerifiedMigrationVersion')
+  const dog = creatures.find((row) => row.values.name === '音速犬')
+  await db.catalogRows.update(dog.id, { values: { ...dog.values, patk: 128, traitDesc: '个人注释' } })
+  let count = 0
+  globalThis.fetch = async (url) => { count++; return presetResponse(url) }
+  await ensureSeeded()
+  assert.ok(count > 0)
+  const repaired = await db.catalogRows.get(dog.id)
+  assert.equal(repaired.values.patk, dog.values.patk)
+  assert.equal(repaired.values.traitDesc, '个人注释')
+  assert.equal((await db.meta.get('rockKingdomVerifiedMigrationVersion')).value, migration.version)
+})

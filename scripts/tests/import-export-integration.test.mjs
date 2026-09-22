@@ -99,3 +99,14 @@ test('export and reimport preserve all five collections and random ids', async (
   await importAllData(JSON.parse(JSON.stringify(payload)))
   assert.deepEqual((await exportAllData()).data, payload.data)
 })
+
+
+test('legacy string options normalize without losing custom extension data', async () => {
+  const custom = { value: 'b', label: 'B', extension: { keep: true } }
+  await importAllData({ data: { catalogFields: [{ id: 'legacy', tableId: 'catalog', key: 'choice', type: 'select', options: ['a', custom], extension: 'preserved' }] } })
+  const field = await db.catalogFields.get('legacy')
+  assert.equal(field.options[0].value, 'a')
+  assert.equal(field.options[0].label, 'a')
+  assert.deepEqual(field.options[1], custom)
+  assert.equal(field.extension, 'preserved')
+})

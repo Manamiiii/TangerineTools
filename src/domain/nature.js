@@ -1689,12 +1689,3 @@ export function applyNatureModifier(baseStats = {}, nature) {
   }
   return result
 }
-
-export function explainNatureRecommendation(nature) {
-  if (!nature) return '请先选择一个候选性格。'
-  const segments = []
-  if (nature.roleLabel) segments.push(`定位：${nature.roleLabel}`)
-  if (nature.reasons?.length) segments.push(...nature.reasons)
-  if (nature.warnings?.length) segments.push(`风险：${nature.warnings.join('；')}`)
-  return `${segments.join('；')}。`
-}
