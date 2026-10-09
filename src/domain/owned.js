@@ -233,7 +233,7 @@ export function buildOwnedNatureRecordIndex(sources = [], equivalentReferenceIds
         const equivalentIds = equivalentReferenceIds.get(referenceValue) || [referenceValue]
         for (const equivalentId of equivalentIds) {
           const byNature = index.get(equivalentId) || {}
-          byNature[natureValue] = [...(byNature[natureValue] || []), record]
+          byNature[natureValue] = [...(byNature[natureValue] || []), { ...record, referenceId: referenceValue }]
           index.set(equivalentId, byNature)
         }
       }

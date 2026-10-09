@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { buildNatureCoverage, summarizeNatureCoverage } from '../../src/domain/natureCoverage.js'
+import { buildNatureCoverage, buildNatureDirectionCoverage, summarizeNatureCoverage } from '../../src/domain/natureCoverage.js'
 
 const candidates = [
   { id: 'recommended-a', raise: 'patk', lower: 'matk', decision: 'recommended', score: 10 },
@@ -62,4 +62,33 @@ test('coverage summary counts completion states and remaining gaps', () => {
     incomplete: 1,
     missing: 2,
   })
+})
+
+
+test('direction coverage counts one adjustable route, not several finished natures', () => {
+  const records = { 'invalid-a': [{ id: 'rare', shiny: true }] }
+  const before = JSON.stringify(candidates)
+  const result = buildNatureDirectionCoverage(candidates, records)
+  assert.equal(result.total, 2)
+  assert.equal(result.repairable, 1)
+  assert.equal(result.exact, 0)
+  assert.equal(result.missing, 1)
+  assert.equal(result.entries[0].rareReady, false)
+  assert.equal(JSON.stringify(candidates), before)
+})
+
+test('direction coverage keeps actual forms separate and reports normal readiness', () => {
+  const forms = candidates.map((candidate) => ({ ...candidate, formDecisions: [
+    { id: 'a', label: 'A', decision: candidate.decision },
+    { id: 'b', label: 'B', decision: candidate.decision },
+  ] }))
+  const result = buildNatureDirectionCoverage(forms, {
+    'invalid-a': [{ id: 'rare-a', referenceId: 'a', colorful: true }],
+    'recommended-a': [{ id: 'normal-b', referenceId: 'b' }],
+  })
+  assert.equal(result.entries.find((entry) => entry.id === 'a:patk').status, 'repairable')
+  const normal = result.entries.find((entry) => entry.id === 'b:patk')
+  assert.equal(normal.status, 'exact')
+  assert.equal(normal.rare.length, 0)
+  assert.equal(result.missing, 2)
 })

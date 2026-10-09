@@ -4,6 +4,7 @@ import {
 } from './nature.js'
 import { buildNatureAnalysisInput } from './natureRowAdapter.js'
 import { pveOverviewSummary } from './naturePve.js'
+import { bestSilverMirrorTarget } from './natureRetention.js'
 import {
   findNumberField,
   getSameNumberRows,
@@ -88,6 +89,11 @@ export function recommendPartnerMarks(items = []) {
   for (const group of groups.values()) {
     const coveredNatures = new Set()
     const coveredSpecialties = new Set()
+    const rareReplacement = (item) => group.find((other) =>
+      other.rare && item.creatureId && other.creatureId === item.creatureId
+      && ((item.raise && other.raise === item.raise) || (!item.raise && item.natureId === other.natureId))
+      && (usableNature(other.formDecision ?? other.natureDecision) || other.mirrorTarget),
+    )
 
     // 人工用途的四种标记是最高优先级输入：保持原样、跳过判断，但仍参与
     // “这个性格/特长已经有一只”的覆盖统计。
@@ -118,8 +124,11 @@ export function recommendPartnerMarks(items = []) {
           ? '稀有外观、性格适合高投入 PVE，建议使用闪电。'
           : '稀有外观且性格为推荐或可保留，建议使用果实。'
       }
+      if (!usableNature(item.formDecision) && item.mirrorTarget) {
+        mark = 'fruit'
+        reason = `稀有个体保留，银镜可修为${natureName(item.mirrorTarget)}；同形态同增益普通个体无需补留。`
+      }
       setRecommendation(results, item, mark, reason)
-      if (item.natureId) coveredNatures.add(item.natureId)
       if (item.specialty) coveredSpecialties.add(item.specialty)
     }
 
@@ -132,6 +141,7 @@ export function recommendPartnerMarks(items = []) {
         || item.rare
         || !item.natureId
         || !usableNature(item.natureDecision)
+        || rareReplacement(item)
       ) continue
       if (!usableByNature.has(item.natureId)) usableByNature.set(item.natureId, [])
       usableByNature.get(item.natureId).push(item)
@@ -160,16 +170,15 @@ export function recommendPartnerMarks(items = []) {
         .filter((item) =>
           !results.has(item.id)
           && !item.rare
-          && item.specialty === specialty
-          && !usableNature(item.natureDecision))
+          && item.specialty === specialty)
         .sort(stableCandidateCompare)
       const winner = candidates[0]
       if (!winner) continue
       setRecommendation(
         results,
         winner,
-        'home',
-        `${specialty === 'sharing' ? '爱分享' : '同乘'}尚未由同组保留个体覆盖，性格不合适也额外保留一只。`,
+        usableNature(winner.natureDecision) ? preferredUsableMark(winner) : 'home',
+        `${specialty === 'sharing' ? '爱分享' : '同乘'}尚未由同组保留个体覆盖，按特殊用途额外保留一只。`,
       )
       coveredSpecialties.add(specialty)
     }
@@ -181,7 +190,9 @@ export function recommendPartnerMarks(items = []) {
         results,
         item,
         'none',
-        duplicate
+        rareReplacement(item)
+          ? '已有同形态、同增益的异色或炫彩个体，可按需用银镜调整减益；普通个体仅作备选。'
+          : duplicate
           ? '同组其他标记或优先个体已经覆盖这个性格，不再重复保留。'
           : '普通外观不符合性格保留规则，也没有未覆盖的同乘或爱分享特长。',
       )
@@ -280,12 +291,20 @@ export function buildRockPartnerMarkRecommendations({
     }
     const { groupKey, candidates } = analysisFor(target)
     const candidate = candidates.find((item) => item.id === natureId)
+    const formCandidates = candidates.map((item) => ({
+      ...item,
+      decision: item.formDecisions?.find((form) => form.id === target.id)?.decision || item.decision,
+    }))
+    const formCandidate = formCandidates.find((item) => item.id === natureId)
     return {
       id: record.id,
       creatureId,
       groupKey,
       natureId,
       natureDecision: candidate?.decision || '',
+      raise: candidate?.raise || '',
+      formDecision: formCandidate?.decision || '',
+      mirrorTarget: bestSilverMirrorTarget(formCandidate, formCandidates),
       pveEligible: pveNatureIsEligible(candidates, candidate),
       starterException: isStarterException(target),
       rare,

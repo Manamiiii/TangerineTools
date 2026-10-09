@@ -1,3 +1,4 @@
+import { buildRockPartnerMarkRecommendations } from './rockKingdomPartnerMarks.js'
 import {
   evaluateNatureProfiles,
   natureName,
@@ -33,6 +34,7 @@ export function buildRockOwnedDiagnostics({
   const visibleRows = visibleRockKingdomCreatureRows(creatureRows)
   const creatureById = new Map(creatureRows.map((row) => [row.id, row]))
 
+  const partnerAdvice = buildRockPartnerMarkRecommendations({ records, ownedFields, creatureRows, creatureFields, skillRows })
   return records.map((record) => {
     const refId = refField ? record.values?.[refField.key] : ''
     const natureId = natureField ? record.values?.[natureField.key] : ''
@@ -100,8 +102,8 @@ export function buildRockOwnedDiagnostics({
       ...result,
       decision: candidate.decision,
       decisionLabel: NATURE_DECISION_LABELS[candidate.decision],
-      actionLabel: result.rare ? retention.rareLabel : retention.normalLabel,
-      explanation: retention.description,
+      actionLabel: partnerAdvice.get(record.id)?.keep ? '个体保留' : '普通备选／无需补留',
+      explanation: partnerAdvice.get(record.id)?.reason || retention.description,
       mirrorTarget: retention.mirrorTarget ? natureName(retention.mirrorTarget) : '',
     }
   })

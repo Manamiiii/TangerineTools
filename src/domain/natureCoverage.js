@@ -79,3 +79,50 @@ export function summarizeNatureCoverage(rows = []) {
     missing: rows.reduce((sum, row) => sum + row.coverage.missing, 0),
   }
 }
+
+// 方向表示一套可选择的培养路线，不表示同时拥有所有减益组合。
+// 跨形态没有明确转换契约时，只使用该资料行的收藏，避免误报替代。
+export function buildNatureDirectionCoverage(candidates = [], ownedRecordsByNature = {}, sourceRowId = '') {
+  const profiles = candidates[0]?.formDecisions || []
+  const scopes = profiles.length ? profiles : [{ id: sourceRowId, label: '' }]
+  const entries = scopes.flatMap((profile) => {
+    const scoped = candidates.map((candidate) => ({
+      ...candidate,
+      decision: profiles.length
+        ? candidate.formDecisions?.find((form) => form.id === profile.id)?.decision
+        : candidate.decision,
+    }))
+    return [...new Set(scoped.filter((c) => VALID_DECISIONS.has(c.decision)).map((c) => c.raise))].map((raise) => {
+      const targets = scoped.filter((c) => c.raise === raise && VALID_DECISIONS.has(c.decision))
+      const targetIds = new Set(targets.map((c) => c.id))
+      const records = scoped.filter((c) => c.raise === raise).flatMap((c) =>
+        (ownedRecordsByNature[c.id] || [])
+          .filter((record) => !profile.id || record.referenceId === profile.id)
+          .map((record) => ({ ...record, nature: c.id })),
+      )
+      const exact = records.filter((record) => targetIds.has(record.nature))
+      const rare = records.filter(isRareRecord)
+      const rareReady = rare.some((record) => targetIds.has(record.nature))
+      return {
+        id: `${profile.id}:${raise}`,
+        profileLabel: profile.label,
+        raise,
+        candidate: targets.find((c) => c.decision === 'recommended') || targets[0],
+        targets,
+        records,
+        rare,
+        rareReady,
+        status: exact.length ? 'exact' : rare.length ? 'repairable' : 'missing',
+      }
+    })
+  })
+  const exact = entries.filter((e) => e.status === 'exact').length
+  const repairable = entries.filter((e) => e.status === 'repairable').length
+  const missing = entries.filter((e) => e.status === 'missing').length
+  return {
+    entries, exact, repairable, missing, total: entries.length,
+    recommended: decisionCounts(entries, 'recommended'),
+    keepable: decisionCounts(entries, 'keepable'),
+    status: missing ? 'incomplete' : repairable ? 'repairable' : 'complete',
+  }
+}
