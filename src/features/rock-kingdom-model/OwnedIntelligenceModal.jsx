@@ -114,6 +114,7 @@ export function OwnedIntelligenceModal({ rows, fields, onClose }) {
                     {item.actionLabel && <span>{item.actionLabel}</span>}
                     {item.mirrorTarget && <span>目标：{item.mirrorTarget}</span>}
                   </div>
+                  {item.explanation && <p>{item.explanation}</p>}
                   {item.issues.length > 0 && <p>需核对：{item.issues.join('；')}</p>}
                 </article>
               ))}

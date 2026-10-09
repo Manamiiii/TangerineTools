@@ -77,8 +77,8 @@ test('keeps rarity details when indexing owned natures across an evolution line'
   }], buildEvolutionReferenceGroups([stage, final]))
 
   assert.deepEqual(index.get(final.id).adamant, [
-    { id: 'ordinary', nature: 'adamant', shiny: false, colorful: false },
-    { id: 'rare', nature: 'adamant', shiny: true, colorful: true },
+    { id: 'ordinary', referenceId: stage.id, nature: 'adamant', shiny: false, colorful: false },
+    { id: 'rare', referenceId: stage.id, nature: 'adamant', shiny: true, colorful: true },
   ])
   assert.deepEqual(summarizeOwnedNatureRecords(index.get(final.id).adamant), {
     total: 2,

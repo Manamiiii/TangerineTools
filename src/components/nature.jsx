@@ -18,8 +18,8 @@ import {
   NATURE_DECISION_LABELS,
   STAT_LABELS,
 } from '../domain/nature.js'
-import { natureRetentionAdvice, summarizeOwnedNatureRecords } from '../domain/natureRetention.js'
-import { buildNatureCoverage, summarizeNatureCoverage } from '../domain/natureCoverage.js'
+import { summarizeOwnedNatureRecords } from '../domain/natureRetention.js'
+import { buildNatureCoverage, buildNatureDirectionCoverage, summarizeNatureCoverage } from '../domain/natureCoverage.js'
 import { pveOverviewSummary, pveStarText } from '../domain/naturePve.js'
 import { buildNatureAnalysisInput, buildPopulationStatSummary, extractRowSummary } from '../domain/natureRowAdapter.js'
 import { buildOwnedNatureIndex, buildOwnedNatureRecordIndex } from '../domain/owned.js'
@@ -96,6 +96,7 @@ export function NatureTool({ scene }) {
           {
             id: '',
             nature: quickAddNature.id,
+            referenceId: previous.sourceRowId,
             shiny: savedValues[previous.ownedContext?.shinyKey] === 'yes',
             colorful: savedValues[previous.ownedContext?.colorfulKey] === 'yes',
           },
@@ -225,7 +226,7 @@ export function NatureTool({ scene }) {
           className={viewMode === 'coverage' ? 'active' : ''}
           onClick={() => setViewMode('coverage')}
         >
-          全局完成度
+          培养方向概览
         </button>
       </div>
 
@@ -277,6 +278,8 @@ export function NatureTool({ scene }) {
                   onQuickAdd={input.ownedContext ? setQuickAddNature : null}
                 />
                 <NatureResult
+                  sourceRowId={input.sourceRowId}
+                  ownedNatureRecords={input.ownedNatureRecords}
                   nature={nature}
                   creatureName={input.name}
                   baseStats={formulaBaseStats}
@@ -597,9 +600,9 @@ function RowImportPanel({ scene, selectedRowId, onImport }) {
 }
 
 function coverageStatusLabel(status) {
-  if (status === 'complete') return '已全部拥有'
-  if (status === 'repairable') return '银镜后完成'
-  return '仍有缺口'
+  if (status === 'complete') return '方向已有可用个体'
+  if (status === 'repairable') return '有银镜可修方向'
+  return '有未收集方向'
 }
 
 function NatureCoverageProgress({ label, counts }) {
@@ -653,9 +656,10 @@ function NatureCoveragePanel({ scene, onOpen }) {
           primaryProfileLabel: [analysis.name, target.values?.form].filter(Boolean).join(' · '),
         },
       )
-      const coverage = buildNatureCoverage(
+      const coverage = buildNatureDirectionCoverage(
         candidates,
         ownedContext.recordIndex.get(target.id) || {},
+        target.id,
       )
       if (coverage.total === 0) return []
       return [{
@@ -663,6 +667,7 @@ function NatureCoveragePanel({ scene, onOpen }) {
         visibleRows,
         summary: extractRowSummary(target, fields),
         coverage,
+        exactCoverage: buildNatureCoverage(candidates, ownedContext.recordIndex.get(target.id) || {}),
       }]
     })
   }, [fields, rows, skillRows, ownedContext])
@@ -679,7 +684,7 @@ function NatureCoveragePanel({ scene, onOpen }) {
   }, [coverageRows, keyword, statusFilter])
 
   if (creatureTable === undefined || !fields || !rows || !skillRows || !ownedContext) {
-    return <div className="nature-coverage-loading">正在计算全部精灵的性格完成度…</div>
+    return <div className="nature-coverage-loading">正在计算已有培养方向…</div>
   }
   if (!creatureTable) {
     return <EmptyState title="缺少精灵资料" description="尚未找到洛克王国精灵基础资料表。" />
@@ -689,8 +694,8 @@ function NatureCoveragePanel({ scene, onOpen }) {
     <section className="nature-coverage">
       <div className="nature-coverage-heading">
         <div>
-          <strong>推荐与可保留性格完成度</strong>
-          <span>同编号形态合并计算；一个稀有个体只能通过残缺魔镜覆盖一个缺失性格。</span>
+          <strong>我的培养方向</strong>
+          <span>按形态与增益统计可选路线，不要求全部集齐；一只稀有个体可按需调整减益，不代表多只成品。</span>
         </div>
         <div className="nature-coverage-controls">
           <input
@@ -701,17 +706,17 @@ function NatureCoveragePanel({ scene, onOpen }) {
           />
           <select className="select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
             <option value="all">全部状态</option>
-            <option value="incomplete">仍有缺口</option>
-            <option value="repairable">银镜后完成</option>
-            <option value="complete">已全部拥有</option>
+            <option value="incomplete">有未收集方向</option>
+            <option value="repairable">有银镜可修方向</option>
+            <option value="complete">方向已有可用个体</option>
           </select>
         </div>
       </div>
       <div className="nature-coverage-summary">
-        <span className="complete"><strong>{summary.complete}</strong><small>已全部拥有</small></span>
-        <span className="repairable"><strong>{summary.repairable}</strong><small>银镜后完成</small></span>
-        <span className="incomplete"><strong>{summary.incomplete}</strong><small>仍有缺口</small></span>
-        <span><strong>{summary.missing}</strong><small>缺失性格总数</small></span>
+        <span className="complete"><strong>{summary.complete}</strong><small>方向已有可用个体</small></span>
+        <span className="repairable"><strong>{summary.repairable}</strong><small>有银镜可修方向</small></span>
+        <span className="incomplete"><strong>{summary.incomplete}</strong><small>有未收集方向</small></span>
+        <span><strong>{summary.missing}</strong><small>未收集方向（按需）</small></span>
       </div>
       <div className="nature-coverage-list">
         {filteredRows.map((row) => {
@@ -727,17 +732,21 @@ function NatureCoveragePanel({ scene, onOpen }) {
                   </span>
                 </span>
                 <NatureCoverageProgress label="推荐" counts={row.coverage.recommended} />
-                <NatureCoverageProgress label="可保留" counts={row.coverage.keepable} />
+                <NatureCoverageProgress label="按需分支" counts={row.coverage.keepable} />
                 <span className={`nature-coverage-status ${row.coverage.status}`}>
                   {coverageStatusLabel(row.coverage.status)}
                   {row.coverage.missing > 0 && <small>缺 {row.coverage.missing}</small>}
                 </span>
               </summary>
               <div className="nature-coverage-detail">
+                <details>
+                  <summary>完整性格记录（非收集目标）</summary>
+                  <p>准确性格已有 {row.exactCoverage.exact} / {row.exactCoverage.total}；一只个体不计作多只成品。</p>
+                </details>
                 <div className="nature-coverage-chips">
                   {row.coverage.entries.map((entry) => (
-                    <span className={entry.status} key={entry.candidate.id}>
-                      {natureName(entry.candidate)}
+                    <span className={entry.status} key={entry.id}>
+                      {entry.profileLabel} · +{STAT_LABELS[entry.raise]}
                       <small>{entry.status === 'exact' ? '已有' : entry.status === 'repairable' ? '银镜可修' : '缺少'}</small>
                     </span>
                   ))}
@@ -745,8 +754,8 @@ function NatureCoveragePanel({ scene, onOpen }) {
                 <div className="nature-coverage-actions">
                   <span>
                     {missingEntries.length > 0
-                      ? `待处理：${missingEntries.map((entry) => natureName(entry.candidate)).join('、')}`
-                      : '所有推荐与可保留性格均已有成品。'}
+                      ? `可选方向：${missingEntries.map((entry) => `${entry.profileLabel} +${STAT_LABELS[entry.raise]}`).join('、')}`
+                      : '各培养方向已有可用个体，不代表收齐全部性格。'}
                   </span>
                   <button
                     type="button"
@@ -960,7 +969,6 @@ function NatureCandidateListItem({
   const candidateIndex = candidates.indexOf(candidate)
   const isActive = candidate === activeCandidate
   const canQuickAdd = candidate.decision !== 'notRecommended' && ownedCount === 0 && onQuickAdd
-  const retention = natureRetentionAdvice(candidate, candidates)
   const ownedSummary = summarizeOwnedNatureRecords(ownedRecords)
   const ownedLabel = ownedSummary.rare > 0
     ? [
@@ -982,11 +990,6 @@ function NatureCandidateListItem({
         </span>
         <span className="nature-candidate-name">{natureName(candidate)}</span>
         <span className="nature-candidate-role">{natureModifierSummary(candidate)}</span>
-        <span className={`nature-candidate-retention ${retention.status}`}>
-          {retention.mirrorTarget
-            ? `银镜 → ${natureName(retention.mirrorTarget)}`
-            : retention.rareLabel.replace('异色/炫彩：', '')}
-        </span>
         {ownedCount > 0 ? (
           <span className="nature-candidate-owned acquired">
             <CheckCircle2 size={13} />
@@ -1017,13 +1020,48 @@ function NatureCandidateListItem({
 }
 
 
-function NatureResult({ nature, creatureName, baseStats, adjustedStats, candidates = [] }) {
+function NatureCollectionAdvice({ candidates, ownedRecords, raise, sourceRowId }) {
+  const coverage = buildNatureDirectionCoverage(candidates, ownedRecords, sourceRowId)
+  const directions = coverage.entries.filter((entry) => entry.raise === raise)
+  return (
+    <section className="nature-retention-card">
+      <div className="nature-retention-head">
+        <strong>我的保留建议 · +{STAT_LABELS[raise]}</strong>
+        <span>收藏不改变性格评分</span>
+      </div>
+      {directions.length === 0
+        ? <p>这个增益没有推荐或可保留路线；稀有个体按收藏价值保留。</p>
+        : directions.map((entry) => (
+          <div key={entry.id} className="nature-owned-direction">
+            {entry.profileLabel && <strong>{entry.profileLabel}</strong>}
+            <p>{entry.rare.length
+              ? entry.rareReady
+                ? '已有可用的异色／炫彩，同方向普通个体无需补留。'
+                : '已有异色／炫彩，银镜可修；同方向普通个体无需补留。'
+              : entry.status === 'exact'
+                ? '已有可用普通个体；尚无同方向稀有替代，继续按现有性格规则保留。'
+                : '尚无可用个体；需要这条路线时，再按性格推荐保留普通精灵。'}</p>
+            {entry.rare.map((record) => (
+              <p key={record.id || record.nature}>
+                {record.colorful ? '炫彩' : '异色'} · {natureName(candidates.find((c) => c.id === record.nature))}
+                {entry.targets.some((c) => c.id === record.nature)
+                  ? '：现成可用'
+                  : `：银镜可修 → ${natureName(entry.candidate)}`}
+              </p>
+            ))}
+          </div>
+        ))}
+      <p>同形态才判断稀有替代。手动保护、特殊用途仍单独保留；可保留分支无需全部收齐。</p>
+    </section>
+  )
+}
+
+function NatureResult({ nature, creatureName, baseStats, adjustedStats, candidates = [], ownedNatureRecords = {}, sourceRowId }) {
   if (!nature) return null
   const formDecisions = nature.formDecisions || []
   const coreReason = nature.decision === 'notRecommended'
     ? nature.warnings[0]
     : nature.reasons[0]
-  const retention = natureRetentionAdvice(nature, candidates)
 
   return (
     <div className="nature-result">
@@ -1051,30 +1089,13 @@ function NatureResult({ nature, creatureName, baseStats, adjustedStats, candidat
         </span>
       </div>
 
-      <section className={`nature-retention-card ${retention.status}`}>
-        <div className="nature-retention-head">
-          <strong>捕捉与残缺魔镜</strong>
-          <span>不改变上方最终性格分档</span>
-        </div>
-        <div className="nature-retention-options">
-          <span>{retention.normalLabel}</span>
-          <span>{retention.rareLabel}</span>
-        </div>
-        <p>{retention.description}</p>
-        {retention.mirrorTarget && (
-          <p className="nature-retention-target">
-            保留 +{STAT_LABELS[nature.raise]}，将 -{STAT_LABELS[nature.lower]} 改为
-            -{STAT_LABELS[retention.mirrorTarget.lower]}，目标性格：{natureName(retention.mirrorTarget)}。
-          </p>
-        )}
-      </section>
+      <NatureCollectionAdvice candidates={candidates} ownedRecords={ownedNatureRecords} raise={nature.raise} sourceRowId={sourceRowId} />
 
       <NatureModelExplanation
         creatureName={creatureName}
         nature={nature}
         baseStats={baseStats}
         adjustedStats={adjustedStats}
-        retention={retention}
       />
 
       <div className="nature-result-summary">
@@ -1143,7 +1164,6 @@ function NatureModelExplanation({
   nature,
   baseStats,
   adjustedStats,
-  retention,
 }) {
   const [state, setState] = useState('idle')
   const [result, setResult] = useState(null)
@@ -1179,8 +1199,6 @@ function NatureModelExplanation({
           role: nature.roleLabel || '',
           reasons: nature.reasons,
           warnings: nature.warnings,
-          retention: `${retention.normalLabel}；${retention.rareLabel}；${retention.description}`,
-          mirrorTarget: retention.mirrorTarget ? natureName(retention.mirrorTarget) : '',
           stats: { base: baseStats, adjusted: adjustedStats },
           skillSummary: nature.skillProfile?.summary || '',
           speedSummary: nature.speedProfile
