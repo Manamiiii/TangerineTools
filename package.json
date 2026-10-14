@@ -29,7 +29,8 @@
     "preview:bwiki": "node scripts/bwiki/build-preview.mjs",
     "check:bwiki:preset": "node scripts/bwiki/apply-preset.mjs --source=nrc",
     "apply:bwiki:preset": "node scripts/bwiki/apply-preset.mjs --write",
-    "test": "node --test scripts/tests/*.test.mjs"
+    "test": "node --test scripts/tests/*.test.mjs",
+    "build:icons": "node scripts/assets/build-icons.mjs"
   },
   "dependencies": {
     "dexie": "^4.4.4",

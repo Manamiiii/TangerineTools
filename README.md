@@ -22,6 +22,7 @@ npm run dev
 | `npm run lint` | 静态检查 |
 | `npm test` | 领域与回归测试 |
 | `npm run build` | 生产构建 |
+| `npm run build:icons` | 从 `public/favicon.svg` 导出 PNG、PWA 遮罩图标和 Windows ICO |
 | `npm run check:nature` | 生成并检查性格推荐校准报告 |
 | `npm run check:scanner:templates` | 检查扫描模板 |
 | `npm run apply:scanner:templates` | 显式写入扫描模板 |
@@ -100,3 +101,5 @@ npm run apply:bwiki:preset -- --source=nrc
 ```
 
 不提供云同步、账号体系、战斗模拟、PVP 自动化或属性克制系统。
+
+应用图标的可编辑源文件为 `public/favicon.svg`，采用 Tangerine 系列的橙色圆角底、深棕橘子轮廓与绿色叶片，中心手柄代表游戏管理。`public/icons/tangerine-tools-*` 为尺寸导出，`public/icons/tangerine-tools.ico` 用于 Windows 快捷方式；修改源文件后运行 `npm run build:icons`。

@@ -1,5 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <circle cx="32" cy="34" r="26" fill="#f2994a" />
-  <path d="M32 8 L32 2" stroke="#6b8f3c" stroke-width="4" stroke-linecap="round" />
-  <path d="M32 8 C 26 2, 20 2, 16 6" stroke="#6b8f3c" stroke-width="4" fill="none" stroke-linecap="round" />
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">TangerineTools</title>
+  <desc id="desc">橙色圆角底上的深棕色橘子轮廓、绿色叶片和游戏手柄。</desc>
+  <defs>
+    <radialGradient id="orange" cx="42%" cy="36%" r="80%">
+      <stop stop-color="#ff9418"/>
+      <stop offset="1" stop-color="#f56b00"/>
+    </radialGradient>
+    <linearGradient id="leaf" x2="1" y2="1">
+      <stop stop-color="#a4be49"/>
+      <stop offset="1" stop-color="#7e9f32"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="244" fill="url(#orange)"/>
+  <circle cx="512" cy="575" r="350" fill="none" stroke="#28180c" stroke-width="36"/>
+  <path d="M202 635C170 437 296 283 452 257" fill="none" stroke="#ffb541" stroke-width="18" stroke-linecap="round" opacity=".7"/>
+  <path d="M550 897C691 885 805 774 833 651" fill="none" stroke="#ff9d22" stroke-width="16" stroke-linecap="round" opacity=".75"/>
+  <path d="M490 236C473 182 482 117 505 86" fill="none" stroke="#28180c" stroke-width="43" stroke-linecap="round"/>
+  <path d="M500 237C560 104 699 54 824 112C779 220 670 262 500 237Z" fill="url(#leaf)" stroke="#28180c" stroke-width="26" stroke-linejoin="round"/>
+  <path d="M505 238C556 189 622 151 708 137C633 165 580 198 540 242Z" fill="#28180c"/>
+  <path d="M385 444H639C690 444 714 481 729 534L769 676C779 714 752 749 718 741C686 734 653 698 622 674H402C371 698 338 734 306 741C272 749 245 714 255 676L295 534C310 481 334 444 385 444Z" fill="#28180c"/>
+  <path d="M365 514H401V552H439V588H401V626H365V588H327V552H365Z" fill="#ff8c0b"/>
+  <g fill="#ff8c0b">
+    <circle cx="658" cy="535" r="23"/>
+    <circle cx="706" cy="583" r="23"/>
+    <rect x="474" y="600" width="76" height="16" rx="8"/>
+  </g>
 </svg>
