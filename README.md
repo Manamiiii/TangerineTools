@@ -15,6 +15,8 @@ npm run dev
 
 本地开发服务固定使用 `http://localhost:5188`；端口被占用时会直接报错，避免与其他工程混用。
 
+Windows 可双击根目录 `TangerineTools.vbs`，或桌面 Tangerine 文件夹中的同名快捷方式。`scripts/windows/start.ps1` 隐藏启动或复用本地服务后打开默认浏览器；固定使用上述地址，以保持浏览器收藏数据所属站点一致。启动日志位于 `artifacts/launcher/`。验证服务而不打开浏览器可运行 `powershell -NoProfile -File scripts/windows/start.ps1 -NoOpenBrowser`。
+
 常用检查：
 
 | 命令 | 用途 |
