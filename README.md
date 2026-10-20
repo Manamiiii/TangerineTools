@@ -17,6 +17,8 @@ npm run dev
 
 Windows 可双击根目录 `TangerineTools.vbs`，或桌面 Tangerine 文件夹中的同名快捷方式。`scripts/windows/start.ps1` 隐藏启动或复用本地服务后打开默认浏览器；固定使用上述地址，以保持浏览器收藏数据所属站点一致。启动日志位于 `artifacts/launcher/`。验证服务而不打开浏览器可运行 `powershell -NoProfile -File scripts/windows/start.ps1 -NoOpenBrowser`。
 
+启动状态窗口显示实际步骤、动态等待条和已等待秒数，就绪后自动打开页面；失败原因保留在窗口中，可选中复制。可最小化窗口，或点击“停止等待”关闭本次等待，已启动的服务继续运行。窗口由 `scripts/windows/startup_window.ps1` 提供，不依赖其他 Tangerine 工程；原快捷方式直接生效。启动回归使用临时目录和服务替身，运行 `node --test scripts/tests/windows-launcher.test.mjs`，不会打开浏览器或访问个人数据。
+
 常用检查：
 
 | 命令 | 用途 |
