@@ -27,3 +27,8 @@ artifacts/
 *.njsproj
 *.sln
 *.sw?
+
+# Optional local provider settings and credentials.
+.env
+.env.*
+!.env.example

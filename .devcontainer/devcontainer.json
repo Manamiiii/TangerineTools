@@ -1,20 +1,15 @@
 {
   "name": "TangerineTools",
   "image": "mcr.microsoft.com/devcontainers/universal:5",
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "openai.chatgpt"
-      ]
-    }
-  },
   "mounts": [
     "source=tangerine-tools-codex-home,target=/home/codespace/.codex,type=volume"
   ],
   "remoteEnv": {
     "CODEX_HOME": "/home/codespace/.codex"
   },
-  "forwardPorts": [5188],
+  "forwardPorts": [
+    5188
+  ],
   "portsAttributes": {
     "5188": {
       "label": "TangerineTools",

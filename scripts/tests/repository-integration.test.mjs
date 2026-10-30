@@ -202,3 +202,18 @@ test('invalid shiny batch rolls back and leaves prior values untouched', async (
   await assert.rejects(writeOwnedRecords('owned', [{ values: { ref: 'allowed', appearance: 'shiny' } }, { values: { ref: 'blocked', appearance: 'shiny' } }]), /无异色/)
   assert.equal(await db.catalogRows.where('tableId').equals('owned').count(), 0)
 })
+
+
+test('Rock collection rejects missing or wrong-table identity atomically without changing backup import semantics', async () => {
+  await resetDatabase()
+  await db.catalogTables.put({ id: 'rock-owned', sceneId: ROCK_KINGDOM_PRESET.scene.id, kind: 'owned', collectionMode: 'multiple' })
+  await db.catalogFields.put({ id: 'rock-ref', tableId: 'rock-owned', key: 'ref', type: 'reference', referenceTableId: 'creatures' })
+  await db.catalogRows.bulkPut([{ id: 'valid', tableId: 'creatures', values: { name: 'Valid' } }, { id: 'wrong', tableId: 'skills', values: {} }])
+  for (const ref of ['', 'missing', 'wrong']) {
+    await assert.rejects(writeOwnedRecords('rock-owned', [{ values: { ref: 'valid' } }, { values: { ref } }]), /图鉴名/)
+    assert.equal(await db.catalogRows.where('tableId').equals('rock-owned').count(), 0)
+  }
+  const [saved] = await writeOwnedRecords('rock-owned', [{ values: { ref: 'valid', note: 'kept' } }])
+  await assert.rejects(writeOwnedRecords('rock-owned', [{ id: saved.id, values: { ref: '' } }]), /图鉴名/)
+  assert.equal((await db.catalogRows.get(saved.id)).values.ref, 'valid')
+})

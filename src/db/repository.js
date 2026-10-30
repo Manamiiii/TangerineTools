@@ -282,6 +282,12 @@ export async function writeOwnedRecords(tableId, records, { appendOnly = false }
       if (record.id && !previous) throw new Error('收集记录已变化，请重新打开后保存')
       const values = { ...previous?.values, ...record.values }
       const reference = refField && values[refField.key] ? await db.catalogRows.get(values[refField.key]) : null
+      if (table.sceneId === ROCK_KINGDOM_PRESET.scene.id) {
+        if (!refField || !values[refField.key]) throw new Error('请选择图鉴名，再保存收集记录。')
+        if (!reference || reference.tableId !== refField.referenceTableId) {
+          throw new Error('所选精灵资料不存在或不属于当前图鉴，请重新选择图鉴名。')
+        }
+      }
       if (reference?.tableId === 'table-rock-kingdom-elf-basic'
         && (values.appearance ? appearanceFlags(values.appearance).shiny === 'yes' : values.shiny === 'yes' || values.shiny === true)
         && reference.values?.shiny !== 'yes' && reference.values?.shiny !== true) {

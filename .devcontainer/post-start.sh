@@ -12,6 +12,7 @@ cd "$repo_root" || {
   exit 0
 }
 
+if [ "${TANGERINE_ENABLE_CODEX_SETUP:-0}" = "1" ]; then
 mkdir -p "$HOME/.codex" || echo "warning: could not pre-create \$HOME/.codex" >&2
 if ! sudo chown "$(id -u):$(id -g)" "$HOME/.codex" 2>/dev/null; then
   echo "warning: could not set ownership on \$HOME/.codex" >&2
@@ -38,6 +39,8 @@ fi
 codex_auth="$HOME/.codex/auth.json"
 if [ -e "$codex_auth" ] && ! chmod 600 "$codex_auth"; then
   echo "warning: could not secure \$HOME/.codex/auth.json permissions" >&2
+fi
+
 fi
 
 if curl --fail --silent --show-error http://127.0.0.1:5188/ >/dev/null 2>&1; then

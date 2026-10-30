@@ -5101,3 +5101,13 @@ fieldset.scanner-shell {
 
 .nature-owned-direction { padding-top: 7px; border-top: 1px solid var(--border); }
 .nature-owned-direction > strong { font-size: 12px; }
+
+.getting-started { padding: 20px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.getting-started h1 { margin: 0 0 10px; font-size: 22px; line-height: 1.4; }
+.getting-started p, .getting-started li { font-size: 13px; line-height: 1.8; color: var(--text-muted); }
+.getting-started ol { padding-left: 22px; }
+.getting-started .local-data-note { margin-bottom: 0; padding-top: 12px; border-top: 1px solid var(--border); }
+.scene-row { cursor: default; }
+.scene-open-button { text-align: left; background: transparent; border: 0; padding: 6px 0; color: var(--text); cursor: pointer; }
+.scene-open-button:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 3px; }
+.scanner-compatibility-note { margin: 0; padding: 10px 12px; border-radius: var(--radius); background: #fff7ed; color: #9a3412; line-height: 1.6; font-size: 13px; }

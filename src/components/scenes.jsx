@@ -24,6 +24,16 @@ export function SceneList({ scenes, onOpen }) {
 
   return (
     <div className="scene-list-page">
+      <section className="getting-started" aria-labelledby="getting-started-title">
+        <h1 id="getting-started-title">整理游戏收藏，决定下一只怎么培养</h1>
+        <p>洛克王国世界玩家可以直接查资料、记精灵，再按自己的收藏查看性格和孵蛋建议。其他游戏可以新建场景，自行配置资料表。</p>
+        <ol>
+          <li><strong>查资料</strong>：打开下方「洛克王国」，搜索精灵或切换到技能资料。</li>
+          <li><strong>记一只</strong>：进入「收集记录」→「新增记录」，选择图鉴名，再填写性格和外观。</li>
+          <li><strong>看建议</strong>：查看「性格推荐」；录入稀有亲本后再尝试「孵蛋推荐」。建议供取舍，不是必须集齐的清单。</li>
+        </ol>
+        <p className="local-data-note"><strong>请定期导出备份。</strong>收藏只保存在当前浏览器、当前网址中，不会自动同步到 GitHub 或其他设备。更换浏览器、网址或清除站点数据前，先用上方「导出数据」保存 JSON；恢复时使用「导入数据」。</p>
+      </section>
       <div className="toolbar toolbar-scenes">
         <h2 className="page-title">场景</h2>
         <IconButton
@@ -47,8 +57,8 @@ export function SceneList({ scenes, onOpen }) {
       ) : (
         <ul className="scene-rows">
           {scenes.map((scene) => (
-            <li key={scene.id} className="scene-row" onClick={() => onOpen(scene.id)}>
-              <span className="scene-row-name">{scene.name}</span>
+            <li key={scene.id} className="scene-row">
+              <button type="button" className="scene-row-name scene-open-button" onClick={() => onOpen(scene.id)}>{scene.name}</button>
               <span className="scene-row-type">{sceneTypeLabel(scene.type)}</span>
               <span className="scene-row-tools">{sceneToolLabels(scene.tools)}</span>
               <span className="scene-row-actions" onClick={(e) => e.stopPropagation()}>

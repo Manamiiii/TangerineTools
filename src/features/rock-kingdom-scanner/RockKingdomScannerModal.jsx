@@ -1151,6 +1151,7 @@ export function RockKingdomScannerModal({ table, fields, onClose }) {
       }
     >
       <fieldset className="scanner-shell" disabled={Boolean(busy)}>
+        <p className="scanner-compatibility-note">扫描录入为实验功能：目前按 3200×1440 横屏画面标定，其他设备布局不保证识别正确。可先手动新增记录；扫描结果必须逐条复核。视频和截图在本机处理，只有主动点击 AI 纠错时才发送有限文字候选。</p>
         <div className="scanner-import-row">
           <label className="btn">
             <Video size={15} />

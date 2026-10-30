@@ -204,6 +204,7 @@ function GlobalDataActions() {
     return runAction('正在导出…', async () => {
       const payload = await exportAllData()
       downloadPayload(payload, `tangerine-tools-${payload.exportedAt.slice(0, 10)}.json`)
+      setNotice('已发起备份下载，请在浏览器下载列表确认 JSON 文件已保存。')
     })
   }
 
@@ -277,7 +278,9 @@ function GlobalDataActions() {
         >
           <div className="import-preview" aria-busy={Boolean(busy)}>
             <p>文件：{pendingImport.name}</p>
-            <p>同 id 的记录整条覆盖，文件未包含的本地记录保留。请确认已保存需要保留的本地备份。</p>
+            <p>相同记录会被备份中的内容覆盖；文件未包含的本地记录保留。建议先导出当前数据，再确认合并。</p>
+            <button type="button" className="btn" disabled={Boolean(busy)} onClick={handleExport}>先导出当前数据</button>
+            {notice && <p role="status">{notice}</p>}
             <table>
               <caption>按当前本地数据估算的导入范围</caption>
               <thead><tr><th>数据</th><th>新增</th><th>覆盖</th></tr></thead>

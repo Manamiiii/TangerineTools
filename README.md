@@ -1,25 +1,86 @@
-# TangerineTools
+# TangerineTools · 游戏收藏与培养助手
 
-TangerineTools 是一个本地优先的个人游戏管理工具。应用使用 Vite、React 19 与 Dexie.js 构建，不依赖后端；资料保存在浏览器 IndexedDB，通过 JSON 手动备份和迁移。
+给《洛克王国世界》玩家的本地收藏工具：查精灵与技能、记录自己的个体，再判断培养、保留和孵蛋方向。
 
-内置的「洛克王国世界」场景提供资料库、收集记录、统计视图、性格推荐、孵蛋推荐和精灵扫描。用户也可以创建其他游戏场景，使用通用的资料库、收集记录与统计视图。照片和设备管理由独立的 TangerinePhotoAssistant 负责，阅读功能由独立的 [TangerineReadingCompanion](https://github.com/Manamiiii/TangerineReadingCompanion) 负责。
+无需注册，也不需要 API Key。收藏保存在你自己的浏览器中，通过 JSON 手动备份和迁移。项目处于早期使用阶段，推荐是辅助判断，不是实战最优解或必须集齐的清单。
 
-## 开发
+![TangerineTools 首页与使用步骤](docs/assets/product/getting-started.png)
 
-需要 Node.js `>=20.19.0`。
+## 适合谁，用来做什么
+
+- **精灵越来越多，记不清已经有什么**：按图鉴名、性格、外观、性别等记录和筛选自己的个体。
+- **想判断培养和保留方向**：查看性格适用性与规则原因；结合已有异色／炫彩，查看哪些同方向普通个体可以作为备选。
+- **想整理繁育目标**：根据已记录的稀有亲本、蛋组、性别和目标，查看最多五对候选组合。普通亲本可能需要按条件现抓。
+- **想记录其他游戏**：可以新建场景和资料表，配置字段、收集记录与统计；其他游戏没有内置图鉴或专项推荐。
+
+内置资料来自版本化 Wiki 快照，不是实时游戏接口。资料批次与逐条来源可在页面底部「数据来源与版权」及资料详情中查看。
+
+## 从零开始
+
+需要安装 Node.js：建议使用 `.nvmrc` 指定的 22.12.0 或更新的受支持 22.x 版本，最低满足 `package.json` 的 `>=20.19.0`。使用命令行方式克隆需要 Git，也可以在 GitHub 的 **Code → Download ZIP** 下载并解压源码。
 
 ```bash
-npm install
+git clone --depth 1 https://github.com/Manamiiii/TangerineTools.git
+cd TangerineTools
+npm ci
 npm run dev
 ```
 
-本地开发服务固定使用 `http://localhost:5188`；端口被占用时会直接报错，避免与其他工程混用。
+打开终端显示的 **http://localhost:5188**。无需配置环境变量、数据库服务或模型供应商。首次进入会读取仓库内的预置资料，等待初始化完成。
 
-Windows 可双击根目录 `TangerineTools.vbs`，或桌面 Tangerine 文件夹中的同名快捷方式。`scripts/windows/start.ps1` 隐藏启动或复用本地服务后打开默认浏览器；固定使用上述地址，以保持浏览器收藏数据所属站点一致。启动日志位于 `artifacts/launcher/`。验证服务而不打开浏览器可运行 `powershell -NoProfile -File scripts/windows/start.ps1 -NoOpenBrowser`。
+Windows 安装依赖后，也可以双击项目根目录的 `TangerineTools.vbs`。启动窗口会显示阶段和耗时，就绪后打开浏览器；失败原因留在窗口中。首次运行可能受系统脚本策略限制，此时直接使用上面的终端命令即可，不需要管理员权限。日志在 `artifacts/launcher/`。源码下载不附带作者电脑上的桌面快捷方式。
 
-启动状态窗口显示实际步骤、动态等待条和已等待秒数，就绪后自动打开页面；失败原因保留在窗口中，可选中复制。可最小化窗口，或点击“停止等待”关闭本次等待，已启动的服务继续运行。窗口由 `scripts/windows/startup_window.ps1` 提供，不依赖其他 Tangerine 工程；原快捷方式直接生效。启动回归使用临时目录和服务替身，运行 `node --test scripts/tests/windows-launcher.test.mjs`，不会打开浏览器或访问个人数据。
+### 完成第一条记录
 
-常用检查：
+1. 点击首页「洛克王国」，先在「资料库」搜索你熟悉的精灵。
+2. 切换「收集记录」→「新增记录」，选择图鉴名，按游戏中的实际个体填写性格、外观等信息并保存。
+3. 打开「性格推荐」，搜索同一精灵。性格分档只判断适用性，「我的保留建议」结合你的收藏判断；两者不是同一件事。
+4. 有异色／炫彩亲本后再尝试「孵蛋推荐」。没有可推进目标的组合时，会显示空状态，不能凭空生成稀有亲本。
+5. 点击顶部 TangerineTools 返回首页，使用「导出数据」，在下载列表确认 JSON 文件已保存。
+
+**请先备份，再做批量修改或删除。** 数据按浏览器和网址隔离：`localhost`、`127.0.0.1`、不同端口以及线上站点不是同一份收藏。换网址或设备前先导出，再到目标页面导入。导入按记录 ID 合并：同 ID 整条覆盖，文件未包含的本地记录保留。导入确认窗口可先导出当前数据。
+
+## 限制与常见问题
+
+- **扫描录入是实验功能**：目前按 3200×1440 横屏游戏画面标定，不能保证适配其他设备或布局；HEVC 视频解码还依赖浏览器和系统。新用户优先手动录入，扫描后仍须逐条复核。参见[扫描说明](docs/rock-kingdom/scanner.md)。
+- **加速、减速和培养建议不是对战模拟**：规则读取六维、技能和特性，不计算完整配招、阵容、克制及全部能量循环。可保留分支按需选择；工具不替你在游戏中放生精灵。
+- **没有自动云同步**：清除浏览器站点数据、无痕窗口结束或浏览器存储被回收都可能丢失本地记录。请把备份文件保存到浏览器外。
+- **核心功能不依赖 AI**：可选的模型解释、扫描文字纠错需要自行配置可信供应商，浏览器直连，可能因 CORS 或费用限制而不可用。详见[模型配置与隐私边界](docs/model-provider-setup.md)。
+- **图片不显示**：部分游戏图片引用外部 Wiki 图床；本地优先不等于所有资源都离线可用。网络或来源站点不可用时，文字记录仍可使用。首次初始化和未缓存功能也不承诺离线可用。
+- **页面启动失败**：确认网络能读取本站静态文件、浏览器允许站点存储，然后点击「重新尝试」。不要为排错先清除站点数据；已有收藏请先备份。
+- **5188 端口被占用**：停止冲突服务后重试。不要随意换端口寻找收藏；新端口使用独立浏览器数据。
+- **其他游戏如何配置**：新建场景时启用需要的工具，在「资料库」建立资料表和字段；收集表可添加引用字段关联该表，再录入个人记录。
+
+更多说明：[数据存储与备份](docs/data-sync.md) · [隐私与第三方内容](docs/privacy-and-sources.md)。
+
+## 构建与自行部署
+
+```bash
+npm ci
+npm run build
+npm run preview -- --host localhost --port 5188 --strictPort
+```
+
+本地预览前先停止同端口开发服务。部署时上传 **`dist/` 的全部内容**，包括预置、OCR 语言包和运行资源，不能直接双击 `dist/index.html`。支持静态 HTTPS 托管，使用相对资源路径和 hash 路由，无需后端或服务端路由重写。`vite preview` 仅用于本地验收，不作为公网服务器。
+
+仓库包含 `.github/workflows/pages.yml` 的 GitHub Pages 流程：检查、测试、构建通过后部署。Fork 用户需在仓库 Settings → Pages 中选择 GitHub Actions，并自行启用工作流；推送 `main` 或手动触发可能发布站点。仅想本地使用时，不必配置 Pages，也不必运行任何 BWiki 采集或预置发布命令。
+
+开发容器通过 `npm ci` 准备依赖并启动 5188 端口；普通用户不需要 AI 开发工具。作者使用的 Codex 凭据配置只在显式设置 `TANGERINE_ENABLE_CODEX_SETUP=1` 后执行。不要将开发端口设为公开共享。容器启动路径尚需在实际 Codespaces 环境单独验收。
+
+## 开发与维护
+
+前端使用 React 19、Vite 与 Dexie，数据保存在浏览器 IndexedDB。维护者常用：
+
+```bash
+npm run lint
+npm test
+npm run build
+```
+
+完整测试包含本机 Chrome 无界面回归，需要已安装 Chrome；Windows 启动器测试只在 Windows 执行。首次安装和依赖审计需要联网。`npm audit` 检查已知依赖通告，不等同于完整安全审计。
+
+<details>
+<summary>全部维护命令（普通用户无需执行采集或发布）</summary>
 
 | 命令 | 用途 |
 |---|---|
@@ -48,17 +109,9 @@ Windows 可双击根目录 `TangerineTools.vbs`，或桌面 Tangerine 文件夹�
 | `npm run check:bwiki:preset` | dry-run 检查 NRC 正式预置差异 |
 | `npm run apply:bwiki:preset -- --source=rocom` | 显式检查来源的 rocom 发布入口；遗漏正式稳定 ID 时拒绝写入 |
 
-自动测试包含本机 Chrome 无界面回归，需已安装 Chrome。OCR 运行资源从锁定依赖打包到 `dist/ocr-runtime/`，语言包使用 `public/reader-ocr/` 的版本化文件。静态缓存版本由产物内容生成，模板或运行资源变化会刷新缓存。
+正式预置写入需要明确来源、针对具体候选的批准及 `BWIKI_PRESET_OVERWRITE` 确认值，见 [BWiki 发布流程](docs/data-sources/bwiki-pipeline.md)。不要把普通运行或升级与重新采集、发布资料混淆。
 
-## 数据边界
-
-- 数据库名为 `tangerine-tools`，Dexie schema 保持 v1。
-- 全量导入按稳定 id 合并：同 id 覆盖，文件未包含的本地记录保留。
-- 洛克王国正式资料只通过版本化 BWiki staging、preview、apply 流程发布。
-- 首页仅在检测到阅读数据时显示「迁移阅读数据」，生成可由 Tangerine Reading Companion 直接导入的专用 JSON。迁移导出不会清理 TangerineTools 中的任何记录。
-- 模型连接地址与模型 ID 保存在 `localStorage`，API Key 仅保存在 `sessionStorage`，不进入 Dexie 或备份文件。
-
-完整存储、导入和兼容语义见 [`docs/data-sync.md`](docs/data-sync.md)。
+</details>
 
 ## 目录
 
@@ -80,6 +133,7 @@ src/presets/                  场景结构定义与版本化来源清单
 ## 维护文档
 
 - [`docs/system-capabilities.md`](docs/system-capabilities.md)：产品范围和已实现能力。
+- [`docs/privacy-and-sources.md`](docs/privacy-and-sources.md)：隐私、第三方请求与素材许可边界。
 - [`docs/data-sync.md`](docs/data-sync.md)：Dexie、备份、导入与阅读迁移兼容。
 - [`docs/data-sources/bwiki-pipeline.md`](docs/data-sources/bwiki-pipeline.md)：正式资料发布流程。
 - [`docs/data-sources/bwiki-field-mapping.md`](docs/data-sources/bwiki-field-mapping.md)：字段转换、稳定 id 与校验门槛。
@@ -94,16 +148,14 @@ src/presets/                  场景结构定义与版本化来源清单
 - [`docs/rock-kingdom/scanner-baseline.md`](docs/rock-kingdom/scanner-baseline.md)：扫描回归基线。
 - [`docs/model-provider-setup.md`](docs/model-provider-setup.md)：洛克王国模型服务配置。
 
-## 发布预置
+应用图标源文件为 `public/favicon.svg`；运行 `npm run build:icons` 导出 `public/icons/tangerine-tools-*` 与 Windows ICO。启动入口为 `TangerineTools.vbs`，实现位于 `scripts/windows/`。
 
-正式资料写入需要显式选择来源、确认具体候选并设置覆盖口令；所有来源都禁止遗漏现有正式稳定 ID：
+## 问题反馈
 
-```bash
-# PowerShell
-$env:BWIKI_PRESET_OVERWRITE='CONFIRM_BWIKI_PRESET'
-npm run apply:bwiki:preset -- --source=nrc
-```
+通过 [GitHub Issues](https://github.com/Manamiiii/TangerineTools/issues) 提供使用入口、浏览器／系统、操作步骤、预期和实际结果。截图请去掉昵称等个人信息；不要公开 API Key、整份个人备份或原始录屏。资料纠错请附对应的游戏版本与来源页面。
 
-不提供云同步、账号体系、战斗模拟、PVP 自动化或属性克制系统。
+## License 与素材说明
 
-应用图标的可编辑源文件为 `public/favicon.svg`，采用 Tangerine 系列的橙色圆角底、深棕橘子轮廓与绿色叶片，中心手柄代表游戏管理。`public/icons/tangerine-tools-*` 为尺寸导出，`public/icons/tangerine-tools.ico` 用于 Windows 快捷方式；修改源文件后运行 `npm run build:icons`。
+**项目代码尚未指定开源许可证。** 仓库公开可见不等于已经给予通用的使用、修改和再分发许可；许可证须由作者明确选择，本文件不代替授权。
+
+Wiki 文字、游戏图片、扫描样本、OCR 语言包与软件依赖各有其来源和许可范围，不能一并声明为项目代码许可证。页面底部提供来源与版权说明；详细边界见[隐私与第三方内容](docs/privacy-and-sources.md)。TangerineTools 与游戏官方及 Wiki 站点无隶属或授权关系。

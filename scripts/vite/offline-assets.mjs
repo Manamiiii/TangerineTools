@@ -18,10 +18,11 @@ runtime.set('LICENSE-tesseract-js', path.join(path.dirname(worker), '../LICENSE.
 
 export function offlineAssets() {
   let outputDirectory
+  let projectRoot
   let build = false
   return {
     name: 'tangerine-offline-assets',
-    configResolved(config) { outputDirectory = path.resolve(config.root, config.build.outDir); build = config.command === 'build' },
+    configResolved(config) { projectRoot = config.root; outputDirectory = path.resolve(config.root, config.build.outDir); build = config.command === 'build' },
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         const pathname = new URL(req.url, 'http://localhost').pathname
@@ -38,6 +39,23 @@ export function offlineAssets() {
       for (const [name, file] of runtime) {
         this.emitFile({ type: 'asset', fileName: `ocr-runtime/${name}`, source: await readFile(file) })
       }
+      const lock = JSON.parse(await readFile(path.join(projectRoot, 'package-lock.json'), 'utf8'))
+      const notices = ['Third-party runtime dependencies. These notices do not license TangerineTools code or game assets.']
+      for (const [directory, metadata] of Object.entries(lock.packages).sort(([a], [b]) => a.localeCompare(b))) {
+        if (!directory || metadata.dev) continue
+        const fullPath = path.join(projectRoot, directory)
+        let files
+        try { files = await readdir(fullPath) } catch (error) {
+          if (metadata.optional && error.code === 'ENOENT') continue
+          throw error
+        }
+        const pkg = JSON.parse(await readFile(path.join(fullPath, 'package.json'), 'utf8'))
+        notices.push(`\n${pkg.name} ${pkg.version} (${pkg.license || 'See package license'})`)
+        for (const filename of files.filter((file) => /^(license|licence|notice|copying)(\.|$)/i.test(file)).sort()) {
+          notices.push(`--- ${filename} ---\n${await readFile(path.join(fullPath, filename), 'utf8')}`)
+        }
+      }
+      this.emitFile({ type: 'asset', fileName: 'THIRD_PARTY_NOTICES.txt', source: notices.join('\n\n') })
     },
     async closeBundle() {
       // 所有静态产物（包括 public 模板）共同决定缓存版本。

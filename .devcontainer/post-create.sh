@@ -18,6 +18,11 @@ if ! npm ci; then
   echo "warning: dependency installation failed; retry with: npm ci" >&2
 fi
 
+# Optional author tooling is opt-in; normal app setup does not alter AI credentials.
+if [ "${TANGERINE_ENABLE_CODEX_SETUP:-0}" != "1" ]; then
+  exit 0
+fi
+
 # Keep Codex reproducible after a Codespace rebuild. A Codex registry/network
 # failure must not make the development container unusable.
 if ! npm install --global @openai/codex@0.144.4; then
