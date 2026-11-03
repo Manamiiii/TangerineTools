@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { access, readFile } from 'node:fs/promises'
+import { access, readFile, readdir } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
 
@@ -56,6 +56,21 @@ import {
   waitForVideoSeek,
 } from '../../src/features/rock-kingdom-scanner/frameCapture.js'
 import fixedPortraitSamples from '../../src/features/rock-kingdom-scanner/fixedPortraitSamples.json' with { type: 'json' }
+
+test('public scanner fixtures redact player identifiers and omit personal metadata', async () => {
+  const directory = new URL('../../docs/assets/rock-kingdom-scanner/baseline-3200x1440/', import.meta.url)
+  const files = (await readdir(directory)).filter(file => file.endsWith('.webp'))
+  assert.equal(files.length, 56)
+  for (const file of files) {
+    const source = fileURLToPath(new URL(file, directory))
+    const metadata = await sharp(source).metadata()
+    assert.ok(!metadata.exif && !metadata.xmp && !metadata.iptc, file)
+    const left = Math.floor(metadata.width * 0.90)
+    const top = Math.floor(metadata.height * 0.96)
+    const pixels = await sharp(source).extract({ left, top, width: metadata.width - left, height: metadata.height - top }).removeAlpha().raw().toBuffer()
+    assert.ok(pixels.every(value => value === 0), `${file}: player identifier region must be fully masked`)
+  }
+})
 
 test('video seeking waits until the requested decoded frame is presented', async () => {
   const listeners = new Map()
