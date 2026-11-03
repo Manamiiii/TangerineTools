@@ -1,0 +1,50 @@
+name: Verify Windows installer
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-installer-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run check:privacy
+      - run: npm test
+      - name: Build Windows x64 Setup (no publishing)
+        run: npm run dist:windows
+      - name: Test packaged production application in isolated profiles
+        run: npm run test:desktop
+      - name: Build isolated installer identities sequentially
+        run: npm run build:installer-fixtures
+      - name: Verify install, upgrade, running protection and retained data
+        run: npm run test:installer
+      - name: Verify production identity with temporary data (silent mode)
+        run: npm run test:installer:production
+      - name: Preserve verification reports only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-verification-reports
+          path: |
+            artifacts/desktop/test-results/*.json
+            artifacts/desktop/release/SHA256SUMS.txt
+            artifacts/desktop/release/artifacts.json
+          if-no-files-found: ignore
+          retention-days: 14

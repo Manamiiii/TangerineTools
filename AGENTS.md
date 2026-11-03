@@ -58,7 +58,7 @@ Also check the latest commit, PR description, and review comments when continuin
 
 ## Environment and commands
 
-- Node must satisfy `package.json` engines (`>=20.19.0`). Run `node -v` before coding.
+- Node must satisfy `package.json` engines (`>=22.12.0`). Run `node -v` before coding.
 - Common checks:
   - `npm run lint`
   - `npm test`

@@ -204,7 +204,9 @@ function GlobalDataActions() {
     return runAction('正在导出…', async () => {
       const payload = await exportAllData()
       downloadPayload(payload, `tangerine-tools-${payload.exportedAt.slice(0, 10)}.json`)
-      setNotice('已发起备份下载，请在浏览器下载列表确认 JSON 文件已保存。')
+      setNotice(window.location.protocol === 'app:'
+        ? '已发起备份保存，请在系统对话框选择位置并确认 JSON 文件已保存；取消保存不会生成备份。'
+        : '已发起备份下载，请在浏览器下载列表确认 JSON 文件已保存。')
     })
   }
 

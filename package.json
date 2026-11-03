@@ -2,10 +2,14 @@
   "name": "tangerine-tools",
   "private": true,
   "version": "0.1.0",
+  "description": "洛克王国世界收藏、性格与繁育助手，数据保存在本机",
+  "author": "TangerineTools contributors",
+  "homepage": "https://github.com/Manamiiii/TangerineTools",
+  "repository": { "type": "git", "url": "https://github.com/Manamiiii/TangerineTools.git" },
   "license": "GPL-3.0-only",
   "type": "module",
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=22.12.0"
   },
   "scripts": {
     "dev": "vite",
@@ -32,7 +36,14 @@
     "check:bwiki:preset": "node scripts/bwiki/apply-preset.mjs --source=nrc",
     "apply:bwiki:preset": "node scripts/bwiki/apply-preset.mjs --write",
     "test": "node --test scripts/tests/*.test.mjs",
-    "build:icons": "node scripts/assets/build-icons.mjs"
+    "build:icons": "node scripts/assets/build-icons.mjs",
+    "pack:desktop": "npm run build && node desktop/build.mjs --dir",
+    "dist:windows": "npm run build && node desktop/build.mjs && npm run checksums:desktop",
+    "build:installer-fixtures": "npm run build && node desktop/build.mjs --fixtures",
+    "checksums:desktop": "node desktop/checksums.mjs",
+    "test:desktop": "node desktop/tests/smoke.mjs",
+    "test:installer": "node desktop/tests/installer.mjs",
+    "test:installer:production": "node desktop/tests/installer.mjs --production"
   },
   "dependencies": {
     "dexie": "^4.4.4",
@@ -43,7 +54,10 @@
     "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.62.1",
     "@vitejs/plugin-react": "^6.0.3",
+    "electron": "45.1.0",
+    "electron-builder": "26.18.0",
     "fake-indexeddb": "^6.2.4",
     "oxlint": "^1.74.0",
     "parse5": "^8.0.1",

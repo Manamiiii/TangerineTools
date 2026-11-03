@@ -1,0 +1,9 @@
+{
+  "productName": "橘子洛克王国工具",
+  "appId": "org.tangerine.rockkingdom",
+  "installerGuid": "a18b37d2-68f6-4be7-9565-2f81c640d274",
+  "executableName": "TangerineTools",
+  "host": "rock-kingdom",
+  "dataDirectory": "TangerineTools",
+  "releases": "https://github.com/Manamiiii/TangerineTools/releases"
+}

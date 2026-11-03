@@ -4,26 +4,27 @@
 
 **《洛克王国世界》的收藏与培养助手。** 查资料、记录盒子里的精灵，再按自己的收藏判断保留、培养和孵蛋方向。
 
-[在线使用](https://manamiiii.github.io/TangerineTools/) · [第一次使用](#第一次使用) · [本地运行](#本地运行) · [问题反馈](https://github.com/Manamiiii/TangerineTools/issues)
+[在线使用](https://manamiiii.github.io/TangerineTools/) · [Windows 安装说明](docs/windows-desktop.md) · [第一次使用](#第一次使用) · [本地运行](#本地运行) · [问题反馈](https://github.com/Manamiiii/TangerineTools/issues)
 
 无需注册，核心功能不需要 API Key。收藏保存在当前浏览器，通过 JSON 手动备份和迁移。项目处于早期阶段，推荐供取舍，不是必须集齐的清单。
 
 ## 在线与本地怎么选
 
-**日常使用和分享给朋友，推荐在线版；开发、调试或自行维护版本时，使用本地版。** 两者是同一套工具，相同代码版本下核心功能一致。
+**想直接尝试，用在线版；需要独立窗口，用 Windows 安装版；修改代码时，使用源码版。** 相同代码版本下核心功能一致，各入口的收藏互不共享。
 
-| | 在线版（GitHub Pages） | 本地版 |
-|---|---|---|
-| 打开方式 | [打开在线工具](https://manamiiii.github.io/TangerineTools/)，可加入浏览器书签 | 启动项目后访问 `http://localhost:5188`；Windows 可用本地启动快捷方式 |
-| 安装要求 | 有浏览器即可，不需要 Node 或源码 | 需要 Node、项目代码和依赖 |
-| 使用的版本 | 已成功部署的公开版本，重新打开或刷新后加载 | 当前电脑里的代码；需要自行同步更新，也可能包含未发布改动 |
-| 收藏保存在哪里 | 当前浏览器中，属于在线网址的站点存储 | 当前浏览器中，属于本地网址的站点存储；不保存在项目代码目录 |
-| 是否同步收藏 | 不上传到 GitHub，不自动同步到本地版或其他设备 | 不随代码提交，不自动同步到在线版或其他设备 |
-| 网络要求 | 首次加载和更新需要网络；不保证断网可用 | 安装完成后可由本机提供程序和预置；外部图片、模型等仍需要网络 |
+| | 在线版（GitHub Pages） | Windows x64 安装版 | 源码版 |
+|---|---|---|---|
+| 打开方式 | [浏览器打开](https://manamiiii.github.io/TangerineTools/) | 安装 Setup 后从开始菜单打开 | 启动项目后访问 `http://localhost:5188` |
+| 运行要求 | 浏览器，无需源码 | 无需 Node、npm、Python 或 Rust | Node、项目代码和依赖 |
+| 使用的版本 | 已部署版本，刷新后加载 | 安装包版本，手动下载并退出后安装更新 | 当前电脑里的代码，自行同步更新 |
+| 收藏位置 | 在线网址的浏览器存储 | 本机独立应用数据目录 | 本地网址的浏览器存储 |
+| 网络要求 | 加载和更新需要网络；不保证断网可用 | 程序、预置与 OCR 随包提供 | 本机提供程序和预置 |
 
-桌面上的**本地启动快捷方式**用于启动这台电脑的服务，不是在线版的必需品。只使用在线版时，可收藏网页或创建网页快捷方式，无需先运行本地服务。
+三种方式都不上传收藏到 GitHub，也不自动同步到其他设备；外部图片和模型服务仍需要网络。Windows 安装包以本仓库 Releases 的实际附件为准，维护者可按[桌面构建说明](docs/windows-desktop.md)生成。安装包未签名，不宣称已经验证 macOS、Linux 或 Windows ARM64。
 
-**从本地切换到在线版：** 先在本地首页「导出数据」，再打开在线版「导入数据」，核对收集记录后固定使用在线入口。在线版已有记录时，先备份在线数据并查看导入覆盖预览；同 ID 记录按备份覆盖，文件未包含的记录保留。两个入口来回使用会形成各自的记录，不会自动合并。更换浏览器或设备也需要同样的导出／导入操作。
+桌面上的**源码启动快捷方式**用于启动这台电脑的开发服务。在线版和安装版都不需要先运行它；安装版有自己的开始菜单入口。
+
+**切换入口：** 先在原入口首页「导出数据」，再到目标入口「导入数据」，核对收集记录后固定使用一个入口。目标已有记录时，先备份目标数据并查看导入覆盖预览；同 ID 记录按备份覆盖，文件未包含的记录保留。来回使用会形成各自的记录，不会自动合并。更换浏览器或设备也需要同样的导出／导入操作。
 
 ## 能帮你做什么
 
@@ -63,7 +64,7 @@
 
 ## 本地运行
 
-希望自行运行或修改代码时，需要安装 Node.js：建议使用 `.nvmrc` 指定的 22.12.0 或更新的受支持 22.x 版本，最低满足 `package.json` 的 `>=20.19.0`。命令行克隆需要 Git，也可以[下载源码 ZIP](https://github.com/Manamiiii/TangerineTools/archive/refs/heads/main.zip)并解压。
+本节是源码运行方式，Windows 安装版不需要这些环境。开发需要 Node.js：建议使用 `.nvmrc` 指定的 22.12.0 或更新的受支持 22.x 版本，最低满足 `package.json` 的 `>=22.12.0`。命令行克隆需要 Git，也可以[下载源码 ZIP](https://github.com/Manamiiii/TangerineTools/archive/refs/heads/main.zip)并解压。
 
 ```bash
 git clone --depth 1 https://github.com/Manamiiii/TangerineTools.git
@@ -132,6 +133,13 @@ README 截图来自隔离浏览器中的界面回归，不读取个人收藏。P
 | `npm run check:privacy` | 检查跟踪文件和提交邮箱，避免本机配置误入公开仓库 |
 | `npm test` | 领域与回归测试 |
 | `npm run build` | 生产构建 |
+| `npm run dist:windows` | 构建 Windows x64 Setup 和 SHA-256，不发布附件 |
+| `npm run pack:desktop` | 构建供验收的 Windows unpacked 程序 |
+| `npm run test:desktop` | 在隔离数据下验收打包程序、OCR、安全边界与备份 |
+| `npm run build:installer-fixtures` | 顺序构建独立身份的低版本号与当前版本安装 fixture |
+| `npm run test:installer` | 独立测试身份的安装、升级、运行中保护与数据保留验证 |
+| `npm run test:installer:production` | 正式身份的隔离静默安装验收；既有安装存在时拒绝 |
+| `npm run checksums:desktop` | 为当前版本 Setup 生成 SHA-256 与大小清单 |
 | `npm run build:icons` | 从 `public/favicon.svg` 导出 PNG、PWA 遮罩图标和 Windows ICO |
 | `npm run check:nature` | 生成并检查性格推荐校准报告 |
 | `npm run check:scanner:templates` | 检查扫描模板 |
@@ -165,6 +173,7 @@ README 截图来自隔离浏览器中的界面回归，不读取个人收藏。P
 
 ```text
 docs/                         当前能力、数据源与专项规则
+desktop/                      桌面安全层、Windows 打包与隔离安装验收
 public/presets/               洛克王国运行时正式预置
 scripts/bwiki/                官方公告审计与 BWiki staging / preview / apply
 scripts/nature/               性格推荐校准
@@ -183,6 +192,7 @@ src/presets/                  场景结构定义与版本化来源清单
 - [`docs/system-capabilities.md`](docs/system-capabilities.md)：产品范围和已实现能力。
 - [`docs/privacy-and-sources.md`](docs/privacy-and-sources.md)：隐私、第三方请求与素材许可边界。
 - [`docs/data-sync.md`](docs/data-sync.md)：Dexie、备份、导入与阅读迁移兼容。
+- [`docs/windows-desktop.md`](docs/windows-desktop.md)：Windows 安装、身份、安全边界、构建与验收口径。
 - [`docs/data-sources/bwiki-pipeline.md`](docs/data-sources/bwiki-pipeline.md)：正式资料发布流程。
 - [`docs/data-sources/bwiki-field-mapping.md`](docs/data-sources/bwiki-field-mapping.md)：字段转换、稳定 id 与校验门槛。
 - [`docs/data-sources/nrc-source.md`](docs/data-sources/nrc-source.md)：新版 NRC 快照采集、候选边界与署名许可。
