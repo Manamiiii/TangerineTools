@@ -1,0 +1,38 @@
+TangerineTools — personal game collection and planning tools
+Copyright (C) 2026 TangerineTools contributors
+SPDX-License-Identifier: GPL-3.0-only
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, version 3 of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+Scope
+-----
+This grant covers project-owned code and original documentation, except
+where a file carries a separate notice. It does not relicense third-party
+dependencies, OCR resources, Wiki-derived data, game artwork, icons or
+screenshots. Their existing notices, attribution and applicable terms
+remain in effect. This notice does not grant rights in third-party game
+assets or establish permission to redistribute them.
+
+See docs/privacy-and-sources.md and src/presets/rockKingdomSources.json
+in the source tree for the content boundaries and source attribution.
+Production builds include THIRD_PARTY_NOTICES.txt and the OCR notices.
+
+Source and redistribution
+-------------------------
+Project repository: https://github.com/Manamiiii/TangerineTools
+Build instructions: README.md in the source tree.
+
+When distributing a compiled or modified version, provide the matching
+Corresponding Source, including the necessary build scripts, as required
+by GPL version 3. A link to an unrelated or older upstream revision is
+not a substitute for the source corresponding to the distributed build.

@@ -36,6 +36,9 @@ export function offlineAssets() {
       })
     },
     async generateBundle() {
+      for (const fileName of ['LICENSE', 'COPYRIGHT']) {
+        this.emitFile({ type: 'asset', fileName, source: await readFile(path.join(projectRoot, fileName)) })
+      }
       for (const [name, file] of runtime) {
         this.emitFile({ type: 'asset', fileName: `ocr-runtime/${name}`, source: await readFile(file) })
       }

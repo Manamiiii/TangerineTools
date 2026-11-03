@@ -25,10 +25,12 @@
 
 ## 来源与许可边界
 
-- 项目代码：根目录尚无 LICENSE；必须由作者明确选择，不将公开仓库描述成已经完成许可授权的开源发行版。
+- 项目自有代码和原创文档：采用 GPL-3.0-only，仅 GNU GPL 第 3 版，另有声明的文件除外。完整条款见根目录 [LICENSE](../LICENSE)，授权与排除范围见 [COPYRIGHT](../COPYRIGHT)。允许商用，但对外分发受其覆盖的程序或修改版本时，须遵守相应的源码提供与同许可要求。
 - 预置文字与整理资料：来源清单为 `src/presets/rockKingdomSources.json`，包含逐行页面、来源批次和变换说明。NRC 清单注明 CC BY-SA 4.0；部分兼容资料来自 rocom，清单注明 CC BY-NC-SA，适用范围按原站和页面声明核对。
 - 游戏角色、立绘、图标及截图：权利归游戏及相应权利人，不因 Wiki 文字许可而自动获得相同的授权。
 - OCR 语言包：见 `public/reader-ocr/LICENSES.txt`。构建会将 Tesseract worker/WASM 的许可文本放到 `dist/ocr-runtime/`。
 - 软件依赖：以锁定依赖包内的 LICENSE／NOTICE 为准。构建把已安装的运行时依赖顶层 LICENSE／NOTICE／COPYING 文本汇总到 `dist/THIRD_PARTY_NOTICES.txt`；依赖升级后仍须核对包内其他素材的许可。
+
+构建产物保留项目 LICENSE、COPYRIGHT 和第三方许可文本。发布静态站点或下载包时，须按 GPL 第 3 版提供与所分发代码对应的源码及必要构建脚本；仅有一个未包含相应改动的仓库地址不能代替对应源码。上述项目许可不改变第三方内容的权利或个人记录本身的权利归属。
 
 正式资料维护约束见 [NRC 来源说明](data-sources/nrc-source.md)。上述内容说明项目使用和记录的来源，不代表已经完成全部第三方素材的公开分发授权审核。

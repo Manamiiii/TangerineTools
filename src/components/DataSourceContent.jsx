@@ -3,6 +3,12 @@ import manifest from '../presets/rockKingdomSources.json'
 export function SourceDetails() {
   return (
       <div className="data-source-notice">
+        <section>
+          <h3>TangerineTools 项目代码</h3>
+          <p>Copyright © 2026 TangerineTools contributors</p>
+          <p>项目自有代码采用 GNU GPL v3.0（GPL-3.0-only），允许按协议修改和再分发，不作担保；第三方资料与素材按各自许可处理。</p>
+          <p><a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noreferrer">阅读 GPL v3.0</a> · <a href="https://github.com/Manamiiii/TangerineTools" target="_blank" rel="noreferrer">项目源码</a></p>
+        </section>
         <p>洛克王国世界内置资料来自以下 Wiki。资料详情提供对应原页面链接；本地修改后的内容可能与原页面不同。</p>
         {Object.entries(manifest.sources).map(([key, source]) => <section key={key}>
           <h3><a href={source.url} target="_blank" rel="noreferrer">{source.name}</a></h3>
