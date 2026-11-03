@@ -72,6 +72,9 @@ test('new user can record creatures, understand recommendations and restore a ba
     await page.getByRole('option').filter({ hasText: '火神' }).first().click()
     await page.locator('.nature-candidate').filter({ hasText: '固执' }).click()
     assert.match(await page.locator('.nature-retention-card').innerText(), /已有异色／炫彩，银镜可修/)
+    if (process.env.CAPTURE_PRODUCT_SCREENSHOT === '1') {
+      await page.locator('.nature-result').screenshot({ path: 'artifacts/quality/product/nature-retention.png' })
+    }
     await page.getByRole('button', { name: '模型设置' }).click()
     await dialog.getByLabel('模型供应商').selectOption('custom')
     await dialog.getByLabel('Chat Completions 兼容地址').fill('http://insecure.example/api')
