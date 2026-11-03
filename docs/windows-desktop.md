@@ -4,7 +4,7 @@
 
 橘子洛克王国工具提供独立 Windows x64 NSIS Setup，复用 TangerineTools 前端、正式预置和 JSON 备份流程。运行安装版不需要源码、Node、npm、Python 或 Rust。GitHub Pages 网页版和源码启动方式继续可用，各入口不会自动共享数据。
 
-安装包以本仓库 Releases 中实际提供的附件为准；没有附件时，维护者可按本文构建。构建和 CI 不创建 Release，也不上传安装包。项目不采购或内置代码签名证书；未签名包可能出现 Windows 发布者未知提示，不能把这类包宣称为已签名或已通过 SmartScreen 信誉验证。
+Windows 安装版目前是本地验收候选，尚无公开下载附件；用户验收通过并确认发布后才上传。维护者可按本文构建。构建和 CI 不创建 Release，也不上传安装包。项目不采购或内置代码签名证书；未签名包可能出现 Windows 发布者未知提示，不能把这类包宣称为已签名或已通过 SmartScreen 信誉验证。
 
 仅 Windows x64 是打包与测试目标。桌面代码与平台构建配置分别维护，macOS、Linux 和 Windows ARM64 均未验证，不提供这些平台的安装包。项目没有 Portable 产品；`win-unpacked` 只用于维护者测试，不作为用户下载入口。
 
@@ -72,13 +72,23 @@ Electron 45.1.0 和 electron-builder 26.18.0 由锁文件固定。构建器使�
 
 `npm run pack:desktop` 只生成 unpacked；`npm run checksums:desktop` 为已存在的当前版本 Setup 生成校验值。发布者须同时提供与构建对应的源码、锁文件和构建脚本；本项目的 CI 只保存验证报告，不保存公开安装包。网页发布仍由 `.github/workflows/pages.yml` 负责，Windows 检查由 `.github/workflows/desktop.yml` 负责。
 
+## 开发工具链风险
+
+锁定的 electron-builder 26.18.0 依赖链受 [minimatch 模式放大拒绝服务通告 GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249) 影响。通告描述攻击者控制 glob 模式且启用 `optimizationLevel >= 2` 时，预处理可能过度消耗 CPU 和内存。审计中的 15 项中等级结果包含该风险沿构建依赖链的传播，不代表 15 个独立漏洞；`npm audit --omit=dev` 没有已知通告也不等于全部依赖无漏洞。每次准备发布时应重新运行两种审计。
+
+影响范围是开发与打包环境：minimatch、glob、asar 以及依赖它们的构建模块，不随应用包中的 node_modules 分发。本项目使用仓库内固定的文件白名单和暂存目录，不把导入 JSON、OCR 输入或模型内容作为构建模式；app-builder-lib 的文件匹配调用未启用上述高优化等级。CI 只读权限、任务超时和包内文件检查进一步限制影响，但不替代上游修复。不得在带有发布凭据的环境中构建未经审查的外部代码或构建配置。
+
+通告修复版本为 minimatch 11.0.1，超出当前消费者要求的 3/5/9/10 主版本范围；asar 3.4.1 还依赖 minimatch 3 可直接调用的导出形式。没有经过兼容验证的直接替换路径，不使用全局 overrides 强行替换，也不按 audit 建议将 electron-builder 降至 20.23.1。后续条件是上游构建器提供兼容修复，或相应主版本获得安全回补；届时更新锁文件并重跑打包程序、两种身份安装生命周期及 Windows CI，通过后重新生成候选包与 SHA-256。
+
 ## 验证口径
 
 `npm test` 包含桌面协议与安全策略单测。`test:desktop` 启动正式身份的打包程序，先用同一 Electron 运行时验证隔离环境，再测试界面操作、本地 OCR、权限边界、备份、部分合并、重开恢复和新 profile 恢复。所有记录和图像均为虚构测试输入，不读取真实收藏。
 
 `test:installer` 只安装独立测试身份，检查低版本号 fixture → 当前版本、运行中保护、卸载保留数据和重装恢复。两个 fixture 都使用当前业务代码，因此不能据此认定历史业务迁移已验证。
 
-`test:installer:production` 检查正式应用标识的静默安装、同版本覆盖、运行中保护、卸载与重装；它使用临时安装目录和隔离数据。测试前若发现该 GUID 的既有安装或同名开始菜单项会拒绝执行，不能覆盖或关闭用户的安装实例。系统注册表和快捷方式在测试结束时由卸载器清理，临时测试数据保留供排错。
+`test:installer:production` 检查正式应用标识的静默安装、同版本覆盖、运行中保护、卸载与重装；它使用临时安装目录和隔离数据。执行安装验收前须核对目标身份的运行进程，不得关闭既有实例。脚本发现该 GUID 的既有安装或同名开始菜单项会拒绝执行；安装器还会拒绝对运行中的应用操作，不能覆盖或关闭用户的安装实例。系统注册表和快捷方式在测试结束时由卸载器清理，临时测试数据保留供排错。
+
+验收须绑定具体文件：核对 `test-results/production-installer.json` 的 `candidateSha256`、`release/artifacts.json` 和实际 Setup 的 SHA-256，并核对 `test-results/packaged.json` 的构建提交及包内文件校验。测试 fixture 的散列不能充当正式候选证据，CI 上另行构建的包也不能替代本地候选的散列。仅文档修改不要求覆盖已验收候选，报告须同时注明候选构建提交与最新文档提交；程序、依赖或打包配置改变时必须重新构建并验收。
 
 这些自动检查不等于正式交互向导或干净 Windows 普通账号验收。发布前的必要人工验收：
 
