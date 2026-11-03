@@ -32,6 +32,7 @@ export function SceneList({ scenes, onOpen }) {
           <li><strong>记一只</strong>：进入「收集记录」→「新增记录」，选择图鉴名，再填写性格和外观。</li>
           <li><strong>看建议</strong>：查看「性格推荐」；录入稀有亲本后再尝试「孵蛋推荐」。建议供取舍，不是必须集齐的清单。</li>
         </ol>
+        <p><strong>在线与本地怎么选：</strong>日常使用推荐 GitHub Pages 在线版，无需安装；本地启动图标用于运行这台电脑的代码，适合开发或自行维护版本。相同代码版本下核心功能一致，两个网址的收藏互不共享；切换前请先导出，再到目标入口导入。</p>
         <p className="local-data-note"><strong>请定期导出备份。</strong>收藏只保存在当前浏览器、当前网址中，不会自动同步到 GitHub 或其他设备。更换浏览器、网址或清除站点数据前，先用上方「导出数据」保存 JSON；恢复时使用「导入数据」。</p>
       </section>
       <div className="toolbar toolbar-scenes">

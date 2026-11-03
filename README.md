@@ -8,6 +8,23 @@
 
 无需注册，核心功能不需要 API Key。收藏保存在当前浏览器，通过 JSON 手动备份和迁移。项目处于早期阶段，推荐供取舍，不是必须集齐的清单。
 
+## 在线与本地怎么选
+
+**日常使用和分享给朋友，推荐在线版；开发、调试或自行维护版本时，使用本地版。** 两者是同一套工具，相同代码版本下核心功能一致。
+
+| | 在线版（GitHub Pages） | 本地版 |
+|---|---|---|
+| 打开方式 | [打开在线工具](https://manamiiii.github.io/TangerineTools/)，可加入浏览器书签 | 启动项目后访问 `http://localhost:5188`；Windows 可用本地启动快捷方式 |
+| 安装要求 | 有浏览器即可，不需要 Node 或源码 | 需要 Node、项目代码和依赖 |
+| 使用的版本 | 已成功部署的公开版本，重新打开或刷新后加载 | 当前电脑里的代码；需要自行同步更新，也可能包含未发布改动 |
+| 收藏保存在哪里 | 当前浏览器中，属于在线网址的站点存储 | 当前浏览器中，属于本地网址的站点存储；不保存在项目代码目录 |
+| 是否同步收藏 | 不上传到 GitHub，不自动同步到本地版或其他设备 | 不随代码提交，不自动同步到在线版或其他设备 |
+| 网络要求 | 首次加载和更新需要网络；不保证断网可用 | 安装完成后可由本机提供程序和预置；外部图片、模型等仍需要网络 |
+
+桌面上的**本地启动快捷方式**用于启动这台电脑的服务，不是在线版的必需品。只使用在线版时，可收藏网页或创建网页快捷方式，无需先运行本地服务。
+
+**从本地切换到在线版：** 先在本地首页「导出数据」，再打开在线版「导入数据」，核对收集记录后固定使用在线入口。在线版已有记录时，先备份在线数据并查看导入覆盖预览；同 ID 记录按备份覆盖，文件未包含的记录保留。两个入口来回使用会形成各自的记录，不会自动合并。更换浏览器或设备也需要同样的导出／导入操作。
+
 ## 能帮你做什么
 
 | 你的问题 | 在工具里怎么做 |
@@ -95,11 +112,14 @@ npm run preview -- --host localhost --port 5188 --strictPort
 
 ```bash
 npm run lint
+npm run check:privacy
 npm test
 npm run build
 ```
 
 完整测试包含本机 Chrome 无界面回归，需要已安装 Chrome；Windows 启动器测试只在 Windows 执行。首次安装和依赖审计需要联网。`npm audit` 检查已知依赖通告，不等同于完整安全审计。
+
+本机目录、密钥、内网地址和个人备份不进入仓库。机器参数使用环境变量或 Git 忽略的 `.local/` 等本地配置；提交使用 GitHub noreply 邮箱。可运行 `git config --local core.hooksPath .githooks` 启用暂存区隐私检查（已有自定义钩子时先整合），详见[公开仓库与本机配置](docs/privacy-and-sources.md#公开仓库与本机配置)。
 
 README 截图来自隔离浏览器中的界面回归，不读取个人收藏。PowerShell 可执行 `$env:CAPTURE_PRODUCT_SCREENSHOT='1'; node --test scripts/tests/public-onboarding.test.mjs`，从 `artifacts/quality/product/` 检查输出后，将 `getting-started.png` 与 `nature-retention.png` 放入 `docs/assets/product/`。
 
@@ -109,6 +129,7 @@ README 截图来自隔离浏览器中的界面回归，不读取个人收藏。P
 | 命令 | 用途 |
 |---|---|
 | `npm run lint` | 静态检查 |
+| `npm run check:privacy` | 检查跟踪文件和提交邮箱，避免本机配置误入公开仓库 |
 | `npm test` | 领域与回归测试 |
 | `npm run build` | 生产构建 |
 | `npm run build:icons` | 从 `public/favicon.svg` 导出 PNG、PWA 遮罩图标和 Windows ICO |
