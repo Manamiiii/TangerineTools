@@ -46,7 +46,7 @@ async function stage(label, identity, version) {
   return directory
 }
 
-export function builderConfig(identity, appDirectory, outputDirectory) {
+export function builderConfig(identity, appDirectory, outputDirectory, legacyFixture = false) {
   return {
     appId: identity.appId, productName: identity.executableName,
     electronVersion: manifest.devDependencies.electron,
@@ -59,7 +59,7 @@ export function builderConfig(identity, appDirectory, outputDirectory) {
       allowToChangeInstallationDirectory: false, deleteAppDataOnUninstall: false, runAfterFinish: false,
       createDesktopShortcut: false, createStartMenuShortcut: true, shortcutName: identity.productName,
       uninstallDisplayName: identity.productName, installerLanguages: ['zh_CN', 'en_US'],
-      license: path.join(root, 'LICENSE'), include: path.join(root, 'desktop/installer.nsh'),
+      license: path.join(root, 'LICENSE'), include: path.join(root, 'desktop', legacyFixture ? 'running-guard.nsh' : 'installer.nsh'),
     },
   }
 }
@@ -69,5 +69,5 @@ for (const [label, version] of plans) {
   const identity = useFixtures ? { ...config, ...fixture } : config
   const directory = await stage(label, identity, version)
   const destination = useFixtures ? path.join(outputRoot, 'installer-acceptance', label) : path.join(outputRoot, 'release')
-  await build({ targets: Platform.WINDOWS.createTarget(directoryOnly ? ['dir'] : ['nsis'], Arch.x64), publish: 'never', config: builderConfig(identity, directory, destination) })
+  await build({ targets: Platform.WINDOWS.createTarget(directoryOnly ? ['dir'] : ['nsis'], Arch.x64), publish: 'never', config: builderConfig(identity, directory, destination, label === 'previous') })
 }

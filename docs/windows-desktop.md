@@ -10,11 +10,11 @@ Windows 安装版目前是本地验收候选，尚无公开下载附件；用户
 
 ## 安装、更新与卸载
 
-- Setup 使用当前用户安装模式，不申请管理员权限；默认安装到用户程序目录，创建开始菜单和 Windows 卸载入口，不自动创建桌面图标。
+- Setup 使用当前用户安装模式，不申请管理员权限；首次默认安装到 `%LOCALAPPDATA%\Programs\Tangerine\TangerineTools`，升级复用该应用 GUID 登记的目录，包括传统用户程序目录下独立的 TangerineTools 子目录，创建开始菜单和 Windows 卸载入口，不自动创建桌面图标。
 - 安装向导展示 GPL v3。项目、前端依赖和 OCR 声明位于包内；Electron 与 Chromium 声明随程序目录提供。
 - 更新由用户手动下载对应 Setup，核对版本和 SHA-256，主动退出程序后确认安装。没有后台更新服务。
 - 程序运行时安装、覆盖安装和卸载均拒绝继续；进程枚举异常也会拒绝，不强制关闭应用。静默模式以退出码 2 返回。
-- 升级和卸载均不清除配置与数据库。重装使用同一数据身份，保留的数据可继续读取。卸载不是清除个人数据的操作。
+- 升级和卸载均不清除配置与数据库。重装使用同一数据身份，保留的数据可继续读取。卸载仅处理本产品安装目录与入口。安装或卸载目标为共享的 Programs 或 Tangerine 父目录时拒绝继续。
 - 请定期从应用内导出 JSON。安装版通过系统保存对话框选择文件位置；点击取消不产生备份。导入仍有预览、覆盖计数与确认，并按 id 合并。
 
 ## 稳定身份与数据边界
@@ -67,7 +67,7 @@ Electron 45.1.0 和 electron-builder 26.18.0 由锁文件固定。构建器使�
 产物位于 `artifacts/desktop/release/`：
 
 - `TangerineTools-<version>-win-x64-Setup.exe`：安装包。
-- `SHA256SUMS.txt`、`artifacts.json`：当前版本安装包的校验值和字节数。
+- `SHA256SUMS.txt`、`artifacts.json`：实际 Setup 的校验值和字节数。生成校验文件前会从 Setup 和主程序的 Windows PE 资源中逐帧核对项目 ICO。
 - `win-unpacked/`：同一构建的可执行目录，供自动验收。
 
 `npm run pack:desktop` 只生成 unpacked；`npm run checksums:desktop` 为已存在的当前版本 Setup 生成校验值。发布者须同时提供与构建对应的源码、锁文件和构建脚本；本项目的 CI 只保存验证报告，不保存公开安装包。网页发布仍由 `.github/workflows/pages.yml` 负责，Windows 检查由 `.github/workflows/desktop.yml` 负责。
@@ -86,7 +86,7 @@ Electron 45.1.0 和 electron-builder 26.18.0 由锁文件固定。构建器使�
 
 `test:installer` 只安装独立测试身份，检查低版本号 fixture → 当前版本、运行中保护、卸载保留数据和重装恢复。两个 fixture 都使用当前业务代码，因此不能据此认定历史业务迁移已验证。
 
-`test:installer:production` 检查正式应用标识的静默安装、同版本覆盖、运行中保护、卸载与重装；它使用临时安装目录和隔离数据。执行安装验收前须核对目标身份的运行进程，不得关闭既有实例。脚本发现该 GUID 的既有安装或同名开始菜单项会拒绝执行；安装器还会拒绝对运行中的应用操作，不能覆盖或关闭用户的安装实例。系统注册表和快捷方式在测试结束时由卸载器清理，临时测试数据保留供排错。
+`test:installer:production` 检查正式应用标识的静默安装、同版本覆盖、运行中保护、卸载与重装；它在隔离的用户目录下采用实际默认路径，只应在专用验收机或 Windows CI 执行。执行安装验收前须核对目标身份的运行进程，不得关闭既有实例。脚本发现该 GUID 的既有安装或同名开始菜单项会拒绝执行；安装器还会拒绝对运行中的应用操作，不能覆盖或关闭用户的安装实例。系统注册表和快捷方式在测试结束时由卸载器清理，临时测试数据保留供排错。
 
 验收须绑定具体文件：核对 `test-results/production-installer.json` 的 `candidateSha256`、`release/artifacts.json` 和实际 Setup 的 SHA-256，并核对 `test-results/packaged.json` 的构建提交及包内文件校验。测试 fixture 的散列不能充当正式候选证据，CI 上另行构建的包也不能替代本地候选的散列。仅文档修改不要求覆盖已验收候选，报告须同时注明候选构建提交与最新文档提交；程序、依赖或打包配置改变时必须重新构建并验收。
 

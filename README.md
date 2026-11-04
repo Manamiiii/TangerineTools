@@ -22,7 +22,7 @@
 
 三种方式都不上传收藏到 GitHub，也不自动同步到其他设备；外部图片和模型服务仍需要网络。Windows 安装版目前是本地验收候选，尚无公开下载附件；验收通过后才发布。维护者可按[桌面构建说明](docs/windows-desktop.md)生成。安装包未签名，不宣称已经验证 macOS、Linux 或 Windows ARM64。
 
-桌面上的**源码启动快捷方式**用于启动这台电脑的开发服务。在线版和安装版都不需要先运行它；安装版有自己的开始菜单入口。
+已有的源码快捷方式仍可通过项目根目录的 `TangerineTools.vbs` 启动本机开发服务。安装版从开始菜单启动，首次默认装入 `%LOCALAPPDATA%\Programs\Tangerine\TangerineTools`，已有安装按登记位置原位更新。
 
 **切换入口：** 先在原入口首页「导出数据」，再到目标入口「导入数据」，核对收集记录后固定使用一个入口。目标已有记录时，先备份目标数据并查看导入覆盖预览；同 ID 记录按备份覆盖，文件未包含的记录保留。来回使用会形成各自的记录，不会自动合并。更换浏览器或设备也需要同样的导出／导入操作。
 
@@ -76,6 +76,8 @@ npm run dev
 打开终端显示的 **http://localhost:5188**。无需配置环境变量、数据库服务或模型供应商。首次进入会读取仓库内的预置资料，等待初始化完成。
 
 Windows 安装依赖后，也可以双击项目根目录的 `TangerineTools.vbs`。启动窗口会显示阶段和耗时，就绪后打开浏览器；失败原因留在窗口中。首次运行可能受系统脚本策略限制，此时直接使用上面的终端命令即可，不需要管理员权限。日志在 `artifacts/launcher/`。源码下载不附带作者电脑上的桌面快捷方式。
+
+VBS 按自身位置找到 `scripts/windows/start.ps1`。脚本通过当前 PATH 查找 Node，从项目根目录运行项目自带的 Vite。进度窗口使用 `-NoOpenBrowser` 和 `-OnProgress`，服务就绪后只打开一次浏览器。重复启动由本机会话互斥锁串行处理，已就绪的服务会复用，发现其他程序占用 5188 时报告冲突。安装器和源码启动器均不生成桌面快捷方式。
 
 **请先备份，再做批量修改或删除。** 数据按浏览器和网址隔离：`localhost`、`127.0.0.1`、不同端口以及线上站点不是同一份收藏。换网址或设备前先导出，再到目标页面导入。导入按记录 ID 合并：同 ID 整条覆盖，文件未包含的本地记录保留。导入确认窗口可先导出当前数据。
 
@@ -173,7 +175,18 @@ README 截图来自隔离浏览器中的界面回归，不读取个人收藏。P
 
 ```text
 docs/                         当前能力、数据源与专项规则
-desktop/                      桌面安全层、Windows 打包与隔离安装验收
+src/                          网页与桌面共用的应用源码
+desktop/main.mjs、security.mjs  桌面启动、资源协议与权限边界
+desktop/config.json、build.mjs  正式身份、打包白名单与 NSIS 构建
+desktop/*.nsh                  安装目录、卸载与运行中保护
+desktop/fixture.mjs、desktop/tests/  独立测试身份与安装、成品验收
+scripts/windows/              源码启动器的服务检查与进度窗口
+scripts/assets/build-icons.mjs 图标导出脚本
+public/favicon.svg → public/icons/  图标源与派生 PNG、ICO
+artifacts/desktop/release/     忽略的正式候选 Setup、散列与 unpacked 程序
+artifacts/desktop/installer-acceptance/  忽略的低版本和当前 fixture
+artifacts/desktop/{staging,test-results}/  忽略的打包暂存和验证报告
+artifacts/{quality,launcher}/   忽略的检查和源码启动日志
 public/presets/               洛克王国运行时正式预置
 scripts/bwiki/                官方公告审计与 BWiki staging / preview / apply
 scripts/nature/               性格推荐校准
