@@ -35,10 +35,13 @@ assert.equal(await exists(hostShortcut), false, 'Existing shortcut must be prese
 const root = await fs.mkdtemp(path.join(await fs.realpath(os.tmpdir()), 'tangerine-installer-'))
 const env = await isolatedEnvironment(root)
 const programs = path.join(env.LOCALAPPDATA, 'Programs')
-const family = path.join(programs, 'Tangerine')
+const family = path.join(env.LOCALAPPDATA, 'Tangerine/Apps')
 const standard = path.join(family, identity.executableName)
 const legacy = path.join(programs, identity.executableName)
+const legacyFamily = path.join(programs, 'Tangerine', identity.executableName)
+const installPaths = [legacy, legacyFamily, standard]
 let installed = production ? standard : legacy
+let legacyProfile = !production
 const sibling = path.join(family, 'SiblingFixture', 'keep.txt')
 await fs.mkdir(path.dirname(sibling), { recursive: true })
 await fs.writeFile(sibling, 'retain', { flag: 'wx' })
@@ -52,10 +55,10 @@ let installedByTest = false
 const checks = []
 async function setup(file, initialLegacy = false) {
   assert.ok([candidate, previous].includes(file))
-  assert.ok([legacy, standard].includes(installed) && installed.startsWith(root + path.sep))
+  assert.ok(installPaths.includes(installed) && installed.startsWith(root + path.sep))
   // NSIS requires /D to be the final argument, without embedded quote characters.
   const args = ['/S', '/currentuser']
-  if (initialLegacy) args.push(`/D=${legacy}`)
+  if (initialLegacy) args.push(`/D=${installed}`)
   await run(file, args, { env, windowsVerbatimArguments: true, windowsHide: true, timeout: 180000 })
   installedByTest = true
   await fs.access(executable())
@@ -64,7 +67,7 @@ async function setup(file, initialLegacy = false) {
 }
 async function remove() {
   assert.equal(path.dirname(uninstaller()), installed)
-  assert.ok([legacy, standard].includes(installed) && installed.startsWith(root + path.sep))
+  assert.ok(installPaths.includes(installed) && installed.startsWith(root + path.sep))
   await run(uninstaller(), ['/S', '/currentuser', `_?=${installed}`], { env, windowsVerbatimArguments: true, windowsHide: true, timeout: 180000 })
   installedByTest = false
   assert.equal(await exists(executable()), false)
@@ -74,9 +77,9 @@ async function remove() {
   if (await exists(installed)) await fs.rmdir(installed)
 }
 async function close() { if (app) { await app.close(); app = undefined } }
-async function open() { const result = await openPackaged(executable(), env, identity); app = result.application; return result }
+async function open() { const result = await openPackaged(executable(), env, identity, legacyProfile); app = result.application; return result }
 async function dataFiles() {
-  const directory = path.join(env.APPDATA, identity.dataDirectory)
+  const directory = legacyProfile ? path.join(env.APPDATA, identity.dataDirectory) : path.join(env.LOCALAPPDATA, 'Tangerine/Data', identity.dataDirectory, 'Storage')
   const results = []
   async function walk(folder) {
     for (const item of await fs.readdir(folder, { withFileTypes: true })) {
@@ -95,6 +98,7 @@ async function preserved(files) {
 }
 try {
   await assert.rejects(run(candidate, ['/S', '/currentuser', `/D=${family}`], { env, windowsHide: true, windowsVerbatimArguments: true, timeout: 30000 }), error => error.code === 3)
+  await assert.rejects(run(candidate, ['/S', '/currentuser', `/D=${path.join(env.LOCALAPPDATA, 'Tangerine/Data', identity.executableName)}`], { env, windowsHide: true, windowsVerbatimArguments: true, timeout: 30000 }), error => error.code === 3)
   assert.equal(await fs.readFile(sibling, 'utf8'), 'retain')
   await setup(previous, !production)
   assert.ok((await ps(registryScript)).includes('present'))
@@ -108,6 +112,10 @@ try {
   checks.push('installer registers per-user uninstall/start-menu entries and saves a fictional record in an isolated profile')
   await assert.rejects(setup(candidate), error => error.code === 2)
   await assert.rejects(remove(), error => error.code === 2)
+  if (!production) {
+    await run(path.join(base, 'current/win-unpacked', `${identity.executableName}.exe`), [], { env, windowsHide: true, timeout: 30000 })
+    assert.equal(await exists(path.join(env.LOCALAPPDATA, 'Tangerine/Data', identity.dataDirectory, 'Storage')), false, 'Candidate must not migrate while the historical profile is open')
+  }
   assert.equal(await first.page.evaluate(() => localStorage.getItem('installer-test-setting')), 'preserve-me')
   assert.deepEqual(ownedRows(await exportJson(app, first.page, path.join(root, 'still-running.json'))), baseline)
   checks.push('running application refuses silent upgrade and uninstall without process termination or data change')
@@ -115,11 +123,14 @@ try {
   const beforeUpgrade = await dataFiles()
   await setup(candidate)
   await preserved(beforeUpgrade)
+  legacyProfile = false
   const upgraded = await open()
+  if (!production) await run(path.join(base, 'previous/win-unpacked', `${identity.executableName}.exe`), [], { env, windowsHide: true, timeout: 30000 })
   assert.equal(upgraded.runtime.version, manifest.version)
   assert.deepEqual(ownedRows(await exportJson(app, upgraded.page, path.join(root, 'upgraded.json'))), baseline)
   assert.equal(await upgraded.page.evaluate(() => localStorage.getItem('installer-test-setting')), 'preserve-me')
   await close()
+  if (!production) await preserved(beforeUpgrade)
   checks.push(production ? 'same-version reinstall preserves IndexedDB, settings and record IDs' : 'lower-version fixture upgrade changes version and preserves IndexedDB, settings and record IDs')
   if (!production) {
     // Exercise damaged registration only under the dedicated fixture GUID.
@@ -159,6 +170,16 @@ try {
   assert.equal(await fs.readFile(sibling, 'utf8'), 'retain')
   checks.push('fresh per-user default, registered path reuse, Start menu target/icon and sibling preservation verified')
   checks.push('reinstallation restores existing collection/settings; final cleanup removes only the test application')
+  if (!production) {
+    installed = legacyFamily
+    await setup(previous, true)
+    await setup(candidate)
+    const retained = await open()
+    assert.deepEqual(ownedRows(await exportJson(app, retained.page, path.join(root, 'family-upgrade.json'))), baseline)
+    await close()
+    await remove()
+    checks.push('both historical program directories upgrade in place; both legacy/current concurrency directions preserve one writer; migrated data survives reinstall')
+  }
   await fs.mkdir('artifacts/desktop/test-results', { recursive: true })
   const digest = async file => createHash('sha256').update(await fs.readFile(file)).digest('hex')
   await fs.writeFile(`artifacts/desktop/test-results/${production ? 'production-installer' : 'installer'}.json`, JSON.stringify({ passed: true, platform: process.platform, os: os.release(), version: manifest.version, candidateSha256: await digest(candidate), previousSha256: await digest(previous), identity, checks, limitation: production ? 'Production application identity under a temporary profile; silent installation and same-version reinstall only. Interactive wizard and clean Windows account remain unverified.' : 'Separate application identity and temporary profile on this host. Lower version uses current code: does not prove historical business migration, production installer UI, or clean Windows acceptance.' }, null, 2))

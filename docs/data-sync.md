@@ -6,7 +6,7 @@
 
 在线版和本地版使用同一套数据模型，但浏览器按 origin（协议、主机、端口）隔离存储。GitHub Pages 网址、`localhost:5188`、`127.0.0.1:5188` 和其他端口不会共享收藏；不同浏览器或设备也不会共享。收藏不写入项目代码目录，不随 Git 提交或网页部署同步。
 
-Windows 安装版使用独立的 `app://rock-kingdom` 来源，数据保存在系统解析的 `%APPDATA%/TangerineTools`，不与任何浏览器共享。升级和卸载保留该目录，重装沿用同一身份。安装包不会读取本机浏览器资料；各入口之间只通过同一 JSON 流程迁移，schema、稳定 id 和合并语义保持一致。详见 [Windows 安装版](windows-desktop.md)。
+Windows 安装版使用独立的 `app://rock-kingdom` 来源，收藏和浏览器设置保存在 `%LOCALAPPDATA%/Tangerine/Data/TangerineTools/Storage`，不与任何浏览器共享。升级和卸载保留数据目录，重装沿用同一身份。历史 `%APPDATA%/TangerineTools` profile 在兼容单实例锁保护下复制持久存储、校验后启用；原件不删除，临时会话、缓存和 API Key 不迁移。冲突和原目录后续变化会阻止加载，避免静默覆盖。该文件层迁移不改变 Dexie 内容格式。安装包不会读取本机浏览器资料；各入口之间只通过同一 JSON 流程迁移，schema、稳定 id 和合并语义保持一致。详见 [Windows 安装版](windows-desktop.md)。
 
 迁移时先从原入口导出 JSON，再在目标入口查看预览并按 id 合并导入；目标入口已有数据时先另存一份备份。确认记录后固定使用一个入口，避免两边独立修改造成冲突。备份中的同 ID 记录覆盖目标记录，未包含记录保留，没有自动比较新旧或双向同步。模型设置和 Key 不在备份里，需在目标入口按需重新配置。
 

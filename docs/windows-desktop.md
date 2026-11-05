@@ -10,11 +10,11 @@ Windows 安装版目前是本地验收候选，尚无公开下载附件；用户
 
 ## 安装、更新与卸载
 
-- Setup 使用当前用户安装模式，不申请管理员权限；首次默认安装到 `%LOCALAPPDATA%\Programs\Tangerine\TangerineTools`，升级复用该应用 GUID 登记的目录，包括传统用户程序目录下独立的 TangerineTools 子目录，创建开始菜单和 Windows 卸载入口，不自动创建桌面图标。
+- Setup 使用当前用户安装模式，不申请管理员权限；新装默认安装到 `%LOCALAPPDATA%\Tangerine\Apps\TangerineTools`，升级复用该应用 GUID 登记的目录，包括 `%LOCALAPPDATA%\Programs\Tangerine\TangerineTools` 和 `%LOCALAPPDATA%\Programs\TangerineTools`，不自动搬动已登记的程序。显式 `/D` 只用于首次安装的独立产品目录；登记路径与显式路径冲突会拒绝。创建开始菜单和 Windows 卸载入口，不自动创建桌面图标。
 - 安装向导展示 GPL v3。项目、前端依赖和 OCR 声明位于包内；Electron 与 Chromium 声明随程序目录提供。
 - 更新由用户手动下载对应 Setup，核对版本和 SHA-256，主动退出程序后确认安装。没有后台更新服务。
 - 程序运行时安装、覆盖安装和卸载均拒绝继续；进程枚举异常也会拒绝，不强制关闭应用。静默模式以退出码 2 返回。
-- 升级和卸载均不清除配置与数据库。重装使用同一数据身份，保留的数据可继续读取。卸载仅处理本产品安装目录与入口。安装或卸载目标为共享的 Programs 或 Tangerine 父目录时拒绝继续。
+- 升级和卸载均不清除配置与数据库。重装使用同一数据身份，保留的数据可继续读取。卸载仅处理本产品安装目录与入口。安装或卸载目标为共享的 Programs、Tangerine、Apps 或 Data 父目录时拒绝继续。
 - 请定期从应用内导出 JSON。安装版通过系统保存对话框选择文件位置；点击取消不产生备份。导入仍有预览、覆盖计数与确认，并按 id 合并。
 
 ## 稳定身份与数据边界
@@ -24,11 +24,34 @@ Windows 安装版目前是本地验收候选，尚无公开下载附件；用户
 | 应用 ID | `org.tangerine.rockkingdom` |
 | 安装 GUID | `a18b37d2-68f6-4be7-9565-2f81c640d274` |
 | 程序文件名 | `TangerineTools.exe` |
-| 用户数据 | `%APPDATA%/TangerineTools`，由系统解析实际位置 |
+| 用户数据 | `%LOCALAPPDATA%/Tangerine/Data/TangerineTools`，由系统解析实际位置 |
 | 浏览器存储来源 | `app://rock-kingdom` |
 | 数据库 | `tangerine-tools`，Dexie schema v1 |
 
 身份写在 `desktop/config.json`，不能随版本号、安装路径或显示名称变化而重建。测试身份位于 `desktop/fixture.mjs`，有独立的应用 ID、GUID、程序名称、数据目录与来源。
+
+## 目录与迁移
+
+默认数据根以下只使用本工具的子目录，不扫描或改写其他项目的数据。`desktop/storage.mjs` 在 Electron `ready` 之前显式设置 `userData` 和 `sessionData`，两者均为 `Storage`，不会另外生成以中文显示名称命名的默认 profile。
+
+| 内容 | 位置与行为 |
+|---|---|
+| 目录归属、迁移清单 | `Config/layout.json`，只在本机保存原目录与文件校验值 |
+| 收藏、设置及 Chromium profile | `Storage/`，含 IndexedDB、Local Storage、Preferences 和运行时管理的 profile 元数据、GPU shader 等文件；不把整个目录视为可清理缓存 |
+| HTTP 缓存路径 | `Cache/`；HTTP 磁盘缓存保持禁用 |
+| 应用日志、崩溃转储路径 | `Logs/`、`Logs/CrashDumps/`；不启用崩溃上报或遥测 |
+| 源码启动日志 | `Logs/Source/`；源码程序、node_modules、dist 和开发检查留在工程中 |
+| 应用临时文件、迁移暂存 | `Temp/`；失败暂存保留用于恢复，不自动删原件 |
+| 手动 JSON 备份 | 用户通过保存对话框选择的外部路径；没有自动备份目录或自动备份服务 |
+| 历史 profile 原件 | `%APPDATA%/TangerineTools`，迁移后保留；兼容单实例锁 `lockfile` 仍位于此目录，新装也只在这里生成这个锁 |
+
+兼容锁必须沿用历史二进制认识的路径。新程序先取得该锁，完成复制后将实际 profile 指向统一数据目录，再初始化浏览器；历史程序与新程序同时启动时只有一个写入者。不要在使用期间删除该锁或历史目录。该锁是集中目录的兼容例外，并非第二份运行中的 profile。
+
+首次启用时，只有目标不存在且原目录明确可识别，才复制历史 profile 的 `IndexedDB`、`Local Storage`、`Preferences`、`Local State`。临时 `Session Storage`、HTTP 缓存和其他文件不复制，所有原件保持不变。逐文件 SHA-256 校验及原件复核通过后，将暂存原子改名为 `Storage` 并记录完成状态。中断后只续接与清单完全匹配的暂存；校验失败、未知内容、链接重定向、损坏清单、已登记但丢失的存储或目标已有未登记内容均明确失败，不新建替代库。
+
+每次启动核对迁移源的持久文件。若回退使用历史程序并修改原库，再启用新程序会拒绝加载，以免两份收藏被静默选取或覆盖。历史程序不会理解新目录：回退不能自动带回新程序中的修改。需要回退或合并时，先在能够打开的当前程序导出 JSON，并在全部程序退出后备份整个统一数据根及历史 profile；由维护者核对迁移清单和两份备份，再按既有 JSON 流程确认目标数据。不要删除 `layout.json`、清空目录、复制部分 LevelDB 文件或反复启动两代程序来排错。未知的其他目录不自动搜索或合并；本应用没有自定义 profile 配置接口，既有安装 `/D`、浏览器存储及用户主动选择的导入导出位置保持各自语义。
+
+源码网页入口固定使用 `http://localhost:5188`，收藏仍属于用户浏览器，不迁移浏览器 profile。系统安装登记、开始菜单、安装器临时文件、系统自身缓存与用户主动导出的位置属于系统或用户管理范围；不承诺操作系统零痕迹。安装器只移除自身程序和登记，不递归清理 Tangerine、Apps、Data 或兄弟工具。
 
 网页版、源码版和安装版之间通过已有 JSON 导出／导入迁移：先备份目标入口已有数据，再从源入口导出，在目标入口预览并确认合并。同 ID 覆盖，文件未包含的记录保留，没有自动新旧比较或双向同步。模型配置与 API Key 不在备份中，需要按需重新配置。详细语义见 [数据存储与迁移](data-sync.md)。
 
@@ -62,7 +85,7 @@ git diff --check
 
 Electron 45.1.0 和 electron-builder 26.18.0 由锁文件固定。构建器使用项目依赖和用户缓存，不需要全局工具链。打包时应关闭本仓库正在测试的 unpacked 程序；不要在程序运行时重写同一输出目录。
 
-`desktop/build.mjs` 先建立白名单暂存包，再顺序打包。只包含前端产物、`desktop/main.mjs`、`security.mjs`、身份配置、许可证及构建清单；排除 node_modules、测试 profile、源码、截图基线、本机配置和网页 Service Worker。`build-info.json` 记录版本、源码提交、工作区是否干净及每个包内文件的 SHA-256。重现构建流程与内容清单不意味着未签名 EXE 的时间戳和二进制字节在不同构建中完全一致。
+`desktop/build.mjs` 先建立白名单暂存包，再顺序打包。只包含前端产物、`desktop/main.mjs`、`security.mjs`、`storage.mjs`、身份配置、许可证及构建清单；排除 node_modules、测试 profile、源码、截图基线、本机配置和网页 Service Worker。`build-info.json` 记录版本、源码提交、工作区是否干净及每个包内文件的 SHA-256。重现构建流程与内容清单不意味着未签名 EXE 的时间戳和二进制字节在不同构建中完全一致。
 
 产物位于 `artifacts/desktop/release/`：
 
@@ -74,17 +97,17 @@ Electron 45.1.0 和 electron-builder 26.18.0 由锁文件固定。构建器使�
 
 ## 开发工具链风险
 
-锁定的 electron-builder 26.18.0 依赖链受 [minimatch 模式放大拒绝服务通告 GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249) 影响。通告描述攻击者控制 glob 模式且启用 `optimizationLevel >= 2` 时，预处理可能过度消耗 CPU 和内存。审计中的 15 项中等级结果包含该风险沿构建依赖链的传播，不代表 15 个独立漏洞；`npm audit --omit=dev` 没有已知通告也不等于全部依赖无漏洞。每次准备发布时应重新运行两种审计。
+锁定的 electron-builder 26.18.0 依赖链受 [minimatch 模式放大拒绝服务通告 GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249) 影响。通告的受影响范围是 minimatch `>=7.0.0 <11.0.1`：攻击者控制 glob 模式且启用 `optimizationLevel >= 2` 时，预处理可能过度消耗 CPU 和内存。审计中的 6 项中等级结果包含该风险沿构建依赖链的传播，不代表 6 个独立漏洞；`npm audit --omit=dev` 没有已知通告也不等于全部依赖无漏洞。通告范围会更新，每次准备发布时应重新运行两种审计。
 
-影响范围是开发与打包环境：minimatch、glob、asar 以及依赖它们的构建模块，不随应用包中的 node_modules 分发。本项目使用仓库内固定的文件白名单和暂存目录，不把导入 JSON、OCR 输入或模型内容作为构建模式；app-builder-lib 的文件匹配调用未启用上述高优化等级。CI 只读权限、任务超时和包内文件检查进一步限制影响，但不替代上游修复。不得在带有发布凭据的环境中构建未经审查的外部代码或构建配置。
+影响范围是开发与打包环境，受影响的 minimatch 位于 app-builder-lib 和 @electron/universal 的依赖链，不随应用包中的 node_modules 分发。本项目使用仓库内固定的文件白名单和暂存目录，不把导入 JSON、OCR 输入或模型内容作为构建模式；app-builder-lib 的文件匹配调用未启用上述高优化等级。CI 只读权限、任务超时和包内文件检查进一步限制影响，但不替代上游修复。不得在带有发布凭据的环境中构建未经审查的外部代码或构建配置。
 
-通告修复版本为 minimatch 11.0.1，超出当前消费者要求的 3/5/9/10 主版本范围；asar 3.4.1 还依赖 minimatch 3 可直接调用的导出形式。没有经过兼容验证的直接替换路径，不使用全局 overrides 强行替换，也不按 audit 建议将 electron-builder 降至 20.23.1。后续条件是上游构建器提供兼容修复，或相应主版本获得安全回补；届时更新锁文件并重跑打包程序、两种身份安装生命周期及 Windows CI，通过后重新生成候选包与 SHA-256。
+通告修复版本为 minimatch 11.0.1，超出受影响消费者要求的 9/10 主版本范围。没有经过兼容验证的直接替换路径，不使用全局 overrides 强行替换，也不按 audit 建议将 electron-builder 降至 25.1.0。后续条件是上游构建器提供兼容修复，或相应主版本获得安全回补；届时更新锁文件并重跑打包程序、两种身份安装生命周期及 Windows CI，通过后重新生成候选包与 SHA-256。
 
 ## 验证口径
 
-`npm test` 包含桌面协议与安全策略单测。`test:desktop` 启动正式身份的打包程序，先用同一 Electron 运行时验证隔离环境，再测试界面操作、本地 OCR、权限边界、备份、部分合并、重开恢复和新 profile 恢复。所有记录和图像均为虚构测试输入，不读取真实收藏。
+`npm test` 包含桌面协议、安全策略和虚构目录迁移单测，覆盖复制校验、中断续接、损坏与链接拒绝、目标冲突、原库后续变化及丢失存储保护。`test:desktop` 启动正式身份的打包程序，先用同一 Electron 运行时验证隔离环境，再测试界面操作、本地 OCR、权限边界、备份、部分合并、重开恢复和新 profile 恢复，核对实际 userData/sessionData 和兼容锁例外。所有记录和图像均为虚构测试输入，不读取真实收藏。
 
-`test:installer` 只安装独立测试身份，检查低版本号 fixture → 当前版本、运行中保护、卸载保留数据和重装恢复。两个 fixture 都使用当前业务代码，因此不能据此认定历史业务迁移已验证。
+`test:installer` 只安装独立测试身份，检查两种历史默认程序目录原位升级、新装 Apps 路径、低版本号 fixture → 当前版本、运行中保护、卸载保留数据和重装恢复。低版本 fixture 使用 `desktop/tests/legacy-storage.mjs` 复现历史 profile 和进程锁；检查两代程序双向互斥、真实 IndexedDB 与设置复制后恢复。两个 fixture 都使用当前业务代码，因此不能据此认定真实历史业务迁移已验证。生产包不会包含这个替身模块。
 
 `test:installer:production` 检查正式应用标识的静默安装、同版本覆盖、运行中保护、卸载与重装；它在隔离的用户目录下采用实际默认路径，只应在专用验收机或 Windows CI 执行。执行安装验收前须核对目标身份的运行进程，不得关闭既有实例。脚本发现该 GUID 的既有安装或同名开始菜单项会拒绝执行；安装器还会拒绝对运行中的应用操作，不能覆盖或关闭用户的安装实例。系统注册表和快捷方式在测试结束时由卸载器清理，临时测试数据保留供排错。
 

@@ -3,16 +3,18 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { _electron as electron } from '@playwright/test'
 
-export async function openPackaged(executable, env, identity) {
+export async function openPackaged(executable, env, identity, legacy = false) {
   const application = await electron.launch({ executablePath: executable, args: [], env, timeout: 45000 })
   try {
     const runtime = await application.evaluate(({ app, BrowserWindow }) => ({
       version: app.getVersion(), packaged: app.isPackaged, userData: app.getPath('userData'),
-      appData: app.getPath('appData'), preferences: BrowserWindow.getAllWindows()[0]?.webContents.getLastWebPreferences(),
+      appData: app.getPath('appData'), sessionData: app.getPath('sessionData'), preferences: BrowserWindow.getAllWindows()[0]?.webContents.getLastWebPreferences(),
     }))
     assert.ok(runtime.packaged)
     assert.equal(path.resolve(runtime.appData).toLowerCase(), path.resolve(env.APPDATA).toLowerCase())
-    assert.equal(path.resolve(runtime.userData).toLowerCase(), path.join(env.APPDATA, identity.dataDirectory).toLowerCase())
+    const profile = legacy ? path.join(env.APPDATA, identity.dataDirectory) : path.join(env.LOCALAPPDATA, 'Tangerine/Data', identity.dataDirectory, 'Storage')
+    assert.equal(path.resolve(runtime.userData).toLowerCase(), profile.toLowerCase())
+    assert.equal(path.resolve(runtime.sessionData).toLowerCase(), profile.toLowerCase())
     const page = await application.firstWindow()
     await page.getByRole('button', { name: '洛克王国', exact: true }).waitFor({ timeout: 45000 })
     assert.equal(new URL(page.url()).host, identity.host)

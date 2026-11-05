@@ -57,6 +57,7 @@ function Start-Process {
     return
   }
   if ($WindowStyle -ne 'Hidden') { throw 'VisibleServer' }
+  if ($RedirectStandardOutput -ne (Join-Path $env:LOCALAPPDATA 'Tangerine\\Data\\TangerineTools\\Logs\\Source\\server.output.log')) { throw 'WrongLogDirectory' }
   if (($ArgumentList -join ' ') -notmatch '--strictPort') { throw 'OriginMayChange' }
   $global:starts++
   Write-Host 'SERVER'
@@ -68,7 +69,7 @@ function Start-Process {
 & ${quote(script)} ${interactive ? '' : '-NoOpenBrowser -OnProgress {param($Stage); Write-Host "STAGE:$Stage"}'}
 `
     return spawnSync('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', command],
-      { encoding: 'utf8', windowsHide: true, timeout: 20000 })
+      { encoding: 'utf8', windowsHide: true, timeout: 20000, env: { ...process.env, LOCALAPPDATA: join(fixture, 'Local') } })
   } finally {
     rmSync(fixture, { recursive: true, force: true })
   }

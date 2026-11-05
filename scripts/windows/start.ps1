@@ -15,7 +15,15 @@ function Report-StartupProgress([string]$Stage) {
     else { Write-Host "Startup: $Stage" }
 }
 Report-StartupProgress 'checking-files'
-$logDirectory = Join-Path $projectRoot 'artifacts\launcher'
+if (-not $env:LOCALAPPDATA -or -not [IO.Path]::IsPathRooted($env:LOCALAPPDATA)) { throw 'LOCALAPPDATA must resolve to the current user directory.' }
+$logDirectory = Join-Path $env:LOCALAPPDATA 'Tangerine\Data\TangerineTools\Logs\Source'
+$logAncestor = [IO.Path]::GetFullPath($logDirectory)
+while ($logAncestor) {
+    if (Test-Path -LiteralPath $logAncestor) {
+        if ((Get-Item -LiteralPath $logAncestor -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'The log path contains a directory link. Check its owner before launching.' }
+    }
+    $logAncestor = [IO.Path]::GetDirectoryName($logAncestor)
+}
 New-Item -ItemType Directory -Force -Path $logDirectory | Out-Null
 $mutex = New-Object Threading.Mutex($false, 'Local\TangerineTools-5188')
 $held = $false

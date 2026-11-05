@@ -3,18 +3,21 @@ import path from 'node:path'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { createAssetHandler, navigationAllowed, externalUrl, downloadAllowed, permissionAllowed, WINDOW_PREFERENCES } from './security.mjs'
+import { initializeStorage } from './storage.mjs'
 
 const directory = path.dirname(fileURLToPath(import.meta.url))
 const config = JSON.parse(readFileSync(path.join(directory, 'config.json'), 'utf8'))
 const root = path.join(directory, '../dist')
 const entry = `app://${config.host}/index.html`
 app.setName(config.productName)
-app.setPath('userData', path.join(app.getPath('appData'), config.dataDirectory))
+let ownsStorage = false
+try { ownsStorage = initializeStorage(app, config) }
+catch (error) { dialog.showErrorBox('数据目录需要确认', error.message); app.exit(1) }
 app.commandLine.appendSwitch('disable-http-cache')
 if (process.platform === 'win32') app.setAppUserModelId(config.appId)
 protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true, allowServiceWorkers: false } }])
 let window
-if (!app.requestSingleInstanceLock()) app.quit()
+if (!ownsStorage) app.exit(0)
 else {
   app.on('second-instance', () => { if (window) { if (window.isMinimized()) window.restore(); window.focus() } })
   app.whenReady().then(async () => {

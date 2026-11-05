@@ -167,6 +167,8 @@ try {
   assert.match(await page.evaluate(() => JSON.stringify(localStorage)), /desktop-test-model/)
   record('exit and reopen preserve database and non-secret settings; API key does not survive the session')
   await app.close(); app = undefined
+  assert.ok((await fs.readdir(path.join(env.APPDATA, identity.dataDirectory))).every(name => name === 'lockfile'), 'Only the compatibility lock may remain outside the unified data root')
+  assert.equal(await fs.stat(path.join(env.APPDATA, identity.productName)).then(() => true, () => false), false, 'No secondary display-name profile')
   const cleanRoot = path.join(root, 'restore')
   const cleanEnv = await isolatedEnvironment(cleanRoot)
   opened = await openPackaged(executable, cleanEnv, identity); app = opened.application; page = opened.page

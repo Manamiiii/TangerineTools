@@ -17,6 +17,14 @@
     !insertmacro refuseUnsafeDirectory
   ${EndIf}
   StrCpy $R2 "$2"
+  ; Program maintenance must never target the shared data tree, including a
+  ; product-named child selected explicitly with /D or damaged registration.
+  ReadEnvStr $R7 LOCALAPPDATA
+  StrLen $R8 "$R7\Tangerine\Data\"
+  StrCpy $R9 "$R2\" $R8
+  ${If} $R9 == "$R7\Tangerine\Data\"
+    !insertmacro refuseUnsafeDirectory
+  ${EndIf}
   ${If} ${FileExists} "$R2\."
     GetFullPathName $R2 "$2"
     System::Call 'kernel32::GetFileAttributesW(w "$R2") i.r3'
@@ -29,6 +37,8 @@
   ${If} $R3 == ""
   ${OrIf} $R3 == "Programs"
   ${OrIf} $R3 == "Tangerine"
+  ${OrIf} $R3 == "Apps"
+  ${OrIf} $R3 == "Data"
     !insertmacro refuseUnsafeDirectory
   ${EndIf}
   StrCpy $INSTDIR "$R2"
@@ -62,7 +72,7 @@
       ${If} $R7 == ""
         !insertmacro refuseUnsafeDirectory
       ${EndIf}
-      StrCpy $INSTDIR "$R7\Programs\Tangerine\${APP_FILENAME}"
+      StrCpy $INSTDIR "$R7\Tangerine\Apps\${APP_FILENAME}"
     ${Else}
       StrCpy $INSTDIR "$R0"
     ${EndIf}
