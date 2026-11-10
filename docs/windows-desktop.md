@@ -95,6 +95,25 @@ Electron 45.1.0 和 electron-builder 26.18.0 由锁文件固定。构建器使�
 
 `npm run pack:desktop` 只生成 unpacked；`npm run checksums:desktop` 为已存在的当前版本 Setup 生成校验值。发布者须同时提供与构建对应的源码、锁文件和构建脚本；本项目的 CI 只保存验证报告，不保存公开安装包。网页发布仍由 `.github/workflows/pages.yml` 负责，Windows 检查由 `.github/workflows/desktop.yml` 负责。
 
+## 源码桌面验收
+
+源码日常入口的链路为本项目桌面 `.lnk` → Windows `wscript.exe` → 仓库根 `TangerineTools.vbs` → `scripts/windows/start.ps1` → 项目 Node/Vite → `http://localhost:5188`。快捷方式参数引用本仓库 VBS，工作目录为仓库根，图标为 `public/icons/tangerine-tools.ico`；私有绝对路径只保存在本机快捷方式和忽略的检查记录中。这个入口不读取 `dist/` 或某个固定 Setup，也不启动 Electron，收藏保持原浏览器来源。
+
+`scripts/vite/source-identity.mjs` 只在 Vite 源码服务启用。只读检查端点 `/__tangerine_source` 返回项目标识、目录摘要、启动与当前运行文件 SHA-256、版本、提交和 PID，不返回原始机器路径、用户数据或凭据；禁用缓存并拒绝非回环和跨来源请求。HTML 携带启动指纹。检查脚本同时核对该 HTML 和实际入口模块，不把标题或端口响应作为版本证据。该端点不进入 Pages 或安装版构建。
+
+本机 `.local/source-entry.json` 是维护者明确记录的验收指纹，Git 忽略且不打包。运行输入包括前端、public、Vite 配置与插件、源码启动链、依赖清单和许可文件；文档与检查日志不改变运行指纹。记录存在时，源码启动器拒绝未验收的运行输入。缺少记录的普通源码克隆可直接运行；`npm run dev` 是开发命令，不代表桌面验收完成。服务开启期间修改工作区仍可能触发 HMR，因此不能在用户活动状态不明时修改其监视的运行文件；验收记录不是冻结正在运行的开发服务。
+
+维护者交付步骤：
+
+1. 读取快捷方式的目标、参数、工作目录、图标；检查 5188 监听 PID、进程命令行和本项目任务。不要读取真实浏览器库。旧服务、未保存页面、运行或暂停任务状态不明时保留实例，不修改在用文件、不重启或强杀。
+2. 完成 lint、隐私检查、测试、构建及差异检查。需要隔离构建时，用 `npm run build -- --outDir artifacts/quality/source-entry/dist`，不要覆盖在用 `dist` 或候选。测试使用独立端口、临时浏览器上下文和虚构记录。只涉及源码检查链且生产载荷一致时，无需重打安装包；注明沿用候选的构建提交与散列。
+3. 核对并提交本批修改，工作区干净后运行 `npm run record:source-entry`。此命令只记录当前内容，不代替测试，不启动服务。已有本机记录损坏或归属不明时保留现场处理，不静默覆盖。源码提交同步仍遵守项目 main 工作流。
+4. 无服务时可用 `powershell -NoProfile -File scripts/windows/start.ps1 -NoOpenBrowser` 启动同一链路而不打开个人浏览器。已匹配服务复用；不匹配服务保留并报错。只有确认任务结束、页面已保存且有正常退出方式时，才由维护者正常退出后再启动；没有退出方式时保留为待安全切换，不强杀进程。
+5. 运行 `npm run check:source-entry`，并在隔离浏览器中核对页面指纹、实际加载模块和必要流程。启动器将成功核对结果写入统一数据目录 `Logs/Source/source-version.json`。检查成功说明服务可提供该版本，不说明用户已经打开的页面或懒加载模块全部更新。
+6. 交接源码提交、工作区状态、快捷入口、运行文件指纹、服务 PID/启动时间、产物版本与适用散列，分别说明源码、入口、当前用户页面状态。未完成安全切换时明确列出原因；不能用“下次点击会更新”代替核验。
+
+原网址的 Service Worker 在 HTTP 下不缓存运行响应；HTTPS 网页版保留既有缓存行为。不要清除浏览器存储来解决版本问题。用户已经打开的标签页应先完成或保存操作，再刷新同一个 `http://localhost:5188` 页面；确认现有收藏仍在。不擅自刷新用户页面，不把隔离浏览器通过当作个人页面已刷新。
+
 ## 开发工具链风险
 
 锁定的 electron-builder 26.18.0 依赖链受 [minimatch 模式放大拒绝服务通告 GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249) 影响。通告的受影响范围是 minimatch `>=7.0.0 <11.0.1`：攻击者控制 glob 模式且启用 `optimizationLevel >= 2` 时，预处理可能过度消耗 CPU 和内存。审计中的 6 项中等级结果包含该风险沿构建依赖链的传播，不代表 6 个独立漏洞；`npm audit --omit=dev` 没有已知通告也不等于全部依赖无漏洞。通告范围会更新，每次准备发布时应重新运行两种审计。

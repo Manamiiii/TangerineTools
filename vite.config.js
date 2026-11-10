@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { offlineAssets } from './scripts/vite/offline-assets.mjs'
+import { sourceIdentityPlugin } from './scripts/vite/source-identity.mjs'
 
 // https://vite.dev/config/
 // base: './' keeps built asset URLs relative so the same dist/ output works
@@ -8,7 +9,7 @@ import { offlineAssets } from './scripts/vite/offline-assets.mjs'
 // project sub-path (GitHub Pages, e.g. https://user.github.io/repo/).
 export default defineConfig({
   base: './',
-  plugins: [react(), offlineAssets()],
+  plugins: [react(), offlineAssets(), sourceIdentityPlugin()],
   server: {
     port: 5188,
     strictPort: true,

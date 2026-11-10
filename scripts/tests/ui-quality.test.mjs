@@ -28,7 +28,7 @@ createRoot(document.getElementById('root')).render(h(Fixture));
 `
 
 test('dialogs retain focus, close only the top layer, and OCR runs without external requests', { timeout: 90000 }, async () => {
-  const server = await createServer({ cacheDir: 'node_modules/.vite-ui-quality', server: { host: '127.0.0.1', strictPort: false, open: false, watch: { ignored: ['**/artifacts/**'] } }, plugins: [{
+  const server = await createServer({ cacheDir: 'node_modules/.vite-ui-quality', server: { host: '127.0.0.1', port: 0, strictPort: false, open: false, watch: { ignored: ['**/artifacts/**'] } }, plugins: [{
     name: 'quality-test-fixture',
     resolveId(id) { if (id === 'virtual:quality-fixture') return id },
     load(id) { if (id === 'virtual:quality-fixture') return fixture },

@@ -18,7 +18,7 @@ async function importFile(page, payload) {
 }
 
 test('new user can record creatures, understand recommendations and restore a backup without a model', { timeout: 90000 }, async () => {
-  const server = await createServer({ cacheDir: 'node_modules/.vite-public-onboarding', server: { host: '127.0.0.1', strictPort: false, open: false, watch: { ignored: ['**/artifacts/**'] } } })
+  const server = await createServer({ cacheDir: 'node_modules/.vite-public-onboarding', server: { host: '127.0.0.1', port: 0, strictPort: false, open: false, watch: { ignored: ['**/artifacts/**'] } } })
   let browser
   try {
     await server.listen()

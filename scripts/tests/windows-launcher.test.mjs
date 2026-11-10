@@ -9,7 +9,6 @@ import { spawnSync } from 'node:child_process'
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const launcher = 'scripts/windows/start.ps1'
 const appName = 'TangerineTools'
-const title = 'TangerineTools - fixture'
 const url = 'http://localhost:5188'
 const quote = value => `'${value.replaceAll("'", "''")}'`
 
@@ -19,6 +18,7 @@ function runFixture(state, interactive = false) {
     const script = join(fixture, launcher)
     mkdirSync(dirname(script), { recursive: true })
     writeFileSync(script, readFileSync(join(root, launcher)))
+    writeFileSync(join(dirname(script), 'check-source.mjs'), '// Called through the isolated source-check substitute.')
     mkdirSync(join(fixture, 'node_modules/vite/bin'), { recursive: true })
     writeFileSync(join(fixture, 'node_modules/vite/bin/vite.js'), '')
     // The window's dispatcher/worker is exercised by the shared WPF regression
@@ -37,17 +37,25 @@ function Show-TangerineStartup {
     const command = `
 $ErrorActionPreference='Stop'
 $global:starts=0
-function Invoke-WebRequest {
-  param($Uri, $TimeoutSec, [switch]$UseBasicParsing)
-  if ($Uri -ne ${quote(url)}) { throw 'WrongOrigin' }
+function Get-Command {
+  param($Name, $ErrorAction)
+  if ($Name -ne 'node') { throw 'UnexpectedCommand' }
+  return [pscustomobject]@{Source='Invoke-FixtureSourceCheck'}
+}
+function Invoke-FixtureSourceCheck {
+  param($Checker, $Mode)
+  if ($Checker -ne ${quote(join(dirname(script), 'check-source.mjs'))}) { throw 'WrongChecker' }
+  if ($Mode -eq '--expected' -and '${state}' -ne 'unaccepted') { $global:LASTEXITCODE=0; return '{}' }
   if ('${state}' -eq 'warm' -or ('${state}' -eq 'cold' -and $global:starts -gt 0)) {
-    return [pscustomobject]@{StatusCode=200;Content='<title>${title}</title>'}
+    $global:LASTEXITCODE=0
+    return '{"verified":true,"origin":"${url}"}'
   }
-  throw 'NotReady'
+  $global:LASTEXITCODE=1
+  return 'Unverified source identity'
 }
 function Get-NetTCPConnection {
   param($LocalPort, $State, $ErrorAction)
-  if ('${state}' -eq 'foreign') { return [pscustomobject]@{State='Listen'} }
+  if ('${state}' -in @('foreign','stale')) { return [pscustomobject]@{State='Listen'} }
 }
 function Start-Process {
   param($FilePath, $ArgumentList, $WorkingDirectory, $WindowStyle, $RedirectStandardOutput, $RedirectStandardError, [switch]$PassThru)
@@ -96,6 +104,19 @@ test('occupied port does not start or open anything', { skip: process.platform !
   assert.notEqual(result.status, 0)
   assert.doesNotMatch(result.stdout, /SERVER|BROWSER|STAGE:ready/)
   assert.match(result.stderr, /another service/)
+})
+
+test('stale source service is preserved without restart or opening an unverified page', { skip: process.platform !== 'win32' }, () => {
+  const result = runFixture('stale')
+  assert.notEqual(result.status, 0)
+  assert.doesNotMatch(result.stdout, /SERVER|BROWSER|STAGE:ready/)
+  assert.match(result.stderr, /unverified source version/)
+})
+
+test('unaccepted changes do not start a new desktop service', { skip: process.platform !== 'win32' }, () => {
+  const result = runFixture('unaccepted')
+  assert.notEqual(result.status, 0)
+  assert.doesNotMatch(result.stdout, /SERVER|BROWSER|STAGE:ready/)
 })
 
 test('server failure propagates to the status window', { skip: process.platform !== 'win32' }, () => {

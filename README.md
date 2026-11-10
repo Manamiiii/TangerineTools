@@ -79,7 +79,9 @@ npm run dev
 
 Windows 安装依赖后，也可以双击项目根目录的 `TangerineTools.vbs`。启动窗口会显示阶段和耗时，就绪后打开浏览器；失败原因留在窗口中。首次运行可能受系统脚本策略限制，此时直接使用上面的终端命令即可，不需要管理员权限。日志在 `%LOCALAPPDATA%\Tangerine\Data\TangerineTools\Logs\Source`。源码下载不附带作者电脑上的桌面快捷方式。
 
-VBS 按自身位置找到 `scripts/windows/start.ps1`。脚本通过当前 PATH 查找 Node，从项目根目录运行项目自带的 Vite。进度窗口使用 `-NoOpenBrowser` 和 `-OnProgress`，服务就绪后只打开一次浏览器。重复启动由本机会话互斥锁串行处理，已就绪的服务会复用，发现其他程序占用 5188 时报告冲突。安装器和源码启动器均不生成桌面快捷方式。
+VBS 按自身位置找到 `scripts/windows/start.ps1`。脚本通过当前 PATH 查找 Node，从项目根目录运行项目自带的 Vite。进度窗口使用 `-NoOpenBrowser` 和 `-OnProgress`，服务就绪后只打开一次浏览器。重复启动由本机会话互斥锁串行处理；只有源码目录、运行文件指纹、HTML 和入口模块核对通过才复用服务。其他服务、启动后改动的源码或未验收内容会报错，保留现有进程，不自动重启。安装器和源码启动器均不生成桌面快捷方式。
+
+维护者完成验证与提交后，运行 `npm run record:source-entry` 保存本机验收记录；`npm run check:source-entry` 只读核对 5188 实际服务。已有验收记录时，桌面启动拒绝尚未验收的运行文件改动；普通源码克隆无此记录，仍可直接启动。具体安全切换、浏览器刷新和交付证据见[源码桌面验收](docs/windows-desktop.md#源码桌面验收)。
 
 **请先备份，再做批量修改或删除。** 数据按浏览器和网址隔离：`localhost`、`127.0.0.1`、不同端口以及线上站点不是同一份收藏。换网址或设备前先导出，再到目标页面导入。导入按记录 ID 合并：同 ID 整条覆盖，文件未包含的本地记录保留。导入确认窗口可先导出当前数据。
 
@@ -135,6 +137,8 @@ README 截图来自隔离浏览器中的界面回归，不读取个人收藏。P
 |---|---|
 | `npm run lint` | 静态检查 |
 | `npm run check:privacy` | 检查跟踪文件和提交邮箱，避免本机配置误入公开仓库 |
+| `npm run record:source-entry` | 验证、提交后记录本机源码验收指纹，不启动或重启服务 |
+| `npm run check:source-entry` | 只读核对 5188 服务归属、启动指纹与实际入口资源 |
 | `npm test` | 领域与回归测试 |
 | `npm run build` | 生产构建 |
 | `npm run dist:windows` | 构建 Windows x64 Setup 和 SHA-256，不发布附件 |
@@ -184,6 +188,7 @@ desktop/config.json、build.mjs  正式身份、打包白名单与 NSIS 构建
 desktop/*.nsh                  安装目录、卸载与运行中保护
 desktop/fixture.mjs、desktop/tests/  独立测试身份与安装、成品验收
 scripts/windows/              源码启动器的服务检查与进度窗口
+scripts/windows/check-source.mjs  本机验收记录与源码服务核对
 scripts/assets/build-icons.mjs 图标导出脚本
 public/favicon.svg → public/icons/  图标源与派生 PNG、ICO
 artifacts/desktop/release/     忽略的正式候选 Setup、散列与 unpacked 程序
@@ -194,7 +199,7 @@ public/presets/               洛克王国运行时正式预置
 scripts/bwiki/                官方公告审计与 BWiki staging / preview / apply
 scripts/nature/               性格推荐校准
 scripts/rock-kingdom-scanner/ 扫描模板维护
-scripts/vite/                 本地 OCR 运行资源打包与静态缓存版本
+scripts/vite/                 OCR 资源打包、静态缓存版本与源码服务身份
 scripts/tests/                自动化回归测试
 src/components/               场景和通用工具界面
 src/features/                 OCR、模型与洛克王国专项能力

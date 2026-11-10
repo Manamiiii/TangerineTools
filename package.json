@@ -16,6 +16,8 @@
     "build": "vite build",
     "lint": "oxlint",
     "check:privacy": "node scripts/check-privacy.mjs",
+    "check:source-entry": "node scripts/windows/check-source.mjs",
+    "record:source-entry": "node scripts/windows/check-source.mjs --record",
     "preview": "vite preview",
     "check:nature": "node scripts/nature/check-recommendations.mjs",
     "check:scanner:templates": "node scripts/rock-kingdom-scanner/build-templates.mjs",

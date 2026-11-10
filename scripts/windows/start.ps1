@@ -27,10 +27,15 @@ while ($logAncestor) {
 New-Item -ItemType Directory -Force -Path $logDirectory | Out-Null
 $mutex = New-Object Threading.Mutex($false, 'Local\TangerineTools-5188')
 $held = $false
+$nodePath = (Get-Command node -ErrorAction Stop).Source
+$checkScript = Join-Path $projectRoot 'scripts\windows\check-source.mjs'
+$lastSourceCheck = ''
 function Test-AppReady {
     try {
-        $response = Invoke-WebRequest -Uri $siteUrl -UseBasicParsing -TimeoutSec 2
-        return $response.StatusCode -eq 200 -and $response.Content -match '<title>TangerineTools '
+        $result = & $nodePath $checkScript 2>&1
+        if ($LASTEXITCODE -ne 0) { $script:lastSourceCheck = ($result | Out-String); return $false }
+        $result | Out-String | Set-Content -LiteralPath (Join-Path $logDirectory 'source-version.json')
+        return $true
     } catch { return $false }
 }
 try {
@@ -39,9 +44,10 @@ try {
     if (-not $held) { throw 'Another TangerineTools launch is still in progress. Please try again shortly.' }
     Report-StartupProgress 'checking-service'
     if (-not (Test-AppReady)) {
+        $expected = & $nodePath $checkScript --expected 2>&1
+        if ($LASTEXITCODE -ne 0) { throw ($expected | Out-String) }
         $listener = Get-NetTCPConnection -LocalPort 5188 -State Listen -ErrorAction SilentlyContinue
-        if ($listener) { throw 'Port 5188 is occupied by another service. Close that service before launching TangerineTools.' }
-        $nodePath = (Get-Command node -ErrorAction Stop).Source
+        if ($listener) { throw "Port 5188 is occupied by another service or an unverified source version. Preserve current work before resolving it. $lastSourceCheck" }
         $vitePath = Join-Path $projectRoot 'node_modules\vite\bin\vite.js'
         if (-not (Test-Path -LiteralPath $vitePath)) { throw 'Dependencies are missing. Run npm ci in the TangerineTools project first.' }
         Report-StartupProgress 'starting-review'
