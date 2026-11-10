@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, writeFile, rm, realpath } from 'node:fs/promises'
 import path from 'node:path'
 import os from 'node:os'
 import { createServer } from 'vite'
@@ -9,7 +9,7 @@ import { sourceIdentity, sourceIdentityPlugin, identityPath } from '../vite/sour
 import { checkSource, expectedSource, recordSource } from '../windows/check-source.mjs'
 
 async function fixture() {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'tangerine-source-'))
+  const root = await mkdtemp(path.join(await realpath(os.tmpdir()), 'tangerine-source-'))
   for (const folder of ['src', 'public', 'scripts/vite', 'scripts/windows']) await mkdir(path.join(root, folder), { recursive: true })
   for (const name of ['package.json', 'package-lock.json']) await writeFile(path.join(root, name), JSON.stringify({ name: 'tangerine-source-fixture', version: '0.1.1', type: 'module' }))
   for (const name of ['LICENSE', 'COPYRIGHT', 'vite.config.js', 'TangerineTools.vbs']) await writeFile(path.join(root, name), '// fictional fixture')
@@ -61,7 +61,7 @@ test('source entry proves checkout and loaded entry; changed inputs, different r
     await assert.rejects(expectedSource(root), /Invalid local acceptance/)
   } finally {
     await server?.close()
-    for (const directory of [root, other]) { assert.equal(path.dirname(directory), path.resolve(os.tmpdir())); await rm(directory, { recursive: true, force: true }) }
+    for (const directory of [root, other]) { assert.equal(path.dirname(directory), await realpath(os.tmpdir())); await rm(directory, { recursive: true, force: true }) }
   }
 })
 
@@ -85,7 +85,7 @@ test('recording desktop acceptance requires a clean committed checkout and prese
     await assert.rejects(recordSource(root), /unknown local file/)
     assert.equal(JSON.parse(await readFile(path.join(root, '.local/source-entry.json'), 'utf8')).project, 'Other')
   } finally {
-    assert.equal(path.dirname(root), path.resolve(os.tmpdir()))
+    assert.equal(path.dirname(root), await realpath(os.tmpdir()))
     await rm(root, { recursive: true, force: true })
   }
 })
