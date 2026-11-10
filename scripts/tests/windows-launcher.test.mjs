@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { join, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
+import { randomUUID } from 'node:crypto'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const launcher = 'scripts/windows/start.ps1'
@@ -16,9 +17,10 @@ function runFixture(state, interactive = false) {
   const fixture = mkdtempSync(join(realpathSync(tmpdir()), 'tangerine launcher '))
   try {
     const script = join(fixture, launcher)
+    const checkerMarker = randomUUID()
     mkdirSync(dirname(script), { recursive: true })
     writeFileSync(script, readFileSync(join(root, launcher)))
-    writeFileSync(join(dirname(script), 'check-source.mjs'), '// Called through the isolated source-check substitute.')
+    writeFileSync(join(dirname(script), 'check-source.mjs'), checkerMarker)
     mkdirSync(join(fixture, 'node_modules/vite/bin'), { recursive: true })
     writeFileSync(join(fixture, 'node_modules/vite/bin/vite.js'), '')
     // The window's dispatcher/worker is exercised by the shared WPF regression
@@ -44,7 +46,9 @@ function Get-Command {
 }
 function Invoke-FixtureSourceCheck {
   param($Checker, $Mode)
-  if ($Checker -ne ${quote(join(dirname(script), 'check-source.mjs'))}) { throw 'WrongChecker' }
+  # Windows may spell the same temporary directory with an 8.3 alias.
+  # Check the unique fixture file identity instead of its path spelling.
+  if (-not [IO.Path]::IsPathRooted($Checker) -or [IO.File]::ReadAllText($Checker) -ne '${checkerMarker}') { throw "WrongChecker: $Checker" }
   if ($Mode -eq '--expected' -and '${state}' -ne 'unaccepted') { $global:LASTEXITCODE=0; return '{}' }
   if ('${state}' -eq 'warm' -or ('${state}' -eq 'cold' -and $global:starts -gt 0)) {
     $global:LASTEXITCODE=0
@@ -117,6 +121,7 @@ test('unaccepted changes do not start a new desktop service', { skip: process.pl
   const result = runFixture('unaccepted')
   assert.notEqual(result.status, 0)
   assert.doesNotMatch(result.stdout, /SERVER|BROWSER|STAGE:ready/)
+  assert.match(result.stderr, /Unverified source identity/)
 })
 
 test('server failure propagates to the status window', { skip: process.platform !== 'win32' }, () => {
